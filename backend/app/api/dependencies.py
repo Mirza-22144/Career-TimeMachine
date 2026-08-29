@@ -4,7 +4,11 @@ from app.repositories.interfaces.session_repository import AnonSession
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
+from app.repositories.memory.memory_skill_mapping_repository import (
+    MemorySkillMappingRepository,
+)
 from app.services.career_journey_service import CareerJourneyService
+from app.services.career_translation_service import CareerTranslationService
 from app.services.catalogue_service import CatalogueService
 from app.services.profile_service import ProfileService
 from app.services.session_service import SessionService
@@ -14,6 +18,7 @@ from app.services.session_service import SessionService
 _session_repository = MemorySessionRepository()
 _catalogue_repository = MemoryCatalogueRepository()
 _profile_repository = MemoryProfileRepository()
+_skill_mapping_repository = MemorySkillMappingRepository()
 
 
 def get_session_service() -> SessionService:
@@ -49,3 +54,12 @@ def get_profile_service() -> ProfileService:
 def get_career_journey_service() -> CareerJourneyService:
     """Build journey service with shared profile and catalogue repositories."""
     return CareerJourneyService(_profile_repository, _catalogue_repository)
+
+
+def get_career_translation_service() -> CareerTranslationService:
+    """Build translation service with shared profile/catalogue/mapping repos."""
+    return CareerTranslationService(
+        _profile_repository,
+        _catalogue_repository,
+        _skill_mapping_repository,
+    )

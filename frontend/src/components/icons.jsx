@@ -1,5 +1,5 @@
-// Small inline Lucide-style icons (2px stroke) used only on the Landing screen.
-// Kept local to this screen so nothing in the shared App tree is touched.
+// Small inline Lucide-style icons (2px stroke), shared across screens.
+// Kept local to this component tree so nothing in the App.jsx tree is touched.
 
 export function ClockIcon({ size = 11, color = '#7C3AED' }) {
   return (
@@ -69,6 +69,15 @@ export function FileTextIcon({ size = 15, color = '#7C3AED' }) {
       <line x1="8" y1="13" x2="16" y2="13" />
       <line x1="8" y1="17" x2="16" y2="17" />
       <line x1="8" y1="9" x2="10" y2="9" />
+    </svg>
+  )
+}
+
+export function SearchIcon({ size = 16, color = '#9CA3AF' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </svg>
   )
 }

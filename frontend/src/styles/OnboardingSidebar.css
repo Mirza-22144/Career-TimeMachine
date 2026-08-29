@@ -1,0 +1,256 @@
+/* Styles for the onboarding wizard's shared dark sidebar
+   (components/OnboardingSidebar.jsx). Scoped under .ob- so it doesn't
+   collide with the Landing screen's .lp- styles. */
+
+.ob-sidebar {
+  --violet-600: #7c3aed;
+  --violet-400: #a78bfa;
+  --violet-300: #c4b5fd;
+  --navy-900: #0d1628;
+
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 640px;
+  height: 100%;
+  min-height: 100vh;
+  background: var(--navy-900);
+  font-family: 'Manrope', sans-serif;
+  box-sizing: border-box;
+}
+
+.ob-sidebar * {
+  box-sizing: border-box;
+}
+
+.ob-stepper-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 280px;
+  min-width: 280px;
+  padding: 32px 24px;
+}
+
+.ob-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ob-brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 4px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.ob-brand-emblem {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.ob-brand-word {
+  font-weight: 800;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.ob-brand-tagline {
+  margin: 0 0 32px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ob-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ob-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.ob-step-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-weight: 700;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ob-step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+
+.ob-step-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ob-step-subtitle {
+  font-weight: 500;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.ob-step--active {
+  background: rgba(124, 58, 237, 0.18);
+}
+
+.ob-step--active .ob-step-index {
+  background: var(--violet-600);
+  border-color: var(--violet-600);
+  color: #ffffff;
+}
+
+.ob-step--active .ob-step-title {
+  color: #ffffff;
+}
+
+.ob-step--active .ob-step-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ob-step--done .ob-step-index {
+  background: rgba(124, 58, 237, 0.25);
+  border-color: transparent;
+  color: var(--violet-300);
+}
+
+.ob-step--done .ob-step-title {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ob-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ob-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ob-progress-bars {
+  display: flex;
+  gap: 6px;
+}
+
+.ob-progress-bar {
+  height: 4px;
+  flex: 1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ob-progress-bar--filled {
+  background: var(--violet-600);
+}
+
+.ob-photo-col {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.ob-photo-image {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #1e2a44 0%, #0d1628 70%);
+  background-size: cover;
+  background-position: center;
+}
+
+.ob-photo-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(13, 22, 40, 0.75) 0%, rgba(13, 22, 40, 0.1) 45%, rgba(13, 22, 40, 0.35) 100%);
+}
+
+.ob-photo-stat {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  max-width: 220px;
+  background: rgba(13, 22, 40, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.ob-photo-stat-label {
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ob-photo-stat-value {
+  font-weight: 800;
+  font-size: 22px;
+  color: #ffffff;
+}
+
+.ob-photo-stat-caption {
+  font-weight: 500;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ob-photo-quote {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  padding: 16px 20px;
+  background: rgba(13, 22, 40, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-family: 'PT Serif', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 900px) {
+  .ob-sidebar {
+    flex-basis: 280px;
+  }
+
+  .ob-photo-col {
+    display: none;
+  }
+}

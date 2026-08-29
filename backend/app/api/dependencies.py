@@ -1,13 +1,18 @@
-
 from fastapi import Depends, Header, HTTPException, status
 
 from app.repositories.interfaces.session_repository import AnonSession
+from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
+from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
+from app.services.catalogue_service import CatalogueService
+from app.services.profile_service import ProfileService
 from app.services.session_service import SessionService
 
 # ONE shared store for the whole app run, so sessions persist between requests.
 # (Dev only. After the DB handover this line becomes the Postgres repo.)
 _session_repository = MemorySessionRepository()
+_catalogue_repository = MemoryCatalogueRepository()
+_profile_repository = MemoryProfileRepository()
 
 
 def get_session_service() -> SessionService:
@@ -28,3 +33,13 @@ def get_current_session(
     if session is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
     return session
+
+
+def get_catalogue_service() -> CatalogueService:
+    """Build catalogue service around the shared development-only repo."""
+    return CatalogueService(_catalogue_repository)
+
+
+def get_profile_service() -> ProfileService:
+    """Build profile service with shared profile and catalogue repositories."""
+    return ProfileService(_profile_repository, _catalogue_repository)

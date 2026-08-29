@@ -41,6 +41,11 @@ class Profile:
     # Computed by the service whenever dates change.
     break_duration_months: int | None = None
 
+    # Career direction stores the user's current selection only. It does not
+    # generate scenarios or infer readiness.
+    return_readiness: str | None = None
+    area_to_explore: str | None = None
+
     # Confirmation means the profile passed the completeness rules. Later edits
     # invalidate this flag so the frontend can ask the user to reconfirm.
     confirmed: bool = False

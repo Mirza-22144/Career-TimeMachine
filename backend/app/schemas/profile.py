@@ -44,4 +44,6 @@ class ProfileResponse(BaseModel):
     planned_return_date: date | None
     return_date_unsure: bool
     break_duration_months: int | None
+    return_readiness: str | None
+    area_to_explore: str | None
     confirmed: bool

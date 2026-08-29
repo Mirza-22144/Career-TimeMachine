@@ -7,6 +7,7 @@ from app.repositories.memory.memory_session_repository import MemorySessionRepos
 from app.repositories.memory.memory_skill_mapping_repository import (
     MemorySkillMappingRepository,
 )
+from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
 from app.services.catalogue_service import CatalogueService
@@ -63,3 +64,8 @@ def get_career_translation_service() -> CareerTranslationService:
         _catalogue_repository,
         _skill_mapping_repository,
     )
+
+
+def get_career_direction_service() -> CareerDirectionService:
+    """Build direction service with shared profile and catalogue repositories."""
+    return CareerDirectionService(_profile_repository, _catalogue_repository)

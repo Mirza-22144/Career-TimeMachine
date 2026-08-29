@@ -40,7 +40,13 @@ def test_career_journey_requires_confirmed_profile():
     response = client.get("/api/v1/career-journey", headers=headers)
 
     assert response.status_code == 409
-    assert response.json()["detail"] == "profile not confirmed"
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_409",
+            "message": "profile not confirmed",
+            "details": [],
+        }
+    }
 
 
 def test_career_journey_returns_structured_confirmed_profile_summary():

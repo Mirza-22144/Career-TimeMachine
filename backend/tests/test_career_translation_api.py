@@ -101,4 +101,10 @@ def test_single_skill_translation_404s_when_skill_not_selected():
     response = client.get("/api/v1/career-translation/rest_apis", headers=headers)
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "skill not selected"
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_404",
+            "message": "skill not selected",
+            "details": [],
+        }
+    }

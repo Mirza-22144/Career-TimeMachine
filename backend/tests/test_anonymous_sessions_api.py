@@ -17,4 +17,13 @@ def test_create_then_fetch_session():
 
 
 def test_current_without_token_is_401():
-    assert client.get("/api/v1/anonymous-sessions/current").status_code == 401
+    response = client.get("/api/v1/anonymous-sessions/current")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_401",
+            "message": "Missing session token",
+            "details": [],
+        }
+    }

@@ -57,7 +57,13 @@ def test_patch_rejects_invalid_catalogue_id():
     )
 
     assert response.status_code == 400
-    assert "Invalid years_experience" in response.json()["detail"]
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_400",
+            "message": "Invalid years_experience: four-ish",
+            "details": [],
+        }
+    }
 
 
 def test_patch_rejects_return_date_before_break_start():
@@ -73,9 +79,13 @@ def test_patch_rejects_return_date_before_break_start():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == (
-        "planned_return_date must be on or after break_started_on"
-    )
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_400",
+            "message": "planned_return_date must be on or after break_started_on",
+            "details": [],
+        }
+    }
 
 
 def test_confirm_incomplete_profile_lists_missing_fields():
@@ -84,12 +94,13 @@ def test_confirm_incomplete_profile_lists_missing_fields():
     response = client.post("/api/v1/profile/confirm", headers=headers)
 
     assert response.status_code == 400
-    detail = response.json()["detail"]
-    assert detail["message"] == "Profile is incomplete"
-    assert "role_id" in detail["missing"]
-    assert "years_experience" in detail["missing"]
-    assert "break_started_on" in detail["missing"]
-    assert "planned_return_date" in detail["missing"]
+    error = response.json()["error"]
+    assert error["code"] == "PROFILE_INCOMPLETE"
+    assert error["message"] == "Profile is incomplete"
+    assert "role_id" in error["details"]
+    assert "years_experience" in error["details"]
+    assert "break_started_on" in error["details"]
+    assert "planned_return_date" in error["details"]
 
 
 def test_confirm_requires_other_text_for_other_role_and_break_reason():
@@ -110,10 +121,26 @@ def test_confirm_requires_other_text_for_other_role_and_break_reason():
     response = client.post("/api/v1/profile/confirm", headers=headers)
 
     assert response.status_code == 400
-    missing = response.json()["detail"]["missing"]
+    missing = response.json()["error"]["details"]
     assert "role_other_text" in missing
     assert "break_reason_other_text" in missing
     assert "planned_return_date" not in missing
+
+
+def test_patch_profile_validation_error_uses_standard_error_envelope():
+    headers = _new_session_headers()
+
+    response = client.patch(
+        "/api/v1/profile",
+        headers=headers,
+        json={"planned_return_date": "not-a-date"},
+    )
+
+    assert response.status_code == 422
+    error = response.json()["error"]
+    assert error["code"] == "REQUEST_VALIDATION_ERROR"
+    assert error["message"] == "Request validation failed"
+    assert error["details"][0]["field"] == "body.planned_return_date"
 
 
 def test_confirm_complete_profile_sets_confirmed_true():

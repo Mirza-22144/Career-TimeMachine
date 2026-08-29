@@ -101,7 +101,13 @@ def test_patch_career_direction_rejects_invalid_return_readiness():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid return_readiness: almost_ready"
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_400",
+            "message": "Invalid return_readiness: almost_ready",
+            "details": [],
+        }
+    }
 
 
 def test_patch_career_direction_rejects_invalid_area_to_explore():
@@ -114,7 +120,13 @@ def test_patch_career_direction_rejects_invalid_area_to_explore():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid area_to_explore: quantum_architecture"
+    assert response.json() == {
+        "error": {
+            "code": "HTTP_400",
+            "message": "Invalid area_to_explore: quantum_architecture",
+            "details": [],
+        }
+    }
 
 
 def test_career_direction_feeds_current_return_status_in_journey():

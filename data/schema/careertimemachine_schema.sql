@@ -111,6 +111,11 @@ CREATE TABLE skill_area_mapping (
 );
 
 
+CREATE TABLE role_skill (                 -- junction between role and skill
+    role_id   VARCHAR(64) NOT NULL REFERENCES role(id),    -- FK to the role catalogue
+    skill_id  VARCHAR(64) NOT NULL REFERENCES skill(id),   -- FK to the skill catalogue
+    PRIMARY KEY (role_id, skill_id)       -- each pairing appears once
+);
 
 CREATE INDEX idx_skill_area_mapping_area ON skill_area_mapping(area_id);
 CREATE INDEX idx_profile_skill_skill ON profile_skill(skill_id);

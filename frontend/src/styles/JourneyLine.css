@@ -1,0 +1,88 @@
+/* Styles for the page-long "Journey Line" scroll rail. Scoped with jl- so it
+   doesn't collide with LandingPage.css. */
+
+.jl-rail {
+  position: absolute;
+  left: 0;
+  width: 360px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.jl-line {
+  position: absolute;
+  width: 2px;
+  left: 127px;
+  top: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(124, 58, 237, 0.55) 0%,
+    rgba(167, 139, 250, 0.45) 82%,
+    rgba(196, 181, 253, 0) 100%
+  );
+}
+
+.jl-milestone {
+  position: absolute;
+  left: 119px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transform: translateY(-50%);
+}
+
+.jl-dot {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.3);
+  border: 4px solid #f7f4ff;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.jl-milestone--passed .jl-dot {
+  background: #7c3aed;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.55);
+}
+
+.jl-milestone--active .jl-dot {
+  background: #7c3aed;
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.85);
+  transform: scale(1.15);
+}
+
+.jl-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.jl-step {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  color: rgba(124, 58, 237, 0.4);
+  transition: color 0.2s ease;
+}
+
+.jl-milestone--passed .jl-step,
+.jl-milestone--active .jl-step {
+  color: #7c3aed;
+}
+
+.jl-caption {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  color: #6b6685;
+}
+
+.jl-pending-tag {
+  color: #b45309;
+  font-weight: 700;
+}

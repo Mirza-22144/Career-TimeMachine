@@ -1,32 +1,32 @@
 """
-Stage 1-2 of the CareerTimeMachine data pipeline.
 
-Reads the raw O*NET Technology Skills export, filters it to IT occupations,
-cleans the technology names, de-duplicates them, and writes a load-ready
-skill catalogue.
+WHAT THIS DOES
+  Takes the raw O*NET Technology Skills export and turns it into a clean, deduplicated
+  list of technologies relevant to IT roles 
 
-Input :  software_skills.csv   (O*NET Technology Skills, 31,821 rows)
-Output:  skills_clean.csv      (one row per unique technology)
+FLOW
+  raw CSV  ->  filter to IT occupations  
+           ->  clean the names  and deduplicate
 
-Run:  python3 build_skills.py
+INPUT   data/raw/software_skills.csv       
+OUTPUT  data/processed/skills_clean.csv     
+
+
 """
 
-import csv
-import re
-from collections import defaultdict
+import csv                          # read/write CSV files 
+import re                           # imports regex for cleaning
+from collections import defaultdict # dictionary that creates empty values
 
-RAW = "/mnt/user-data/uploads/software_skills.csv"
-OUT = "/mnt/user-data/outputs/skills_clean.csv"
-SOURCE_LABEL = "O*NET Technology Skills 30.2"
 
-# ---------------------------------------------------------------
-# 1. WHICH OCCUPATIONS TO KEEP
-#    All IT-related occupations. Excludes pure-maths (actuaries,
-#    statisticians), clinical/bio informatics, GIS, document mgmt,
-#    and hardware engineering - none reflect a software engineer's stack.
-# ---------------------------------------------------------------
-IT_OCCUPATIONS = {
-    # Core software
+RAW = "data/raw/software_skills.csv"          
+OUT = "data/processed/skills_clean.csv"       # gives a clean csv file as output
+SOURCE_LABEL = "O*NET Technology Skills 30.2" # proof where data is collected from
+
+
+# we list all the soc codes here
+IT_OCCUPATIONS = {                                   
+    # all the software roles
     "15-1252.00": "Software Developers",
     "15-1251.00": "Computer Programmers",
     "15-1253.00": "Software Quality Assurance Analysts and Testers",
@@ -34,24 +34,24 @@ IT_OCCUPATIONS = {
     "15-1255.00": "Web and Digital Interface Designers",
     "15-1255.01": "Video Game Designers",
     "15-1299.08": "Computer Systems Engineers/Architects",
-    # Data
+    # roles related to data
     "15-1242.00": "Database Administrators",
     "15-1243.00": "Database Architects",
     "15-1243.01": "Data Warehousing Specialists",
     "15-2051.00": "Data Scientists",
     "15-2051.01": "Business Intelligence Analysts",
-    # Infrastructure / network
+    # infrastructure and network roles
     "15-1241.00": "Computer Network Architects",
     "15-1244.00": "Network and Computer Systems Administrators",
     "15-1231.00": "Computer Network Support Specialists",
     "15-1232.00": "Computer User Support Specialists",
     "15-1241.01": "Telecommunications Engineering Specialists",
-    # Security
+    # security roles 
     "15-1212.00": "Information Security Analysts",
     "15-1299.04": "Penetration Testers",
     "15-1299.05": "Information Security Engineers",
     "15-1299.06": "Digital Forensics Analysts",
-    # Analysis / other tech
+    # other tech roles
     "15-1211.00": "Computer Systems Analysts",
     "15-1221.00": "Computer and Information Research Scientists",
     "15-1299.01": "Web Administrators",
@@ -60,13 +60,9 @@ IT_OCCUPATIONS = {
     "11-3021.00": "Computer and Information Systems Managers",
 }
 
-# ---------------------------------------------------------------
-# 2. NAME CLEANING
-#    O*NET writes vendor-prefixed, spelled-out names. These rules
-#    turn them into labels a returning engineer would recognise.
-#    Explicit overrides first, then generic rules.
-# ---------------------------------------------------------------
-OVERRIDES = {
+
+# overrides the labels to clean familiar labels
+OVERRIDES = {                                        
     "Amazon Web Services AWS software": "AWS",
     "Amazon Web Services AWS CloudFormation": "AWS CloudFormation",
     "Microsoft Azure software": "Microsoft Azure",
@@ -107,7 +103,6 @@ OVERRIDES = {
     "Microsoft Azure Data Factory": "Azure Data Factory",
     "Amazon Elastic Compute Cloud EC2": "Amazon EC2",
     "Amazon Web Services AWS SageMaker": "AWS SageMaker",
-    "Content management systems CMS": "Content management systems (CMS)",
     "Enterprise application integration EAI": "Enterprise integration (EAI)",
     "Content management systems CMS": "Content management (CMS)",
     "Microsoft Active Server Pages ASP": "ASP",
@@ -122,106 +117,115 @@ OVERRIDES = {
     "Microsoft Visual Basic Scripting Edition VBScript": "VBScript",
 }
 
-# Trailing words that add nothing for a user-facing label
+# general rules for names ending in a filler noun
+# also matches the whitespace 
+
 TRAILING_NOISE = re.compile(
-    r"\s+(software|tool|tools|systems?|programs?|applications?)$", re.I
+    r"\s+(software|tool|tools|systems?|programs?|applications?)$", re.I # makes it case insensitive
 )
 
 
+# the below function removes leading or trailing whitespaces 
 def clean_label(raw: str) -> str:
-    """Turn an O*NET 'Workplace Example' into a readable technology name."""
-    name = raw.strip()
-    if name in OVERRIDES:
-        return OVERRIDES[name]
-    # drop a generic trailing noun ("Docker software" -> "Docker")
-    name = TRAILING_NOISE.sub("", name).strip()
-    # an override may only match after the trailing noun was stripped
-    return OVERRIDES.get(name, name)
+    """Turn an O*NET Workplace Example into a readable name"""
+    name = raw.strip()                # removes whitespaces         
+    if name in OVERRIDES:                      # checks if an override is present then uses that
+        return OVERRIDES[name]                
+    name = TRAILING_NOISE.sub("", name).strip()  
+    return OVERRIDES.get(name, name)         
 
 
+# builds a snake_case id
 def make_id(label: str) -> str:
-    """Stable lowercase snake_case id, safe for URLs and FKs."""
-    slug = label.lower()
-    slug = slug.replace("+", "plus").replace("#", "sharp").replace("&", "and")
-    slug = re.sub(r"[^a-z0-9]+", "_", slug)
-    return slug.strip("_")[:64]
+    """Build a stable snake_case id taht is safe to use as a primary key """
+    slug = label.lower()                                  
+    slug = slug.replace("+", "plus")              # example c++ will become cplusplus         
+    slug = slug.replace("#", "sharp")                 
+    slug = slug.replace("&", "and")                        
+    slug = re.sub(r"[^a-z0-9]+", "_", slug)                
+    return slug.strip("_")[:64]                            
 
+# main pipeline
 
-# ---------------------------------------------------------------
-# 3. LOAD, FILTER, DEDUPE
-# ---------------------------------------------------------------
 def main():
+    # we load the raw file
     with open(RAW, newline="", encoding="utf-8-sig") as f:
-        all_rows = list(csv.DictReader(f))
+        all_rows = list(csv.DictReader(f))     # each row becomes a dict keyed by header
 
+   # we filter the dataset based on IT occupations
     it_rows = [r for r in all_rows if r["O*NET-SOC Code"] in IT_OCCUPATIONS]
 
-    # Keep only technologies O*NET flags as currently relevant.
-    # Showing all ~1,900 would be unusable in a checkbox list.
-    flagged = [
-        r for r in it_rows
-        if r["Hot Technology"] == "Y" or r["In Demand"] == "Y"
-    ]
+# we do not drop unflagged tech as our user might have used it before
+    kept = it_rows
 
-    # Collapse duplicates: a technology appears once per occupation.
-    # Keep the strongest signal seen for each flag, and record every
-    # occupation and O*NET category it appeared under.
-    merged = {}
-    occ_seen = defaultdict(set)
-    cat_seen = defaultdict(set)
+# UI SHOWS HOT AND IN DEMAND TECH FIRST AND THE REST REMAIN FINDABLE BY A SEARCH OPTION
 
-    for r in flagged:
-        label = clean_label(r["Workplace Example"])
-        sid = make_id(label)
-        if not sid:
+
+# deduplicate
+    merged = {}                      # single merged record
+    occ_seen = defaultdict(set)     # set of occupations it appeared in
+    cat_seen = defaultdict(set)    
+
+    for r in kept:                                  
+        label = clean_label(r["Workplace Example"])     # clean the name 
+        sid = make_id(label)                        
+        if not sid:                                  # here we skip if the id is empty    
             continue
+
+       
         rec = merged.setdefault(sid, {
             "id": sid,
             "label": label,
-            "category": r["Element Name"],
-            "hot_technology": False,
-            "in_demand": False,
+            "category": r["Element Name"],              # O*NET's own grouping
+            "hot_technology": False,                    # start false
+            "in_demand": False,                         # start false
             "source": SOURCE_LABEL,
         })
+
+       # we use the OR assign operator
         rec["hot_technology"] |= (r["Hot Technology"] == "Y")
         rec["in_demand"] |= (r["In Demand"] == "Y")
+
+        # records when it was seen
         occ_seen[sid].add(IT_OCCUPATIONS[r["O*NET-SOC Code"]])
         cat_seen[sid].add(r["Element Name"])
 
-    # ---------------------------------------------------------------
-    # 4. WRITE OUTPUT
-    # ---------------------------------------------------------------
+  # write the output in a clean csv file
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow([
+        w.writerow([                                    # occurences and occupation are extra working data
             "id", "label", "category", "hot_technology", "in_demand",
             "source", "occurrences", "occupations",
         ])
-        for sid in sorted(merged):
+        for sid in sorted(merged):                      # alphabetical by id
             rec = merged[sid]
             w.writerow([
-                rec["id"], rec["label"], rec["category"],
-                "true" if rec["hot_technology"] else "false",
+                rec["id"],
+                rec["label"],
+                rec["category"],
+                "true" if rec["hot_technology"] else "false",   # convert to lowercase for postgres
                 "true" if rec["in_demand"] else "false",
                 rec["source"],
-                len(occ_seen[sid]),
-                "; ".join(sorted(occ_seen[sid])),
+                len(occ_seen[sid]),                     # how many occupations use it
+                "; ".join(sorted(occ_seen[sid])),      
             ])
 
-    # ---------------------------------------------------------------
-    # 5. REPORT
-    # ---------------------------------------------------------------
+ # reports what happened 
     print(f"raw rows            : {len(all_rows):,}")
     print(f"IT occupation rows  : {len(it_rows):,}  ({len(IT_OCCUPATIONS)} occupations)")
-    print(f"hot / in-demand rows: {len(flagged):,}")
+    print(f"rows kept           : {len(kept):,}  (no flag filter applied)")
     print(f"unique skills out   : {len(merged):,}")
     print()
-    both = sum(1 for r in merged.values() if r["hot_technology"] and r["in_demand"])
-    print(f"  flagged in demand : {sum(1 for r in merged.values() if r['in_demand'])}")
-    print(f"  flagged hot tech  : {sum(1 for r in merged.values() if r['hot_technology'])}")
-    print(f"  flagged both      : {both}")
+    demand = sum(1 for r in merged.values() if r["in_demand"])
+    hot = sum(1 for r in merged.values() if r["hot_technology"])
+    either = sum(1 for r in merged.values() if r["in_demand"] or r["hot_technology"])
+    print(f"  In Demand         : {demand}")
+    print(f"  Hot Technology    : {hot}")
+    print(f"  either flag       : {either}   <- surface these first in the UI")
+    print(f"  unflagged         : {len(merged) - either}   <- findable via search")
     print()
     print("Most widely used across occupations:")
+    # sort by occupation count descending, show the top 15
     for sid in sorted(merged, key=lambda s: -len(occ_seen[s]))[:15]:
         print(f"  {len(occ_seen[sid]):2d}  {merged[sid]['label']}")
     print()

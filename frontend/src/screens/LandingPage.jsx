@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import "../styles/LandingPage.css";
+import { navigate } from "../navigate.js";
 import logoEmblem from "../assets/Logo.png";
 import heroBackground from "../assets/Background.png";
 import JourneyLine from "../components/JourneyLine";
@@ -81,11 +82,11 @@ export default function LandingPage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Shows a brief loading state on the CTA buttons before continuing.
-  // Replace the timeout with real navigation once routing exists.
+  // Shows a brief loading state on the CTA buttons, then moves to the
+  // onboarding wizard's first step.
   const handleEnterJourney = () => {
     setCtaLoading(true);
-    setTimeout(() => setCtaLoading(false), 1200);
+    setTimeout(() => navigate("/your-story"), 1200);
   };
 
   return (
@@ -127,7 +128,7 @@ export default function LandingPage() {
               ),
             )}
           </div>
-          <button type="button" className="lp-btn-outline">
+          <button type="button" className="lp-btn-outline" onClick={handleEnterJourney}>
             {journeyCtaLabel}
           </button>
         </div>

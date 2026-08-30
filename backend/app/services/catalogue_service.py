@@ -11,4 +11,7 @@ class CatalogueService:
     def get(self, kind: str) -> list[CatalogueItem]:
         return self.catalogue.get_items(kind)
 
+    def get_skills(self, role_id: str | None) -> list[CatalogueItem]:
+        return self.catalogue.get_skills_for_role(role_id)
+
     

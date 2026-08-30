@@ -74,6 +74,9 @@ async function createSession(force = false) {
 export const api = {
   createSession,
   getCatalogue: (kind) => request(`/catalogue/${kind}`),
+  // Skills depend on the previously selected role (DATA_HANDOVER.md 5.2) —
+  // omit roleId to get the flat fallback list.
+  getSkills: (roleId) => request(`/catalogue/skills${roleId ? `?role_id=${encodeURIComponent(roleId)}` : ''}`),
   getProfile: () => request('/profile'),
   patchProfile: (patch) => request('/profile', { method: 'PATCH', body: patch }),
   confirmProfile: () => request('/profile/confirm', { method: 'POST' }),

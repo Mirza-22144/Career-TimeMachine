@@ -64,8 +64,62 @@ _CATALOGUES: dict[str, list[CatalogueItem]] = {
 }
 
 
+# PLACEHOLDER for role_skill (DATA_HANDOVER.md 4.1) until the real 1,299-skill
+# / 5,629-row role_skill table is connected. Reuses the flat skills list above
+# with representative in_demand/hot_technology flags per role, just so the
+# frontend's role-dependent fetch + ordering has something real to call.
+_SKILLS_BY_ROLE: dict[str, list[CatalogueItem]] = {
+    "software_engineer": [
+        CatalogueItem("python", "Python", in_demand=True, hot_technology=True),
+        CatalogueItem("react", "React", in_demand=True, hot_technology=True),
+        CatalogueItem("rest_apis", "REST APIs", in_demand=True),
+        CatalogueItem("git", "Git", in_demand=True),
+        CatalogueItem("aws", "AWS", hot_technology=True),
+        CatalogueItem("docker", "Docker"),
+        CatalogueItem("java", "Java"),
+        CatalogueItem("sql", "SQL"),
+    ],
+    "software_developer": [
+        CatalogueItem("java", "Java", in_demand=True),
+        CatalogueItem("sql", "SQL", in_demand=True),
+        CatalogueItem("git", "Git", in_demand=True),
+        CatalogueItem("rest_apis", "REST APIs", hot_technology=True),
+        CatalogueItem("python", "Python", hot_technology=True),
+        CatalogueItem("docker", "Docker"),
+        CatalogueItem("react", "React"),
+        CatalogueItem("aws", "AWS"),
+    ],
+    "systems_analyst": [
+        CatalogueItem("sql", "SQL", in_demand=True, hot_technology=True),
+        CatalogueItem("rest_apis", "REST APIs", in_demand=True),
+        CatalogueItem("git", "Git"),
+        CatalogueItem("aws", "AWS"),
+        CatalogueItem("java", "Java"),
+    ],
+    "qa_engineer": [
+        CatalogueItem("git", "Git", in_demand=True, hot_technology=True),
+        CatalogueItem("java", "Java", in_demand=True),
+        CatalogueItem("python", "Python", hot_technology=True),
+        CatalogueItem("rest_apis", "REST APIs"),
+        CatalogueItem("docker", "Docker"),
+    ],
+    "web_developer": [
+        CatalogueItem("react", "React", in_demand=True, hot_technology=True),
+        CatalogueItem("rest_apis", "REST APIs", in_demand=True),
+        CatalogueItem("git", "Git", in_demand=True),
+        CatalogueItem("sql", "SQL"),
+        CatalogueItem("aws", "AWS"),
+        CatalogueItem("docker", "Docker"),
+    ],
+}
+
+
 class MemoryCatalogueRepository(CatalogueRepository):
     """DEVELOPMENT-ONLY curated catalogues (see _CATALOGUES above)."""
 
     def get_items(self, kind: str) -> list[CatalogueItem]:
         return _CATALOGUES.get(kind, [])   # [] for an unknown kind
+
+    def get_skills_for_role(self, role_id: str | None) -> list[CatalogueItem]:
+        items = _SKILLS_BY_ROLE.get(role_id, _CATALOGUES["skills"]) if role_id else _CATALOGUES["skills"]
+        return sorted(items, key=lambda s: (not s.in_demand, not s.hot_technology, s.label))

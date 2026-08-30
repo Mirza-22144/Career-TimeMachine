@@ -7,10 +7,18 @@ import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
+// Real skill catalogues can run into the hundreds per role, so only the
+// top-ranked ones (already in_demand/hot_technology-sorted by the backend)
+// show by default; search or "Show all" reveal the rest.
+const VISIBLE_SKILL_COUNT = 12
+
 /**
- * "Your Experience" — step 2. Technologies/tools and responsibilities come
- * from the backend catalogue (GET /catalogue/skills, /responsibilities);
- * "+ Add" entries are free text, saved as custom_skills/custom_responsibilities.
+ * "Your Experience" — step 2. Responsibilities come from the backend
+ * catalogue (GET /catalogue/responsibilities); skills depend on the role
+ * chosen in step 1 (GET /catalogue/skills?role_id=...), since the real
+ * catalogue is role-specific and far too large to show flat (see
+ * DATA_HANDOVER.md 5.1/5.2). "+ Add" entries are free text, saved as
+ * custom_skills/custom_responsibilities.
  */
 export default function YourExperience() {
   const [loading, setLoading] = useState(true)
@@ -25,6 +33,8 @@ export default function YourExperience() {
   const [isAddingSkill, setIsAddingSkill] = useState(false)
   const [skillDraft, setSkillDraft] = useState('')
   const [skillError, setSkillError] = useState('')
+  const [skillSearch, setSkillSearch] = useState('')
+  const [showAllSkills, setShowAllSkills] = useState(false)
 
   const [selectedResponsibilityIds, setSelectedResponsibilityIds] = useState([])
   const [customResponsibilities, setCustomResponsibilities] = useState([])
@@ -34,13 +44,13 @@ export default function YourExperience() {
 
   useEffect(() => {
     async function load() {
-      const [skills, responsibilities, rolesData, experienceData, profileData] = await Promise.all([
-        api.getCatalogue('skills'),
+      const [responsibilities, rolesData, experienceData, profileData] = await Promise.all([
         api.getCatalogue('responsibilities'),
         api.getCatalogue('roles'),
         api.getCatalogue('experience-options'),
         api.getProfile(),
       ])
+      const skills = await api.getSkills(profileData.role_id)
       setCatalogueSkills(skills)
       setCatalogueResponsibilities(responsibilities)
       setRoles(rolesData)
@@ -116,6 +126,15 @@ export default function YourExperience() {
   const selectedSkillLabels = [...selectedSkillIds.map(skillLabel), ...customSkills]
   const selectedResponsibilityLabels = [...selectedResponsibilityIds.map(responsibilityLabel), ...customResponsibilities]
 
+  // Already sorted in_demand/hot_technology-first by the backend. Search
+  // narrows the full list; otherwise only the top slice shows, so a
+  // 400+ skill catalogue doesn't dump onto the screen at once.
+  const searchedSkills = skillSearch.trim()
+    ? catalogueSkills.filter((s) => s.label.toLowerCase().includes(skillSearch.trim().toLowerCase()))
+    : catalogueSkills
+  const visibleSkills = showAllSkills || skillSearch.trim() ? searchedSkills : searchedSkills.slice(0, VISIBLE_SKILL_COUNT)
+  const hasMoreSkills = !skillSearch.trim() && catalogueSkills.length > VISIBLE_SKILL_COUNT
+
   return (
     <div className="ye-page">
       <OnboardingSidebar currentStep={2} showPhoto={false} />
@@ -132,8 +151,16 @@ export default function YourExperience() {
               <span className="ye-selected-count">{selectedSkillLabels.length} selected</span>
             </div>
 
+            <input
+              type="text"
+              className="ye-skill-search"
+              placeholder="Search skills..."
+              value={skillSearch}
+              onChange={(e) => setSkillSearch(e.target.value)}
+            />
+
             <div className="ye-pill-grid">
-              {catalogueSkills.map((skill) => {
+              {visibleSkills.map((skill) => {
                 const isActive = selectedSkillIds.includes(skill.id)
                 return (
                   <button
@@ -145,6 +172,8 @@ export default function YourExperience() {
                   >
                     {isActive && <CheckIcon size={11} color="#FFFFFF" />}
                     {skill.label}
+                    {skill.in_demand && <span className="ye-skill-tag">In demand</span>}
+                    {!skill.in_demand && skill.hot_technology && <span className="ye-skill-tag">Hot</span>}
                   </button>
                 )
               })}
@@ -179,6 +208,11 @@ export default function YourExperience() {
               )}
             </div>
             {skillError && <p className="ye-error">{skillError}</p>}
+            {hasMoreSkills && !showAllSkills && (
+              <button type="button" className="ye-show-more" onClick={() => setShowAllSkills(true)}>
+                Show all {catalogueSkills.length} skills
+              </button>
+            )}
 
             <p className="ye-quote">&ldquo;{stepTwoData.skillsQuote}&rdquo;</p>
           </section>

@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies import get_catalogue_service
 from app.schemas.catalogue import CatalogueItemResponse
@@ -16,9 +16,14 @@ def get_roles(service: CatalogueService = Depends(get_catalogue_service)):
 def get_experience_options(service: CatalogueService = Depends(get_catalogue_service)):
     return service.get("experience-options")
 
+# role_id filters to skills relevant to that previous role (DATA_HANDOVER.md
+# 4.1/5.2); omitted, it falls back to the full flat list.
 @router.get("/skills", response_model=list[CatalogueItemResponse])
-def get_skills(service: CatalogueService = Depends(get_catalogue_service)):
-    return service.get("skills")
+def get_skills(
+    role_id: str | None = Query(default=None),
+    service: CatalogueService = Depends(get_catalogue_service),
+):
+    return service.get_skills(role_id)
 
 @router.get("/responsibilities", response_model=list[CatalogueItemResponse])
 def get_responsibilities(service: CatalogueService = Depends(get_catalogue_service)):

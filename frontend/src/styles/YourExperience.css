@@ -84,11 +84,54 @@
   color: var(--ink-600);
 }
 
+.ye-skill-search {
+  width: 100%;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.12);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-900);
+  outline: none;
+}
+
+.ye-skill-search:focus {
+  border-color: var(--violet-500);
+}
+
 .ye-pill-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 16px;
+}
+
+.ye-skill-tag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.ye-pill:not(.ye-pill--active) .ye-skill-tag {
+  background: var(--violet-50);
+  color: var(--violet-700);
+}
+
+.ye-show-more {
+  padding: 0;
+  margin: -8px 0 12px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--violet-600);
+  cursor: pointer;
 }
 
 .ye-pill {

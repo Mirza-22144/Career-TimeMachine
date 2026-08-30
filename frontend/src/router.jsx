@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react'
 import LandingPage from './screens/LandingPage.jsx'
 import YourStory from './screens/YourStory.jsx'
 import YourExperience from './screens/YourExperience.jsx'
+import YourBreak from './screens/YourBreak.jsx'
+import SkillRelevanceMap from './screens/SkillRelevanceMap.jsx'
 
 // Path -> screen component. Add an entry here as each new screen is built.
 const routes = {
   '/': LandingPage,
   '/your-story': YourStory,
   '/your-experience': YourExperience,
+  '/your-break': YourBreak,
+  '/skill-relevance-map': SkillRelevanceMap,
 }
 
 function getCurrentPath() {

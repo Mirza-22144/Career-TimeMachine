@@ -99,6 +99,17 @@ Each catalogue endpoint returns a list of stable IDs and display labels.
 
 ### `GET /catalogue/skills`
 
+Accepts an optional `role_id` query parameter. When present, returns only
+the skills linked to that role (via the real `role_skill` table), sorted
+`in_demand` desc, then `hot_technology` desc, then label. Without it, returns
+the full skill catalogue unsorted-by-relevance. Each item additionally
+carries `in_demand` and `hot_technology` booleans (default `false` for every
+other catalogue kind).
+
+```js
+const res = await fetch(`/api/v1/catalogue/skills?role_id=${roleId}`);
+```
+
 ### `GET /catalogue/responsibilities`
 
 ### `GET /catalogue/break-reasons`
@@ -115,7 +126,9 @@ Success `200`:
 [
   {
     "id": "software_engineer",
-    "label": "Software Engineer"
+    "label": "Software Engineer",
+    "in_demand": false,
+    "hot_technology": false
   }
 ]
 ```
@@ -314,28 +327,54 @@ const res = await fetch("/api/v1/career-journey", { headers });
 
 ### `GET /career-translation`
 
-Returns deterministic career-area mappings for the user's selected catalogue
-skills. Custom skills are not mapped.
+**Changed from the original Iteration 1 shape** — this no longer maps skills
+to career areas (that model needed `skill_area_mapping`/`career_area`, which
+are still unseeded — see the data handover). It now implements AC 2.2.1
+directly: compares the user's recorded skills against the current in-demand
+skills for her selected role, using the real `role_skill` table.
+
+- `owned_skills` — every catalogue skill_id on the profile, each flagged
+  `still_relevant` if it's `in_demand` for the user's role.
+- `custom_skills` — passed through as plain strings; there's no relevance
+  concept for free text.
+- `new_horizons` — in-demand skills for the role that the user hasn't
+  recorded ("New Horizons" in the AC).
+- `role_data_available` — `false` when no role is selected yet, or the role
+  has no skill data at all. The frontend shows *"Current skill demand
+  information is unavailable for this role."* in that case (AC 2.2.1's
+  required exception copy).
+- When `role_data_available` is `true` but `new_horizons` is empty, the
+  frontend shows *"You're already aligned with the current skill demand for
+  your selected role."* (also AC-required copy).
 
 Request body: none
 
 Success `200`:
 
 ```json
-[
-  {
-    "previous_skill": {
-      "id": "rest_apis",
-      "name": "REST APIs"
-    },
-    "connected_areas": [
-      {
-        "id": "cloud_native_engineering",
-        "name": "Cloud-Native Engineering"
-      }
-    ]
-  }
-]
+{
+  "role_label": "Web Developer",
+  "role_data_available": true,
+  "owned_skills": [
+    { "id": "react", "label": "React", "still_relevant": true }
+  ],
+  "custom_skills": ["Rust"],
+  "new_horizons": [
+    { "id": "git", "label": "Git" }
+  ]
+}
+```
+
+No role selected yet:
+
+```json
+{
+  "role_label": null,
+  "role_data_available": false,
+  "owned_skills": [],
+  "custom_skills": [],
+  "new_horizons": []
+}
 ```
 
 Errors:
@@ -348,24 +387,8 @@ Frontend example:
 const res = await fetch("/api/v1/career-translation", { headers });
 ```
 
-### `GET /career-translation/{skill_id}`
-
-Returns deterministic career-area mappings for one selected catalogue skill.
-
-Request body: none
-
-Success `200`: one object from the `GET /career-translation` list
-
-Errors:
-
-- `401` when `X-Session-Token` is missing or invalid.
-- `404` when the skill is not selected in the user's profile.
-
-Frontend example:
-
-```js
-const res = await fetch("/api/v1/career-translation/rest_apis", { headers });
-```
+**Removed:** `GET /career-translation/{skill_id}` no longer exists — the new
+shape is a single aggregate view, not a per-skill lookup.
 
 ## Career Direction
 

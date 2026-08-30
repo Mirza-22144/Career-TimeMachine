@@ -1,5 +1,7 @@
 from fastapi import Depends, Header, HTTPException, status
 
+from app.core.config import HAS_DATABASE
+from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.session_repository import AnonSession
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
@@ -15,11 +17,23 @@ from app.services.profile_service import ProfileService
 from app.services.session_service import SessionService
 
 # ONE shared store for the whole app run, so sessions persist between requests.
-# (Dev only. After the DB handover this line becomes the Postgres repo.)
+# (Dev only. Session/profile stay in-memory - their tables are empty until
+# the app writes to them; there's no data to migrate from yet.)
 _session_repository = MemorySessionRepository()
-_catalogue_repository = MemoryCatalogueRepository()
 _profile_repository = MemoryProfileRepository()
 _skill_mapping_repository = MemorySkillMappingRepository()
+
+# Roles/skills use the real Cloud SQL data once DB_* env vars are set
+# (DATA_HANDOVER.md); falls back to the curated mock otherwise.
+_catalogue_repository: CatalogueRepository
+if HAS_DATABASE:
+    from app.repositories.postgres.postgres_catalogue_repository import (
+        PostgresCatalogueRepository,
+    )
+
+    _catalogue_repository = PostgresCatalogueRepository()
+else:
+    _catalogue_repository = MemoryCatalogueRepository()
 
 
 def get_session_service() -> SessionService:

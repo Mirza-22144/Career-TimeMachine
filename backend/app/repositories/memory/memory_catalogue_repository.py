@@ -5,7 +5,7 @@ from app.repositories.interfaces.catalogue_repository import (
 
 # PROVISIONAL / MOCK data for Iteration 1. The data-science teammate replaces
 # this with prepared PostgreSQL data later. Keep the ids stable.
-_CATALOGUES: dict[str, list[CatalogueItem]] = {
+CATALOGUES: dict[str, list[CatalogueItem]] = {
     "roles": [
         CatalogueItem("software_engineer", "Software Engineer"),
         CatalogueItem("software_developer", "Software Developer"),
@@ -115,11 +115,11 @@ _SKILLS_BY_ROLE: dict[str, list[CatalogueItem]] = {
 
 
 class MemoryCatalogueRepository(CatalogueRepository):
-    """DEVELOPMENT-ONLY curated catalogues (see _CATALOGUES above)."""
+    """DEVELOPMENT-ONLY curated catalogues (see CATALOGUES above)."""
 
     def get_items(self, kind: str) -> list[CatalogueItem]:
-        return _CATALOGUES.get(kind, [])   # [] for an unknown kind
+        return CATALOGUES.get(kind, [])   # [] for an unknown kind
 
     def get_skills_for_role(self, role_id: str | None) -> list[CatalogueItem]:
-        items = _SKILLS_BY_ROLE.get(role_id, _CATALOGUES["skills"]) if role_id else _CATALOGUES["skills"]
+        items = _SKILLS_BY_ROLE.get(role_id, CATALOGUES["skills"]) if role_id else CATALOGUES["skills"]
         return sorted(items, key=lambda s: (not s.in_demand, not s.hot_technology, s.label))

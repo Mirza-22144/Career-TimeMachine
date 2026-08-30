@@ -7,17 +7,18 @@ import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
-// Real skill catalogues can run into the hundreds per role, so only the
-// top-ranked ones (already in_demand/hot_technology-sorted by the backend)
-// show by default; search or "Show all" reveal the rest.
-const VISIBLE_SKILL_COUNT = 12
+// Real skill catalogues can run into the hundreds per role (DATA_HANDOVER.md
+// 5.1). Only the top 10 (already in_demand/hot_technology-sorted by the
+// backend) show as default suggestions; search or "+ Add skill" reach
+// anything beyond that - never a full browse list.
+const DEFAULT_SUGGESTIONS = 10
+const MAX_SUGGESTIONS = 8
 
 /**
  * "Your Experience" — step 2. Responsibilities come from the backend
  * catalogue (GET /catalogue/responsibilities); skills depend on the role
- * chosen in step 1 (GET /catalogue/skills?role_id=...), since the real
- * catalogue is role-specific and far too large to show flat (see
- * DATA_HANDOVER.md 5.1/5.2). "+ Add" entries are free text, saved as
+ * chosen in step 1 (GET /catalogue/skills?role_id=...). "+ Add" entries are
+ * free text unless they match a catalogue skill, saved as
  * custom_skills/custom_responsibilities.
  */
 export default function YourExperience() {
@@ -34,7 +35,6 @@ export default function YourExperience() {
   const [skillDraft, setSkillDraft] = useState('')
   const [skillError, setSkillError] = useState('')
   const [skillSearch, setSkillSearch] = useState('')
-  const [showAllSkills, setShowAllSkills] = useState(false)
 
   const [selectedResponsibilityIds, setSelectedResponsibilityIds] = useState([])
   const [customResponsibilities, setCustomResponsibilities] = useState([])
@@ -73,13 +73,20 @@ export default function YourExperience() {
     setSelectedResponsibilityIds((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]))
   }
 
+  // Enter commits the draft: a catalogue match gets selected (not duplicated
+  // as free text), anything else becomes a custom skill.
   const commitSkillDraft = () => {
     const trimmed = skillDraft.trim()
     if (!trimmed) {
       setSkillError('Please enter a skill.')
       return
     }
-    if (!customSkills.includes(trimmed)) setCustomSkills((prev) => [...prev, trimmed])
+    const match = catalogueSkills.find((s) => s.label.toLowerCase() === trimmed.toLowerCase())
+    if (match) {
+      if (!selectedSkillIds.includes(match.id)) toggleSkill(match.id)
+    } else if (!customSkills.includes(trimmed)) {
+      setCustomSkills((prev) => [...prev, trimmed])
+    }
     setSkillDraft('')
     setSkillError('')
     setIsAddingSkill(false)
@@ -89,6 +96,18 @@ export default function YourExperience() {
     setSkillDraft('')
     setSkillError('')
     setIsAddingSkill(false)
+  }
+
+  const selectSkillSuggestion = (skill) => {
+    if (!selectedSkillIds.includes(skill.id)) toggleSkill(skill.id)
+    setSkillDraft('')
+    setSkillError('')
+    setIsAddingSkill(false)
+  }
+
+  const selectSearchResult = (skill) => {
+    if (!selectedSkillIds.includes(skill.id)) toggleSkill(skill.id)
+    setSkillSearch('')
   }
 
   const commitResponsibilityDraft = () => {
@@ -126,14 +145,27 @@ export default function YourExperience() {
   const selectedSkillLabels = [...selectedSkillIds.map(skillLabel), ...customSkills]
   const selectedResponsibilityLabels = [...selectedResponsibilityIds.map(responsibilityLabel), ...customResponsibilities]
 
-  // Already sorted in_demand/hot_technology-first by the backend. Search
-  // narrows the full list; otherwise only the top slice shows, so a
-  // 400+ skill catalogue doesn't dump onto the screen at once.
-  const searchedSkills = skillSearch.trim()
-    ? catalogueSkills.filter((s) => s.label.toLowerCase().includes(skillSearch.trim().toLowerCase()))
-    : catalogueSkills
-  const visibleSkills = showAllSkills || skillSearch.trim() ? searchedSkills : searchedSkills.slice(0, VISIBLE_SKILL_COUNT)
-  const hasMoreSkills = !skillSearch.trim() && catalogueSkills.length > VISIBLE_SKILL_COUNT
+  // Only surfaced while actively typing a new skill - never a full browse list.
+  const skillSuggestions = isAddingSkill && skillDraft.trim()
+    ? catalogueSkills
+        .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillDraft.trim().toLowerCase()))
+        .slice(0, MAX_SUGGESTIONS)
+    : []
+  const searchResults = skillSearch.trim()
+    ? catalogueSkills
+        .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillSearch.trim().toLowerCase()))
+        .slice(0, MAX_SUGGESTIONS)
+    : []
+
+  // Default suggestion pills: top 10 catalogue skills, plus any selected
+  // skill that fell outside that top 10 (e.g. picked via search), so a
+  // selection never disappears from view.
+  const topSkills = catalogueSkills.slice(0, DEFAULT_SUGGESTIONS)
+  const extraSelectedSkills = selectedSkillIds
+    .filter((id) => !topSkills.some((s) => s.id === id))
+    .map((id) => catalogueSkills.find((s) => s.id === id))
+    .filter(Boolean)
+  const suggestedSkills = [...extraSelectedSkills, ...topSkills]
 
   return (
     <div className="ye-page">
@@ -151,16 +183,34 @@ export default function YourExperience() {
               <span className="ye-selected-count">{selectedSkillLabels.length} selected</span>
             </div>
 
-            <input
-              type="text"
-              className="ye-skill-search"
-              placeholder="Search skills..."
-              value={skillSearch}
-              onChange={(e) => setSkillSearch(e.target.value)}
-            />
+            <div className="ye-skill-search-wrap">
+              <input
+                type="text"
+                className="ye-skill-search"
+                placeholder="Search skills..."
+                value={skillSearch}
+                onChange={(e) => setSkillSearch(e.target.value)}
+              />
+              {searchResults.length > 0 && (
+                <div className="ye-skill-suggestions">
+                  {searchResults.map((s) => (
+                    <button
+                      type="button"
+                      key={s.id}
+                      className="ye-skill-suggestion"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => selectSearchResult(s)}
+                    >
+                      {s.label}
+                      {s.in_demand && <span className="ye-skill-tag">In demand</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="ye-pill-grid">
-              {visibleSkills.map((skill) => {
+              {suggestedSkills.map((skill) => {
                 const isActive = selectedSkillIds.includes(skill.id)
                 return (
                   <button
@@ -185,22 +235,40 @@ export default function YourExperience() {
               ))}
 
               {isAddingSkill ? (
-                <input
-                  type="text"
-                  autoFocus
-                  className="ye-pill-input"
-                  placeholder="Type a skill..."
-                  value={skillDraft}
-                  onChange={(e) => {
-                    setSkillDraft(e.target.value)
-                    setSkillError('')
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') commitSkillDraft()
-                    if (e.key === 'Escape') cancelSkillDraft()
-                  }}
-                  onBlur={() => (skillDraft.trim() ? commitSkillDraft() : cancelSkillDraft())}
-                />
+                <div className="ye-skill-add">
+                  <input
+                    type="text"
+                    autoFocus
+                    className="ye-pill-input"
+                    placeholder="Type a skill..."
+                    value={skillDraft}
+                    onChange={(e) => {
+                      setSkillDraft(e.target.value)
+                      setSkillError('')
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitSkillDraft()
+                      if (e.key === 'Escape') cancelSkillDraft()
+                    }}
+                    onBlur={() => (skillDraft.trim() ? commitSkillDraft() : cancelSkillDraft())}
+                  />
+                  {skillSuggestions.length > 0 && (
+                    <div className="ye-skill-suggestions">
+                      {skillSuggestions.map((s) => (
+                        <button
+                          type="button"
+                          key={s.id}
+                          className="ye-skill-suggestion"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => selectSkillSuggestion(s)}
+                        >
+                          {s.label}
+                          {s.in_demand && <span className="ye-skill-tag">In demand</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <button type="button" className="ye-pill ye-pill--add" onClick={() => setIsAddingSkill(true)}>
                   + Add skill
@@ -208,11 +276,6 @@ export default function YourExperience() {
               )}
             </div>
             {skillError && <p className="ye-error">{skillError}</p>}
-            {hasMoreSkills && !showAllSkills && (
-              <button type="button" className="ye-show-more" onClick={() => setShowAllSkills(true)}>
-                Show all {catalogueSkills.length} skills
-              </button>
-            )}
 
             <p className="ye-quote">&ldquo;{stepTwoData.skillsQuote}&rdquo;</p>
           </section>

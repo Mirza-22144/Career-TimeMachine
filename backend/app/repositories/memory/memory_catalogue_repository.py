@@ -32,13 +32,15 @@ CATALOGUES: dict[str, list[CatalogueItem]] = {
         CatalogueItem("react", "React"),
         CatalogueItem("docker", "Docker"),
     ],
-    "responsibilities": [
+    "responsibilities": [               # matches DATA_HANDOVER.md 6.5's 8 - table itself is unseeded
         CatalogueItem("backend_development", "Backend development"),
         CatalogueItem("api_design", "API design"),
-        CatalogueItem("debugging", "Debugging"),
-        CatalogueItem("testing", "Testing"),
+        CatalogueItem("debugging", "Debugging & troubleshooting"),
+        CatalogueItem("testing", "Testing & QA"),
         CatalogueItem("code_review", "Code review"),
         CatalogueItem("system_design", "System design"),
+        CatalogueItem("team_collaboration", "Team collaboration"),
+        CatalogueItem("project_delivery", "Project delivery"),
     ],
     "break-reasons": [
         CatalogueItem("caregiving", "Caregiving"),

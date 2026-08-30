@@ -192,8 +192,9 @@
 
 .ys-slider-value strong {
   margin-right: 4px;
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 800;
+  white-space: nowrap;
   color: var(--violet-600);
 }
 

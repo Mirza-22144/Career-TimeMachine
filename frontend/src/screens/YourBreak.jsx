@@ -4,9 +4,20 @@ import OnboardingSidebar from '../components/OnboardingSidebar'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
-import { api } from '../api.js'
+import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
+
+// Maps confirm-profile's missing-field codes to plain text, since they can
+// come from an earlier step (see PROFILE_INCOMPLETE in the API contract).
+const MISSING_FIELD_LABELS = {
+  role_id: 'your previous role (Step 1)',
+  role_other_text: 'your previous role (Step 1)',
+  years_experience: 'your years of experience (Step 1)',
+  break_started_on: 'when your break started',
+  planned_return_date: 'your planned return date',
+  valid_break_dates: 'a valid break date range',
+}
 
 const CURRENT_YEAR = new Date().getFullYear()
 const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
@@ -26,6 +37,7 @@ export default function YourBreak() {
   const [returnUnsure, setReturnUnsure] = useState(false)
   const [reasonId, setReasonId] = useState(null)
   const [otherReasonText, setOtherReasonText] = useState('')
+  const [confirmError, setConfirmError] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -57,15 +69,25 @@ export default function YourBreak() {
   else if (!isValidRange) timelineMessage = stepThreeData.invalidRangeMessage
 
   const handleContinue = async () => {
-    await api.patchProfile({
-      break_started_on: yearToDate(startYear),
-      planned_return_date: returnUnsure ? null : yearToDate(returnYear),
-      return_date_unsure: returnUnsure,
-      break_reason: reasonId,
-      break_reason_other_text: isOtherReason ? otherReasonText.trim() : null,
-    })
-    await api.confirmProfile()
-    navigate('/skill-relevance-map')
+    setConfirmError('')
+    try {
+      await api.patchProfile({
+        break_started_on: yearToDate(startYear),
+        planned_return_date: returnUnsure ? null : yearToDate(returnYear),
+        return_date_unsure: returnUnsure,
+        break_reason: reasonId,
+        break_reason_other_text: isOtherReason ? otherReasonText.trim() : null,
+      })
+      await api.confirmProfile()
+      navigate('/skill-relevance-map')
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'PROFILE_INCOMPLETE' && err.details?.length) {
+        const missing = err.details.map((f) => MISSING_FIELD_LABELS[f] || f).join(', ')
+        setConfirmError(`Please go back and complete: ${missing}.`)
+      } else {
+        setConfirmError('Something went wrong saving your answers. Please try again.')
+      }
+    }
   }
 
   if (loading) return <div className="yb-page" />
@@ -179,6 +201,7 @@ export default function YourBreak() {
             <ArrowRightIcon size={16} />
           </button>
           {!canContinue && <p className="yb-hint">{!reasonValid ? 'Please describe your reason.' : timelineMessage}</p>}
+          {confirmError && <p className="yb-hint">{confirmError}</p>}
         </div>
       </main>
 

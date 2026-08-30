@@ -84,10 +84,14 @@
   color: var(--ink-600);
 }
 
+.ye-skill-search-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
 .ye-skill-search {
   width: 100%;
   padding: 10px 16px;
-  margin-bottom: 12px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.12);
   border-radius: 10px;
@@ -99,6 +103,48 @@
 
 .ye-skill-search:focus {
   border-color: var(--violet-500);
+}
+
+.ye-skill-add {
+  position: relative;
+}
+
+.ye-skill-suggestions {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px -6px rgba(15, 23, 40, 0.2);
+}
+
+.ye-skill-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-900);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ye-skill-suggestion:hover {
+  background: var(--violet-50);
 }
 
 .ye-pill-grid {
@@ -120,18 +166,6 @@
 .ye-pill:not(.ye-pill--active) .ye-skill-tag {
   background: var(--violet-50);
   color: var(--violet-700);
-}
-
-.ye-show-more {
-  padding: 0;
-  margin: -8px 0 12px;
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--violet-600);
-  cursor: pointer;
 }
 
 .ye-pill {

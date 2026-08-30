@@ -98,11 +98,25 @@
 
 .srm-horizon-pill {
   padding: 10px 16px;
+  background: transparent;
   border: 1px solid var(--teal-500);
   border-radius: 999px;
+  font-family: inherit;
   font-weight: 600;
   font-size: 13px;
   color: var(--teal-500);
+  cursor: pointer;
+}
+
+.srm-horizon-pill--active {
+  background: var(--teal-500);
+  color: #ffffff;
+}
+
+.srm-connector {
+  width: 2px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .srm-center-card {
@@ -166,6 +180,10 @@
   font-size: 11px;
   letter-spacing: 1px;
   color: var(--violet-600);
+}
+
+.srm-detail-eyebrow--new {
+  color: var(--teal-500);
 }
 
 .srm-detail-title {

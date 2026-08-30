@@ -3,12 +3,13 @@ import '../styles/SkillRelevanceMap.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import { stepFourData } from '../mockData/onboardingData'
 import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
 export default function SkillRelevanceMap() {
   const [profile] = useState(getOnboardingProfile)
   const skills = profile.skills || []
-  const [activeSkill, setActiveSkill] = useState(skills[0] || null)
+  const [active, setActive] = useState(skills[0] ? { type: 'owned', name: skills[0] } : null)
 
   return (
     <div className="srm-page">
@@ -25,9 +26,18 @@ export default function SkillRelevanceMap() {
               <span className="srm-section-label srm-section-label--horizons">○ NEW HORIZONS</span>
               <div className="srm-pill-row">
                 {stepFourData.newHorizons.map((h) => (
-                  <span key={h} className="srm-horizon-pill">○ {h}</span>
+                  <button
+                    type="button"
+                    key={h}
+                    className={`srm-horizon-pill ${active?.name === h ? 'srm-horizon-pill--active' : ''}`}
+                    onClick={() => setActive({ type: 'new', name: h })}
+                  >
+                    ○ {h}
+                  </button>
                 ))}
               </div>
+
+              <span className="srm-connector srm-connector--top" />
 
               <div className="srm-center-card">
                 <span className="srm-center-eyebrow">YOU ARE HERE</span>
@@ -37,13 +47,15 @@ export default function SkillRelevanceMap() {
                 </span>
               </div>
 
+              <span className="srm-connector srm-connector--bottom" />
+
               <div className="srm-pill-row">
                 {skills.map((s) => (
                   <button
                     type="button"
                     key={s}
-                    className={`srm-skill-pill ${s === activeSkill ? 'srm-skill-pill--active' : ''}`}
-                    onClick={() => setActiveSkill(s)}
+                    className={`srm-skill-pill ${active?.name === s ? 'srm-skill-pill--active' : ''}`}
+                    onClick={() => setActive({ type: 'owned', name: s })}
                   >
                     ● {s}
                   </button>
@@ -52,13 +64,15 @@ export default function SkillRelevanceMap() {
               <span className="srm-section-label srm-section-label--skills">● SKILLS YOU BRING BACK</span>
             </div>
 
-            {activeSkill && (
+            {active && (
               <div className="srm-detail-card">
-                <span className="srm-detail-eyebrow">● SKILLS YOU BRING BACK</span>
-                <h3 className="srm-detail-title">{activeSkill}</h3>
+                <span className={`srm-detail-eyebrow ${active.type === 'new' ? 'srm-detail-eyebrow--new' : ''}`}>
+                  {active.type === 'new' ? '○ NEW HORIZONS' : '● SKILLS YOU BRING BACK'}
+                </span>
+                <h3 className="srm-detail-title">{active.name}</h3>
                 <hr className="srm-detail-divider" />
-                <p className="srm-detail-note">{stepFourData.skillNotes[activeSkill] || 'Still relevant to your field.'}</p>
-                <p className="srm-detail-note">You recorded this in your experience.</p>
+                <p className="srm-detail-note">{stepFourData.relevanceNote}</p>
+                <p className="srm-detail-note">{active.type === 'new' ? stepFourData.newNote : stepFourData.ownedNote}</p>
               </div>
             )}
           </div>
@@ -66,7 +80,10 @@ export default function SkillRelevanceMap() {
           <button
             type="button"
             className="srm-continue"
-            onClick={() => saveOnboardingProfile({ focusSkill: activeSkill })}
+            onClick={() => {
+              saveOnboardingProfile({ focusSkill: active?.name })
+              navigate('/your-direction')
+            }}
           >
             {stepFourData.ctaLabel}
             <ArrowRightIcon size={16} />

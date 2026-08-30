@@ -4,6 +4,7 @@ import OnboardingSidebar from '../components/OnboardingSidebar'
 import ExperienceSummaryCard from '../components/ExperienceSummaryCard'
 import { stepTwoData } from '../mockData/onboardingData'
 import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
 /**
@@ -166,7 +167,10 @@ export default function YourExperience() {
             type="button"
             className="ye-continue"
             disabled={selectedSkills.length === 0}
-            onClick={() => saveOnboardingProfile({ skills: selectedSkills, responsibilities: selectedResponsibilities })}
+            onClick={() => {
+              saveOnboardingProfile({ skills: selectedSkills, responsibilities: selectedResponsibilities })
+              navigate('/your-break')
+            }}
           >
             {stepTwoData.ctaLabel}
             <ArrowRightIcon size={16} />

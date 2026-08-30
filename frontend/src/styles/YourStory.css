@@ -134,18 +134,18 @@
   box-shadow: 0 0 0 1px var(--violet-600);
 }
 
-.ys-role-checkbox {
+.ys-role-radio {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
   min-width: 20px;
-  border-radius: 6px;
+  border-radius: 999px;
   border: 2px solid rgba(15, 23, 40, 0.15);
 }
 
-.ys-role-checkbox--active {
+.ys-role-radio--active {
   background: var(--violet-600);
   border-color: var(--violet-600);
 }

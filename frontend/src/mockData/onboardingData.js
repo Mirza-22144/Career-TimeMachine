@@ -29,7 +29,7 @@ export const stepOneData = {
   eyebrow: 'STEP 01 · YOUR STORY',
   heading: 'Let us remember where your journey began.',
   subheading: 'Choose the role that started your professional story.',
-  roleQuestion: 'What was your previous IT role? (select all that apply)',
+  roleQuestion: 'What was your previous IT role?',
   searchPlaceholder: 'Search your previous role...',
   roles: [
     'Software Engineer',
@@ -48,17 +48,8 @@ export const stepOneData = {
   ctaLabel: 'Continue',
 }
 
-// Joins role names into a natural-language list: "X", "X and Y", or
-// "X, Y and Z".
-function joinRoles(roles) {
-  if (roles.length === 1) return roles[0]
-  if (roles.length === 2) return `${roles[0]} and ${roles[1]}`
-  return `${roles.slice(0, -1).join(', ')} and ${roles[roles.length - 1]}`
-}
-
-// Builds the reflection sentence shown under the years slider. `roles` is
-// one or more previously-held IT roles.
-export function buildReflectionText(roles, years) {
+// Builds the reflection sentence shown under the years slider.
+export function buildReflectionText(role, years) {
   const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
-  return `A ${joinRoles(roles)} with ${yearsLabel} years of experience. That is a significant professional foundation.`
+  return `A ${role} with ${yearsLabel} years of experience. That is a significant professional foundation.`
 }

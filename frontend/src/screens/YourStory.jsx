@@ -18,7 +18,9 @@ import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
  */
 export default function YourStory() {
   const [search, setSearch] = useState('')
-  const [selectedRoles, setSelectedRoles] = useState([])
+  // Single-select for this iteration — clicking a role replaces the
+  // previous selection rather than adding to it.
+  const [selectedRole, setSelectedRole] = useState(null)
   // Rests at the minimum rather than a guessed midpoint, so nothing reads
   // as pre-selected before the user actually drags the slider.
   const [years, setYears] = useState(stepOneData.minYears)
@@ -28,12 +30,6 @@ export default function YourStory() {
     if (!query) return stepOneData.roles
     return stepOneData.roles.filter((role) => role.toLowerCase().includes(query))
   }, [search])
-
-  const toggleRole = (role) => {
-    setSelectedRoles((prev) =>
-      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role],
-    )
-  }
 
   const percent = ((years - stepOneData.minYears) / (stepOneData.maxYears - stepOneData.minYears)) * 100
   const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
@@ -64,17 +60,17 @@ export default function YourStory() {
 
             <div className="ys-role-grid">
               {filteredRoles.map((role) => {
-                const isActive = selectedRoles.includes(role)
+                const isActive = role === selectedRole
                 return (
                   <button
                     type="button"
                     key={role}
                     className={`ys-role-card ${isActive ? 'ys-role-card--active' : ''}`}
-                    onClick={() => toggleRole(role)}
+                    onClick={() => setSelectedRole(role)}
                     aria-pressed={isActive}
                   >
                     {role}
-                    <span className={`ys-role-checkbox ${isActive ? 'ys-role-checkbox--active' : ''}`}>
+                    <span className={`ys-role-radio ${isActive ? 'ys-role-radio--active' : ''}`}>
                       {isActive && <CheckIcon size={11} />}
                     </span>
                   </button>
@@ -117,16 +113,16 @@ export default function YourStory() {
             </div>
           </section>
 
-          {selectedRoles.length > 0 && (
+          {selectedRole && (
             <div className="ys-reflection">
               <span className="ys-reflection-icon">
                 <CheckIcon size={12} color="#7C3AED" />
               </span>
-              <p>{buildReflectionText(selectedRoles, years)}</p>
+              <p>{buildReflectionText(selectedRole, years)}</p>
             </div>
           )}
 
-          <button type="button" className="ys-continue" disabled={selectedRoles.length === 0}>
+          <button type="button" className="ys-continue" disabled={!selectedRole}>
             {stepOneData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>

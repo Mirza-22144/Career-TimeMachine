@@ -23,6 +23,7 @@ export default function YourExperience() {
   const [customSkills, setCustomSkills] = useState(savedSkills.filter((s) => !stepTwoData.skills.includes(s)))
   const [isAddingSkill, setIsAddingSkill] = useState(false)
   const [skillDraft, setSkillDraft] = useState('')
+  const [skillError, setSkillError] = useState('')
 
   const [selectedResponsibilities, setSelectedResponsibilities] = useState(savedResponsibilities)
   const [customResponsibilities, setCustomResponsibilities] = useState(
@@ -30,6 +31,7 @@ export default function YourExperience() {
   )
   const [isAddingResponsibility, setIsAddingResponsibility] = useState(false)
   const [responsibilityDraft, setResponsibilityDraft] = useState('')
+  const [responsibilityError, setResponsibilityError] = useState('')
 
   const allSkills = [...stepTwoData.skills, ...customSkills]
   const allResponsibilities = [...stepTwoData.responsibilities, ...customResponsibilities]
@@ -46,21 +48,43 @@ export default function YourExperience() {
 
   const commitSkillDraft = () => {
     const trimmed = skillDraft.trim()
-    if (trimmed && !allSkills.includes(trimmed)) {
-      setCustomSkills((prev) => [...prev, trimmed])
-      setSelectedSkills((prev) => [...prev, trimmed])
+    if (!trimmed) {
+      setSkillError('Please enter a skill.')
+      return
     }
+    if (!allSkills.includes(trimmed)) {
+      setCustomSkills((prev) => [...prev, trimmed])
+    }
+    setSelectedSkills((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]))
     setSkillDraft('')
+    setSkillError('')
+    setIsAddingSkill(false)
+  }
+
+  const cancelSkillDraft = () => {
+    setSkillDraft('')
+    setSkillError('')
     setIsAddingSkill(false)
   }
 
   const commitResponsibilityDraft = () => {
     const trimmed = responsibilityDraft.trim()
-    if (trimmed && !allResponsibilities.includes(trimmed)) {
-      setCustomResponsibilities((prev) => [...prev, trimmed])
-      setSelectedResponsibilities((prev) => [...prev, trimmed])
+    if (!trimmed) {
+      setResponsibilityError('Please enter a responsibility.')
+      return
     }
+    if (!allResponsibilities.includes(trimmed)) {
+      setCustomResponsibilities((prev) => [...prev, trimmed])
+    }
+    setSelectedResponsibilities((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]))
     setResponsibilityDraft('')
+    setResponsibilityError('')
+    setIsAddingResponsibility(false)
+  }
+
+  const cancelResponsibilityDraft = () => {
+    setResponsibilityDraft('')
+    setResponsibilityError('')
     setIsAddingResponsibility(false)
   }
 
@@ -104,9 +128,15 @@ export default function YourExperience() {
                   className="ye-pill-input"
                   placeholder="Type a skill..."
                   value={skillDraft}
-                  onChange={(e) => setSkillDraft(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && commitSkillDraft()}
-                  onBlur={commitSkillDraft}
+                  onChange={(e) => {
+                    setSkillDraft(e.target.value)
+                    setSkillError('')
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') commitSkillDraft()
+                    if (e.key === 'Escape') cancelSkillDraft()
+                  }}
+                  onBlur={() => (skillDraft.trim() ? commitSkillDraft() : cancelSkillDraft())}
                 />
               ) : (
                 <button type="button" className="ye-pill ye-pill--add" onClick={() => setIsAddingSkill(true)}>
@@ -114,6 +144,7 @@ export default function YourExperience() {
                 </button>
               )}
             </div>
+            {skillError && <p className="ye-error">{skillError}</p>}
 
             <p className="ye-quote">&ldquo;{stepTwoData.skillsQuote}&rdquo;</p>
           </section>
@@ -150,9 +181,15 @@ export default function YourExperience() {
                   className="ye-responsibility-input"
                   placeholder="Type a responsibility..."
                   value={responsibilityDraft}
-                  onChange={(e) => setResponsibilityDraft(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && commitResponsibilityDraft()}
-                  onBlur={commitResponsibilityDraft}
+                  onChange={(e) => {
+                    setResponsibilityDraft(e.target.value)
+                    setResponsibilityError('')
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') commitResponsibilityDraft()
+                    if (e.key === 'Escape') cancelResponsibilityDraft()
+                  }}
+                  onBlur={() => (responsibilityDraft.trim() ? commitResponsibilityDraft() : cancelResponsibilityDraft())}
                 />
               ) : (
                 <button
@@ -164,6 +201,7 @@ export default function YourExperience() {
                 </button>
               )}
             </div>
+            {responsibilityError && <p className="ye-error">{responsibilityError}</p>}
           </section>
 
           <div className="ye-translate-note">{stepTwoData.translateNote}</div>

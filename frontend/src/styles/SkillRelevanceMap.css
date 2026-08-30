@@ -103,6 +103,20 @@
   color: var(--violet-600);
 }
 
+.srm-map-message {
+  margin: 0;
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.srm-relevant-tag {
+  margin: 0;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--violet-600);
+}
+
 .srm-pill-row {
   display: flex;
   flex-wrap: wrap;

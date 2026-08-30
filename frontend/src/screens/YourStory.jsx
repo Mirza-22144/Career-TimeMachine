@@ -17,13 +17,16 @@ import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.
  */
 export default function YourStory() {
   const [profile] = useState(getOnboardingProfile)
+  const isKnownRole = profile.role && stepOneData.roles.includes(profile.role)
+
   const [search, setSearch] = useState('')
-  // Single-select for this iteration — clicking a role replaces the
-  // previous selection rather than adding to it. Restores a prior answer if
-  // the user navigated back to fix something.
-  const [selectedRole, setSelectedRole] = useState(profile.role ?? null)
-  // Rests at the minimum rather than a guessed midpoint, so nothing reads
-  // as pre-selected before the user actually drags the slider.
+  // Single-select — clicking a role replaces the previous selection.
+  // Restores a prior answer if the user navigated back to fix something.
+  const [selectedRole, setSelectedRole] = useState(isKnownRole ? profile.role : profile.role ? 'Other' : null)
+  const [otherRoleText, setOtherRoleText] = useState(isKnownRole ? '' : (profile.role ?? ''))
+  // Tracks whether the slider has actually been touched, so a valid-looking
+  // default value doesn't count as an answer.
+  const [yearsTouched, setYearsTouched] = useState(profile.years != null)
   const [years, setYears] = useState(profile.years ?? stepOneData.minYears)
 
   const filteredRoles = useMemo(() => {
@@ -34,6 +37,15 @@ export default function YourStory() {
 
   const percent = ((years - stepOneData.minYears) / (stepOneData.maxYears - stepOneData.minYears)) * 100
   const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
+
+  const finalRole = selectedRole === 'Other' ? otherRoleText.trim() : selectedRole
+  const roleValid = !!finalRole
+  const canContinue = roleValid && yearsTouched
+
+  let hint = ''
+  if (!selectedRole) hint = 'Select a role to continue.'
+  else if (selectedRole === 'Other' && !otherRoleText.trim()) hint = 'Please enter your previous role.'
+  else if (!yearsTouched) hint = 'Drag the slider to select your years of experience.'
 
   return (
     <div className="ys-page">
@@ -78,6 +90,17 @@ export default function YourStory() {
                 )
               })}
             </div>
+
+            {selectedRole === 'Other' && (
+              <input
+                type="text"
+                className="ys-other-input"
+                placeholder="What was your previous role?"
+                value={otherRoleText}
+                onChange={(e) => setOtherRoleText(e.target.value)}
+                autoFocus
+              />
+            )}
           </section>
 
           <section className="ys-question">
@@ -97,7 +120,10 @@ export default function YourStory() {
                   min={stepOneData.minYears}
                   max={stepOneData.maxYears}
                   value={years}
-                  onChange={(e) => setYears(Number(e.target.value))}
+                  onChange={(e) => {
+                    setYears(Number(e.target.value))
+                    setYearsTouched(true)
+                  }}
                   className="ys-slider-input"
                   style={{ '--percent': `${percent}%` }}
                   aria-label={stepOneData.experienceQuestion}
@@ -114,27 +140,28 @@ export default function YourStory() {
             </div>
           </section>
 
-          {selectedRole && (
+          {roleValid && yearsTouched && (
             <div className="ys-reflection">
               <span className="ys-reflection-icon">
                 <CheckIcon size={12} color="#7C3AED" />
               </span>
-              <p>{buildReflectionText(selectedRole, years)}</p>
+              <p>{buildReflectionText(finalRole, years)}</p>
             </div>
           )}
 
           <button
             type="button"
             className="ys-continue"
-            disabled={!selectedRole}
+            disabled={!canContinue}
             onClick={() => {
-              saveOnboardingProfile({ role: selectedRole, years })
+              saveOnboardingProfile({ role: finalRole, years })
               navigate('/your-experience')
             }}
           >
             {stepOneData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
+          {!canContinue && <p className="ys-hint">{hint}</p>}
         </div>
       </main>
     </div>

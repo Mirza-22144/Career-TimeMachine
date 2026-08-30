@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import '../styles/SkillRelevanceMap.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
-import { stepFourData } from '../mockData/onboardingData'
+import { stepFourData, horizonsByRole } from '../mockData/onboardingData'
 import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
@@ -49,9 +49,14 @@ function useFanLines(containerRef, deps) {
 export default function SkillRelevanceMap() {
   const [profile] = useState(getOnboardingProfile)
   const skills = profile.skills || []
+  const roleHorizons = horizonsByRole[profile.role]
+  // Never suggest a "new" horizon the user already recorded as a skill.
+  const horizons = roleHorizons ? roleHorizons.filter((h) => !skills.includes(h)) : []
+  const isAligned = !!roleHorizons && horizons.length === 0
+
   const [active, setActive] = useState(skills[0] ? { type: 'owned', name: skills[0] } : null)
   const mapRef = useRef(null)
-  const { lines, top, bottom } = useFanLines(mapRef, [skills.length])
+  const { lines, top, bottom } = useFanLines(mapRef, [skills.length, horizons.length])
 
   return (
     <div className="srm-page">
@@ -86,19 +91,23 @@ export default function SkillRelevanceMap() {
               </svg>
 
               <span className="srm-section-label srm-section-label--horizons">○ NEW HORIZONS</span>
-              <div className="srm-pill-row">
-                {stepFourData.newHorizons.map((h) => (
-                  <button
-                    type="button"
-                    key={h}
-                    data-name={h}
-                    className={`srm-horizon-pill ${active?.name === h ? 'srm-horizon-pill--active' : ''}`}
-                    onClick={() => setActive({ type: 'new', name: h })}
-                  >
-                    ○ {h}
-                  </button>
-                ))}
-              </div>
+              {!roleHorizons && <p className="srm-map-message">{stepFourData.unavailableMessage}</p>}
+              {isAligned && <p className="srm-map-message">{stepFourData.alignedMessage}</p>}
+              {horizons.length > 0 && (
+                <div className="srm-pill-row">
+                  {horizons.map((h) => (
+                    <button
+                      type="button"
+                      key={h}
+                      data-name={h}
+                      className={`srm-horizon-pill ${active?.name === h ? 'srm-horizon-pill--active' : ''}`}
+                      onClick={() => setActive({ type: 'new', name: h })}
+                    >
+                      ○ {h}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="srm-center-card">
                 <span className="srm-center-eyebrow">YOU ARE HERE</span>
@@ -121,6 +130,7 @@ export default function SkillRelevanceMap() {
                   </button>
                 ))}
               </div>
+              {skills.length > 0 && <p className="srm-relevant-tag">✓ {stepFourData.ownedSummary}</p>}
               <span className="srm-section-label srm-section-label--skills">● SKILLS YOU BRING BACK</span>
             </div>
 
@@ -131,7 +141,9 @@ export default function SkillRelevanceMap() {
                 </span>
                 <h3 className="srm-detail-title">{active.name}</h3>
                 <hr className="srm-detail-divider" />
-                <p className="srm-detail-note">{stepFourData.relevanceNote}</p>
+                <p className="srm-detail-note">
+                  {profile.role ? stepFourData.relevanceNote(profile.role) : 'Currently in demand for this role.'}
+                </p>
                 <p className="srm-detail-note">{active.type === 'new' ? stepFourData.newNote : stepFourData.ownedNote}</p>
               </div>
             )}

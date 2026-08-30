@@ -41,6 +41,7 @@ export const stepOneData = {
     'Business Analyst',
     'Data Analyst',
     'Project Manager',
+    'Other',
   ],
   experienceQuestion: 'How many years of IT experience did you have?',
   minYears: 1,
@@ -105,7 +106,9 @@ export const stepThreeData = {
   returnLabel: 'PLANNING TO RETURN',
   reasonsLabel: 'What led to your break?',
   reasons: ['Caregiving', 'Personal reasons', 'Health & wellbeing', 'Further study', 'Relocation', 'Other', 'Prefer not to say'],
+  otherReasonPlaceholder: 'Tell us in your own words...',
   note: 'We use these dates to show what changed in your field while you were away.',
+  invalidRangeMessage: 'Your planning-to-return year must be the same as or after your career break start year.',
   ctaLabel: 'See My Skills Map',
 }
 
@@ -116,11 +119,11 @@ export const sidePhoto = {
 }
 
 // Step 4 — "Skill Relevance Map": what's still relevant + new horizons.
-export const stepFourData = {
-  eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
-  heading: 'Your experience is still your greatest asset.',
-  subheading: 'See what remains relevant and what you could explore.',
-  newHorizons: [
+// Current in-demand skills, keyed by previous IT role. Only a couple of
+// roles have mock data — any other role falls back to the
+// "unavailable for this role" message (AC 2.2.1's exception path).
+export const horizonsByRole = {
+  'Software Engineer': [
     'Remote collaboration',
     'GitHub Copilot',
     'TypeScript',
@@ -131,9 +134,20 @@ export const stepFourData = {
     'Modern security',
     'LLM APIs',
   ],
-  relevanceNote: 'Currently in demand for your role.',
+  'Data Analyst': ['Python', 'Cloud-native', 'AI-assisted tools', 'Data visualisation', 'LLM APIs'],
+}
+
+export const stepFourData = {
+  eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
+  heading: 'Your experience is still your greatest asset.',
+  subheading: 'See what remains relevant and what you could explore.',
+  ownedTag: 'Still relevant',
+  ownedSummary: 'These skills remain relevant to your role.',
+  relevanceNote: (role) => `Currently in demand for ${role} roles.`,
   ownedNote: 'You recorded this in your experience.',
   newNote: 'Not recorded in your experience yet.',
+  unavailableMessage: 'Current skill demand information is unavailable for this role.',
+  alignedMessage: "You're already aligned with the current skill demand for your selected role.",
   ctaLabel: 'Define My Direction',
 }
 

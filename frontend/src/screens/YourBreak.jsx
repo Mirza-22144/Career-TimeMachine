@@ -13,22 +13,28 @@ const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
 
 export default function YourBreak() {
   const [profile] = useState(getOnboardingProfile)
+  const isKnownReason = profile.breakReason && stepThreeData.reasons.includes(profile.breakReason)
+
   // Restores prior answers if the user navigated back to fix something.
   const [startYear, setStartYear] = useState(profile.breakStartYear ?? '')
   const [returnYear, setReturnYear] = useState(profile.breakReturnYear ?? '')
-  const [reasons, setReasons] = useState(profile.breakReasons ?? [])
-
-  const toggleReason = (reason) => {
-    setReasons((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]))
-  }
+  // Single-select — choosing a reason replaces the previous one.
+  const [reason, setReason] = useState(isKnownReason ? profile.breakReason : profile.breakReason ? 'Other' : null)
+  const [otherReasonText, setOtherReasonText] = useState(isKnownReason ? '' : (profile.breakReason ?? ''))
 
   const start = Number(startYear)
   const end = Number(returnYear)
-  const hasRange = startYear && returnYear && end >= start
-  const duration = hasRange ? end - start : null
-  const timelineYears = hasRange ? Array.from({ length: duration + 1 }, (_, i) => start + i) : []
+  const bothSelected = !!startYear && !!returnYear
+  const isValidRange = bothSelected && end >= start
+  const duration = isValidRange ? end - start : null
+  const timelineYears = isValidRange ? Array.from({ length: duration + 1 }, (_, i) => start + i) : []
 
-  const canContinue = hasRange
+  const finalReason = reason === 'Other' ? otherReasonText.trim() : reason
+  const canContinue = isValidRange
+
+  let timelineMessage = ''
+  if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
+  else if (!isValidRange) timelineMessage = stepThreeData.invalidRangeMessage
 
   return (
     <div className="yb-page">
@@ -63,7 +69,7 @@ export default function YourBreak() {
 
           <div className="yb-timeline-card">
             <span className="yb-timeline-label">TIMELINE</span>
-            {hasRange ? (
+            {isValidRange ? (
               <>
                 <div className="yb-timeline-ticks">
                   {timelineYears.map((y) => (
@@ -79,7 +85,7 @@ export default function YourBreak() {
                 </div>
               </>
             ) : (
-              <p className="yb-timeline-empty">Select both years to see your timeline.</p>
+              <p className="yb-timeline-empty">{timelineMessage}</p>
             )}
           </div>
 
@@ -88,21 +94,31 @@ export default function YourBreak() {
             <span className="yb-optional">Optional</span>
           </div>
           <div className="yb-reason-grid">
-            {stepThreeData.reasons.map((reason) => {
-              const isActive = reasons.includes(reason)
+            {stepThreeData.reasons.map((r) => {
+              const isActive = reason === r
               return (
                 <button
                   type="button"
-                  key={reason}
+                  key={r}
                   className={`yb-reason ${isActive ? 'yb-reason--active' : ''}`}
-                  onClick={() => toggleReason(reason)}
+                  onClick={() => setReason(isActive ? null : r)}
                 >
                   {isActive && <span className="yb-reason-check">✓</span>}
-                  {reason}
+                  {r}
                 </button>
               )
             })}
           </div>
+          {reason === 'Other' && (
+            <input
+              type="text"
+              className="yb-other-input"
+              placeholder={stepThreeData.otherReasonPlaceholder}
+              value={otherReasonText}
+              onChange={(e) => setOtherReasonText(e.target.value)}
+              autoFocus
+            />
+          )}
 
           <p className="yb-note">{stepThreeData.note}</p>
 
@@ -111,13 +127,14 @@ export default function YourBreak() {
             className="yb-continue"
             disabled={!canContinue}
             onClick={() => {
-              saveOnboardingProfile({ breakStartYear: start, breakReturnYear: end, breakReasons: reasons })
+              saveOnboardingProfile({ breakStartYear: start, breakReturnYear: end, breakReason: finalReason || null })
               navigate('/skill-relevance-map')
             }}
           >
             {stepThreeData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
+          {!canContinue && <p className="yb-hint">{timelineMessage}</p>}
         </div>
       </main>
 

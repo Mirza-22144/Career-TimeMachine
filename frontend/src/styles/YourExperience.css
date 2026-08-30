@@ -134,6 +134,13 @@
   outline: none;
 }
 
+.ye-error {
+  margin: -4px 0 12px;
+  font-weight: 500;
+  font-size: 13px;
+  color: #b45309;
+}
+
 .ye-quote {
   margin: 0;
   font-family: 'PT Serif', serif;

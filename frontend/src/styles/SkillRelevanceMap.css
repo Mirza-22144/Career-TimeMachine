@@ -67,11 +67,25 @@
 }
 
 .srm-map-main {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
+}
+
+.srm-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.srm-map-main > :not(.srm-lines) {
+  position: relative;
+  z-index: 1;
 }
 
 .srm-section-label {
@@ -111,12 +125,6 @@
 .srm-horizon-pill--active {
   background: var(--teal-500);
   color: #ffffff;
-}
-
-.srm-connector {
-  width: 2px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.15);
 }
 
 .srm-center-card {

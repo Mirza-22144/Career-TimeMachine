@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import '../styles/SkillRelevanceMap.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import { stepFourData } from '../mockData/onboardingData'
@@ -6,10 +6,52 @@ import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
+// Draws a line from each pill to the center card, measured from actual
+// rendered positions (works for any number of horizon/skill pills).
+function useFanLines(containerRef, deps) {
+  const [state, setState] = useState({ lines: [], top: null, bottom: null })
+
+  useLayoutEffect(() => {
+    const map = containerRef.current
+    const center = map?.querySelector('.srm-center-card')
+    if (!map || !center) return
+
+    const measure = () => {
+      const base = map.getBoundingClientRect()
+      const anchor = (el, atTop) => {
+        const r = el.getBoundingClientRect()
+        return { x: r.left + r.width / 2 - base.left, y: (atTop ? r.top : r.bottom) - base.top }
+      }
+      const top = anchor(center, true)
+      const bottom = anchor(center, false)
+      const lines = []
+      map.querySelectorAll('.srm-horizon-pill').forEach((el) =>
+        lines.push({ ...anchor(el, false), tx: top.x, ty: top.y, color: '#14b8a6', type: 'new', name: el.dataset.name }),
+      )
+      map.querySelectorAll('.srm-skill-pill').forEach((el) =>
+        lines.push({ ...anchor(el, true), tx: bottom.x, ty: bottom.y, color: '#7c3aed', type: 'owned', name: el.dataset.name }),
+      )
+      setState({ lines, top, bottom })
+    }
+
+    measure()
+    const retry = setTimeout(measure, 300) // catches late web-font reflow
+    window.addEventListener('resize', measure)
+    return () => {
+      clearTimeout(retry)
+      window.removeEventListener('resize', measure)
+    }
+  }, deps)
+
+  return state
+}
+
 export default function SkillRelevanceMap() {
   const [profile] = useState(getOnboardingProfile)
   const skills = profile.skills || []
   const [active, setActive] = useState(skills[0] ? { type: 'owned', name: skills[0] } : null)
+  const mapRef = useRef(null)
+  const { lines, top, bottom } = useFanLines(mapRef, [skills.length])
 
   return (
     <div className="srm-page">
@@ -22,13 +64,34 @@ export default function SkillRelevanceMap() {
           <p className="srm-subheading">{stepFourData.subheading}</p>
 
           <div className="srm-map">
-            <div className="srm-map-main">
+            <div className="srm-map-main" ref={mapRef}>
+              <svg className="srm-lines">
+                {lines.map((l, i) => {
+                  const isActive = active?.type === l.type && active?.name === l.name
+                  return (
+                    <line
+                      key={i}
+                      x1={l.x}
+                      y1={l.y}
+                      x2={l.tx}
+                      y2={l.ty}
+                      stroke={l.color}
+                      strokeOpacity={isActive ? 0.9 : 0.35}
+                      strokeWidth={isActive ? 2 : 1}
+                    />
+                  )
+                })}
+                {top && <circle cx={top.x} cy={top.y} r="4" fill="#0d1628" stroke="#14b8a6" strokeWidth="1.5" />}
+                {bottom && <circle cx={bottom.x} cy={bottom.y} r="4" fill="#7c3aed" />}
+              </svg>
+
               <span className="srm-section-label srm-section-label--horizons">○ NEW HORIZONS</span>
               <div className="srm-pill-row">
                 {stepFourData.newHorizons.map((h) => (
                   <button
                     type="button"
                     key={h}
+                    data-name={h}
                     className={`srm-horizon-pill ${active?.name === h ? 'srm-horizon-pill--active' : ''}`}
                     onClick={() => setActive({ type: 'new', name: h })}
                   >
@@ -36,8 +99,6 @@ export default function SkillRelevanceMap() {
                   </button>
                 ))}
               </div>
-
-              <span className="srm-connector srm-connector--top" />
 
               <div className="srm-center-card">
                 <span className="srm-center-eyebrow">YOU ARE HERE</span>
@@ -47,13 +108,12 @@ export default function SkillRelevanceMap() {
                 </span>
               </div>
 
-              <span className="srm-connector srm-connector--bottom" />
-
               <div className="srm-pill-row">
                 {skills.map((s) => (
                   <button
                     type="button"
                     key={s}
+                    data-name={s}
                     className={`srm-skill-pill ${active?.name === s ? 'srm-skill-pill--active' : ''}`}
                     onClick={() => setActive({ type: 'owned', name: s })}
                   >

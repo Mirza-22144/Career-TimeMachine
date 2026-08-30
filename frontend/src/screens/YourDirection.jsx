@@ -3,6 +3,7 @@ import '../styles/YourDirection.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
 import { api } from '../api.js'
+import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
 const plural = (n, word) => {
@@ -40,6 +41,7 @@ export default function YourDirection() {
 
   const handleContinue = async () => {
     await api.patchCareerDirection({ return_readiness: pace, area_to_explore: areaId })
+    navigate('/career-journey')
   }
 
   if (loading) return <div className="yd-page" />

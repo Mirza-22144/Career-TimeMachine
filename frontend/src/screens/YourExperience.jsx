@@ -24,6 +24,7 @@ const MAX_SUGGESTIONS = 8
 export default function YourExperience() {
   const [loading, setLoading] = useState(true)
   const [catalogueSkills, setCatalogueSkills] = useState([])
+  const [allSkills, setAllSkills] = useState([])
   const [catalogueResponsibilities, setCatalogueResponsibilities] = useState([])
   const [roles, setRoles] = useState([])
   const [experienceOptions, setExperienceOptions] = useState([])
@@ -50,8 +51,15 @@ export default function YourExperience() {
         api.getCatalogue('experience-options'),
         api.getProfile(),
       ])
-      const skills = await api.getSkills(profileData.role_id)
+      // Role-scoped list drives the default 10 suggestions (AC 1.2.1's
+      // "relevant" set); the full catalogue backs search/"+ Add skill" so a
+      // real skill is always findable even if it isn't linked to this role.
+      const [skills, everySkill] = await Promise.all([
+        api.getSkills(profileData.role_id),
+        api.getCatalogue('skills'),
+      ])
       setCatalogueSkills(skills)
+      setAllSkills(everySkill)
       setCatalogueResponsibilities(responsibilities)
       setRoles(rolesData)
       setExperienceOptions(experienceData)
@@ -81,7 +89,7 @@ export default function YourExperience() {
       setSkillError('Please enter a skill.')
       return
     }
-    const match = catalogueSkills.find((s) => s.label.toLowerCase() === trimmed.toLowerCase())
+    const match = allSkills.find((s) => s.label.toLowerCase() === trimmed.toLowerCase())
     if (match) {
       if (!selectedSkillIds.includes(match.id)) toggleSkill(match.id)
     } else if (!customSkills.includes(trimmed)) {
@@ -140,19 +148,20 @@ export default function YourExperience() {
 
   if (loading) return <div className="ye-page" />
 
-  const skillLabel = (id) => catalogueSkills.find((s) => s.id === id)?.label || id
+  const skillLabel = (id) => allSkills.find((s) => s.id === id)?.label || catalogueSkills.find((s) => s.id === id)?.label || id
   const responsibilityLabel = (id) => catalogueResponsibilities.find((r) => r.id === id)?.label || id
   const selectedSkillLabels = [...selectedSkillIds.map(skillLabel), ...customSkills]
   const selectedResponsibilityLabels = [...selectedResponsibilityIds.map(responsibilityLabel), ...customResponsibilities]
 
-  // Only surfaced while actively typing a new skill - never a full browse list.
+  // Both search the FULL catalogue (not just this role's list) - a real
+  // skill should always be findable, even if it isn't linked to this role.
   const skillSuggestions = isAddingSkill && skillDraft.trim()
-    ? catalogueSkills
+    ? allSkills
         .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillDraft.trim().toLowerCase()))
         .slice(0, MAX_SUGGESTIONS)
     : []
   const searchResults = skillSearch.trim()
-    ? catalogueSkills
+    ? allSkills
         .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillSearch.trim().toLowerCase()))
         .slice(0, MAX_SUGGESTIONS)
     : []
@@ -163,7 +172,7 @@ export default function YourExperience() {
   const topSkills = catalogueSkills.slice(0, DEFAULT_SUGGESTIONS)
   const extraSelectedSkills = selectedSkillIds
     .filter((id) => !topSkills.some((s) => s.id === id))
-    .map((id) => catalogueSkills.find((s) => s.id === id))
+    .map((id) => allSkills.find((s) => s.id === id) || catalogueSkills.find((s) => s.id === id))
     .filter(Boolean)
   const suggestedSkills = [...extraSelectedSkills, ...topSkills]
 

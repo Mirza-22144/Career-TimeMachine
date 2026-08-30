@@ -141,6 +141,17 @@
   color: #ffffff;
 }
 
+.srm-show-more {
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--teal-500);
+  cursor: pointer;
+}
+
 .srm-center-card {
   display: flex;
   flex-direction: column;

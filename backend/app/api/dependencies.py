@@ -6,9 +6,6 @@ from app.repositories.interfaces.session_repository import AnonSession
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
-from app.repositories.memory.memory_skill_mapping_repository import (
-    MemorySkillMappingRepository,
-)
 from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
@@ -21,7 +18,6 @@ from app.services.session_service import SessionService
 # the app writes to them; there's no data to migrate from yet.)
 _session_repository = MemorySessionRepository()
 _profile_repository = MemoryProfileRepository()
-_skill_mapping_repository = MemorySkillMappingRepository()
 
 # Roles/skills use the real Cloud SQL data once DB_* env vars are set
 # (DATA_HANDOVER.md); falls back to the curated mock otherwise.
@@ -72,12 +68,8 @@ def get_career_journey_service() -> CareerJourneyService:
 
 
 def get_career_translation_service() -> CareerTranslationService:
-    """Build translation service with shared profile/catalogue/mapping repos."""
-    return CareerTranslationService(
-        _profile_repository,
-        _catalogue_repository,
-        _skill_mapping_repository,
-    )
+    """Build translation service with shared profile and catalogue repositories."""
+    return CareerTranslationService(_profile_repository, _catalogue_repository)
 
 
 def get_career_direction_service() -> CareerDirectionService:

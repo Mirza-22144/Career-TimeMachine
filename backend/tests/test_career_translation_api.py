@@ -12,99 +12,54 @@ def _new_session_headers() -> dict[str, str]:
     return {"X-Session-Token": response.json()["token"]}
 
 
-def test_career_translation_returns_all_selected_catalogue_skill_mappings():
+# AC 2.2.1: compares recorded skills against current in-demand skills for
+# the user's previous role ("New Horizons"), not a skill-to-area mapping.
+
+
+def test_career_translation_marks_in_demand_owned_skills_as_still_relevant():
     headers = _new_session_headers()
+    client.patch("/api/v1/profile", headers=headers, json={"role_id": "web_developer"})
     patch_response = client.patch(
         "/api/v1/profile",
         headers=headers,
-        json={
-            "skill_ids": ["rest_apis", "react", "docker"],
-            "custom_skills": ["Release coordination"],
-        },
+        json={"skill_ids": ["react", "aws"], "custom_skills": ["Release coordination"]},
     )
     assert patch_response.status_code == 200
 
     response = client.get("/api/v1/career-translation", headers=headers)
 
     assert response.status_code == 200
-    assert response.json() == [
-        {
-            "previous_skill": {"id": "rest_apis", "name": "REST APIs"},
-            "connected_areas": [
-                {
-                    "id": "cloud_native_engineering",
-                    "name": "Cloud-Native Engineering",
-                }
-            ],
-        },
-        {
-            "previous_skill": {"id": "react", "name": "React"},
-            "connected_areas": [],
-        },
-        {
-            "previous_skill": {"id": "docker", "name": "Docker"},
-            "connected_areas": [
-                {
-                    "id": "modern_devops",
-                    "name": "Modern DevOps Practices",
-                },
-                {
-                    "id": "cloud_native_engineering",
-                    "name": "Cloud-Native Engineering",
-                },
-            ],
-        },
-    ]
+    body = response.json()
+    assert body["role_data_available"] is True
+    owned_by_id = {s["id"]: s for s in body["owned_skills"]}
+    assert owned_by_id["react"]["still_relevant"] is True  # in-demand for web_developer
+    assert owned_by_id["aws"]["still_relevant"] is False  # not in-demand for web_developer
+    assert body["custom_skills"] == ["Release coordination"]
 
 
-def test_career_translation_returns_empty_list_when_no_skills_selected():
+def test_career_translation_lists_unrecorded_in_demand_skills_as_new_horizons():
+    headers = _new_session_headers()
+    client.patch("/api/v1/profile", headers=headers, json={"role_id": "web_developer"})
+    client.patch("/api/v1/profile", headers=headers, json={"skill_ids": ["react"]})
+
+    response = client.get("/api/v1/career-translation", headers=headers)
+
+    assert response.status_code == 200
+    new_horizon_ids = {s["id"] for s in response.json()["new_horizons"]}
+    assert "react" not in new_horizon_ids  # already recorded
+    assert new_horizon_ids  # web_developer has other in-demand skills the user hasn't recorded
+
+
+def test_career_translation_without_a_role_selected_has_no_role_data():
     headers = _new_session_headers()
 
     response = client.get("/api/v1/career-translation", headers=headers)
 
     assert response.status_code == 200
-    assert response.json() == []
-
-
-def test_single_skill_translation_returns_selected_skill_mapping():
-    headers = _new_session_headers()
-    patch_response = client.patch(
-        "/api/v1/profile",
-        headers=headers,
-        json={"skill_ids": ["python", "java"]},
-    )
-    assert patch_response.status_code == 200
-
-    response = client.get("/api/v1/career-translation/python", headers=headers)
-
-    assert response.status_code == 200
     assert response.json() == {
-        "previous_skill": {"id": "python", "name": "Python"},
-        "connected_areas": [
-            {
-                "id": "data_analytics_basics",
-                "name": "Data & Analytics Basics",
-            }
-        ],
-    }
-
-
-def test_single_skill_translation_404s_when_skill_not_selected():
-    headers = _new_session_headers()
-    patch_response = client.patch(
-        "/api/v1/profile",
-        headers=headers,
-        json={"skill_ids": ["python"]},
-    )
-    assert patch_response.status_code == 200
-
-    response = client.get("/api/v1/career-translation/rest_apis", headers=headers)
-
-    assert response.status_code == 404
-    assert response.json() == {
-        "error": {
-            "code": "HTTP_404",
-            "message": "skill not selected",
-            "details": [],
-        }
+        "role_label": None,
+        "role_data_available": False,
+        "owned_skills": [],
+        "custom_skills": [],
+        "new_horizons": [],
     }

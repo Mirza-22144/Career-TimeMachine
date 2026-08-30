@@ -78,18 +78,23 @@ export const sidePhoto = {
   caption: 'women in tech have taken a career break',
 }
 
-// Step 4 — "Skill Relevance Map". Skill-to-career-area connections come
-// from the real backend (GET /career-translation) — only static screen
-// copy lives here.
+// Step 4 — "Skill Relevance Map" (AC 2.2.1): compares recorded skills
+// against current in-demand skills for the user's previous role, from the
+// real backend (GET /career-translation) — only static screen copy and the
+// AC's required exception copy live here.
 export const stepFourData = {
   eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
   heading: 'Your experience is still your greatest asset.',
   subheading: 'See what remains relevant and what you could explore.',
   ownedSummary: 'These are the skills you are bringing back.',
   ownedLabel: '● SKILLS YOU BRING BACK',
-  areasLabel: '○ CONNECTED CAREER AREAS',
-  noAreasMessage: 'No career-area connections found for your recorded skills yet.',
-  skillNoAreaNote: 'Not currently mapped to a specific career area.',
+  horizonsLabel: '○ NEW HORIZONS',
+  noRoleDataMessage: 'Current skill demand information is unavailable for this role.',
+  allAlignedMessage: "You're already aligned with the current skill demand for your selected role.",
+  stillRelevantTag: 'Still relevant',
+  notInDemandNote: 'Not currently flagged in-demand for this role.',
+  customSkillNote: 'Custom skill - not in the current-demand catalogue.',
+  horizonNote: (roleLabel) => `Currently in demand for ${roleLabel} roles.`,
   ctaLabel: 'Define My Direction',
 }
 

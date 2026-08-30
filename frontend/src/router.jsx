@@ -5,6 +5,7 @@ import YourExperience from './screens/YourExperience.jsx'
 import YourBreak from './screens/YourBreak.jsx'
 import SkillRelevanceMap from './screens/SkillRelevanceMap.jsx'
 import YourDirection from './screens/YourDirection.jsx'
+import CareerJourney from './screens/CareerJourney.jsx'
 
 // Path -> screen component. Add an entry here as each new screen is built.
 const routes = {
@@ -14,6 +15,7 @@ const routes = {
   '/your-break': YourBreak,
   '/skill-relevance-map': SkillRelevanceMap,
   '/your-direction': YourDirection,
+  '/career-journey': CareerJourney,
 }
 
 function getCurrentPath() {

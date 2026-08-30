@@ -1,94 +1,86 @@
-from dataclasses import dataclass
-
-from fastapi import HTTPException, status
+from dataclasses import dataclass, field
 
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.profile_repository import ProfileRepository
-from app.repositories.interfaces.skill_mapping_repository import SkillMappingRepository
 
 
 @dataclass
-class NamedItem:
-    """Internal id + name pair used by career-translation responses."""
+class OwnedSkill:
+    """A recorded skill, flagged 'still relevant' if it's in_demand for the
+    user's previous role (AC 2.1.2 / 2.2.1) - not a future-demand claim."""
 
     id: str
-    name: str
+    label: str
+    still_relevant: bool
 
 
 @dataclass
-class SkillTranslation:
-    """Internal translation result for one selected catalogue skill."""
+class NewHorizonSkill:
+    id: str
+    label: str
 
-    previous_skill: NamedItem
-    connected_areas: list[NamedItem]
+
+@dataclass
+class SkillRelevanceMap:
+    """AC 2.2.1: 'Skills You Bring Back' vs 'New Horizons' - current
+    in-demand skills for the user's role that she hasn't recorded. This
+    compares skills against skills for the SAME role; it is not a
+    skill-to-career-area mapping."""
+
+    role_label: str | None
+    role_data_available: bool
+    owned_skills: list[OwnedSkill] = field(default_factory=list)
+    custom_skills: list[str] = field(default_factory=list)
+    new_horizons: list[NewHorizonSkill] = field(default_factory=list)
 
 
 class CareerTranslationService:
-    """Business logic for deterministic skill-to-career-area translations."""
-
-    def __init__(
-        self,
-        profiles: ProfileRepository,
-        catalogue: CatalogueRepository,
-        skill_mappings: SkillMappingRepository,
-    ) -> None:
+    def __init__(self, profiles: ProfileRepository, catalogue: CatalogueRepository) -> None:
         # Depend on interfaces so each backing store can be replaced later.
         self.profiles = profiles
         self.catalogue = catalogue
-        self.skill_mappings = skill_mappings
 
-    def build_all_for_session(self, session_token: str) -> list[SkillTranslation]:
-        """Build translations for every catalogue skill selected by the user."""
+    def build_for_session(self, session_token: str) -> SkillRelevanceMap:
         profile = self.profiles.get_by_session_token(session_token)
-        if profile is None:
-            return []
+        if profile is None or profile.role_id is None:
+            return SkillRelevanceMap(role_label=None, role_data_available=False)
 
-        # Custom skills are intentionally ignored because they have no stable
-        # catalogue ID and therefore no deterministic mapping.
-        return [
-            self._build_for_selected_skill(skill_id)
+        role_label = next(
+            (r.label for r in self.catalogue.get_items("roles") if r.id == profile.role_id),
+            profile.role_id,
+        )
+        role_skills = self.catalogue.get_skills_for_role(profile.role_id)
+        if not role_skills:
+            # AC 2.2.1 exception: "Current skill demand information is
+            # unavailable for this role."
+            return SkillRelevanceMap(
+                role_label=role_label,
+                role_data_available=False,
+                custom_skills=profile.custom_skills,
+            )
+
+        role_in_demand_ids = {s.id for s in role_skills if s.in_demand}
+        all_labels_by_id = {s.id: s.label for s in self.catalogue.get_items("skills")}
+        owned_ids = set(profile.skill_ids)
+
+        owned_skills = [
+            OwnedSkill(
+                id=skill_id,
+                label=all_labels_by_id.get(skill_id, skill_id),
+                still_relevant=skill_id in role_in_demand_ids,
+            )
             for skill_id in profile.skill_ids
         ]
+        new_horizons = [
+            NewHorizonSkill(id=s.id, label=s.label)
+            for s in role_skills
+            if s.in_demand and s.id not in owned_ids
+        ]
 
-    def build_one_for_session(
-        self,
-        session_token: str,
-        skill_id: str,
-    ) -> SkillTranslation:
-        """Build one translation, only if the skill is in the user's profile."""
-        profile = self.profiles.get_by_session_token(session_token)
-
-        if profile is None or skill_id not in profile.skill_ids:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="skill not selected",
-            )
-
-        return self._build_for_selected_skill(skill_id)
-
-    def _build_for_selected_skill(self, skill_id: str) -> SkillTranslation:
-        """Resolve one selected skill and its mapped career areas."""
-        connected_area_ids = self.skill_mappings.get_connected_areas(skill_id)
-
-        return SkillTranslation(
-            previous_skill=self._required_named_item("skills", skill_id),
-            connected_areas=[
-                self._required_named_item("career-areas", area_id)
-                for area_id in connected_area_ids
-            ],
+        return SkillRelevanceMap(
+            role_label=role_label,
+            role_data_available=True,
+            owned_skills=owned_skills,
+            custom_skills=profile.custom_skills,
+            new_horizons=new_horizons,
         )
-
-    def _required_named_item(self, catalogue_kind: str, item_id: str) -> NamedItem:
-        """Resolve a catalogue ID into id + name, failing on inconsistent data."""
-        names_by_id = {
-            item.id: item.label
-            for item in self.catalogue.get_items(catalogue_kind)
-        }
-
-        if item_id not in names_by_id:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Missing catalogue item for {catalogue_kind}: {item_id}",
-            )
-
-        return NamedItem(id=item_id, name=names_by_id[item_id])

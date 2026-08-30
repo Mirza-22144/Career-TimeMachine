@@ -2,6 +2,7 @@ import { useState } from 'react'
 import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import SidePhotoPanel from '../components/SidePhotoPanel'
+import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { saveOnboardingProfile } from '../onboardingState.js'
 import { navigate } from '../navigate.js'
@@ -118,7 +119,7 @@ export default function YourBreak() {
         </div>
       </main>
 
-      <SidePhotoPanel label={sidePhoto.label} value={sidePhoto.value} caption={sidePhoto.caption} />
+      <SidePhotoPanel backgroundImage={breakPhoto} label={sidePhoto.label} value={sidePhoto.value} caption={sidePhoto.caption} />
     </div>
   )
 }

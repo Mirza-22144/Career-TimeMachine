@@ -4,6 +4,8 @@ import OnboardingSidebar from '../components/OnboardingSidebar'
 import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, buildReflectionText } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
+import { navigate } from '../navigate.js'
+import { saveOnboardingProfile } from '../onboardingState.js'
 
 /**
  * "Your Story" — step 1 of the 5-step onboarding wizard shown after the
@@ -12,9 +14,6 @@ import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
  * Unlike the Landing screen's demo sections, this is a real data-collection
  * form (previous role + years of experience), so its controls stay fully
  * interactive rather than fixed.
- *
- * Steps 2-5 aren't built yet — advancing past this step has nowhere to go
- * until their designs arrive.
  */
 export default function YourStory() {
   const [search, setSearch] = useState('')
@@ -122,7 +121,15 @@ export default function YourStory() {
             </div>
           )}
 
-          <button type="button" className="ys-continue" disabled={!selectedRole}>
+          <button
+            type="button"
+            className="ys-continue"
+            disabled={!selectedRole}
+            onClick={() => {
+              saveOnboardingProfile({ role: selectedRole, years })
+              navigate('/your-experience')
+            }}
+          >
             {stepOneData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>

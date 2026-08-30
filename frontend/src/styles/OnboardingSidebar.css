@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+.ob-sidebar--no-photo {
+  flex-basis: 280px;
+}
+
 .ob-sidebar * {
   box-sizing: border-box;
 }

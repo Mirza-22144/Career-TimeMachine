@@ -1,13 +1,13 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import '../styles/SkillRelevanceMap.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
-import { stepFourData, horizonsByRole } from '../mockData/onboardingData'
-import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { stepFourData } from '../mockData/onboardingData'
+import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
 // Draws a line from each pill to the center card, measured from actual
-// rendered positions (works for any number of horizon/skill pills).
+// rendered positions (works for any number of skill/area pills).
 function useFanLines(containerRef, deps) {
   const [state, setState] = useState({ lines: [], top: null, bottom: null })
 
@@ -26,10 +26,10 @@ function useFanLines(containerRef, deps) {
       const bottom = anchor(center, false)
       const lines = []
       map.querySelectorAll('.srm-horizon-pill').forEach((el) =>
-        lines.push({ ...anchor(el, false), tx: top.x, ty: top.y, color: '#14b8a6', type: 'new', name: el.dataset.name }),
+        lines.push({ ...anchor(el, false), tx: top.x, ty: top.y, color: '#14b8a6', type: 'area', name: el.dataset.name }),
       )
       map.querySelectorAll('.srm-skill-pill').forEach((el) =>
-        lines.push({ ...anchor(el, true), tx: bottom.x, ty: bottom.y, color: '#7c3aed', type: 'owned', name: el.dataset.name }),
+        lines.push({ ...anchor(el, true), tx: bottom.x, ty: bottom.y, color: '#7c3aed', type: 'skill', name: el.dataset.name }),
       )
       setState({ lines, top, bottom })
     }
@@ -47,16 +47,37 @@ function useFanLines(containerRef, deps) {
 }
 
 export default function SkillRelevanceMap() {
-  const [profile] = useState(getOnboardingProfile)
-  const skills = profile.skills || []
-  const roleHorizons = horizonsByRole[profile.role]
-  // Never suggest a "new" horizon the user already recorded as a skill.
-  const horizons = roleHorizons ? roleHorizons.filter((h) => !skills.includes(h)) : []
-  const isAligned = !!roleHorizons && horizons.length === 0
-
-  const [active, setActive] = useState(skills[0] ? { type: 'owned', name: skills[0] } : null)
+  const [loading, setLoading] = useState(true)
+  const [journey, setJourney] = useState(null)
+  const [translations, setTranslations] = useState([])
+  const [active, setActive] = useState(null)
   const mapRef = useRef(null)
-  const { lines, top, bottom } = useFanLines(mapRef, [skills.length, horizons.length])
+
+  useEffect(() => {
+    async function load() {
+      const [journeyData, translationData] = await Promise.all([api.getCareerJourney(), api.getCareerTranslation()])
+      setJourney(journeyData)
+      setTranslations(translationData)
+      const firstSkill = journeyData.selected_skills.catalogue_skills[0]?.label || journeyData.selected_skills.custom_skills[0]
+      if (firstSkill) setActive({ type: 'skill', name: firstSkill })
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  const { lines, top, bottom } = useFanLines(mapRef, [translations.length])
+
+  if (loading) return <div className="srm-page" />
+
+  const skills = [
+    ...journey.selected_skills.catalogue_skills.map((s) => s.label),
+    ...journey.selected_skills.custom_skills,
+  ]
+  const areaNames = [...new Set(translations.flatMap((t) => t.connected_areas.map((a) => a.name)))]
+
+  const findTranslation = (skillName) => translations.find((t) => t.previous_skill.name === skillName)
+  const skillsForArea = (areaName) =>
+    translations.filter((t) => t.connected_areas.some((a) => a.name === areaName)).map((t) => t.previous_skill.name)
 
   return (
     <div className="srm-page">
@@ -70,6 +91,24 @@ export default function SkillRelevanceMap() {
 
           <div className="srm-map">
             <div className="srm-map-main" ref={mapRef}>
+              <span className="srm-section-label srm-section-label--horizons">{stepFourData.areasLabel}</span>
+              {areaNames.length === 0 && <p className="srm-map-message">{stepFourData.noAreasMessage}</p>}
+              {areaNames.length > 0 && (
+                <div className="srm-pill-row">
+                  {areaNames.map((name) => (
+                    <button
+                      type="button"
+                      key={name}
+                      data-name={name}
+                      className={`srm-horizon-pill ${active?.name === name ? 'srm-horizon-pill--active' : ''}`}
+                      onClick={() => setActive({ type: 'area', name })}
+                    >
+                      ○ {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <svg className="srm-lines">
                 {lines.map((l, i) => {
                   const isActive = active?.type === l.type && active?.name === l.name
@@ -90,61 +129,57 @@ export default function SkillRelevanceMap() {
                 {bottom && <circle cx={bottom.x} cy={bottom.y} r="4" fill="#7c3aed" />}
               </svg>
 
-              <span className="srm-section-label srm-section-label--horizons">○ NEW HORIZONS</span>
-              {!roleHorizons && <p className="srm-map-message">{stepFourData.unavailableMessage}</p>}
-              {isAligned && <p className="srm-map-message">{stepFourData.alignedMessage}</p>}
-              {horizons.length > 0 && (
-                <div className="srm-pill-row">
-                  {horizons.map((h) => (
-                    <button
-                      type="button"
-                      key={h}
-                      data-name={h}
-                      className={`srm-horizon-pill ${active?.name === h ? 'srm-horizon-pill--active' : ''}`}
-                      onClick={() => setActive({ type: 'new', name: h })}
-                    >
-                      ○ {h}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               <div className="srm-center-card">
                 <span className="srm-center-eyebrow">YOU ARE HERE</span>
-                <span className="srm-center-role">{profile.role || 'Your role'}</span>
-                <span className="srm-center-years">
-                  {profile.years ? `${profile.years} year${profile.years === 1 ? '' : 's'} experience` : ''}
-                </span>
+                <span className="srm-center-role">{journey.previous_role?.label || 'Your role'}</span>
+                <span className="srm-center-years">{journey.years_experience?.label}</span>
               </div>
 
               <div className="srm-pill-row">
-                {skills.map((s) => (
+                {skills.map((name) => (
                   <button
                     type="button"
-                    key={s}
-                    data-name={s}
-                    className={`srm-skill-pill ${active?.name === s ? 'srm-skill-pill--active' : ''}`}
-                    onClick={() => setActive({ type: 'owned', name: s })}
+                    key={name}
+                    data-name={name}
+                    className={`srm-skill-pill ${active?.name === name ? 'srm-skill-pill--active' : ''}`}
+                    onClick={() => setActive({ type: 'skill', name })}
                   >
-                    ● {s}
+                    ● {name}
                   </button>
                 ))}
               </div>
               {skills.length > 0 && <p className="srm-relevant-tag">✓ {stepFourData.ownedSummary}</p>}
-              <span className="srm-section-label srm-section-label--skills">● SKILLS YOU BRING BACK</span>
+              <span className="srm-section-label srm-section-label--skills">{stepFourData.ownedLabel}</span>
             </div>
 
-            {active && (
+            {active?.type === 'skill' && (
               <div className="srm-detail-card">
-                <span className={`srm-detail-eyebrow ${active.type === 'new' ? 'srm-detail-eyebrow--new' : ''}`}>
-                  {active.type === 'new' ? '○ NEW HORIZONS' : '● SKILLS YOU BRING BACK'}
-                </span>
+                <span className="srm-detail-eyebrow">{stepFourData.ownedLabel}</span>
                 <h3 className="srm-detail-title">{active.name}</h3>
                 <hr className="srm-detail-divider" />
-                <p className="srm-detail-note">
-                  {profile.role ? stepFourData.relevanceNote(profile.role) : 'Currently in demand for this role.'}
-                </p>
-                <p className="srm-detail-note">{active.type === 'new' ? stepFourData.newNote : stepFourData.ownedNote}</p>
+                {(() => {
+                  const t = findTranslation(active.name)
+                  const areas = t?.connected_areas || []
+                  return areas.length > 0 ? (
+                    areas.map((a) => (
+                      <p key={a.id} className="srm-detail-note">Connects to: {a.name}</p>
+                    ))
+                  ) : (
+                    <p className="srm-detail-note">{stepFourData.skillNoAreaNote}</p>
+                  )
+                })()}
+              </div>
+            )}
+
+            {active?.type === 'area' && (
+              <div className="srm-detail-card">
+                <span className="srm-detail-eyebrow srm-detail-eyebrow--new">{stepFourData.areasLabel}</span>
+                <h3 className="srm-detail-title">{active.name}</h3>
+                <hr className="srm-detail-divider" />
+                <p className="srm-detail-note">Skills that connect here:</p>
+                {skillsForArea(active.name).map((name) => (
+                  <p key={name} className="srm-detail-note">● {name}</p>
+                ))}
               </div>
             )}
           </div>
@@ -152,10 +187,7 @@ export default function SkillRelevanceMap() {
           <button
             type="button"
             className="srm-continue"
-            onClick={() => {
-              saveOnboardingProfile({ focusSkill: active?.name })
-              navigate('/your-direction')
-            }}
+            onClick={() => navigate('/your-direction')}
           >
             {stepFourData.ctaLabel}
             <ArrowRightIcon size={16} />

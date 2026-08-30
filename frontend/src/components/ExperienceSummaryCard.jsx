@@ -5,7 +5,7 @@ import '../styles/ExperienceSummaryCard.css'
  * onboarding wizard. Reflects answers already collected in earlier steps
  * (role, years) plus the current step's selections (skills, responsibilities).
  */
-export default function ExperienceSummaryCard({ role, years, skills = [], responsibilities = [] }) {
+export default function ExperienceSummaryCard({ role, experienceLabel, skills = [], responsibilities = [] }) {
   return (
     <aside className="esc-card">
       <h3 className="esc-title">Your experience</h3>
@@ -16,7 +16,7 @@ export default function ExperienceSummaryCard({ role, years, skills = [], respon
       </div>
       <div className="esc-row">
         <span className="esc-label">Experience</span>
-        <span className="esc-value">{years != null ? `${years} year${years === 1 ? '' : 's'}` : '—'}</span>
+        <span className="esc-value">{experienceLabel || '—'}</span>
       </div>
       <div className="esc-row">
         <span className="esc-label">Skills</span>

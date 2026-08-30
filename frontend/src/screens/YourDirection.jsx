@@ -1,41 +1,60 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles/YourDirection.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
-import { stepFourData, stepFiveData } from '../mockData/onboardingData'
-import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
+import { api } from '../api.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
+const plural = (n, word) => {
+  if (n === 1) return `${n} ${word}`
+  return `${n} ${word.endsWith('y') ? word.slice(0, -1) + 'ies' : word + 's'}`
+}
+
 export default function YourDirection() {
-  const [profile] = useState(getOnboardingProfile)
-  // Restores prior answers if the user navigated back to fix something.
-  const [pace, setPace] = useState(profile.pace ?? null)
-  const [exploreAreas, setExploreAreas] = useState(profile.exploreAreas ?? [])
-  const [tryFirst, setTryFirst] = useState(profile.tryFirst ?? null)
+  const [loading, setLoading] = useState(true)
+  const [journey, setJourney] = useState(null)
+  const [returnStatuses, setReturnStatuses] = useState([])
+  const [careerAreas, setCareerAreas] = useState([])
+  const [pace, setPace] = useState(null)
+  const [areaId, setAreaId] = useState(null)
 
-  const skills = profile.skills || []
-  const responsibilities = profile.responsibilities || []
+  useEffect(() => {
+    async function load() {
+      const [journeyData, statuses, areas, direction] = await Promise.all([
+        api.getCareerJourney(),
+        api.getCatalogue('return-statuses'),
+        api.getCatalogue('career-areas'),
+        api.getCareerDirection(),
+      ])
+      setJourney(journeyData)
+      setReturnStatuses(statuses)
+      setCareerAreas(areas)
+      setPace(direction.return_readiness)
+      setAreaId(direction.area_to_explore)
+      setLoading(false)
+    }
+    load()
+  }, [])
 
-  const plural = (n, word) => {
-    if (n === 1) return `${n} ${word}`
-    return `${n} ${word.endsWith('y') ? word.slice(0, -1) + 'ies' : word + 's'}`
+  const canContinue = !!pace && !!areaId
+
+  const handleContinue = async () => {
+    await api.patchCareerDirection({ return_readiness: pace, area_to_explore: areaId })
   }
 
-  const journey = [
-    { label: 'Your Story', caption: profile.role ? `${profile.role}, ${plural(profile.years, 'yr')}` : '—' },
-    { label: 'Your Experience', caption: `${plural(skills.length, 'skill')}, ${plural(responsibilities.length, 'duty')}` },
-    { label: 'Your Break', caption: profile.breakStartYear ? `${profile.breakStartYear} to ${profile.breakReturnYear}` : '—' },
-    { label: 'Journey Map', caption: `${skills.length} kept, ${stepFourData.newHorizons.length} new` },
+  if (loading) return <div className="yd-page" />
+
+  const skillCount = journey.selected_skills.catalogue_skills.length + journey.selected_skills.custom_skills.length
+  const journeySteps = [
+    { label: 'Your Story', caption: journey.previous_role ? `${journey.previous_role.label}, ${journey.years_experience.label}` : '—' },
+    { label: 'Your Experience', caption: `${plural(skillCount, 'skill')}` },
+    {
+      label: 'Your Break',
+      caption: journey.career_break.break_started_on
+        ? `${journey.career_break.break_started_on.slice(0, 4)} to ${journey.career_break.return_date_unsure ? 'undecided' : journey.career_break.planned_return_date?.slice(0, 4)}`
+        : '—',
+    },
   ]
-
-  const toggleExplore = (area) => {
-    setExploreAreas((prev) => {
-      const next = prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area]
-      if (!next.includes(tryFirst)) setTryFirst(null)
-      return next
-    })
-  }
-
-  const canContinue = pace && exploreAreas.length > 0 && tryFirst
 
   return (
     <div className="yd-page">
@@ -50,10 +69,10 @@ export default function YourDirection() {
           <div className="yd-journey-card">
             <div className="yd-journey-header">
               <span>{stepFiveData.journeyLabel}</span>
-              <span>{journey.length} steps mapped</span>
+              <span>{journeySteps.length} steps mapped</span>
             </div>
             <div className="yd-journey-row">
-              {journey.map((step) => (
+              {journeySteps.map((step) => (
                 <div key={step.label} className="yd-journey-step">
                   <span className="yd-journey-dot yd-journey-dot--done">
                     <CheckIcon size={12} color="#FFFFFF" />
@@ -73,60 +92,37 @@ export default function YourDirection() {
           <h2 className="yd-question-label">{stepFiveData.paceQuestion}</h2>
           <p className="yd-question-subtext">{stepFiveData.paceSubtext}</p>
           <div className="yd-pace-grid">
-            {stepFiveData.paceOptions.map((option) => {
-              const isActive = pace === option.title
+            {returnStatuses.map((option) => {
+              const isActive = pace === option.id
               return (
                 <button
                   type="button"
-                  key={option.title}
+                  key={option.id}
                   className={`yd-pace-card ${isActive ? 'yd-pace-card--active' : ''}`}
-                  onClick={() => setPace(option.title)}
+                  onClick={() => setPace(option.id)}
                 >
                   <span className={`yd-pace-bar ${isActive ? 'yd-pace-bar--active' : ''}`} />
-                  <strong>{option.title}</strong>
-                  <span>{option.caption}</span>
+                  <strong>{option.label}</strong>
+                  <span>{paceCaptions[option.id]}</span>
                 </button>
               )
             })}
           </div>
 
-          <h2 className="yd-question-label">{stepFiveData.exploreQuestion}</h2>
-          <p className="yd-question-subtext">{stepFiveData.exploreSubtext}</p>
-          <div className="yd-pill-grid">
-            {stepFiveData.exploreAreas.map((area) => {
-              const isActive = exploreAreas.includes(area)
-              return (
-                <button
-                  type="button"
-                  key={area}
-                  className={`yd-pill ${isActive ? 'yd-pill--active' : ''}`}
-                  onClick={() => toggleExplore(area)}
-                >
-                  {isActive && <CheckIcon size={11} color="#FFFFFF" />}
-                  {area}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="yd-question-header">
-            <h2 className="yd-question-label">{stepFiveData.tryQuestion}</h2>
-            <span className="yd-optional">Pick one</span>
-          </div>
-          <p className="yd-question-subtext">{stepFiveData.trySubtext}</p>
+          <h2 className="yd-question-label">{stepFiveData.areaQuestion}</h2>
+          <p className="yd-question-subtext">{stepFiveData.areaSubtext}</p>
           <div className="yd-radio-grid">
-            {exploreAreas.length === 0 && <p className="yd-radio-empty">Select at least one area above.</p>}
-            {exploreAreas.map((area) => {
-              const isActive = tryFirst === area
+            {careerAreas.map((area) => {
+              const isActive = areaId === area.id
               return (
                 <button
                   type="button"
-                  key={area}
+                  key={area.id}
                   className={`yd-radio ${isActive ? 'yd-radio--active' : ''}`}
-                  onClick={() => setTryFirst(area)}
+                  onClick={() => setAreaId(area.id)}
                 >
                   <span className={`yd-radio-dot ${isActive ? 'yd-radio-dot--active' : ''}`} />
-                  {area}
+                  {area.label}
                 </button>
               )
             })}
@@ -137,12 +133,7 @@ export default function YourDirection() {
             <p>{stepFiveData.noteBody}</p>
           </div>
 
-          <button
-            type="button"
-            className="yd-continue"
-            disabled={!canContinue}
-            onClick={() => saveOnboardingProfile({ pace, exploreAreas, tryFirst })}
-          >
+          <button type="button" className="yd-continue" disabled={!canContinue} onClick={handleContinue}>
             {stepFiveData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>

@@ -1,51 +1,74 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import '../styles/YourStory.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, buildReflectionText } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
 import { navigate } from '../navigate.js'
-import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { api } from '../api.js'
 
 /**
  * "Your Story" — step 1 of the 5-step onboarding wizard shown after the
  * Landing screen's "Enter My Journey" CTA.
  *
- * Unlike the Landing screen's demo sections, this is a real data-collection
- * form (previous role + years of experience), so its controls stay fully
- * interactive rather than fixed.
+ * Role and years-of-experience options come from the backend catalogue;
+ * the selected answers are saved to the real profile via PATCH /profile.
  */
 export default function YourStory() {
-  const [profile] = useState(getOnboardingProfile)
-  const isKnownRole = profile.role && stepOneData.roles.includes(profile.role)
+  const [loading, setLoading] = useState(true)
+  const [roles, setRoles] = useState([])
+  const [experienceOptions, setExperienceOptions] = useState([])
 
   const [search, setSearch] = useState('')
-  // Single-select — clicking a role replaces the previous selection.
-  // Restores a prior answer if the user navigated back to fix something.
-  const [selectedRole, setSelectedRole] = useState(isKnownRole ? profile.role : profile.role ? 'Other' : null)
-  const [otherRoleText, setOtherRoleText] = useState(isKnownRole ? '' : (profile.role ?? ''))
-  // Tracks whether the slider has actually been touched, so a valid-looking
-  // default value doesn't count as an answer.
-  const [yearsTouched, setYearsTouched] = useState(profile.years != null)
-  const [years, setYears] = useState(profile.years ?? stepOneData.minYears)
+  const [selectedRoleId, setSelectedRoleId] = useState(null)
+  const [otherRoleText, setOtherRoleText] = useState('')
+  const [selectedYearsId, setSelectedYearsId] = useState(null)
+
+  useEffect(() => {
+    async function load() {
+      const [rolesData, experienceData, profile] = await Promise.all([
+        api.getCatalogue('roles'),
+        api.getCatalogue('experience-options'),
+        api.getProfile(),
+      ])
+      setRoles(rolesData)
+      setExperienceOptions(experienceData)
+      if (profile.role_id) setSelectedRoleId(profile.role_id)
+      if (profile.role_other_text) setOtherRoleText(profile.role_other_text)
+      if (profile.years_experience) setSelectedYearsId(profile.years_experience)
+      setLoading(false)
+    }
+    load()
+  }, [])
 
   const filteredRoles = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return stepOneData.roles
-    return stepOneData.roles.filter((role) => role.toLowerCase().includes(query))
-  }, [search])
+    if (!query) return roles
+    return roles.filter((role) => role.label.toLowerCase().includes(query))
+  }, [search, roles])
 
-  const percent = ((years - stepOneData.minYears) / (stepOneData.maxYears - stepOneData.minYears)) * 100
-  const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
-
-  const finalRole = selectedRole === 'Other' ? otherRoleText.trim() : selectedRole
-  const roleValid = !!finalRole
-  const canContinue = roleValid && yearsTouched
+  const selectedRole = roles.find((r) => r.id === selectedRoleId)
+  const isOther = selectedRole?.id === 'other'
+  const finalRoleLabel = isOther ? otherRoleText.trim() : selectedRole?.label
+  const roleValid = isOther ? !!otherRoleText.trim() : !!selectedRoleId
+  const selectedYears = experienceOptions.find((y) => y.id === selectedYearsId)
+  const canContinue = roleValid && !!selectedYearsId
 
   let hint = ''
-  if (!selectedRole) hint = 'Select a role to continue.'
-  else if (selectedRole === 'Other' && !otherRoleText.trim()) hint = 'Please enter your previous role.'
-  else if (!yearsTouched) hint = 'Drag the slider to select your years of experience.'
+  if (!selectedRoleId) hint = 'Select a role to continue.'
+  else if (isOther && !otherRoleText.trim()) hint = 'Please enter your previous role.'
+  else if (!selectedYearsId) hint = 'Select your years of experience to continue.'
+
+  const handleContinue = async () => {
+    await api.patchProfile({
+      role_id: selectedRoleId,
+      role_other_text: isOther ? otherRoleText.trim() : null,
+      years_experience: selectedYearsId,
+    })
+    navigate('/your-experience')
+  }
+
+  if (loading) return <div className="ys-page" />
 
   return (
     <div className="ys-page">
@@ -73,16 +96,16 @@ export default function YourStory() {
 
             <div className="ys-role-grid">
               {filteredRoles.map((role) => {
-                const isActive = role === selectedRole
+                const isActive = role.id === selectedRoleId
                 return (
                   <button
                     type="button"
-                    key={role}
+                    key={role.id}
                     className={`ys-role-card ${isActive ? 'ys-role-card--active' : ''}`}
-                    onClick={() => setSelectedRole(role)}
+                    onClick={() => setSelectedRoleId(role.id)}
                     aria-pressed={isActive}
                   >
-                    {role}
+                    {role.label}
                     <span className={`ys-role-radio ${isActive ? 'ys-role-radio--active' : ''}`}>
                       {isActive && <CheckIcon size={11} />}
                     </span>
@@ -91,7 +114,7 @@ export default function YourStory() {
               })}
             </div>
 
-            {selectedRole === 'Other' && (
+            {isOther && (
               <input
                 type="text"
                 className="ys-other-input"
@@ -105,59 +128,37 @@ export default function YourStory() {
 
           <section className="ys-question">
             <h2 className="ys-question-label">{stepOneData.experienceQuestion}</h2>
-
-            <div className="ys-slider-card">
-              <div className="ys-slider-header">
-                <span className="ys-slider-value">
-                  <strong>{years}</strong> years
-                </span>
-                <span className="ys-slider-hint">Drag to select</span>
-              </div>
-
-              <div className="ys-slider-track-wrap">
-                <input
-                  type="range"
-                  min={stepOneData.minYears}
-                  max={stepOneData.maxYears}
-                  value={years}
-                  onChange={(e) => {
-                    setYears(Number(e.target.value))
-                    setYearsTouched(true)
-                  }}
-                  className="ys-slider-input"
-                  style={{ '--percent': `${percent}%` }}
-                  aria-label={stepOneData.experienceQuestion}
-                />
-                <span className="ys-slider-tooltip" style={{ left: `${percent}%` }}>
-                  {yearsLabel} yrs
-                </span>
-              </div>
-
-              <div className="ys-slider-labels">
-                <span>{stepOneData.minYears} yr</span>
-                <span>{stepOneData.maxYears}+ yrs</span>
-              </div>
+            <div className="ys-role-grid">
+              {experienceOptions.map((option) => {
+                const isActive = option.id === selectedYearsId
+                return (
+                  <button
+                    type="button"
+                    key={option.id}
+                    className={`ys-role-card ${isActive ? 'ys-role-card--active' : ''}`}
+                    onClick={() => setSelectedYearsId(option.id)}
+                    aria-pressed={isActive}
+                  >
+                    {option.label}
+                    <span className={`ys-role-radio ${isActive ? 'ys-role-radio--active' : ''}`}>
+                      {isActive && <CheckIcon size={11} />}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </section>
 
-          {roleValid && yearsTouched && (
+          {roleValid && selectedYears && (
             <div className="ys-reflection">
               <span className="ys-reflection-icon">
                 <CheckIcon size={12} color="#7C3AED" />
               </span>
-              <p>{buildReflectionText(finalRole, years)}</p>
+              <p>{buildReflectionText(finalRoleLabel, selectedYears.label)}</p>
             </div>
           )}
 
-          <button
-            type="button"
-            className="ys-continue"
-            disabled={!canContinue}
-            onClick={() => {
-              saveOnboardingProfile({ role: finalRole, years })
-              navigate('/your-experience')
-            }}
-          >
+          <button type="button" className="ys-continue" disabled={!canContinue} onClick={handleContinue}>
             {stepOneData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>

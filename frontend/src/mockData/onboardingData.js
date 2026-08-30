@@ -25,34 +25,23 @@ export const sidebarStat = {
 export const sidebarQuote = 'Every expert started somewhere.'
 
 // Step 1 — "Your Story": previous IT role + years of experience.
+// Role and experience OPTIONS now come from the backend catalogue
+// (GET /catalogue/roles, /catalogue/experience-options) — only the static
+// screen copy lives here.
 export const stepOneData = {
   eyebrow: 'STEP 01 · YOUR STORY',
   heading: 'Let us remember where your journey began.',
   subheading: 'Choose the role that started your professional story.',
   roleQuestion: 'What was your previous IT role?',
   searchPlaceholder: 'Search your previous role...',
-  roles: [
-    'Software Engineer',
-    'Software Developer',
-    'Systems Analyst',
-    'QA Engineer',
-    'Web Developer',
-    'IT Support Specialist',
-    'Business Analyst',
-    'Data Analyst',
-    'Project Manager',
-    'Other',
-  ],
   experienceQuestion: 'How many years of IT experience did you have?',
-  minYears: 1,
-  maxYears: 10,
   ctaLabel: 'Continue',
 }
 
-// Builds the reflection sentence shown under the years slider.
+// Builds the reflection sentence. `role` and `years` are catalogue labels
+// (e.g. "Software Engineer", "5 years"), not raw ids.
 export function buildReflectionText(role, years) {
-  const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
-  return `A ${role} with ${yearsLabel} years of experience. That is a significant professional foundation.`
+  return `A ${role} with ${years} of experience. That is a significant professional foundation.`
 }
 
 // Step 2 — "Your Experience": technologies/tools used + main
@@ -63,36 +52,8 @@ export const stepTwoData = {
   heading: 'What do you remember working with?',
   subheading: 'You do not need to remember everything. Start with what feels familiar.',
   skillsLabel: 'Technologies and tools',
-  skills: [
-    'Java',
-    'Python',
-    'JavaScript',
-    'TypeScript',
-    'SQL',
-    'REST APIs',
-    'Git',
-    'AWS',
-    'Azure',
-    'Docker',
-    'Testing',
-    'Agile',
-    'Data Analysis',
-    'Kubernetes',
-    'React',
-    'Node.js',
-  ],
   skillsQuote: 'There is no need to remember everything.',
   responsibilitiesLabel: 'Main responsibilities',
-  responsibilities: [
-    'Backend development',
-    'API design',
-    'Debugging & troubleshooting',
-    'Testing & QA',
-    'Code review',
-    'System design',
-    'Team collaboration',
-    'Project delivery',
-  ],
   translateNote: 'We will translate this into the language employers use today.',
   ctaLabel: 'Continue',
 }
@@ -105,7 +66,6 @@ export const stepThreeData = {
   startLabel: 'CAREER BREAK STARTED',
   returnLabel: 'PLANNING TO RETURN',
   reasonsLabel: 'What led to your break?',
-  reasons: ['Caregiving', 'Personal reasons', 'Health & wellbeing', 'Further study', 'Relocation', 'Other', 'Prefer not to say'],
   otherReasonPlaceholder: 'Tell us in your own words...',
   note: 'We use these dates to show what changed in your field while you were away.',
   invalidRangeMessage: 'Your planning-to-return year must be the same as or after your career break start year.',
@@ -118,40 +78,33 @@ export const sidePhoto = {
   caption: 'women in tech have taken a career break',
 }
 
-// Step 4 — "Skill Relevance Map": what's still relevant + new horizons.
-// Current in-demand skills, keyed by previous IT role. Only a couple of
-// roles have mock data — any other role falls back to the
-// "unavailable for this role" message (AC 2.2.1's exception path).
-export const horizonsByRole = {
-  'Software Engineer': [
-    'Remote collaboration',
-    'GitHub Copilot',
-    'TypeScript',
-    'Cloud-native',
-    'AI-assisted tools',
-    'React / Next.js',
-    'Docker / K8s',
-    'Modern security',
-    'LLM APIs',
-  ],
-  'Data Analyst': ['Python', 'Cloud-native', 'AI-assisted tools', 'Data visualisation', 'LLM APIs'],
-}
-
+// Step 4 — "Skill Relevance Map". Skill-to-career-area connections come
+// from the real backend (GET /career-translation) — only static screen
+// copy lives here.
 export const stepFourData = {
   eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
   heading: 'Your experience is still your greatest asset.',
   subheading: 'See what remains relevant and what you could explore.',
-  ownedTag: 'Still relevant',
-  ownedSummary: 'These skills remain relevant to your role.',
-  relevanceNote: (role) => `Currently in demand for ${role} roles.`,
-  ownedNote: 'You recorded this in your experience.',
-  newNote: 'Not recorded in your experience yet.',
-  unavailableMessage: 'Current skill demand information is unavailable for this role.',
-  alignedMessage: "You're already aligned with the current skill demand for your selected role.",
+  ownedSummary: 'These are the skills you are bringing back.',
+  ownedLabel: '● SKILLS YOU BRING BACK',
+  areasLabel: '○ CONNECTED CAREER AREAS',
+  noAreasMessage: 'No career-area connections found for your recorded skills yet.',
+  skillNoAreaNote: 'Not currently mapped to a specific career area.',
   ctaLabel: 'Define My Direction',
 }
 
 // Step 5 — "Your Direction": pace + areas to explore + one to try first.
+// Return-readiness options and career areas come from the backend
+// catalogue (GET /catalogue/return-statuses, /career-areas); captions below
+// are local flavour text keyed by the backend's option id, since the
+// catalogue only provides a label.
+export const paceCaptions = {
+  ready: 'I am actively exploring roles now.',
+  preparing: 'I am rebuilding confidence and updating my skills.',
+  planning_soon: 'I am getting ready for my next opportunity.',
+  not_sure: 'I am exploring what is possible for me.',
+}
+
 export const stepFiveData = {
   eyebrow: 'STEP 05 · YOUR DIRECTION',
   heading: 'Your direction from here.',
@@ -159,25 +112,8 @@ export const stepFiveData = {
   journeyLabel: 'YOUR JOURNEY SO FAR',
   paceQuestion: 'Where are you now?',
   paceSubtext: 'Choose the pace that feels right for you. There is no wrong answer.',
-  paceOptions: [
-    { title: 'I am ready to return', caption: 'I am actively exploring roles now.' },
-    { title: 'I am preparing to return', caption: 'I am rebuilding confidence and updating my skills.' },
-    { title: 'I am planning to return soon', caption: 'I am getting ready for my next opportunity.' },
-    { title: 'I am not sure yet', caption: 'I am exploring what is possible for me.' },
-  ],
-  exploreQuestion: 'What would you like to explore next?',
-  exploreSubtext: 'Select everything that interests you, even loosely.',
-  exploreAreas: [
-    'Software Engineering',
-    'Data & Analytics',
-    'Cloud & DevOps',
-    'AI-assisted Development',
-    'Product & Project Management',
-    'Testing & Quality',
-    'Technical Leadership',
-  ],
-  tryQuestion: 'Choose one area to try first',
-  trySubtext: 'We will put you into a real workplace scenario for the area you choose.',
+  areaQuestion: 'Which area would you like to explore?',
+  areaSubtext: 'We will put you into a real workplace scenario for the area you choose.',
   noteTitle: 'You choose the pace.',
   noteBody: 'You are building on experience you already have, not starting from nothing.',
   ctaLabel: 'Try a Workplace Scenario',

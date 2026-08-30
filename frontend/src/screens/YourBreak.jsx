@@ -1,40 +1,74 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
-import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
+import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
 
-export default function YourBreak() {
-  const [profile] = useState(getOnboardingProfile)
-  const isKnownReason = profile.breakReason && stepThreeData.reasons.includes(profile.breakReason)
+// The backend stores full ISO dates; the UI only asks for a year (matching
+// the approved design), so a break/return is always saved as 1 January of
+// the chosen year.
+const yearToDate = (year) => (year ? `${year}-01-01` : null)
+const dateToYear = (date) => (date ? date.slice(0, 4) : '')
 
-  // Restores prior answers if the user navigated back to fix something.
-  const [startYear, setStartYear] = useState(profile.breakStartYear ?? '')
-  const [returnYear, setReturnYear] = useState(profile.breakReturnYear ?? '')
-  // Single-select — choosing a reason replaces the previous one.
-  const [reason, setReason] = useState(isKnownReason ? profile.breakReason : profile.breakReason ? 'Other' : null)
-  const [otherReasonText, setOtherReasonText] = useState(isKnownReason ? '' : (profile.breakReason ?? ''))
+export default function YourBreak() {
+  const [loading, setLoading] = useState(true)
+  const [reasons, setReasons] = useState([])
+
+  const [startYear, setStartYear] = useState('')
+  const [returnYear, setReturnYear] = useState('')
+  const [returnUnsure, setReturnUnsure] = useState(false)
+  const [reasonId, setReasonId] = useState(null)
+  const [otherReasonText, setOtherReasonText] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      const [reasonsData, profile] = await Promise.all([api.getCatalogue('break-reasons'), api.getProfile()])
+      setReasons(reasonsData)
+      setStartYear(dateToYear(profile.break_started_on))
+      setReturnYear(dateToYear(profile.planned_return_date))
+      setReturnUnsure(profile.return_date_unsure)
+      setReasonId(profile.break_reason)
+      setOtherReasonText(profile.break_reason_other_text || '')
+      setLoading(false)
+    }
+    load()
+  }, [])
 
   const start = Number(startYear)
   const end = Number(returnYear)
-  const bothSelected = !!startYear && !!returnYear
-  const isValidRange = bothSelected && end >= start
-  const duration = isValidRange ? end - start : null
-  const timelineYears = isValidRange ? Array.from({ length: duration + 1 }, (_, i) => start + i) : []
+  const bothSelected = !!startYear && (returnUnsure || !!returnYear)
+  const isValidRange = bothSelected && (returnUnsure || end >= start)
+  const duration = isValidRange && !returnUnsure ? end - start : null
+  const timelineYears = duration != null ? Array.from({ length: duration + 1 }, (_, i) => start + i) : []
 
-  const finalReason = reason === 'Other' ? otherReasonText.trim() : reason
-  const canContinue = isValidRange
+  const isOtherReason = reasonId === 'other'
+  const reasonValid = !isOtherReason || !!otherReasonText.trim()
+  const canContinue = isValidRange && reasonValid
 
   let timelineMessage = ''
   if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
   else if (!isValidRange) timelineMessage = stepThreeData.invalidRangeMessage
+
+  const handleContinue = async () => {
+    await api.patchProfile({
+      break_started_on: yearToDate(startYear),
+      planned_return_date: returnUnsure ? null : yearToDate(returnYear),
+      return_date_unsure: returnUnsure,
+      break_reason: reasonId,
+      break_reason_other_text: isOtherReason ? otherReasonText.trim() : null,
+    })
+    await api.confirmProfile()
+    navigate('/skill-relevance-map')
+  }
+
+  if (loading) return <div className="yb-page" />
 
   return (
     <div className="yb-page">
@@ -58,18 +92,34 @@ export default function YourBreak() {
             </div>
             <div className="yb-year-field">
               <label className="yb-year-label">{stepThreeData.returnLabel}</label>
-              <select value={returnYear} onChange={(e) => setReturnYear(e.target.value)} className="yb-select">
+              <select
+                value={returnYear}
+                onChange={(e) => setReturnYear(e.target.value)}
+                className="yb-select"
+                disabled={returnUnsure}
+              >
                 <option value="">Select year</option>
                 {YEAR_OPTIONS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
+              <label className="yb-unsure">
+                <input
+                  type="checkbox"
+                  checked={returnUnsure}
+                  onChange={(e) => {
+                    setReturnUnsure(e.target.checked)
+                    if (e.target.checked) setReturnYear('')
+                  }}
+                />
+                I&rsquo;m not sure yet
+              </label>
             </div>
           </div>
 
           <div className="yb-timeline-card">
             <span className="yb-timeline-label">TIMELINE</span>
-            {isValidRange ? (
+            {isValidRange && !returnUnsure ? (
               <>
                 <div className="yb-timeline-ticks">
                   {timelineYears.map((y) => (
@@ -84,6 +134,8 @@ export default function YourBreak() {
                   <strong>{duration} {duration === 1 ? 'year' : 'years'}</strong>
                 </div>
               </>
+            ) : isValidRange && returnUnsure ? (
+              <p className="yb-timeline-empty">Started {startYear}. Return date to be decided.</p>
             ) : (
               <p className="yb-timeline-empty">{timelineMessage}</p>
             )}
@@ -94,22 +146,22 @@ export default function YourBreak() {
             <span className="yb-optional">Optional</span>
           </div>
           <div className="yb-reason-grid">
-            {stepThreeData.reasons.map((r) => {
-              const isActive = reason === r
+            {reasons.map((r) => {
+              const isActive = reasonId === r.id
               return (
                 <button
                   type="button"
-                  key={r}
+                  key={r.id}
                   className={`yb-reason ${isActive ? 'yb-reason--active' : ''}`}
-                  onClick={() => setReason(isActive ? null : r)}
+                  onClick={() => setReasonId(isActive ? null : r.id)}
                 >
                   {isActive && <span className="yb-reason-check">✓</span>}
-                  {r}
+                  {r.label}
                 </button>
               )
             })}
           </div>
-          {reason === 'Other' && (
+          {isOtherReason && (
             <input
               type="text"
               className="yb-other-input"
@@ -122,19 +174,11 @@ export default function YourBreak() {
 
           <p className="yb-note">{stepThreeData.note}</p>
 
-          <button
-            type="button"
-            className="yb-continue"
-            disabled={!canContinue}
-            onClick={() => {
-              saveOnboardingProfile({ breakStartYear: start, breakReturnYear: end, breakReason: finalReason || null })
-              navigate('/skill-relevance-map')
-            }}
-          >
+          <button type="button" className="yb-continue" disabled={!canContinue} onClick={handleContinue}>
             {stepThreeData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
-          {!canContinue && <p className="yb-hint">{timelineMessage}</p>}
+          {!canContinue && <p className="yb-hint">{!reasonValid ? 'Please describe your reason.' : timelineMessage}</p>}
         </div>
       </main>
 

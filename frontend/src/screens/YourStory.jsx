@@ -41,10 +41,12 @@ export default function YourStory() {
     load()
   }, [])
 
+  // Capped to 10 - the real catalogue can run into the dozens, and a search
+  // narrows it down further if the role isn't in the first 10 shown.
   const filteredRoles = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return roles
-    return roles.filter((role) => role.label.toLowerCase().includes(query))
+    const matches = query ? roles.filter((role) => role.label.toLowerCase().includes(query)) : roles
+    return matches.slice(0, 10)
   }, [search, roles])
 
   const selectedRole = roles.find((r) => r.id === selectedRoleId)
@@ -53,6 +55,12 @@ export default function YourStory() {
   const roleValid = isOther ? !!otherRoleText.trim() : !!selectedRoleId
   const selectedYears = experienceOptions.find((y) => y.id === selectedYearsId)
   const canContinue = roleValid && !!selectedYearsId
+
+  // Slider is index-based over the catalogue's fixed options (1, 2, 3, 5,
+  // 7, 10+ years aren't evenly spaced, so dragging steps through the list
+  // rather than a raw numeric range).
+  const yearsIndex = Math.max(0, experienceOptions.findIndex((y) => y.id === selectedYearsId))
+  const yearsPercent = experienceOptions.length > 1 ? (yearsIndex / (experienceOptions.length - 1)) * 100 : 0
 
   let hint = ''
   if (!selectedRoleId) hint = 'Select a role to continue.'
@@ -127,25 +135,36 @@ export default function YourStory() {
           </section>
 
           <section className="ys-question">
-            <h2 className="ys-question-label">{stepOneData.experienceQuestion}</h2>
-            <div className="ys-role-grid">
-              {experienceOptions.map((option) => {
-                const isActive = option.id === selectedYearsId
-                return (
-                  <button
-                    type="button"
-                    key={option.id}
-                    className={`ys-role-card ${isActive ? 'ys-role-card--active' : ''}`}
-                    onClick={() => setSelectedYearsId(option.id)}
-                    aria-pressed={isActive}
-                  >
-                    {option.label}
-                    <span className={`ys-role-radio ${isActive ? 'ys-role-radio--active' : ''}`}>
-                      {isActive && <CheckIcon size={11} />}
-                    </span>
-                  </button>
-                )
-              })}
+            <div className="ys-slider-card">
+              <div className="ys-slider-header">
+                <h2 className="ys-question-label">{stepOneData.experienceQuestion}</h2>
+                <span className="ys-slider-value">
+                  {selectedYears ? <strong>{selectedYears.label}</strong> : <span className="ys-slider-hint">Drag to select</span>}
+                </span>
+              </div>
+
+              <div className="ys-slider-track-wrap">
+                {selectedYears && (
+                  <span className="ys-slider-tooltip" style={{ left: `${yearsPercent}%` }}>
+                    {selectedYears.label}
+                  </span>
+                )}
+                <input
+                  type="range"
+                  className="ys-slider-input"
+                  style={{ '--percent': `${yearsPercent}%` }}
+                  min={0}
+                  max={Math.max(0, experienceOptions.length - 1)}
+                  step={1}
+                  value={yearsIndex}
+                  onChange={(e) => setSelectedYearsId(experienceOptions[Number(e.target.value)]?.id)}
+                />
+              </div>
+
+              <div className="ys-slider-labels">
+                <span>{experienceOptions[0]?.label}</span>
+                <span>{experienceOptions[experienceOptions.length - 1]?.label}</span>
+              </div>
             </div>
           </section>
 

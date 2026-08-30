@@ -2,7 +2,9 @@
 // Handles the anonymous-session token and the standard error envelope
 // ({ error: { code, message, details } }) in one place.
 
-const API_BASE = 'http://localhost:8000/api/v1'
+// 127.0.0.1, not "localhost" - resolving "localhost" adds a ~2s IPv6-then-
+// fallback delay on some Windows setups; 127.0.0.1 skips that entirely.
+const API_BASE = 'http://127.0.0.1:8000/api/v1'
 const TOKEN_KEY = 'ctm_session_token'
 
 function getToken() {

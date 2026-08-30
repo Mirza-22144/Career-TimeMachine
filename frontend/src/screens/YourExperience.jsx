@@ -15,14 +15,19 @@ import { CheckIcon, ArrowRightIcon } from '../components/icons'
  */
 export default function YourExperience() {
   const [profile] = useState(getOnboardingProfile)
+  const savedSkills = profile.skills || []
+  const savedResponsibilities = profile.responsibilities || []
 
-  const [selectedSkills, setSelectedSkills] = useState([])
-  const [customSkills, setCustomSkills] = useState([])
+  // Restores prior answers if the user navigated back to fix something.
+  const [selectedSkills, setSelectedSkills] = useState(savedSkills)
+  const [customSkills, setCustomSkills] = useState(savedSkills.filter((s) => !stepTwoData.skills.includes(s)))
   const [isAddingSkill, setIsAddingSkill] = useState(false)
   const [skillDraft, setSkillDraft] = useState('')
 
-  const [selectedResponsibilities, setSelectedResponsibilities] = useState([])
-  const [customResponsibilities, setCustomResponsibilities] = useState([])
+  const [selectedResponsibilities, setSelectedResponsibilities] = useState(savedResponsibilities)
+  const [customResponsibilities, setCustomResponsibilities] = useState(
+    savedResponsibilities.filter((r) => !stepTwoData.responsibilities.includes(r)),
+  )
   const [isAddingResponsibility, setIsAddingResponsibility] = useState(false)
   const [responsibilityDraft, setResponsibilityDraft] = useState('')
 

@@ -4,7 +4,7 @@ import OnboardingSidebar from '../components/OnboardingSidebar'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
-import { saveOnboardingProfile } from '../onboardingState.js'
+import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
@@ -12,9 +12,11 @@ const CURRENT_YEAR = new Date().getFullYear()
 const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
 
 export default function YourBreak() {
-  const [startYear, setStartYear] = useState('')
-  const [returnYear, setReturnYear] = useState('')
-  const [reasons, setReasons] = useState([])
+  const [profile] = useState(getOnboardingProfile)
+  // Restores prior answers if the user navigated back to fix something.
+  const [startYear, setStartYear] = useState(profile.breakStartYear ?? '')
+  const [returnYear, setReturnYear] = useState(profile.breakReturnYear ?? '')
+  const [reasons, setReasons] = useState(profile.breakReasons ?? [])
 
   const toggleReason = (reason) => {
     setReasons((prev) => (prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason]))

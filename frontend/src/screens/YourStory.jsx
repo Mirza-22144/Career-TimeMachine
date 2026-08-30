@@ -5,7 +5,7 @@ import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, buildReflectionText } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
 import { navigate } from '../navigate.js'
-import { saveOnboardingProfile } from '../onboardingState.js'
+import { getOnboardingProfile, saveOnboardingProfile } from '../onboardingState.js'
 
 /**
  * "Your Story" — step 1 of the 5-step onboarding wizard shown after the
@@ -16,13 +16,15 @@ import { saveOnboardingProfile } from '../onboardingState.js'
  * interactive rather than fixed.
  */
 export default function YourStory() {
+  const [profile] = useState(getOnboardingProfile)
   const [search, setSearch] = useState('')
   // Single-select for this iteration — clicking a role replaces the
-  // previous selection rather than adding to it.
-  const [selectedRole, setSelectedRole] = useState(null)
+  // previous selection rather than adding to it. Restores a prior answer if
+  // the user navigated back to fix something.
+  const [selectedRole, setSelectedRole] = useState(profile.role ?? null)
   // Rests at the minimum rather than a guessed midpoint, so nothing reads
   // as pre-selected before the user actually drags the slider.
-  const [years, setYears] = useState(stepOneData.minYears)
+  const [years, setYears] = useState(profile.years ?? stepOneData.minYears)
 
   const filteredRoles = useMemo(() => {
     const query = search.trim().toLowerCase()

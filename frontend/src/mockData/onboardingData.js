@@ -5,11 +5,11 @@
 // Steps shown in the wizard's sidebar. Only steps 1-4's content exists so
 // far; step 5 renders as a pending placeholder until its design arrives.
 export const onboardingSteps = [
-  { id: 1, title: 'Your Story', subtitle: 'Where you started' },
-  { id: 2, title: 'Your Experience', subtitle: 'What you built' },
-  { id: 3, title: 'Your Break', subtitle: 'What changed' },
-  { id: 4, title: 'Skill Relevance Map', subtitle: 'What is relevant now' },
-  { id: 5, title: 'Your Direction', subtitle: 'Where you want to go' },
+  { id: 1, title: 'Your Story', subtitle: 'Where you started', path: '/your-story' },
+  { id: 2, title: 'Your Experience', subtitle: 'What you built', path: '/your-experience' },
+  { id: 3, title: 'Your Break', subtitle: 'What changed', path: '/your-break' },
+  { id: 4, title: 'Skill Relevance Map', subtitle: 'What is relevant now', path: '/skill-relevance-map' },
+  { id: 5, title: 'Your Direction', subtitle: 'Where you want to go', path: '/your-direction' },
 ]
 
 export const sidebarBrand = {

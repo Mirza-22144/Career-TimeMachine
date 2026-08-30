@@ -7,9 +7,10 @@ import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
 export default function YourDirection() {
   const [profile] = useState(getOnboardingProfile)
-  const [pace, setPace] = useState(null)
-  const [exploreAreas, setExploreAreas] = useState([])
-  const [tryFirst, setTryFirst] = useState(null)
+  // Restores prior answers if the user navigated back to fix something.
+  const [pace, setPace] = useState(profile.pace ?? null)
+  const [exploreAreas, setExploreAreas] = useState(profile.exploreAreas ?? [])
+  const [tryFirst, setTryFirst] = useState(profile.tryFirst ?? null)
 
   const skills = profile.skills || []
   const responsibilities = profile.responsibilities || []

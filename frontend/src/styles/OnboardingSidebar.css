@@ -87,6 +87,19 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.ob-step--done {
+  cursor: pointer;
+}
+
+.ob-step--done:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .ob-step-index {

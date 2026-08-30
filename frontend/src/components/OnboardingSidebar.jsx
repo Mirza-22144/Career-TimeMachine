@@ -1,6 +1,7 @@
 import '../styles/OnboardingSidebar.css'
 import logoEmblem from '../assets/Logo.png'
 import { onboardingSteps, sidebarBrand, sidebarStat, sidebarQuote } from '../mockData/onboardingData'
+import { navigate } from '../navigate.js'
 import { CheckIcon } from './icons'
 
 // Dark left-hand panel shared by every step of the onboarding wizard: brand
@@ -29,10 +30,13 @@ export default function OnboardingSidebar({ currentStep, backgroundImage, showPh
             {onboardingSteps.map((step) => {
               const isActive = step.id === currentStep
               const isDone = step.id < currentStep
+              const Tag = isDone ? 'button' : 'div'
               return (
-                <div
+                <Tag
                   key={step.id}
+                  type={isDone ? 'button' : undefined}
                   className={`ob-step ${isActive ? 'ob-step--active' : ''} ${isDone ? 'ob-step--done' : ''}`}
+                  onClick={isDone ? () => navigate(step.path) : undefined}
                 >
                   <span className="ob-step-index">
                     {isDone ? <CheckIcon size={12} /> : String(step.id).padStart(2, '0')}
@@ -41,7 +45,7 @@ export default function OnboardingSidebar({ currentStep, backgroundImage, showPh
                     <span className="ob-step-title">{step.title}</span>
                     <span className="ob-step-subtitle">{step.subtitle}</span>
                   </span>
-                </div>
+                </Tag>
               )
             })}
           </nav>

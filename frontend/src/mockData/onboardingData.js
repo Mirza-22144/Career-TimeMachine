@@ -2,8 +2,8 @@
 // Landing screen's "Enter My Journey" CTA). This is a real data-collection
 // flow, not a demo preview — its inputs stay fully interactive.
 
-// Steps shown in the wizard's sidebar. Only steps 1-2's content exists so
-// far; steps 3-5 render as pending placeholders until their designs arrive.
+// Steps shown in the wizard's sidebar. Only steps 1-4's content exists so
+// far; step 5 renders as a pending placeholder until its design arrives.
 export const onboardingSteps = [
   { id: 1, title: 'Your Story', subtitle: 'Where you started' },
   { id: 2, title: 'Your Experience', subtitle: 'What you built' },
@@ -94,4 +94,51 @@ export const stepTwoData = {
   ],
   translateNote: 'We will translate this into the language employers use today.',
   ctaLabel: 'Continue',
+}
+
+// Step 3 — "Your Break": when the break started/ends + optional reasons.
+export const stepThreeData = {
+  eyebrow: 'STEP 03 · YOUR BREAK',
+  heading: 'Then life took you somewhere different.',
+  subheading: 'When did your career break begin, and when are you planning to return?',
+  startLabel: 'CAREER BREAK STARTED',
+  returnLabel: 'PLANNING TO RETURN',
+  reasonsLabel: 'What led to your break?',
+  reasons: ['Caregiving', 'Personal reasons', 'Health & wellbeing', 'Further study', 'Relocation', 'Other', 'Prefer not to say'],
+  note: 'We use these dates to show what changed in your field while you were away.',
+  ctaLabel: 'See My Skills Map',
+}
+
+export const sidePhoto = {
+  label: 'YOU ARE IN GOOD COMPANY',
+  value: '1 in 4',
+  caption: 'women in tech have taken a career break',
+}
+
+// Step 4 — "Skill Relevance Map": what's still relevant + new horizons.
+export const stepFourData = {
+  eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
+  heading: 'Your experience is still your greatest asset.',
+  subheading: 'See what remains relevant and what you could explore.',
+  newHorizons: [
+    'Remote collaboration',
+    'GitHub Copilot',
+    'TypeScript',
+    'Cloud-native',
+    'AI-assisted tools',
+    'React / Next.js',
+    'Docker / K8s',
+    'Modern security',
+    'LLM APIs',
+  ],
+  skillNotes: {
+    Java: 'Currently in demand for your role.',
+    Python: 'Widely used across modern stacks.',
+    SQL: 'Still core to most backend systems.',
+    'REST APIs': 'A foundation for most integrations today.',
+    Git: 'Still the standard for version control.',
+    Testing: 'Increasingly automated, still essential.',
+    Agile: 'Still the common way teams ship software.',
+  },
+  ctaLabel: 'Define My Direction',
 }

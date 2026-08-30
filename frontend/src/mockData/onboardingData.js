@@ -2,8 +2,8 @@
 // Landing screen's "Enter My Journey" CTA). This is a real data-collection
 // flow, not a demo preview — its inputs stay fully interactive.
 
-// Steps shown in the wizard's sidebar. Only step 1's content exists so far;
-// steps 2-5 render as pending placeholders until their designs arrive.
+// Steps shown in the wizard's sidebar. Only steps 1-2's content exists so
+// far; steps 3-5 render as pending placeholders until their designs arrive.
 export const onboardingSteps = [
   { id: 1, title: 'Your Story', subtitle: 'Where you started' },
   { id: 2, title: 'Your Experience', subtitle: 'What you built' },
@@ -52,4 +52,46 @@ export const stepOneData = {
 export function buildReflectionText(role, years) {
   const yearsLabel = years >= stepOneData.maxYears ? `${years}+` : `${years}`
   return `A ${role} with ${yearsLabel} years of experience. That is a significant professional foundation.`
+}
+
+// Step 2 — "Your Experience": technologies/tools used + main
+// responsibilities. Nothing is pre-selected — the user builds this list
+// themselves.
+export const stepTwoData = {
+  eyebrow: 'STEP 02 · YOUR EXPERIENCE',
+  heading: 'What do you remember working with?',
+  subheading: 'You do not need to remember everything. Start with what feels familiar.',
+  skillsLabel: 'Technologies and tools',
+  skills: [
+    'Java',
+    'Python',
+    'JavaScript',
+    'TypeScript',
+    'SQL',
+    'REST APIs',
+    'Git',
+    'AWS',
+    'Azure',
+    'Docker',
+    'Testing',
+    'Agile',
+    'Data Analysis',
+    'Kubernetes',
+    'React',
+    'Node.js',
+  ],
+  skillsQuote: 'There is no need to remember everything.',
+  responsibilitiesLabel: 'Main responsibilities',
+  responsibilities: [
+    'Backend development',
+    'API design',
+    'Debugging & troubleshooting',
+    'Testing & QA',
+    'Code review',
+    'System design',
+    'Team collaboration',
+    'Project delivery',
+  ],
+  translateNote: 'We will translate this into the language employers use today.',
+  ctaLabel: 'Continue',
 }

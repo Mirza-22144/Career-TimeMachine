@@ -13,6 +13,7 @@ def read_career_translation(
     session: AnonSession = Depends(get_current_session),
     service: CareerTranslationService = Depends(get_career_translation_service),
 ):
-    """AC 2.2.1: skills the user brings back vs current in-demand skills
-    ('New Horizons') for her selected role."""
+    """Return the Skill Relevance Map for step 4 of the wizard: skills the
+    user brings back vs current in-demand skills ('New Horizons') for her
+    selected role."""
     return service.build_for_session(session.token)

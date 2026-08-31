@@ -1,9 +1,9 @@
 from app.repositories.interfaces.skill_mapping_repository import SkillMappingRepository
 
 
-# PROVISIONAL / MOCK deterministic mappings for Iteration 1.
-# Only catalogue skill IDs appear here. Custom user skills intentionally have
-# no mappings because they are not stable catalogue identifiers.
+# Placeholder skill-to-career-area links, picked by hand for now.
+# Only catalogue skill ids appear here. Custom skills the user typed in
+# have no mapping since they have no stable id to match against.
 _SKILL_TO_CAREER_AREA_IDS: dict[str, list[str]] = {
     "python": ["data_analytics_basics"],
     "rest_apis": ["cloud_native_engineering"],
@@ -15,13 +15,10 @@ _SKILL_TO_CAREER_AREA_IDS: dict[str, list[str]] = {
 
 
 class MemorySkillMappingRepository(SkillMappingRepository):
-    """DEVELOPMENT-ONLY skill mapping store.
-
-    These mappings are hand-curated placeholders so the frontend can build the
-    flow before the data-prep handover. They are deterministic and make no AI
-    calls.
-    """
+    """Skill mapping store backed by the hand-picked list above, used until
+    real skill-to-career-area data is loaded. Not currently used by any
+    route - kept in case a future feature needs this kind of mapping."""
 
     def get_connected_areas(self, skill_id: str) -> list[str]:
-        """Return mapped career-area IDs, or [] when no mapping exists."""
+        """Return the career-area ids linked to a skill, or [] if none."""
         return _SKILL_TO_CAREER_AREA_IDS.get(skill_id, [])

@@ -6,8 +6,8 @@ from app.repositories.interfaces.profile_repository import ProfileRepository
 
 @dataclass
 class OwnedSkill:
-    """A recorded skill, flagged 'still relevant' if it's in_demand for the
-    user's previous role (AC 2.1.2 / 2.2.1) - not a future-demand claim."""
+    """A recorded skill, marked 'still relevant' if it is in demand for the
+    user's previous role. This is not a claim about future demand."""
 
     id: str
     label: str
@@ -22,10 +22,10 @@ class NewHorizonSkill:
 
 @dataclass
 class SkillRelevanceMap:
-    """AC 2.2.1: 'Skills You Bring Back' vs 'New Horizons' - current
-    in-demand skills for the user's role that she hasn't recorded. This
-    compares skills against skills for the SAME role; it is not a
-    skill-to-career-area mapping."""
+    """Compares the user's recorded skills against the current in-demand
+    skills for the same role. 'Skills You Bring Back' are what she already
+    has; 'New Horizons' are in-demand skills for that role she has not
+    recorded. This is not a skill-to-career-area mapping."""
 
     role_label: str | None
     role_data_available: bool
@@ -35,12 +35,16 @@ class SkillRelevanceMap:
 
 
 class CareerTranslationService:
+    """Builds the Skill Relevance Map shown in step 4 of the wizard."""
+
     def __init__(self, profiles: ProfileRepository, catalogue: CatalogueRepository) -> None:
         # Depend on interfaces so each backing store can be replaced later.
         self.profiles = profiles
         self.catalogue = catalogue
 
     def build_for_session(self, session_token: str) -> SkillRelevanceMap:
+        """Build the skill relevance map for one session. Used by the
+        career-translation route."""
         profile = self.profiles.get_by_session_token(session_token)
         if profile is None or profile.role_id is None:
             return SkillRelevanceMap(role_label=None, role_data_available=False)
@@ -51,8 +55,8 @@ class CareerTranslationService:
         )
         role_skills = self.catalogue.get_skills_for_role(profile.role_id)
         if not role_skills:
-            # AC 2.2.1 exception: "Current skill demand information is
-            # unavailable for this role."
+            # No skill data for this role - the frontend shows "Current
+            # skill demand information is unavailable for this role."
             return SkillRelevanceMap(
                 role_label=role_label,
                 role_data_available=False,

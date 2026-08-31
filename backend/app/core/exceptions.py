@@ -6,7 +6,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-# Keep this local to avoid framework constant renames affecting our code.
+# Kept as a local constant so a future FastAPI rename does not break this file.
 REQUEST_VALIDATION_STATUS_CODE = 422
 
 

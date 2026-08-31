@@ -10,6 +10,8 @@ from app.api.routes import (
     profile,
 )
 
+# Combines every route module into one router. main.py mounts this under
+# the /api/v1 prefix.
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
 api_router.include_router(anonymous_sessions.router)

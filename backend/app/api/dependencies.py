@@ -19,8 +19,8 @@ from app.services.session_service import SessionService
 _session_repository = MemorySessionRepository()
 _profile_repository = MemoryProfileRepository()
 
-# Roles/skills use the real Cloud SQL data once DB_* env vars are set
-# (DATA_HANDOVER.md); falls back to the curated mock otherwise.
+# Roles and skills use the real database once the DB_* env vars are set;
+# falls back to the placeholder list otherwise.
 _catalogue_repository: CatalogueRepository
 if HAS_DATABASE:
     from app.repositories.postgres.postgres_catalogue_repository import (
@@ -43,7 +43,7 @@ def get_current_session(
     service: SessionService = Depends(get_session_service),
 ) -> AnonSession:
     """Turn the header token into a real session, or reject the request.
-    NOTE: error shape is unified in Phase 14; HTTPException is fine for now."""
+    Used by every protected route to identify who is calling."""
     if x_session_token is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing session token")
     session = service.get_current(x_session_token)

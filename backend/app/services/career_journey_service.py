@@ -68,10 +68,6 @@ class CareerJourneyService:
                 detail="profile not confirmed",
             )
 
-        # Phase 13 will add return_readiness to Profile. getattr keeps this
-        # Phase 11 endpoint returning null until that field exists and is set.
-        return_readiness = getattr(profile, "return_readiness", None)
-
         return CareerJourney(
             previous_role=self._selection_or_none("roles", profile.role_id),
             years_experience=self._selection_or_none(
@@ -86,7 +82,7 @@ class CareerJourneyService:
             ),
             current_return_status=self._selection_or_none(
                 "return-statuses",
-                return_readiness,
+                profile.return_readiness,
             ),
             selected_skills=SelectedSkillsSummary(
                 catalogue_skills=[

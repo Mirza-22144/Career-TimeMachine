@@ -10,6 +10,7 @@ DB_PORT = os.environ.get("DB_PORT", "5432")
 DB_NAME = os.environ.get("DB_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_SSLMODE = os.environ.get("DB_SSLMODE", "prefer")
 
 # True once real connection details are present, so the app can fall back
 # to the in-memory repositories when they're not (e.g. a fresh checkout with

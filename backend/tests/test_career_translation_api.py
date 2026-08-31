@@ -12,8 +12,8 @@ def _new_session_headers() -> dict[str, str]:
     return {"X-Session-Token": response.json()["token"]}
 
 
-# AC 2.2.1: compares recorded skills against current in-demand skills for
-# the user's previous role ("New Horizons"), not a skill-to-area mapping.
+# Compares recorded skills against current in-demand skills for the user's
+# previous role ("New Horizons"), not a skill-to-area mapping.
 
 
 def test_career_translation_marks_in_demand_owned_skills_as_still_relevant():

@@ -68,12 +68,12 @@ class ProfileService:
         return self.profiles.save(profile)
 
     def confirm_profile(self, session_token: str) -> Profile:
-        """Confirm the profile if all required Phase 10 fields are complete."""
+        """Confirm the profile if all required fields are complete."""
         profile = self.get_or_create(session_token)
         missing = self._missing_confirmation_fields(profile)
 
         if missing:
-            # Phase 14 will wrap errors in the final standard envelope.
+            # core/exceptions.py turns this into the standard error envelope.
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={

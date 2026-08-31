@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.router import api_router  # import the API router
+from app.core.config import CORS_ORIGINS
 from app.core.exceptions import (
     http_exception_handler,
     request_validation_exception_handler,
@@ -11,13 +12,13 @@ from app.core.exceptions import (
 
 app = FastAPI(title="Career TimeMachine API")
 
-# Allows the frontend dev server (Vite, a different origin/port) to call
-# this API from the browser. Without this, every request from the React
-# app is blocked by the browser's CORS policy before it even reaches here
-# (curl/Postman aren't affected, which is why this was easy to miss).
+# Allows the frontend (a different origin/port) to call this API from the
+# browser. Without this, every request from the React app is blocked by
+# the browser's CORS policy before it even reaches here (curl/Postman
+# aren't affected, which is why this was easy to miss).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

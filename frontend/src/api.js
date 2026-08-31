@@ -2,9 +2,11 @@
 // Handles the anonymous-session token and the standard error envelope
 // ({ error: { code, message, details } }) in one place.
 
-// 127.0.0.1, not "localhost" - resolving "localhost" adds a ~2s IPv6-then-
-// fallback delay on some Windows setups; 127.0.0.1 skips that entirely.
-const API_BASE = 'http://127.0.0.1:8000/api/v1'
+// Set VITE_API_BASE_URL at build time to point at a deployed backend (see
+// DEPLOYMENT.md). Falls back to local dev otherwise - 127.0.0.1, not
+// "localhost", since resolving "localhost" adds a ~2s IPv6-then-fallback
+// delay on some Windows setups; 127.0.0.1 skips that entirely.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1'
 const TOKEN_KEY = 'ctm_session_token'
 
 // Reads the saved session token, if any. Used by request() below to attach

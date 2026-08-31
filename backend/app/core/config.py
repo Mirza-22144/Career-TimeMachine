@@ -12,6 +12,12 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_SSLMODE = os.environ.get("DB_SSLMODE", "prefer")
 
+# Comma-separated list of frontend origins allowed to call this API. Local
+# dev origins are always included; add the deployed frontend URL through
+# the CORS_ORIGINS env var (see DEPLOYMENT.md) rather than editing code.
+_extra_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+CORS_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", *_extra_origins]
+
 # True once real connection details are present, so the app can fall back
 # to the in-memory repositories when they're not (e.g. a fresh checkout with
 # no .env yet).

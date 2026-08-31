@@ -6,12 +6,13 @@ import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
 
-// Real per-role in-demand skill lists can run long; only the top slice
-// shows by default, with a "Show all" control for the rest.
+// Only this many "New Horizons" show by default; "Show all" reveals the rest.
 const DEFAULT_HORIZON_COUNT = 12
 
-// Draws a line from each pill to the center card, measured from actual
-// rendered positions (works for any number of skill/horizon pills).
+// Measures the pill and center-card positions inside the map, then uses
+// those positions to draw the connecting lines. Runs again on resize and
+// once more right after load, in case fonts finish loading late and shift
+// things around.
 function useFanLines(containerRef, deps) {
   const [state, setState] = useState({ lines: [], top: null, bottom: null })
 
@@ -39,7 +40,7 @@ function useFanLines(containerRef, deps) {
     }
 
     measure()
-    const retry = setTimeout(measure, 300) // catches late web-font reflow
+    const retry = setTimeout(measure, 300)
     window.addEventListener('resize', measure)
     return () => {
       clearTimeout(retry)
@@ -50,6 +51,9 @@ function useFanLines(containerRef, deps) {
   return state
 }
 
+// Step 4 of the onboarding wizard, shown at the "/skill-relevance-map" URL.
+// Shows the skills the user already has next to skills the role needs,
+// and lets the user click each one to see more detail.
 export default function SkillRelevanceMap() {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
@@ -72,6 +76,8 @@ export default function SkillRelevanceMap() {
 
   if (loading) return <div className="srm-page" />
 
+  // Custom skills carry no relevance status, so they're marked separately
+  // from catalogue skills for the detail card below.
   const ownedSkills = [
     ...data.owned_skills,
     ...data.custom_skills.map((label) => ({ id: label, label, still_relevant: null, custom: true })),
@@ -80,7 +86,7 @@ export default function SkillRelevanceMap() {
   const visibleHorizons = showAllHorizons ? horizons : horizons.slice(0, DEFAULT_HORIZON_COUNT)
   const hasMoreHorizons = horizons.length > DEFAULT_HORIZON_COUNT
 
-  const findOwned = (name) => ownedSkills.find((s) => s.label === name)
+  const selectedOwnedSkill = active?.type === 'skill' ? ownedSkills.find((s) => s.label === active.name) : null
 
   return (
     <div className="srm-page">
@@ -170,24 +176,20 @@ export default function SkillRelevanceMap() {
                 <span className="srm-section-label srm-section-label--skills">{stepFourData.ownedLabel}</span>
               </div>
 
-              {active?.type === 'skill' &&
-                (() => {
-                  const skill = findOwned(active.name)
-                  return (
-                    <div className="srm-detail-card">
-                      <span className="srm-detail-eyebrow">{stepFourData.ownedLabel}</span>
-                      <h3 className="srm-detail-title">{active.name}</h3>
-                      <hr className="srm-detail-divider" />
-                      {skill?.custom ? (
-                        <p className="srm-detail-note">{stepFourData.customSkillNote}</p>
-                      ) : skill?.still_relevant ? (
-                        <p className="srm-detail-note">✓ {stepFourData.stillRelevantTag}</p>
-                      ) : (
-                        <p className="srm-detail-note">{stepFourData.notInDemandNote}</p>
-                      )}
-                    </div>
-                  )
-                })()}
+              {selectedOwnedSkill && (
+                <div className="srm-detail-card">
+                  <span className="srm-detail-eyebrow">{stepFourData.ownedLabel}</span>
+                  <h3 className="srm-detail-title">{active.name}</h3>
+                  <hr className="srm-detail-divider" />
+                  {selectedOwnedSkill.custom ? (
+                    <p className="srm-detail-note">{stepFourData.customSkillNote}</p>
+                  ) : selectedOwnedSkill.still_relevant ? (
+                    <p className="srm-detail-note">✓ {stepFourData.stillRelevantTag}</p>
+                  ) : (
+                    <p className="srm-detail-note">{stepFourData.notInDemandNote}</p>
+                  )}
+                </div>
+              )}
 
               {active?.type === 'horizon' && (
                 <div className="srm-detail-card">

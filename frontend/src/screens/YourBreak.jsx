@@ -28,6 +28,9 @@ const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
 const yearToDate = (year) => (year ? `${year}-01-01` : null)
 const dateToYear = (date) => (date ? date.slice(0, 4) : '')
 
+// Step 3 of the onboarding wizard, shown at the "/your-break" URL. Collects
+// the career break start/return years and reason, then confirms the whole
+// profile before moving on to the Skill Relevance Map.
 export default function YourBreak() {
   const [loading, setLoading] = useState(true)
   const [reasons, setReasons] = useState([])
@@ -68,6 +71,8 @@ export default function YourBreak() {
   if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
   else if (!isValidRange) timelineMessage = stepThreeData.invalidRangeMessage
 
+  // Saves the break details, confirms the profile is complete, then moves
+  // to the Skill Relevance Map. Runs when the Continue button is clicked.
   const handleContinue = async () => {
     setConfirmError('')
     try {

@@ -2,8 +2,7 @@
 // Landing screen's "Enter My Journey" CTA). This is a real data-collection
 // flow, not a demo preview — its inputs stay fully interactive.
 
-// Steps shown in the wizard's sidebar. Only steps 1-4's content exists so
-// far; step 5 renders as a pending placeholder until its design arrives.
+// Steps shown in the wizard's sidebar, in order.
 export const onboardingSteps = [
   { id: 1, title: 'Your Story', subtitle: 'Where you started', path: '/your-story' },
   { id: 2, title: 'Your Experience', subtitle: 'What you built', path: '/your-experience' },
@@ -78,10 +77,9 @@ export const sidePhoto = {
   caption: 'women in tech have taken a career break',
 }
 
-// Step 4 — "Skill Relevance Map" (AC 2.2.1): compares recorded skills
-// against current in-demand skills for the user's previous role, from the
-// real backend (GET /career-translation) — only static screen copy and the
-// AC's required exception copy live here.
+// Step 4 — "Skill Relevance Map": compares recorded skills against current
+// in-demand skills for the user's previous role. Data comes from the real
+// backend; only static screen copy and exception messages live here.
 export const stepFourData = {
   eyebrow: 'STEP 04 · SKILL RELEVANCE MAP',
   heading: 'Your experience is still your greatest asset.',
@@ -98,11 +96,10 @@ export const stepFourData = {
   ctaLabel: 'Define My Direction',
 }
 
-// Step 5 — "Your Direction": pace + areas to explore + one to try first.
-// Return-readiness options and career areas come from the backend
-// catalogue (GET /catalogue/return-statuses, /career-areas); captions below
-// are local flavour text keyed by the backend's option id, since the
-// catalogue only provides a label.
+// Step 5 — "Your Direction": pace + area to explore. Return-readiness
+// options and career areas come from the backend catalogue; captions
+// below are extra text shown per option id, since the catalogue only
+// gives a plain label.
 export const paceCaptions = {
   ready: 'I am actively exploring roles now.',
   preparing: 'I am rebuilding confidence and updating my skills.',

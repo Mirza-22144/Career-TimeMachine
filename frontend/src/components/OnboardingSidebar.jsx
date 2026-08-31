@@ -4,13 +4,13 @@ import { onboardingSteps, sidebarBrand, sidebarStat, sidebarQuote } from '../moc
 import { navigate } from '../navigate.js'
 import { CheckIcon } from './icons'
 
-// Dark left-hand panel shared by every step of the onboarding wizard: brand
-// lockup, step-by-step progress list, an optional photo panel with a stat
-// card and quote, and a progress footer.
+// Dark left-hand panel shared by every step of the onboarding wizard: logo
+// and name at the top, a step-by-step progress list, an optional photo
+// panel with a stat card and quote, and a progress bar at the bottom.
 //
-// `backgroundImage` is optional — falls back to a gradient placeholder until
-// the real photo asset is provided. `showPhoto` controls whether the photo
-// panel renders at all — only step 1's design includes it.
+// `backgroundImage` is optional — falls back to a plain gradient until a
+// real photo is set. `showPhoto` turns the photo panel on or off — only
+// step 1's design shows it.
 export default function OnboardingSidebar({ currentStep, backgroundImage, showPhoto = true }) {
   const completedCount = currentStep - 1
 

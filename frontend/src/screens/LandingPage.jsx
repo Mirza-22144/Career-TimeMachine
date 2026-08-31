@@ -33,18 +33,7 @@ import {
 } from "../components/icons";
 
 /**
- * Landing screen ("01 Landing", Figma node-id 11-93).
- *
- * Single-page flow: Navigation, Hero, and six content sections (Remember,
- * Discover, Practise, Adapt, Reflect, ePortfolio), ending in a Closing CTA
- * banner and Footer. A scroll-linked progress rail (JourneyLine) tracks
- * position through five of those sections.
- *
- * Interactivity policy: Discover is the only section a visitor can interact
- * with (hover a skill to see the future-skill areas it maps to). Every
- * other multi-option control (Practise's scenario options, Reflect's mood
- * selector) renders a fixed selection for demo purposes and does not
- * respond to clicks.
+ * First screen visitors see, shown at the root URL "/" ("01 Landing"
  */
 
 // Center point of the "Your Experience" node in the Remember section's
@@ -128,7 +117,11 @@ export default function LandingPage() {
               ),
             )}
           </div>
-          <button type="button" className="lp-btn-outline" onClick={handleEnterJourney}>
+          <button
+            type="button"
+            className="lp-btn-outline"
+            onClick={handleEnterJourney}
+          >
             {journeyCtaLabel}
           </button>
         </div>
@@ -149,8 +142,8 @@ export default function LandingPage() {
             today.
           </p>
           <p className="lp-supporting-copy">
-            Explore new possibilities, practise realistic workplace
-            situations and build confidence for your return to IT
+            Explore new possibilities, practise realistic workplace situations
+            and build confidence for your return to IT
           </p>
           <div className="lp-quote-row">
             <span className="lp-quote">
@@ -441,7 +434,9 @@ export default function LandingPage() {
                     {selectedOption.feedback.heading}
                   </span>
                 </div>
-                <p className="lp-feedback-main">{selectedOption.feedback.main}</p>
+                <p className="lp-feedback-main">
+                  {selectedOption.feedback.main}
+                </p>
                 <p className="lp-feedback-note">
                   {selectedOption.feedback.note}
                 </p>

@@ -7,19 +7,50 @@ import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
-// Real skill catalogues can run into the hundreds per role (DATA_HANDOVER.md
-// 5.1). Only the top 10 (already in_demand/hot_technology-sorted by the
-// backend) show as default suggestions; search or "+ Add skill" reach
-// anything beyond that - never a full browse list.
+// Default pill count and search/suggestion cap, so a role with hundreds of
+// linked skills never dumps a full list onto the screen.
 const DEFAULT_SUGGESTIONS = 10
 const MAX_SUGGESTIONS = 8
 
+// Open/type/commit/cancel state for a "+ Add X" chip - shared by the skill
+// and responsibility sections below, since both work the same way.
+function useTagDraft(commitValue, emptyErrorMessage) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [error, setError] = useState('')
+
+  // Updates the typed text and clears any old error.
+  const change = (value) => {
+    setDraft(value)
+    setError('')
+  }
+  // Saves the typed value (via commitValue) and closes the input, or shows
+  // an error if it was left blank.
+  const commit = () => {
+    const trimmed = draft.trim()
+    if (!trimmed) {
+      setError(emptyErrorMessage)
+      return
+    }
+    commitValue(trimmed)
+    setDraft('')
+    setIsOpen(false)
+  }
+  // Closes the input without saving anything.
+  const cancel = () => {
+    setDraft('')
+    setError('')
+    setIsOpen(false)
+  }
+
+  return { isOpen, open: () => setIsOpen(true), draft, change, error, commit, cancel }
+}
+
 /**
- * "Your Experience" — step 2. Responsibilities come from the backend
- * catalogue (GET /catalogue/responsibilities); skills depend on the role
- * chosen in step 1 (GET /catalogue/skills?role_id=...). "+ Add" entries are
- * free text unless they match a catalogue skill, saved as
- * custom_skills/custom_responsibilities.
+ * Step 2 of the onboarding wizard, shown at the "/your-experience" URL.
+ * Collects skills and responsibilities. Responsibilities come from the
+ * backend catalogue; skills depend on the role chosen in step 1, since the
+ * real catalogue is role-specific and far too large to browse flat.
  */
 export default function YourExperience() {
   const [loading, setLoading] = useState(true)
@@ -32,16 +63,10 @@ export default function YourExperience() {
 
   const [selectedSkillIds, setSelectedSkillIds] = useState([])
   const [customSkills, setCustomSkills] = useState([])
-  const [isAddingSkill, setIsAddingSkill] = useState(false)
-  const [skillDraft, setSkillDraft] = useState('')
-  const [skillError, setSkillError] = useState('')
   const [skillSearch, setSkillSearch] = useState('')
 
   const [selectedResponsibilityIds, setSelectedResponsibilityIds] = useState([])
   const [customResponsibilities, setCustomResponsibilities] = useState([])
-  const [isAddingResponsibility, setIsAddingResponsibility] = useState(false)
-  const [responsibilityDraft, setResponsibilityDraft] = useState('')
-  const [responsibilityError, setResponsibilityError] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -51,9 +76,9 @@ export default function YourExperience() {
         api.getCatalogue('experience-options'),
         api.getProfile(),
       ])
-      // Role-scoped list drives the default 10 suggestions (AC 1.2.1's
-      // "relevant" set); the full catalogue backs search/"+ Add skill" so a
-      // real skill is always findable even if it isn't linked to this role.
+      // The list for this role drives the default suggestion pills; search
+      // looks at every skill instead, so a real skill can still be found
+      // even if it isn't linked to this particular role.
       const [skills, everySkill] = await Promise.all([
         api.getSkills(profileData.role_id),
         api.getCatalogue('skills'),
@@ -73,69 +98,47 @@ export default function YourExperience() {
     load()
   }, [])
 
+  // Adds or removes a skill id from the selected list. Used when a skill
+  // pill or suggestion is clicked.
   const toggleSkill = (id) => {
     setSelectedSkillIds((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]))
   }
 
+  // Adds or removes a responsibility id from the selected list. Used when
+  // a responsibility pill is clicked.
   const toggleResponsibility = (id) => {
     setSelectedResponsibilityIds((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]))
   }
 
-  // Enter commits the draft: a catalogue match gets selected (not duplicated
-  // as free text), anything else becomes a custom skill.
-  const commitSkillDraft = () => {
-    const trimmed = skillDraft.trim()
-    if (!trimmed) {
-      setSkillError('Please enter a skill.')
-      return
-    }
+  // A typed skill that matches a real catalogue entry gets selected
+  // instead of duplicated as free text.
+  const skillDraft = useTagDraft((trimmed) => {
     const match = allSkills.find((s) => s.label.toLowerCase() === trimmed.toLowerCase())
     if (match) {
       if (!selectedSkillIds.includes(match.id)) toggleSkill(match.id)
     } else if (!customSkills.includes(trimmed)) {
       setCustomSkills((prev) => [...prev, trimmed])
     }
-    setSkillDraft('')
-    setSkillError('')
-    setIsAddingSkill(false)
-  }
+  }, 'Please enter a skill.')
 
-  const cancelSkillDraft = () => {
-    setSkillDraft('')
-    setSkillError('')
-    setIsAddingSkill(false)
-  }
+  const responsibilityDraft = useTagDraft((trimmed) => {
+    if (!customResponsibilities.includes(trimmed)) setCustomResponsibilities((prev) => [...prev, trimmed])
+  }, 'Please enter a responsibility.')
 
+  // Picks a skill from the "+ Add skill" suggestion list, then closes it.
   const selectSkillSuggestion = (skill) => {
     if (!selectedSkillIds.includes(skill.id)) toggleSkill(skill.id)
-    setSkillDraft('')
-    setSkillError('')
-    setIsAddingSkill(false)
+    skillDraft.cancel()
   }
 
+  // Picks a skill from the search box's result list, then clears the search.
   const selectSearchResult = (skill) => {
     if (!selectedSkillIds.includes(skill.id)) toggleSkill(skill.id)
     setSkillSearch('')
   }
 
-  const commitResponsibilityDraft = () => {
-    const trimmed = responsibilityDraft.trim()
-    if (!trimmed) {
-      setResponsibilityError('Please enter a responsibility.')
-      return
-    }
-    if (!customResponsibilities.includes(trimmed)) setCustomResponsibilities((prev) => [...prev, trimmed])
-    setResponsibilityDraft('')
-    setResponsibilityError('')
-    setIsAddingResponsibility(false)
-  }
-
-  const cancelResponsibilityDraft = () => {
-    setResponsibilityDraft('')
-    setResponsibilityError('')
-    setIsAddingResponsibility(false)
-  }
-
+  // Saves the chosen skills and responsibilities, then moves to step 3.
+  // Runs when the Continue button is clicked.
   const handleContinue = async () => {
     await api.patchProfile({
       skill_ids: selectedSkillIds,
@@ -148,16 +151,18 @@ export default function YourExperience() {
 
   if (loading) return <div className="ye-page" />
 
+  // Looks up a skill's display label from its id.
   const skillLabel = (id) => allSkills.find((s) => s.id === id)?.label || catalogueSkills.find((s) => s.id === id)?.label || id
+  // Looks up a responsibility's display label from its id.
   const responsibilityLabel = (id) => catalogueResponsibilities.find((r) => r.id === id)?.label || id
   const selectedSkillLabels = [...selectedSkillIds.map(skillLabel), ...customSkills]
   const selectedResponsibilityLabels = [...selectedResponsibilityIds.map(responsibilityLabel), ...customResponsibilities]
 
-  // Both search the FULL catalogue (not just this role's list) - a real
-  // skill should always be findable, even if it isn't linked to this role.
-  const skillSuggestions = isAddingSkill && skillDraft.trim()
+  // Search and the "+ Add skill" suggestions both look across every skill,
+  // not just this role's list.
+  const skillSuggestions = skillDraft.isOpen && skillDraft.draft.trim()
     ? allSkills
-        .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillDraft.trim().toLowerCase()))
+        .filter((s) => !selectedSkillIds.includes(s.id) && s.label.toLowerCase().includes(skillDraft.draft.trim().toLowerCase()))
         .slice(0, MAX_SUGGESTIONS)
     : []
   const searchResults = skillSearch.trim()
@@ -166,9 +171,8 @@ export default function YourExperience() {
         .slice(0, MAX_SUGGESTIONS)
     : []
 
-  // Default suggestion pills: top 10 catalogue skills, plus any selected
-  // skill that fell outside that top 10 (e.g. picked via search), so a
-  // selection never disappears from view.
+  // Default pills: the role's top skills, plus any selection that fell
+  // outside that top slice (e.g. picked via search), so it stays visible.
   const topSkills = catalogueSkills.slice(0, DEFAULT_SUGGESTIONS)
   const extraSelectedSkills = selectedSkillIds
     .filter((id) => !topSkills.some((s) => s.id === id))
@@ -243,23 +247,20 @@ export default function YourExperience() {
                 </button>
               ))}
 
-              {isAddingSkill ? (
+              {skillDraft.isOpen ? (
                 <div className="ye-skill-add">
                   <input
                     type="text"
                     autoFocus
                     className="ye-pill-input"
                     placeholder="Type a skill..."
-                    value={skillDraft}
-                    onChange={(e) => {
-                      setSkillDraft(e.target.value)
-                      setSkillError('')
-                    }}
+                    value={skillDraft.draft}
+                    onChange={(e) => skillDraft.change(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') commitSkillDraft()
-                      if (e.key === 'Escape') cancelSkillDraft()
+                      if (e.key === 'Enter') skillDraft.commit()
+                      if (e.key === 'Escape') skillDraft.cancel()
                     }}
-                    onBlur={() => (skillDraft.trim() ? commitSkillDraft() : cancelSkillDraft())}
+                    onBlur={() => (skillDraft.draft.trim() ? skillDraft.commit() : skillDraft.cancel())}
                   />
                   {skillSuggestions.length > 0 && (
                     <div className="ye-skill-suggestions">
@@ -279,12 +280,12 @@ export default function YourExperience() {
                   )}
                 </div>
               ) : (
-                <button type="button" className="ye-pill ye-pill--add" onClick={() => setIsAddingSkill(true)}>
+                <button type="button" className="ye-pill ye-pill--add" onClick={skillDraft.open}>
                   + Add skill
                 </button>
               )}
             </div>
-            {skillError && <p className="ye-error">{skillError}</p>}
+            {skillDraft.error && <p className="ye-error">{skillDraft.error}</p>}
 
             <p className="ye-quote">&ldquo;{stepTwoData.skillsQuote}&rdquo;</p>
           </section>
@@ -327,34 +328,31 @@ export default function YourExperience() {
                 </button>
               ))}
 
-              {isAddingResponsibility ? (
+              {responsibilityDraft.isOpen ? (
                 <input
                   type="text"
                   autoFocus
                   className="ye-responsibility-input"
                   placeholder="Type a responsibility..."
-                  value={responsibilityDraft}
-                  onChange={(e) => {
-                    setResponsibilityDraft(e.target.value)
-                    setResponsibilityError('')
-                  }}
+                  value={responsibilityDraft.draft}
+                  onChange={(e) => responsibilityDraft.change(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') commitResponsibilityDraft()
-                    if (e.key === 'Escape') cancelResponsibilityDraft()
+                    if (e.key === 'Enter') responsibilityDraft.commit()
+                    if (e.key === 'Escape') responsibilityDraft.cancel()
                   }}
-                  onBlur={() => (responsibilityDraft.trim() ? commitResponsibilityDraft() : cancelResponsibilityDraft())}
+                  onBlur={() => (responsibilityDraft.draft.trim() ? responsibilityDraft.commit() : responsibilityDraft.cancel())}
                 />
               ) : (
                 <button
                   type="button"
                   className="ye-responsibility ye-responsibility--add"
-                  onClick={() => setIsAddingResponsibility(true)}
+                  onClick={responsibilityDraft.open}
                 >
                   + Add responsibility
                 </button>
               )}
             </div>
-            {responsibilityError && <p className="ye-error">{responsibilityError}</p>}
+            {responsibilityDraft.error && <p className="ye-error">{responsibilityDraft.error}</p>}
           </section>
 
           <div className="ye-translate-note">{stepTwoData.translateNote}</div>

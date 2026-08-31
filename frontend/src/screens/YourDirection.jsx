@@ -6,11 +6,16 @@ import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
 
+// Adds an "s" (or turns "y" into "ies") when the count is more than one.
+// Used to build the small journey-recap captions on this screen.
 const plural = (n, word) => {
   if (n === 1) return `${n} ${word}`
   return `${n} ${word.endsWith('y') ? word.slice(0, -1) + 'ies' : word + 's'}`
 }
 
+// Step 5 of the onboarding wizard, shown at the "/your-direction" URL.
+// Recaps the journey so far, then collects return-readiness and the area
+// the user wants to explore.
 export default function YourDirection() {
   const [loading, setLoading] = useState(true)
   const [journey, setJourney] = useState(null)
@@ -39,6 +44,8 @@ export default function YourDirection() {
 
   const canContinue = !!pace && !!areaId
 
+  // Saves the chosen pace and area, then moves to the Career Journey
+  // summary screen. Runs when the Continue button is clicked.
   const handleContinue = async () => {
     await api.patchCareerDirection({ return_readiness: pace, area_to_explore: areaId })
     navigate('/career-journey')

@@ -8,8 +8,8 @@ import { navigate } from '../navigate.js'
 import { api } from '../api.js'
 
 /**
- * "Your Story" — step 1 of the 5-step onboarding wizard shown after the
- * Landing screen's "Enter My Journey" CTA.
+ * Step 1 of the onboarding wizard, shown at the "/your-story" URL, right
+ * after the Landing screen's "Enter My Journey" button.
  *
  * Role and years-of-experience options come from the backend catalogue;
  * the selected answers are saved to the real profile via PATCH /profile.
@@ -67,6 +67,8 @@ export default function YourStory() {
   else if (isOther && !otherRoleText.trim()) hint = 'Please enter your previous role.'
   else if (!selectedYearsId) hint = 'Select your years of experience to continue.'
 
+  // Saves the role and years chosen on this screen, then moves to step 2.
+  // Runs when the Continue button is clicked.
   const handleContinue = async () => {
     await api.patchProfile({
       role_id: selectedRoleId,

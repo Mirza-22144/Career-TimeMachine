@@ -3,24 +3,21 @@ import '../styles/JourneyLine.css'
 import { journeyMilestones } from '../mockData/landingPageData'
 
 /**
- * Page-long scroll progress rail tracking the milestones in
- * mockData/landingPageData.js (journeyMilestones).
+ * Scroll progress rail shown down the page, tracking the milestones listed
+ * in mockData/landingPageData.js (journeyMilestones).
  *
- * Each marker's vertical position is computed live from where its linked
- * section actually sits in the DOM (via `getBoundingClientRect`), rather
- * than a fixed offset, so the rail stays correct as section content changes.
- * The currently-active marker is tracked separately via IntersectionObserver
- * as sections scroll through the viewport.
+ * Each marker's position is worked out fresh from where its section sits on
+ * the page right now, instead of a fixed number, so it stays right even if
+ * a section's content changes size. Which marker is "active" is tracked on
+ * its own, based on which section is currently on screen.
  *
- * `containerRef` must point at the positioned ancestor (.lp-page) this rail
- * is absolutely positioned against.
+ * `containerRef` must point at the parent element (.lp-page) this rail is
+ * placed inside.
  */
 
-// Every section shares the same 120px top padding before its heading. Each
-// marker is nudged this far past its section's top edge so it reads as
-// sitting inside that section (rather than pinned to the seam where the
-// previous section ends) while still landing comfortably before the
-// heading text starts.
+// Each section has 120px of space above its heading. Markers are moved down
+// by this much past the section's top edge, so they land inside that
+// section instead of right on the line between two sections.
 const SECTION_ENTRY_OFFSET = 40
 
 export default function JourneyLine({ containerRef }) {
@@ -35,9 +32,8 @@ export default function JourneyLine({ containerRef }) {
       .map((m) => {
         const el = document.getElementById(m.sectionId)
         if (!el) return null
-        // Nudge past the section's raw top edge (the seam where the
-        // previous section ends) so the marker reads as sitting inside
-        // this section, not floating on the boundary between two.
+        // Move down past the section's top edge so the marker sits inside
+        // this section instead of on the line between two sections.
         const top = el.getBoundingClientRect().top + window.scrollY - containerTop + SECTION_ENTRY_OFFSET
         return { ...m, top }
       })
@@ -45,11 +41,10 @@ export default function JourneyLine({ containerRef }) {
     setPositions(next)
   }, [containerRef])
 
-  // NOTE: this must be a plain effect, not useLayoutEffect. `containerRef`
-  // (pageRef) is attached to JourneyLine's *parent* (.lp-page), and React
-  // attaches a parent's ref only after processing its children — so at the
-  // point a child's own useLayoutEffect fires, an ancestor ref can still be
-  // null. Plain effects run after the whole commit (all refs) settles.
+  // Must stay a plain effect, not useLayoutEffect. `containerRef` belongs
+  // to JourneyLine's parent element, and that ref is not set yet at the
+  // point a child's useLayoutEffect would run. A plain effect runs later,
+  // once every ref on the page is ready.
   useEffect(() => {
     recalc()
     window.addEventListener('resize', recalc)

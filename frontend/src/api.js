@@ -7,6 +7,8 @@
 const API_BASE = 'http://127.0.0.1:8000/api/v1'
 const TOKEN_KEY = 'ctm_session_token'
 
+// Reads the saved session token, if any. Used by request() below to attach
+// the token to every call, and to check if a session already exists.
 function getToken() {
   try {
     return sessionStorage.getItem(TOKEN_KEY)
@@ -15,11 +17,14 @@ function getToken() {
   }
 }
 
+// Saves the session token so later page loads reuse the same session.
+// Used right after a new session is created.
 function setToken(token) {
   try {
     sessionStorage.setItem(TOKEN_KEY, token)
   } catch {
-    // ignore — same private-browsing fallback as onboardingState.js
+    // Storage can be blocked in private browsing. Skip saving the token in
+    // that case instead of crashing the page.
   }
 }
 
@@ -76,8 +81,7 @@ async function createSession(force = false) {
 export const api = {
   createSession,
   getCatalogue: (kind) => request(`/catalogue/${kind}`),
-  // Skills depend on the previously selected role (DATA_HANDOVER.md 5.2) —
-  // omit roleId to get the flat fallback list.
+  // Skills depend on the previously selected role — omit roleId for the flat fallback list.
   getSkills: (roleId) => request(`/catalogue/skills${roleId ? `?role_id=${encodeURIComponent(roleId)}` : ''}`),
   getProfile: () => request('/profile'),
   patchProfile: (patch) => request('/profile', { method: 'PATCH', body: patch }),

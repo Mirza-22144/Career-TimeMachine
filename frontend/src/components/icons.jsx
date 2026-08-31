@@ -1,6 +1,7 @@
 // Small inline Lucide-style icons (2px stroke), shared across screens.
 // Kept local to this component tree so nothing in the App.jsx tree is touched.
 
+// Small clock icon. Used in the eyebrow badge on the Landing page hero.
 export function ClockIcon({ size = 11, color = '#7C3AED' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -10,6 +11,7 @@ export function ClockIcon({ size = 11, color = '#7C3AED' }) {
   )
 }
 
+// Right arrow. Used on Continue/CTA buttons across the wizard and the Landing page.
 export function ArrowRightIcon({ size = 16, color = '#FFFFFF' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -19,6 +21,7 @@ export function ArrowRightIcon({ size = 16, color = '#FFFFFF' }) {
   )
 }
 
+// Down arrow. Used on the Landing page's "See how it works" link.
 export function ArrowDownIcon({ size = 15, color = '#8B5CF6' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,6 +31,7 @@ export function ArrowDownIcon({ size = 15, color = '#8B5CF6' }) {
   )
 }
 
+// Person icon. Used on the Landing page for profile/experience visuals.
 export function UserIcon({ size = 24, color = '#7C3AED' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -37,6 +41,7 @@ export function UserIcon({ size = 24, color = '#7C3AED' }) {
   )
 }
 
+// Cloud icon. Used on the Landing page's "Discover" section for future-skill cards.
 export function CloudIcon({ size = 17, color = '#7C3AED' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -45,6 +50,7 @@ export function CloudIcon({ size = 17, color = '#7C3AED' }) {
   )
 }
 
+// Checkmark. Used across the onboarding wizard for selected options and done steps.
 export function CheckIcon({ size = 10, color = '#FFFFFF' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -53,6 +59,7 @@ export function CheckIcon({ size = 10, color = '#FFFFFF' }) {
   )
 }
 
+// Speech bubble icon. Used on the Landing page's "Adapt" practice loop section.
 export function MessageCircleIcon({ size = 17, color = '#7C3AED' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -61,6 +68,7 @@ export function MessageCircleIcon({ size = 17, color = '#7C3AED' }) {
   )
 }
 
+// Document icon. Used on the Landing page's ePortfolio preview rows.
 export function FileTextIcon({ size = 15, color = '#7C3AED' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -73,6 +81,7 @@ export function FileTextIcon({ size = 15, color = '#7C3AED' }) {
   )
 }
 
+// Magnifying glass. Used in the role and skill search boxes in the wizard.
 export function SearchIcon({ size = 16, color = '#9CA3AF' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -82,6 +91,7 @@ export function SearchIcon({ size = 16, color = '#9CA3AF' }) {
   )
 }
 
+// Spinning loader. Used on the Landing page CTA buttons while navigating away.
 export function SpinnerIcon({ size = 16, color = '#FFFFFF' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="lp-spin">

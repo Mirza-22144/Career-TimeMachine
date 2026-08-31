@@ -18,6 +18,8 @@ const routes = {
   '/career-journey': CareerJourney,
 }
 
+// Reads the current screen path out of the URL hash. Used by Router below
+// to pick which screen to show, and again each time the hash changes.
 function getCurrentPath() {
   const hash = window.location.hash.replace(/^#/, '')
   return hash || '/'

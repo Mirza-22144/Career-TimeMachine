@@ -58,17 +58,35 @@ class PostgresCatalogueRepository(CatalogueRepository):
             return self.get_items("skills")
         rows = _query(
             """
-            SELECT s.id, s.label, s.in_demand, s.hot_technology
+            SELECT s.id, s.label, s.in_demand, s.hot_technology, s.category
             FROM skill s
             JOIN role_skill rs ON rs.skill_id = s.id
             WHERE rs.role_id = %s
-            ORDER BY s.in_demand DESC, s.hot_technology DESC, s.label
             """,
             (role_id,),
         )
         if not rows:
             return self.get_items("skills")  # unmapped role -> full list
+
+        # in_demand/hot_technology alone tie for the large majority of a
+        # role's skills, which left the list looking alphabetical (Python
+        # buried behind "Active directory"). A category that recurs often
+        # among this role's in-demand skills is core to the role (e.g.
+        # "Object or component oriented development software" for a
+        # developer); a category used by only one skill is usually a
+        # one-off O*NET miscategorisation (DATA_HANDOVER.md 7). Breaking
+        # ties by that frequency - still real data, nothing invented -
+        # surfaces core languages/tools ahead of incidental tools.
+        category_counts: dict[str, int] = {}
+        for _id, _label, in_demand, hot, category in rows:
+            if in_demand and hot and category:
+                category_counts[category] = category_counts.get(category, 0) + 1
+
+        def sort_key(row):
+            _id, label, in_demand, hot, category = row
+            return (not in_demand, not hot, -category_counts.get(category, 0), label)
+
         return [
             CatalogueItem(id=r[0], label=r[1], in_demand=bool(r[2]), hot_technology=bool(r[3]))
-            for r in rows
+            for r in sorted(rows, key=sort_key)
         ]

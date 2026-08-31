@@ -116,9 +116,13 @@ export default function SkillRelevanceMap() {
                         </button>
                       ))}
                     </div>
-                    {hasMoreHorizons && !showAllHorizons && (
-                      <button type="button" className="srm-show-more" onClick={() => setShowAllHorizons(true)}>
-                        Show all {horizons.length} New Horizons
+                    {hasMoreHorizons && (
+                      <button
+                        type="button"
+                        className="srm-show-more"
+                        onClick={() => setShowAllHorizons((prev) => !prev)}
+                      >
+                        {showAllHorizons ? 'Show fewer New Horizons' : `Show all ${horizons.length} New Horizons`}
                       </button>
                     )}
                   </>

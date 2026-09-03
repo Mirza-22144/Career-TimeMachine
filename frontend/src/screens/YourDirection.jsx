@@ -44,6 +44,10 @@ export default function YourDirection() {
 
   const canContinue = !!pace && !!areaId
 
+  let hint = ''
+  if (!pace) hint = 'Select a return status to continue.'
+  else if (!areaId) hint = 'Select an area to explore to continue.'
+
   // Saves the chosen pace and area, then moves to the Career Journey
   // summary screen. Runs when the Continue button is clicked.
   const handleContinue = async () => {
@@ -146,6 +150,7 @@ export default function YourDirection() {
             {stepFiveData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
+          {!canContinue && <p className="yd-hint">{hint}</p>}
         </div>
       </main>
     </div>

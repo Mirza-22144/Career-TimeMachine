@@ -249,19 +249,30 @@ export default function YourExperience() {
 
               {skillDraft.isOpen ? (
                 <div className="ye-skill-add">
-                  <input
-                    type="text"
-                    autoFocus
-                    className="ye-pill-input"
-                    placeholder="Type a skill..."
-                    value={skillDraft.draft}
-                    onChange={(e) => skillDraft.change(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') skillDraft.commit()
-                      if (e.key === 'Escape') skillDraft.cancel()
-                    }}
-                    onBlur={() => (skillDraft.draft.trim() ? skillDraft.commit() : skillDraft.cancel())}
-                  />
+                  <div className="ye-tag-input-row">
+                    <input
+                      type="text"
+                      autoFocus
+                      className="ye-pill-input"
+                      placeholder="Type a skill..."
+                      value={skillDraft.draft}
+                      onChange={(e) => skillDraft.change(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') skillDraft.commit()
+                        if (e.key === 'Escape') skillDraft.cancel()
+                      }}
+                      onBlur={skillDraft.cancel}
+                    />
+                    <button
+                      type="button"
+                      className="ye-tag-cancel"
+                      aria-label="Cancel adding a skill"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={skillDraft.cancel}
+                    >
+                      ✕
+                    </button>
+                  </div>
                   {skillSuggestions.length > 0 && (
                     <div className="ye-skill-suggestions">
                       {skillSuggestions.map((s) => (
@@ -329,19 +340,30 @@ export default function YourExperience() {
               ))}
 
               {responsibilityDraft.isOpen ? (
-                <input
-                  type="text"
-                  autoFocus
-                  className="ye-responsibility-input"
-                  placeholder="Type a responsibility..."
-                  value={responsibilityDraft.draft}
-                  onChange={(e) => responsibilityDraft.change(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') responsibilityDraft.commit()
-                    if (e.key === 'Escape') responsibilityDraft.cancel()
-                  }}
-                  onBlur={() => (responsibilityDraft.draft.trim() ? responsibilityDraft.commit() : responsibilityDraft.cancel())}
-                />
+                <div className="ye-tag-input-row ye-tag-input-row--responsibility">
+                  <input
+                    type="text"
+                    autoFocus
+                    className="ye-responsibility-input"
+                    placeholder="Type a responsibility..."
+                    value={responsibilityDraft.draft}
+                    onChange={(e) => responsibilityDraft.change(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') responsibilityDraft.commit()
+                      if (e.key === 'Escape') responsibilityDraft.cancel()
+                    }}
+                    onBlur={responsibilityDraft.cancel}
+                  />
+                  <button
+                    type="button"
+                    className="ye-tag-cancel"
+                    aria-label="Cancel adding a responsibility"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={responsibilityDraft.cancel}
+                  >
+                    ✕
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"

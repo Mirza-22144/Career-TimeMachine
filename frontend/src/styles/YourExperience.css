@@ -198,6 +198,32 @@
   color: var(--ink-600);
 }
 
+.ye-tag-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ye-tag-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.12);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--ink-600);
+  cursor: pointer;
+}
+
+.ye-tag-cancel:hover {
+  border-color: #b45309;
+  color: #b45309;
+}
+
 .ye-pill-input {
   padding: 10px 18px;
   min-width: 140px;
@@ -276,8 +302,12 @@
 }
 
 .ye-responsibility--add,
-.ye-responsibility-input {
+.ye-tag-input-row--responsibility {
   grid-column: 1 / -1;
+}
+
+.ye-tag-input-row--responsibility .ye-responsibility-input {
+  flex: 1;
 }
 
 .ye-responsibility--add {

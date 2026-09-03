@@ -183,10 +183,12 @@ export default function SkillRelevanceMap() {
                   <hr className="srm-detail-divider" />
                   {selectedOwnedSkill.custom ? (
                     <p className="srm-detail-note">{stepFourData.customSkillNote}</p>
-                  ) : selectedOwnedSkill.still_relevant ? (
+                  ) : selectedOwnedSkill.still_relevant === true ? (
                     <p className="srm-detail-note">✓ {stepFourData.stillRelevantTag}</p>
-                  ) : (
+                  ) : selectedOwnedSkill.still_relevant === false ? (
                     <p className="srm-detail-note">{stepFourData.notInDemandNote}</p>
+                  ) : (
+                    <p className="srm-detail-note">{stepFourData.relevanceUnknownNote}</p>
                   )}
                 </div>
               )}

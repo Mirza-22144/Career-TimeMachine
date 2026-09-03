@@ -14,4 +14,7 @@ frontend/.env
 # General
 .DS_Store
 *.log
-"@ | Out-File -FilePath .gitignore -Encoding utf8
+"@ | Out-File -FilePath .gitignore -Encoding utf8*_backup_*.sql
+
+# Database backups - real data, kept outside the repository
+*_backup_*.sql

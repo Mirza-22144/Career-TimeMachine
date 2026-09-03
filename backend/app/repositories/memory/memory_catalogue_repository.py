@@ -8,12 +8,16 @@ from app.repositories.interfaces.catalogue_repository import (
 # real database once it is connected (see PostgresCatalogueRepository).
 # Ids need to stay the same once the data team fills the real tables in.
 CATALOGUES: dict[str, list[CatalogueItem]] = {
-    "experience-options": [                      # fixed set from the document
+    "experience-options": [                      # every year from 1 through 10+, none skipped
         CatalogueItem("1", "1 year"),
         CatalogueItem("2", "2 years"),
         CatalogueItem("3", "3 years"),
+        CatalogueItem("4", "4 years"),
         CatalogueItem("5", "5 years"),
+        CatalogueItem("6", "6 years"),
         CatalogueItem("7", "7 years"),
+        CatalogueItem("8", "8 years"),
+        CatalogueItem("9", "9 years"),
         CatalogueItem("10_plus", "10+ years"),
     ],
     "responsibilities": [               # matches the 8 the data team plans to add; table is empty for now

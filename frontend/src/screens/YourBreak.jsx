@@ -6,7 +6,7 @@ import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
-import { ArrowRightIcon } from '../components/icons'
+import { ArrowRightIcon, CheckIcon } from '../components/icons'
 
 // Maps confirm-profile's missing-field codes to plain text, since they can
 // come from an earlier step (see PROFILE_INCOMPLETE in the API contract).
@@ -40,6 +40,7 @@ export default function YourBreak() {
   const [returnUnsure, setReturnUnsure] = useState(false)
   const [reasonId, setReasonId] = useState(null)
   const [otherReasonText, setOtherReasonText] = useState('')
+  const [otherReasonSaved, setOtherReasonSaved] = useState(false)
   const [confirmError, setConfirmError] = useState('')
 
   useEffect(() => {
@@ -66,6 +67,19 @@ export default function YourBreak() {
   const isOtherReason = reasonId === 'other'
   const reasonValid = !isOtherReason || !!otherReasonText.trim()
   const canContinue = isValidRange && reasonValid
+
+  // Saves just the break reason right away, without moving to the next
+  // step - lets a typed "Other" reason register as soon as the user is
+  // done typing it (Enter or clicking away), instead of only being saved
+  // once the whole step is submitted.
+  const saveOtherReason = async () => {
+    if (!otherReasonText.trim()) return
+    await api.patchProfile({
+      break_reason: reasonId,
+      break_reason_other_text: otherReasonText.trim(),
+    })
+    setOtherReasonSaved(true)
+  }
 
   let timelineMessage = ''
   if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
@@ -189,14 +203,28 @@ export default function YourBreak() {
             })}
           </div>
           {isOtherReason && (
-            <input
-              type="text"
-              className="yb-other-input"
-              placeholder={stepThreeData.otherReasonPlaceholder}
-              value={otherReasonText}
-              onChange={(e) => setOtherReasonText(e.target.value)}
-              autoFocus
-            />
+            <div className="yb-other-row">
+              <input
+                type="text"
+                className="yb-other-input"
+                placeholder={stepThreeData.otherReasonPlaceholder}
+                value={otherReasonText}
+                onChange={(e) => {
+                  setOtherReasonText(e.target.value)
+                  setOtherReasonSaved(false)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.target.blur()
+                }}
+                onBlur={saveOtherReason}
+                autoFocus
+              />
+              {otherReasonSaved && (
+                <span className="yb-other-saved">
+                  <CheckIcon size={12} color="#16a34a" /> Saved
+                </span>
+              )}
+            </div>
           )}
 
           <p className="yb-note">{stepThreeData.note}</p>

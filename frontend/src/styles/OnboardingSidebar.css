@@ -36,10 +36,27 @@
 }
 
 .ob-brand {
+  all: unset;
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.ob-back {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.ob-back:hover {
+  color: #ffffff;
 }
 
 .ob-brand-mark {
@@ -184,10 +201,11 @@
 }
 
 .ob-progress-bar {
-  height: 4px;
+  height: 6px;
   flex: 1;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.14);
+  transition: background-color 200ms ease;
 }
 
 .ob-progress-bar--filled {

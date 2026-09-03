@@ -35,7 +35,10 @@ export default function YourStory() {
       setExperienceOptions(experienceData)
       if (profile.role_id) setSelectedRoleId(profile.role_id)
       if (profile.role_other_text) setOtherRoleText(profile.role_other_text)
-      if (profile.years_experience) setSelectedYearsId(profile.years_experience)
+      // Defaults to the first catalogue value (e.g. "1 year") instead of
+      // leaving the slider blank, so every value - including the first - is
+      // directly selectable without having to drag away and back first.
+      setSelectedYearsId(profile.years_experience || experienceData[0]?.id || null)
       setLoading(false)
     }
     load()

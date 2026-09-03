@@ -1,0 +1,11 @@
+/* Global reset. Without this, html/body/#root have no defined height, so
+   the wizard's per-screen "overflow-y: auto" panels never get a bounded
+   parent height to scroll within - the whole window scrolls instead, which
+   is why the sidebar could end early (a visible gap under it) and why a new
+   step could render already scrolled to wherever the previous step was. */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}

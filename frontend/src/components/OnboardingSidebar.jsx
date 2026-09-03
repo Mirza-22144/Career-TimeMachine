@@ -13,18 +13,25 @@ import { CheckIcon } from './icons'
 // step 1's design shows it.
 export default function OnboardingSidebar({ currentStep, backgroundImage, showPhoto = true }) {
   const completedCount = currentStep - 1
+  const previousStep = onboardingSteps.find((step) => step.id === currentStep - 1)
 
   return (
     <aside className={`ob-sidebar ${showPhoto ? '' : 'ob-sidebar--no-photo'}`}>
       <div className="ob-stepper-col">
         <div>
-          <div className="ob-brand">
+          <button type="button" className="ob-brand" onClick={() => navigate('/')}>
             <span className="ob-brand-mark">
               <img src={logoEmblem} alt="CareerTimeMachine emblem" className="ob-brand-emblem" />
             </span>
             <span className="ob-brand-word">CareerTimeMachine</span>
-          </div>
+          </button>
           <p className="ob-brand-tagline">{sidebarBrand.tagline}</p>
+
+          {previousStep && (
+            <button type="button" className="ob-back" onClick={() => navigate(previousStep.path)}>
+              ← Back to {previousStep.title}
+            </button>
+          )}
 
           <nav className="ob-stepper" aria-label="Onboarding progress">
             {onboardingSteps.map((step) => {

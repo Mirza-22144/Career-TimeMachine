@@ -37,6 +37,12 @@ export default function Router() {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
+  // Moving to a new step should always start at the top, not wherever the
+  // previous step was scrolled to.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [path])
+
   const Screen = routes[path] || LandingPage
   return <Screen />
 }

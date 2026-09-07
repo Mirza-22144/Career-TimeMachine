@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import '../styles/YourStory.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import sidebarPhoto from '../assets/storyimage.png'
-import { stepOneData, buildReflectionText } from '../mockData/onboardingData'
+import { stepOneData, roleSearchAliases } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
 import { navigate } from '../navigate.js'
 import { api } from '../api.js'
@@ -45,16 +45,23 @@ export default function YourStory() {
   }, [])
 
   // Capped to 10 - the real catalogue can run into the dozens, and a search
-  // narrows it down further if the role isn't in the first 10 shown.
+  // narrows it down further if the role isn't in the first 10 shown. A role
+  // also matches on its common industry name (see roleSearchAliases), not
+  // just its real catalogue label.
   const filteredRoles = useMemo(() => {
     const query = search.trim().toLowerCase()
-    const matches = query ? roles.filter((role) => role.label.toLowerCase().includes(query)) : roles
+    const matches = query
+      ? roles.filter((role) => {
+          if (role.label.toLowerCase().includes(query)) return true
+          const aliases = roleSearchAliases[role.id] || []
+          return aliases.some((alias) => alias.includes(query))
+        })
+      : roles
     return matches.slice(0, 10)
   }, [search, roles])
 
   const selectedRole = roles.find((r) => r.id === selectedRoleId)
   const isOther = selectedRole?.id === 'other'
-  const finalRoleLabel = isOther ? otherRoleText.trim() : selectedRole?.label
   const roleValid = isOther ? !!otherRoleText.trim() : !!selectedRoleId
   const selectedYears = experienceOptions.find((y) => y.id === selectedYearsId)
   const canContinue = roleValid && !!selectedYearsId
@@ -172,15 +179,6 @@ export default function YourStory() {
               </div>
             </div>
           </section>
-
-          {roleValid && selectedYears && (
-            <div className="ys-reflection">
-              <span className="ys-reflection-icon">
-                <CheckIcon size={12} color="#7C3AED" />
-              </span>
-              <p>{buildReflectionText(finalRoleLabel, selectedYears.label)}</p>
-            </div>
-          )}
 
           <button type="button" className="ys-continue" disabled={!canContinue} onClick={handleContinue}>
             {stepOneData.ctaLabel}

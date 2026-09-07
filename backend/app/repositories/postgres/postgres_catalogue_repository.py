@@ -90,9 +90,13 @@ class PostgresCatalogueRepository(CatalogueRepository):
                 category_counts[category] = category_counts.get(category, 0) + 1
 
         # In-demand first, then hot, then most common category, then name.
+        # label.lower() keeps the name tie-break truly alphabetical - plain
+        # label sorts every all-caps acronym (AWS, CSS, HTML) ahead of any
+        # Title Case name regardless of the actual letters, which pushed
+        # real tools like "Adobe XD" and "Figma" out of the default list.
         def sort_key(row):
             _id, label, in_demand, hot, category = row
-            return (not in_demand, not hot, -category_counts.get(category, 0), label)
+            return (not in_demand, not hot, -category_counts.get(category, 0), label.lower())
 
         return [
             CatalogueItem(id=r[0], label=r[1], in_demand=bool(r[2]), hot_technology=bool(r[3]))

@@ -5,7 +5,6 @@
   --violet-700: #6d28d9;
   --violet-600: #7c3aed;
   --violet-500: #8b5cf6;
-  --violet-100: #ede9fe;
   --violet-50: #f5f3ff;
   --bg-app: #f7f4ff;
   --ink-900: #0f1728;
@@ -269,37 +268,6 @@
   font-weight: 500;
   font-size: 12px;
   color: #9ca3af;
-}
-
-.ys-reflection {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 20px;
-  margin-bottom: 28px;
-  background: var(--violet-50);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 12px;
-}
-
-.ys-reflection-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  margin-top: 1px;
-  border-radius: 999px;
-  background: var(--violet-100);
-}
-
-.ys-reflection p {
-  margin: 0;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--violet-700);
 }
 
 .ys-continue {

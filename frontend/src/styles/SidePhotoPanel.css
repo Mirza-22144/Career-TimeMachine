@@ -1,6 +1,9 @@
 .spp-panel {
-  position: relative;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
   flex: 0 0 480px;
+  height: 100vh;
   overflow: hidden;
 }
 

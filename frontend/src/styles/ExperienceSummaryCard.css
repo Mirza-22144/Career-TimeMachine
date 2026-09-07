@@ -10,6 +10,8 @@
 
   flex: 0 0 300px;
   align-self: flex-start;
+  position: sticky;
+  top: 56px;
   margin-top: 56px;
   padding: 24px;
   background: #ffffff;

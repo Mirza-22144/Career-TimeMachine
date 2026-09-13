@@ -14,8 +14,9 @@ import {
 import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
 import AccessTokenModal from "../components/AccessTokenModal";
 import GeneratedTokenModal from "../components/GeneratedTokenModal";
+import MyTokenModal from "../components/MyTokenModal";
 import TokenRequiredModal from "../components/TokenRequiredModal";
-import { hasActiveToken, setActiveToken } from "../accessToken.js";
+import { getActiveToken, hasActiveToken, setActiveToken } from "../accessToken.js";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -39,13 +40,17 @@ export default function LandingPage() {
   // (AC 3.1.2, after a token has been generated).
   const [modalView, setModalView] = useState(null);
   const [accessModalError, setAccessModalError] = useState(false);
-  const [generatedToken, setGeneratedToken] = useState("");
   const [tokenGenerationError, setTokenGenerationError] = useState(false);
   const [isTokenRequiredOpen, setIsTokenRequiredOpen] = useState(false);
   const [tokenCheckError, setTokenCheckError] = useState(false);
   // Last nav-gate attempt, so the "couldn't verify" exception's Try Again
   // button can re-run the same check instead of just dismissing it.
   const [lastGateAction, setLastGateAction] = useState(null);
+  // Mirrors accessToken.js in local state (AC 3.1.5) so the nav pill and
+  // Hero CTA re-render as soon as a token is generated or entered, instead
+  // of only reflecting it after the next full page load.
+  const [activeToken, setActiveTokenState] = useState(() => getActiveToken());
+  const [loadTokenError, setLoadTokenError] = useState(false);
 
   // Smooth-scrolls to an in-page section instead of following the anchor link.
   const scrollToId = (id) => (e) => {
@@ -69,16 +74,40 @@ export default function LandingPage() {
 
   // Generates a new token and moves to the token-display modal (AC 3.1.2).
   // Client-side only for now - swap for a real backend call once BE 3.x
-  // exists, keeping this same try/catch shape for the failure case.
+  // exists, keeping this same try/catch shape for the failure case. Not
+  // reachable while a token is already active (AC 3.1.5) - the nav only
+  // offers Generate/Access Token before that point.
   const handleGenerateToken = () => {
     try {
       const token = generateMockToken();
       setActiveToken(token);
-      setGeneratedToken(token);
+      setActiveTokenState(token);
       setTokenGenerationError(false);
       setModalView("token");
     } catch {
       setTokenGenerationError(true);
+    }
+  };
+
+  // Marks a validated existing token as active in local state too, so the
+  // nav/Hero switch to the "active token" view immediately (AC 3.1.5).
+  const handleValidToken = (token) => {
+    setActiveTokenState(token);
+    navigate("/your-story");
+  };
+
+  // Opens the "My Token" view (AC 3.1.5) for a visitor who already has an
+  // active token. Reads it fresh rather than trusting local state, so a
+  // genuine retrieval failure can actually be caught and shown. Copy-only -
+  // see MyTokenModal for why this must never offer a way into Your Story.
+  const handleViewToken = () => {
+    try {
+      const token = getActiveToken();
+      if (!token) throw new Error("no active token");
+      setLoadTokenError(false);
+      setModalView("my-token");
+    } catch {
+      setLoadTokenError(true);
     }
   };
 
@@ -146,10 +175,17 @@ export default function LandingPage() {
               ),
             )}
           </div>
-          <button type="button" className="lp-token-pill" onClick={openAccessModal}>
-            <span className="lp-token-pill-dot" />
-            Generate / Access Token
-          </button>
+          {activeToken ? (
+            <button type="button" className="lp-token-pill" onClick={handleViewToken}>
+              <span className="lp-token-pill-dot" />
+              My Token
+            </button>
+          ) : (
+            <button type="button" className="lp-token-pill" onClick={openAccessModal}>
+              <span className="lp-token-pill-dot" />
+              Generate / Access Token
+            </button>
+          )}
         </div>
       </nav>
 
@@ -184,24 +220,41 @@ export default function LandingPage() {
             their return with confidence.
           </p>
 
-          <div className="lp-ctas">
-            <button
-              type="button"
-              className="lp-btn-primary"
-              onClick={openAccessModal}
-            >
-              <span className="lp-btn-label">{journeyCtaLabel}</span>
-              <ArrowRightIcon size={16} />
-            </button>
-            <a
-              href="#roadmap"
-              className="lp-btn-ghost"
-              onClick={scrollToId("roadmap")}
-            >
-              <span>See how it works</span>
-              <ArrowDownIcon size={15} />
-            </a>
-          </div>
+          {activeToken ? (
+            <div className="lp-active-journey">
+              <span className="lp-active-journey-title">Your journey is saved.</span>
+              <p className="lp-active-journey-text">
+                Your access token is active. Continue where you left off.
+              </p>
+              <button
+                type="button"
+                className="lp-btn-primary"
+                onClick={() => navigate("/your-story")}
+              >
+                <span className="lp-btn-label">Continue your journey</span>
+                <ArrowRightIcon size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="lp-ctas">
+              <button
+                type="button"
+                className="lp-btn-primary"
+                onClick={openAccessModal}
+              >
+                <span className="lp-btn-label">{journeyCtaLabel}</span>
+                <ArrowRightIcon size={16} />
+              </button>
+              <a
+                href="#roadmap"
+                className="lp-btn-ghost"
+                onClick={scrollToId("roadmap")}
+              >
+                <span>See how it works</span>
+                <ArrowDownIcon size={15} />
+              </a>
+            </div>
+          )}
 
           <div className="lp-trust-row">
             {trustItems.map((item) => (
@@ -310,16 +363,20 @@ export default function LandingPage() {
         <AccessTokenModal
           onClose={closeModal}
           onGenerateToken={handleGenerateToken}
-          onValidToken={() => navigate("/your-story")}
+          onValidToken={handleValidToken}
         />
       )}
 
       {modalView === "token" && (
         <GeneratedTokenModal
-          token={generatedToken}
+          token={activeToken}
           onClose={closeModal}
           onStartJourney={() => navigate("/your-story")}
         />
+      )}
+
+      {modalView === "my-token" && (
+        <MyTokenModal token={activeToken} onClose={closeModal} />
       )}
 
       {accessModalError && (
@@ -351,6 +408,15 @@ export default function LandingPage() {
             type="button"
             onClick={() => lastGateAction && attemptTokenGate(lastGateAction)}
           >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {loadTokenError && (
+        <div className="lp-modal-error">
+          <span>We couldn&rsquo;t load your access token. Please try again.</span>
+          <button type="button" onClick={handleViewToken}>
             Try Again
           </button>
         </div>

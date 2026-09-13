@@ -33,7 +33,7 @@ export default function AccessTokenModal({ onClose, onGenerateToken, onValidToke
     }
     setActiveToken(trimmed);
     setTokenError(null);
-    onValidToken();
+    onValidToken(trimmed);
   };
 
   const handleTryAgain = () => {

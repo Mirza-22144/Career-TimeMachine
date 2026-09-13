@@ -1,50 +1,24 @@
 import { useState } from "react";
 import "../styles/AccessTokenModal.css";
 import { ShieldIcon, CheckIcon } from "./icons";
-
-// Selects and copies text via the older execCommand approach. Used when
-// navigator.clipboard is unavailable or blocked (e.g. no clipboard-write
-// permission, an insecure context, or an older browser) - the modern API
-// alone can silently fail in exactly those cases with no fallback.
-function copyWithFallback(text) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  textarea.setSelectionRange(0, text.length);
-  const succeeded = document.execCommand("copy");
-  document.body.removeChild(textarea);
-  if (!succeeded) throw new Error("execCommand copy failed");
-}
+import { copyToClipboard } from "../copyToClipboard.js";
 
 /**
- * "Your access token" modal (AC 3.1.2). Shown after Generate Token succeeds
- * on the Access Your Journey modal. Copy Token tries the modern Clipboard
- * API first, falls back to the older execCommand approach if that is
- * unavailable or fails, and only then shows the manual-copy error; Start My
- * Journey moves on to the wizard's first step.
+ * "Your access token" modal (AC 3.1.2). Shown right after Generate Token
+ * succeeds on the Access Your Journey modal - this is the one place a
+ * token display also offers a way into Your Story. Viewing an already-
+ * active token later (AC 3.1.5) uses MyTokenModal instead, which is
+ * copy-only.
  */
 export default function GeneratedTokenModal({ token, onClose, onStartJourney }) {
   const [copyState, setCopyState] = useState("idle"); // idle | copied | error
 
   const handleCopy = async () => {
     try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(token);
-      } else {
-        copyWithFallback(token);
-      }
+      await copyToClipboard(token);
       setCopyState("copied");
     } catch {
-      try {
-        copyWithFallback(token);
-        setCopyState("copied");
-      } catch {
-        setCopyState("error");
-      }
+      setCopyState("error");
     }
   };
 

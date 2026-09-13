@@ -274,6 +274,29 @@
   margin-bottom: 40px;
 }
 
+/* Shown instead of .lp-ctas once a token is active (AC 3.1.5). */
+.lp-active-journey {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.lp-active-journey-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.lp-active-journey-text {
+  margin: 0 0 8px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .lp-btn-primary {
   display: flex;
   align-items: center;

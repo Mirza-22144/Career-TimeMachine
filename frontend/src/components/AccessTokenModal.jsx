@@ -4,11 +4,11 @@ import { PlusIcon, RefreshIcon } from "./icons";
 /**
  * "Access Your Journey" modal (AC 3.1.1). Shown when the user selects
  * Generate/Access Token from the nav or Enter My Journey on the Hero.
- * This step only covers displaying the modal and its two options - the
- * Generate Token and Start My Journey buttons are not wired up yet
- * (later ACs cover actually generating/validating a token).
+ * Generate Token (AC 3.1.2) hands off to the generated-token modal via
+ * onGenerateToken. The existing-token "Start My Journey" path is not wired
+ * up yet - a later AC covers validating an existing token.
  */
-export default function AccessTokenModal({ onClose }) {
+export default function AccessTokenModal({ onClose, onGenerateToken }) {
   return (
     <div className="atm-overlay" onClick={onClose}>
       <div
@@ -46,7 +46,7 @@ export default function AccessTokenModal({ onClose }) {
           <p className="atm-panel-text">
             We&rsquo;ll create a token that keeps your progress safe.
           </p>
-          <button type="button" className="atm-btn-primary">
+          <button type="button" className="atm-btn-primary" onClick={onGenerateToken}>
             Generate Token
           </button>
         </div>

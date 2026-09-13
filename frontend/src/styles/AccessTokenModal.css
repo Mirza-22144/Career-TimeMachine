@@ -206,6 +206,95 @@
   opacity: 0.92;
 }
 
+.atm-btn-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #7c3aed;
+  cursor: pointer;
+}
+
+.atm-btn-outline:hover {
+  background: #f5f3ff;
+}
+
+/* ---------- Generated token display (AC 3.1.2) ---------- */
+
+.atm-token-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #faf9fd;
+  border: 1px dashed rgba(124, 58, 237, 0.35);
+  border-radius: 14px;
+}
+
+.atm-token-label {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #6b6685;
+}
+
+.atm-token-value {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: #7c3aed;
+}
+
+.atm-safety-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: #f5f3ff;
+  border-radius: 12px;
+}
+
+.atm-safety-banner p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  color: #514b66;
+}
+
+.atm-safety-banner strong {
+  color: #0f1728;
+}
+
+.atm-copy-error {
+  margin: -8px 0 16px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #b45309;
+}
+
+.atm-actions-row {
+  display: flex;
+  gap: 12px;
+}
+
+.atm-actions-row .atm-btn-primary,
+.atm-actions-row .atm-btn-outline {
+  flex: 1;
+  width: auto;
+}
+
 @media (max-width: 520px) {
   .atm-modal {
     padding: 22px;

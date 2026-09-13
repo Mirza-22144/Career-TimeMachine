@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../styles/LandingPage.css";
+import { navigate } from "../navigate.js";
 import logoEmblem from "../assets/Logo.png";
 import heroBackground from "../assets/Background.png";
 import heroVideo from "../assets/hero-background.mp4";
@@ -12,6 +13,7 @@ import {
 } from "../mockData/landingPageData";
 import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
 import AccessTokenModal from "../components/AccessTokenModal";
+import GeneratedTokenModal from "../components/GeneratedTokenModal";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -21,9 +23,22 @@ import AccessTokenModal from "../components/AccessTokenModal";
 // (token-based "Continue" label) is out of scope until auth/tokens exist.
 const journeyCtaLabel = "Enter My Journey";
 
+// Chars exclude visually-ambiguous ones (0/O, 1/I, etc). Placeholder client-
+// side generator until BE 3.x wires up a real backend-issued token.
+const TOKEN_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function generateMockToken() {
+  const segment = () =>
+    Array.from({ length: 4 }, () => TOKEN_CHARS[Math.floor(Math.random() * TOKEN_CHARS.length)]).join("");
+  return `CTM-${segment()}-${segment()}`;
+}
+
 export default function LandingPage() {
-  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  // Which modal is showing: null (none), "options" (AC 3.1.1) or "token"
+  // (AC 3.1.2, after a token has been generated).
+  const [modalView, setModalView] = useState(null);
   const [accessModalError, setAccessModalError] = useState(false);
+  const [generatedToken, setGeneratedToken] = useState("");
+  const [tokenGenerationError, setTokenGenerationError] = useState(false);
 
   // Smooth-scrolls to an in-page section instead of following the anchor link.
   const scrollToId = (id) => (e) => {
@@ -31,15 +46,30 @@ export default function LandingPage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const closeModal = () => setModalView(null);
+
   // Opens the "Access Your Journey" modal (AC 3.1.1). Runs when the user
   // selects Enter My Journey on the Hero or Generate/Access Token in the
   // nav - both lead to the same modal.
   const openAccessModal = () => {
     try {
       setAccessModalError(false);
-      setIsAccessModalOpen(true);
+      setModalView("options");
     } catch {
       setAccessModalError(true);
+    }
+  };
+
+  // Generates a new token and moves to the token-display modal (AC 3.1.2).
+  // Client-side only for now - swap for a real backend call once BE 3.x
+  // exists, keeping this same try/catch shape for the failure case.
+  const handleGenerateToken = () => {
+    try {
+      setGeneratedToken(generateMockToken());
+      setTokenGenerationError(false);
+      setModalView("token");
+    } catch {
+      setTokenGenerationError(true);
     }
   };
 
@@ -240,14 +270,31 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {isAccessModalOpen && (
-        <AccessTokenModal onClose={() => setIsAccessModalOpen(false)} />
+      {modalView === "options" && (
+        <AccessTokenModal onClose={closeModal} onGenerateToken={handleGenerateToken} />
+      )}
+
+      {modalView === "token" && (
+        <GeneratedTokenModal
+          token={generatedToken}
+          onClose={closeModal}
+          onStartJourney={() => navigate("/your-story")}
+        />
       )}
 
       {accessModalError && (
         <div className="lp-modal-error">
           <span>We couldn&rsquo;t open access options. Please try again.</span>
           <button type="button" onClick={openAccessModal}>
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {tokenGenerationError && (
+        <div className="lp-modal-error">
+          <span>We couldn&rsquo;t generate your access token. Please try again.</span>
+          <button type="button" onClick={handleGenerateToken}>
             Try Again
           </button>
         </div>

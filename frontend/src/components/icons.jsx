@@ -100,3 +100,26 @@ export function SpinnerIcon({ size = 16, color = '#FFFFFF' }) {
     </svg>
   )
 }
+
+// Plus sign. Used on the Access Your Journey modal's "start a new journey" option.
+export function PlusIcon({ size = 16, color = '#FFFFFF' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
+// Two-arrow refresh/restore icon. Used on the Access Your Journey modal's
+// "come back to your journey" (existing-token) option.
+export function RefreshIcon({ size = 16, color = '#FFFFFF' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12a9 9 0 0 1-15.3 6.4L3 16" />
+      <path d="M3 12a9 9 0 0 1 15.3-6.4L21 8" />
+      <polyline points="3 21 3 16 8 16" />
+      <polyline points="21 3 21 8 16 8" />
+    </svg>
+  )
+}

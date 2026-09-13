@@ -144,11 +144,16 @@
   border: 1px solid rgba(124, 58, 237, 0.35);
   border-radius: 999px;
   background: var(--bg-app);
+  font-family: inherit;
   font-weight: 600;
   font-size: 13px;
   color: var(--violet-600);
-  cursor: default;
+  cursor: pointer;
   white-space: nowrap;
+}
+
+.lp-token-pill:hover {
+  background: var(--violet-50);
 }
 
 .lp-token-pill-dot {
@@ -553,6 +558,38 @@
 }
 
 /* ---------- Misc ---------- */
+
+/* AC 3.1.1 exception: shown if the Access Your Journey modal fails to open. */
+.lp-modal-error {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #0d1628;
+  border-radius: 12px;
+  box-shadow: var(--elevation-3);
+  font-weight: 500;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.lp-modal-error button {
+  padding: 8px 16px;
+  background: var(--violet-600);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
 .lp-spin {
   animation: lp-spin 0.8s linear infinite;

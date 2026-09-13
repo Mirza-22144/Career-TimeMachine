@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "../styles/LandingPage.css";
-import { navigate } from "../navigate.js";
 import logoEmblem from "../assets/Logo.png";
 import heroBackground from "../assets/Background.png";
 import heroVideo from "../assets/hero-background.mp4";
@@ -11,7 +10,8 @@ import {
   roadmapSteps,
   footerSection,
 } from "../mockData/landingPageData";
-import { ArrowRightIcon, ArrowDownIcon, SpinnerIcon } from "../components/icons";
+import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
+import AccessTokenModal from "../components/AccessTokenModal";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -22,7 +22,8 @@ import { ArrowRightIcon, ArrowDownIcon, SpinnerIcon } from "../components/icons"
 const journeyCtaLabel = "Enter My Journey";
 
 export default function LandingPage() {
-  const [ctaLoading, setCtaLoading] = useState(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [accessModalError, setAccessModalError] = useState(false);
 
   // Smooth-scrolls to an in-page section instead of following the anchor link.
   const scrollToId = (id) => (e) => {
@@ -30,11 +31,16 @@ export default function LandingPage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Shows a brief loading state on the CTA button, then moves to the
-  // onboarding wizard's first step.
-  const handleEnterJourney = () => {
-    setCtaLoading(true);
-    setTimeout(() => navigate("/your-story"), 1200);
+  // Opens the "Access Your Journey" modal (AC 3.1.1). Runs when the user
+  // selects Enter My Journey on the Hero or Generate/Access Token in the
+  // nav - both lead to the same modal.
+  const openAccessModal = () => {
+    try {
+      setAccessModalError(false);
+      setIsAccessModalOpen(true);
+    } catch {
+      setAccessModalError(true);
+    }
   };
 
   return (
@@ -74,12 +80,10 @@ export default function LandingPage() {
               ),
             )}
           </div>
-          {/* Iteration 2's sign-on feature is not built yet - visual
-              placeholder only, matches the inert nav-link convention above. */}
-          <span className="lp-token-pill" aria-disabled="true">
+          <button type="button" className="lp-token-pill" onClick={openAccessModal}>
             <span className="lp-token-pill-dot" />
             Generate / Access Token
-          </span>
+          </button>
         </div>
       </nav>
 
@@ -118,21 +122,10 @@ export default function LandingPage() {
             <button
               type="button"
               className="lp-btn-primary"
-              onClick={handleEnterJourney}
-              disabled={ctaLoading}
+              onClick={openAccessModal}
             >
-              <span
-                className={
-                  ctaLoading ? "lp-btn-label lp-btn-label--dim" : "lp-btn-label"
-                }
-              >
-                {journeyCtaLabel}
-              </span>
-              {ctaLoading ? (
-                <SpinnerIcon size={16} />
-              ) : (
-                <ArrowRightIcon size={16} />
-              )}
+              <span className="lp-btn-label">{journeyCtaLabel}</span>
+              <ArrowRightIcon size={16} />
             </button>
             <a
               href="#roadmap"
@@ -246,6 +239,19 @@ export default function LandingPage() {
           <span className="lp-footer-copyright">{footerSection.copyright}</span>
         </div>
       </footer>
+
+      {isAccessModalOpen && (
+        <AccessTokenModal onClose={() => setIsAccessModalOpen(false)} />
+      )}
+
+      {accessModalError && (
+        <div className="lp-modal-error">
+          <span>We couldn&rsquo;t open access options. Please try again.</span>
+          <button type="button" onClick={openAccessModal}>
+            Try Again
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,213 @@
+/* Styles for the "Access Your Journey" modal
+   (components/AccessTokenModal.jsx). Scoped under .atm- so it doesn't
+   collide with other screens' styles. */
+
+.atm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(13, 22, 40, 0.55);
+}
+
+.atm-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.24);
+  font-family: 'Manrope', sans-serif;
+  box-sizing: border-box;
+}
+
+.atm-modal * {
+  box-sizing: border-box;
+}
+
+.atm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.atm-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 22px;
+  color: #0f1728;
+}
+
+.atm-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: none;
+  border-radius: 999px;
+  background: #f3f0fb;
+  color: #6b6685;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.atm-close:hover {
+  background: #ede9fe;
+}
+
+.atm-subtitle {
+  margin: 10px 0 24px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b6685;
+}
+
+.atm-panel {
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.atm-panel--new {
+  background: #f5f3ff;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.atm-panel--existing {
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.1);
+}
+
+.atm-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.atm-panel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 999px;
+}
+
+.atm-panel-icon--new {
+  background: #7c3aed;
+}
+
+.atm-panel-icon--existing {
+  background: #ede9fe;
+}
+
+.atm-panel-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f1728;
+}
+
+.atm-panel-text {
+  margin: 0 0 16px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  color: #6b6685;
+}
+
+.atm-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.atm-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(15, 23, 40, 0.1);
+}
+
+.atm-divider span {
+  position: relative;
+  padding: 0 12px;
+  background: #ffffff;
+  font-weight: 500;
+  font-size: 12px;
+  color: #6b6685;
+}
+
+.atm-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #0f1728;
+}
+
+.atm-input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.14);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f1728;
+  outline: none;
+}
+
+.atm-input:focus {
+  border-color: #8b5cf6;
+}
+
+.atm-hint {
+  margin: 0 0 16px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #6b6685;
+}
+
+.atm-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #7c3aed 0%, #9333ea 100%);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.atm-btn-primary:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 520px) {
+  .atm-modal {
+    padding: 22px;
+  }
+}

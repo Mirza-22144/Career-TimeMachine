@@ -6,7 +6,7 @@ import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
-import { ArrowRightIcon, CheckIcon } from '../components/icons'
+import { ArrowRightIcon } from '../components/icons'
 
 // Maps confirm-profile's missing-field codes to plain text, since they can
 // come from an earlier step (see PROFILE_INCOMPLETE in the API contract).
@@ -20,7 +20,11 @@ const MISSING_FIELD_LABELS = {
 }
 
 const CURRENT_YEAR = new Date().getFullYear()
-const YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
+// A break can only have started in the past (or this year) - never the future.
+const START_YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
+// A planned return, by definition, can only be this year or a future one.
+// Descending like the start-year list, so both dropdowns sort the same way.
+const RETURN_YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + 10 - i)
 
 // The backend stores full ISO dates; the UI only asks for a year (matching
 // the approved design), so a break/return is always saved as 1 January of
@@ -29,29 +33,25 @@ const yearToDate = (year) => (year ? `${year}-01-01` : null)
 const dateToYear = (date) => (date ? date.slice(0, 4) : '')
 
 // Step 3 of the onboarding wizard, shown at the "/your-break" URL. Collects
-// the career break start/return years and reason, then confirms the whole
-// profile before moving on to the Skill Relevance Map.
+// the career break start/return years, then confirms the whole profile
+// before moving on to the Skill Relevance Map.
 export default function YourBreak() {
   const [loading, setLoading] = useState(true)
-  const [reasons, setReasons] = useState([])
 
   const [startYear, setStartYear] = useState('')
   const [returnYear, setReturnYear] = useState('')
   const [returnUnsure, setReturnUnsure] = useState(false)
-  const [reasonId, setReasonId] = useState(null)
-  const [otherReasonText, setOtherReasonText] = useState('')
-  const [otherReasonSaved, setOtherReasonSaved] = useState(false)
   const [confirmError, setConfirmError] = useState('')
+  // Only shows the incomplete-timeline hint after the user actually tries
+  // to continue, not just because a year is still empty on first load.
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
 
   useEffect(() => {
     async function load() {
-      const [reasonsData, profile] = await Promise.all([api.getCatalogue('break-reasons'), api.getProfile()])
-      setReasons(reasonsData)
+      const profile = await api.getProfile()
       setStartYear(dateToYear(profile.break_started_on))
       setReturnYear(dateToYear(profile.planned_return_date))
       setReturnUnsure(profile.return_date_unsure)
-      setReasonId(profile.break_reason)
-      setOtherReasonText(profile.break_reason_other_text || '')
       setLoading(false)
     }
     load()
@@ -64,22 +64,7 @@ export default function YourBreak() {
   const duration = isValidRange && !returnUnsure ? end - start : null
   const timelineYears = duration != null ? Array.from({ length: duration + 1 }, (_, i) => start + i) : []
 
-  const isOtherReason = reasonId === 'other'
-  const reasonValid = !isOtherReason || !!otherReasonText.trim()
-  const canContinue = isValidRange && reasonValid
-
-  // Saves just the break reason right away, without moving to the next
-  // step - lets a typed "Other" reason register as soon as the user is
-  // done typing it (Enter or clicking away), instead of only being saved
-  // once the whole step is submitted.
-  const saveOtherReason = async () => {
-    if (!otherReasonText.trim()) return
-    await api.patchProfile({
-      break_reason: reasonId,
-      break_reason_other_text: otherReasonText.trim(),
-    })
-    setOtherReasonSaved(true)
-  }
+  const canContinue = isValidRange
 
   let timelineMessage = ''
   if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
@@ -88,14 +73,15 @@ export default function YourBreak() {
   // Saves the break details, confirms the profile is complete, then moves
   // to the Skill Relevance Map. Runs when the Continue button is clicked.
   const handleContinue = async () => {
+    setAttemptedSubmit(true)
+    if (!canContinue) return
+
     setConfirmError('')
     try {
       await api.patchProfile({
         break_started_on: yearToDate(startYear),
         planned_return_date: returnUnsure ? null : yearToDate(returnYear),
         return_date_unsure: returnUnsure,
-        break_reason: reasonId,
-        break_reason_other_text: isOtherReason ? otherReasonText.trim() : null,
       })
       await api.confirmProfile()
       navigate('/skill-relevance-map')
@@ -126,7 +112,7 @@ export default function YourBreak() {
               <label className="yb-year-label">{stepThreeData.startLabel}</label>
               <select value={startYear} onChange={(e) => setStartYear(e.target.value)} className="yb-select">
                 <option value="">Select year</option>
-                {YEAR_OPTIONS.map((y) => (
+                {START_YEAR_OPTIONS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
@@ -140,7 +126,7 @@ export default function YourBreak() {
                 disabled={returnUnsure}
               >
                 <option value="">Select year</option>
-                {YEAR_OPTIONS.map((y) => (
+                {RETURN_YEAR_OPTIONS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
@@ -182,58 +168,13 @@ export default function YourBreak() {
             )}
           </div>
 
-          <div className="yb-question-header">
-            <h2 className="yb-question-label">{stepThreeData.reasonsLabel}</h2>
-            <span className="yb-optional">Optional</span>
-          </div>
-          <div className="yb-reason-grid">
-            {reasons.map((r) => {
-              const isActive = reasonId === r.id
-              return (
-                <button
-                  type="button"
-                  key={r.id}
-                  className={`yb-reason ${isActive ? 'yb-reason--active' : ''}`}
-                  onClick={() => setReasonId(isActive ? null : r.id)}
-                >
-                  {isActive && <span className="yb-reason-check">✓</span>}
-                  {r.label}
-                </button>
-              )
-            })}
-          </div>
-          {isOtherReason && (
-            <div className="yb-other-row">
-              <input
-                type="text"
-                className="yb-other-input"
-                placeholder={stepThreeData.otherReasonPlaceholder}
-                value={otherReasonText}
-                onChange={(e) => {
-                  setOtherReasonText(e.target.value)
-                  setOtherReasonSaved(false)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') e.target.blur()
-                }}
-                onBlur={saveOtherReason}
-                autoFocus
-              />
-              {otherReasonSaved && (
-                <span className="yb-other-saved">
-                  <CheckIcon size={12} color="#16a34a" /> Saved
-                </span>
-              )}
-            </div>
-          )}
-
           <p className="yb-note">{stepThreeData.note}</p>
 
-          <button type="button" className="yb-continue" disabled={!canContinue} onClick={handleContinue}>
+          <button type="button" className={`yb-continue ${!canContinue ? 'yb-continue--disabled' : ''}`} onClick={handleContinue}>
             {stepThreeData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
-          {!canContinue && <p className="yb-hint">{!reasonValid ? 'Please describe your reason.' : timelineMessage}</p>}
+          {attemptedSubmit && !canContinue && <p className="yb-hint">{timelineMessage}</p>}
           {confirmError && <p className="yb-hint">{confirmError}</p>}
         </div>
       </main>

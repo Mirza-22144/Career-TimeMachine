@@ -88,7 +88,7 @@ export const stepTwoData = {
   ctaLabel: "Continue",
 };
 
-// Step 3 — "Your Break": when the break started/ends + optional reasons.
+// Step 3 — "Your Break": when the break started/ends.
 export const stepThreeData = {
   eyebrow: "STEP 03 · YOUR BREAK",
   heading: "Then life took you somewhere different.",
@@ -96,8 +96,6 @@ export const stepThreeData = {
     "When did your career break begin, and when are you planning to return?",
   startLabel: "CAREER BREAK STARTED",
   returnLabel: "PLANNING TO RETURN",
-  reasonsLabel: "What led to your break?",
-  otherReasonPlaceholder: "Tell us in your own words...",
   note: "We use these dates to show what changed in your field while you were away.",
   invalidRangeMessage:
     "Your planning-to-return year must be the same as or after your career break start year.",

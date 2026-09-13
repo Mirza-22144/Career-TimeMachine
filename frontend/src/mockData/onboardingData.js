@@ -124,11 +124,6 @@ export const stepFourData = {
     "Current skill demand information is unavailable for this role.",
   allAlignedMessage:
     "You're already aligned with the current skill demand for your selected role.",
-  stillRelevantTag: "Still relevant",
-  notInDemandNote: "Not currently flagged in-demand for this role.",
-  relevanceUnknownNote: "Current relevance data is unavailable for this skill.",
-  customSkillNote: "Custom skill - not in the current-demand catalogue.",
-  horizonNote: (roleLabel) => `Currently in demand for ${roleLabel} roles.`,
   ctaLabel: "Define My Direction",
 };
 

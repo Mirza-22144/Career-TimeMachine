@@ -52,8 +52,9 @@ function useFanLines(containerRef, deps) {
 }
 
 // Step 4 of the onboarding wizard, shown at the "/skill-relevance-map" URL.
-// Shows the skills the user already has next to skills the role needs,
-// and lets the user click each one to see more detail.
+// Shows the skills the user already has next to skills the role needs, and
+// highlights the connecting line between a pill and the center role card
+// when it is clicked.
 export default function SkillRelevanceMap() {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
@@ -76,17 +77,13 @@ export default function SkillRelevanceMap() {
 
   if (loading) return <div className="srm-page" />
 
-  // Custom skills carry no relevance status, so they're marked separately
-  // from catalogue skills for the detail card below.
   const ownedSkills = [
     ...data.owned_skills,
-    ...data.custom_skills.map((label) => ({ id: label, label, still_relevant: null, custom: true })),
+    ...data.custom_skills.map((label) => ({ id: label, label })),
   ]
   const horizons = data.new_horizons
   const visibleHorizons = showAllHorizons ? horizons : horizons.slice(0, DEFAULT_HORIZON_COUNT)
   const hasMoreHorizons = horizons.length > DEFAULT_HORIZON_COUNT
-
-  const selectedOwnedSkill = active?.type === 'skill' ? ownedSkills.find((s) => s.label === active.name) : null
 
   return (
     <div className="srm-page">
@@ -175,32 +172,6 @@ export default function SkillRelevanceMap() {
                 {ownedSkills.length > 0 && <p className="srm-relevant-tag">✓ {stepFourData.ownedSummary}</p>}
                 <span className="srm-section-label srm-section-label--skills">{stepFourData.ownedLabel}</span>
               </div>
-
-              {selectedOwnedSkill && (
-                <div className="srm-detail-card">
-                  <span className="srm-detail-eyebrow">{stepFourData.ownedLabel}</span>
-                  <h3 className="srm-detail-title">{active.name}</h3>
-                  <hr className="srm-detail-divider" />
-                  {selectedOwnedSkill.custom ? (
-                    <p className="srm-detail-note">{stepFourData.customSkillNote}</p>
-                  ) : selectedOwnedSkill.still_relevant === true ? (
-                    <p className="srm-detail-note">✓ {stepFourData.stillRelevantTag}</p>
-                  ) : selectedOwnedSkill.still_relevant === false ? (
-                    <p className="srm-detail-note">{stepFourData.notInDemandNote}</p>
-                  ) : (
-                    <p className="srm-detail-note">{stepFourData.relevanceUnknownNote}</p>
-                  )}
-                </div>
-              )}
-
-              {active?.type === 'horizon' && (
-                <div className="srm-detail-card">
-                  <span className="srm-detail-eyebrow srm-detail-eyebrow--new">{stepFourData.horizonsLabel}</span>
-                  <h3 className="srm-detail-title">{active.name}</h3>
-                  <hr className="srm-detail-divider" />
-                  <p className="srm-detail-note">{stepFourData.horizonNote(data.role_label)}</p>
-                </div>
-              )}
             </div>
           )}
 

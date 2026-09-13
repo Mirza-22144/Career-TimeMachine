@@ -1,14 +1,46 @@
+import { useState } from "react";
 import "../styles/AccessTokenModal.css";
 import { PlusIcon, RefreshIcon } from "./icons";
+import { isKnownToken, setActiveToken } from "../accessToken.js";
 
 /**
  * "Access Your Journey" modal (AC 3.1.1). Shown when the user selects
  * Generate/Access Token from the nav or Enter My Journey on the Hero.
  * Generate Token (AC 3.1.2) hands off to the generated-token modal via
- * onGenerateToken. The existing-token "Start My Journey" path is not wired
- * up yet - a later AC covers validating an existing token.
+ * onGenerateToken. The existing-token path validates against tokens
+ * generated this session (see accessToken.js) - swap for a real backend
+ * lookup once BE 3.x exists.
  */
-export default function AccessTokenModal({ onClose, onGenerateToken }) {
+export default function AccessTokenModal({ onClose, onGenerateToken, onValidToken }) {
+  const [existingToken, setExistingToken] = useState("");
+  // null | "empty" | "invalid"
+  const [tokenError, setTokenError] = useState(null);
+
+  const handleChange = (e) => {
+    setExistingToken(e.target.value);
+    setTokenError(null);
+  };
+
+  const handleStartMyJourney = () => {
+    const trimmed = existingToken.trim();
+    if (!trimmed) {
+      setTokenError("empty");
+      return;
+    }
+    if (!isKnownToken(trimmed)) {
+      setTokenError("invalid");
+      return;
+    }
+    setActiveToken(trimmed);
+    setTokenError(null);
+    onValidToken();
+  };
+
+  const handleTryAgain = () => {
+    setExistingToken("");
+    setTokenError(null);
+  };
+
   return (
     <div className="atm-overlay" onClick={onClose}>
       <div
@@ -68,13 +100,37 @@ export default function AccessTokenModal({ onClose, onGenerateToken }) {
           <input
             id="atm-token-input"
             type="text"
-            className="atm-input"
+            className={`atm-input ${tokenError ? "atm-input--error" : ""}`}
             placeholder="Enter your access token"
+            value={existingToken}
+            onChange={handleChange}
           />
-          <p className="atm-hint">Your token looks like CTM-XXXX-XXXX</p>
-          <button type="button" className="atm-btn-primary">
-            Start My Journey
-          </button>
+          {tokenError === "empty" && (
+            <p className="atm-field-error">
+              <span className="atm-field-error-icon">!</span>
+              Please enter your access token to continue.
+            </p>
+          )}
+          {tokenError === "invalid" && (
+            <p className="atm-field-error">
+              <span className="atm-field-error-icon">!</span>
+              That token isn&rsquo;t recognised. Please check it and try again.
+            </p>
+          )}
+          {tokenError !== "invalid" && (
+            <p className="atm-hint">Your token looks like CTM-XXXX-XXXX</p>
+          )}
+
+          <div className="atm-actions-row">
+            <button type="button" className="atm-btn-primary" onClick={handleStartMyJourney}>
+              Start My Journey
+            </button>
+            {tokenError === "invalid" && (
+              <button type="button" className="atm-btn-outline" onClick={handleTryAgain}>
+                Try Again
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

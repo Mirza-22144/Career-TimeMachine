@@ -30,6 +30,16 @@
   box-sizing: border-box;
 }
 
+.atm-modal--compact {
+  max-width: 380px;
+}
+
+.atm-btn-okay {
+  width: auto;
+  margin-left: auto;
+  padding: 12px 28px;
+}
+
 .atm-header {
   display: flex;
   align-items: flex-start;
@@ -179,11 +189,40 @@
   border-color: #8b5cf6;
 }
 
+.atm-input--error {
+  border-color: #dc2626;
+}
+
 .atm-hint {
   margin: 0 0 16px;
   font-weight: 500;
   font-size: 12px;
   color: #6b6685;
+}
+
+.atm-field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 16px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+.atm-field-error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .atm-btn-primary {

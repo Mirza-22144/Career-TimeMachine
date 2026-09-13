@@ -1,16 +1,15 @@
 // Mock data for the Landing screen (frontend/src/screens/LandingPage.jsx).
 // Nothing here is wired to the backend yet — replace with real API data later.
 
-// Top navigation links. `clickable: false` renders the link as inert text
-// (see LandingPage.jsx) for destinations not yet built. "Career Journey"
-// scrolls to the in-page Roadmap slide, not the real /career-journey route -
-// that route needs onboarding data a first-time anonymous visitor does not
-// have yet.
+// Top navigation links. `gated: true` marks a token-dependent destination
+// (see LandingPage.jsx) - selecting it checks for an active access token
+// first and shows the "Access token required" notice if there isn't one,
+// instead of scrolling/navigating. "Home" is the only ungated link.
 export const navLinks = [
-  { label: "Home", href: "#hero", clickable: true },
-  { label: "Career Journey", href: "#roadmap", clickable: true },
-  { label: "Practice Scenarios", href: "#", clickable: false },
-  { label: "ePortfolio", href: "#", clickable: false },
+  { label: "Home", href: "#hero", gated: false },
+  { label: "Career Journey", href: "/career-journey", gated: true },
+  { label: "Practice Scenarios", href: "#", gated: true },
+  { label: "ePortfolio", href: "#", gated: true },
 ];
 
 export const trustItems = [

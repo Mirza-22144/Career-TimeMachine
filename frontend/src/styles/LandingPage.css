@@ -109,10 +109,14 @@
   white-space: nowrap;
 }
 
-/* Demo-only: Practice Scenarios and ePortfolio aren't built this iteration */
-.lp-nav-link--static {
-  color: rgba(15, 23, 40, 0.35);
-  cursor: default;
+/* Gated nav items (Career Journey, Practice Scenarios, ePortfolio) are real
+   buttons so they can run the token-gate check, styled to look identical
+   to the plain anchor links above. */
+.lp-nav-link--button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .lp-btn-outline {

@@ -14,6 +14,8 @@ import {
 import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
 import AccessTokenModal from "../components/AccessTokenModal";
 import GeneratedTokenModal from "../components/GeneratedTokenModal";
+import TokenRequiredModal from "../components/TokenRequiredModal";
+import { hasActiveToken, setActiveToken } from "../accessToken.js";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -39,6 +41,11 @@ export default function LandingPage() {
   const [accessModalError, setAccessModalError] = useState(false);
   const [generatedToken, setGeneratedToken] = useState("");
   const [tokenGenerationError, setTokenGenerationError] = useState(false);
+  const [isTokenRequiredOpen, setIsTokenRequiredOpen] = useState(false);
+  const [tokenCheckError, setTokenCheckError] = useState(false);
+  // Last nav-gate attempt, so the "couldn't verify" exception's Try Again
+  // button can re-run the same check instead of just dismissing it.
+  const [lastGateAction, setLastGateAction] = useState(null);
 
   // Smooth-scrolls to an in-page section instead of following the anchor link.
   const scrollToId = (id) => (e) => {
@@ -65,12 +72,35 @@ export default function LandingPage() {
   // exists, keeping this same try/catch shape for the failure case.
   const handleGenerateToken = () => {
     try {
-      setGeneratedToken(generateMockToken());
+      const token = generateMockToken();
+      setActiveToken(token);
+      setGeneratedToken(token);
       setTokenGenerationError(false);
       setModalView("token");
     } catch {
       setTokenGenerationError(true);
     }
+  };
+
+  // Guards a token-dependent nav item (Career Journey, Practice Scenarios,
+  // ePortfolio). Shows the "access token required" notice when there is no
+  // active token yet; runs `onAllowed` when there is one.
+  const attemptTokenGate = (onAllowed) => {
+    try {
+      setTokenCheckError(false);
+      if (hasActiveToken()) {
+        onAllowed();
+      } else {
+        setIsTokenRequiredOpen(true);
+      }
+    } catch {
+      setTokenCheckError(true);
+    }
+  };
+  const checkTokenGate = (onAllowed) => (e) => {
+    e.preventDefault();
+    setLastGateAction(() => onAllowed);
+    attemptTokenGate(onAllowed);
   };
 
   return (
@@ -90,7 +120,21 @@ export default function LandingPage() {
         <div className="lp-nav-actions">
           <div className="lp-nav-links">
             {navLinks.map((link) =>
-              link.clickable ? (
+              link.gated ? (
+                <button
+                  key={link.label}
+                  type="button"
+                  className="lp-nav-link lp-nav-link--button"
+                  onClick={checkTokenGate(() => {
+                    // Career Journey is the only one of these three with a
+                    // real page built so far - Practice Scenarios and
+                    // ePortfolio still have nowhere to go once past the gate.
+                    if (!link.href.startsWith("#")) navigate(link.href);
+                  })}
+                >
+                  {link.label}
+                </button>
+              ) : (
                 <a
                   key={link.label}
                   href={link.href}
@@ -99,14 +143,6 @@ export default function LandingPage() {
                 >
                   {link.label}
                 </a>
-              ) : (
-                <span
-                  key={link.label}
-                  className="lp-nav-link lp-nav-link--static"
-                  aria-disabled="true"
-                >
-                  {link.label}
-                </span>
               ),
             )}
           </div>
@@ -271,7 +307,11 @@ export default function LandingPage() {
       </footer>
 
       {modalView === "options" && (
-        <AccessTokenModal onClose={closeModal} onGenerateToken={handleGenerateToken} />
+        <AccessTokenModal
+          onClose={closeModal}
+          onGenerateToken={handleGenerateToken}
+          onValidToken={() => navigate("/your-story")}
+        />
       )}
 
       {modalView === "token" && (
@@ -295,6 +335,22 @@ export default function LandingPage() {
         <div className="lp-modal-error">
           <span>We couldn&rsquo;t generate your access token. Please try again.</span>
           <button type="button" onClick={handleGenerateToken}>
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {isTokenRequiredOpen && (
+        <TokenRequiredModal onClose={() => setIsTokenRequiredOpen(false)} />
+      )}
+
+      {tokenCheckError && (
+        <div className="lp-modal-error">
+          <span>We couldn&rsquo;t verify your access. Please try again.</span>
+          <button
+            type="button"
+            onClick={() => lastGateAction && attemptTokenGate(lastGateAction)}
+          >
             Try Again
           </button>
         </div>

@@ -21,7 +21,6 @@ import {
   footerSection,
 } from "../mockData/landingPageData";
 import {
-  ClockIcon,
   ArrowRightIcon,
   ArrowDownIcon,
   UserIcon,
@@ -53,7 +52,7 @@ export default function LandingPage() {
   const [activeSkillId, setActiveSkillId] = useState(defaultActiveSkillId);
   const [ctaLoading, setCtaLoading] = useState(false);
 
-  // Fixed demo selections for the Practise scenario and Reflect mood
+  // Fixed demo selections for the Practice scenario and Reflect mood
   // selector — intentionally not backed by state, since neither responds
   // to user input (see mockData/landingPageData.js for the underlying data).
   const selectedOptionId = practiceScenario.defaultSelectedId;
@@ -130,11 +129,6 @@ export default function LandingPage() {
       {/* ---------- Hero ---------- */}
       <section className="lp-hero" id="hero">
         <div className="lp-hero-copy">
-          <div className="lp-eyebrow-pill">
-            <ClockIcon size={11} />
-            <span>CAREERTIMEMACHINE</span>
-          </div>
-
           <h1 className="lp-h1">You don&rsquo;t have to start over.</h1>
           <p className="lp-lead">Your experience is still valuable.</p>
           <p className="lp-brand-line">
@@ -376,8 +370,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---------- Practise ---------- */}
-      <section className="lp-section lp-practise" id="practise">
+      {/* ---------- Practice ---------- */}
+      <section className="lp-section lp-practice" id="practice">
         <h2 className="lp-h2">Try it before you return.</h2>
         <p className="lp-lead lp-lead--section">
           A real workplace situation, at your own pace.

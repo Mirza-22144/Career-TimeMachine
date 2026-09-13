@@ -5,7 +5,7 @@
 // (see LandingPage.jsx) for destinations not yet built.
 export const navLinks = [
   { label: "How it works", href: "#remember", clickable: true },
-  { label: "Practise", href: "#practise", clickable: false },
+  { label: "Practice", href: "#practice", clickable: false },
   { label: "Your ePortfolio", href: "#", clickable: false },
 ];
 
@@ -20,7 +20,7 @@ export const trustItems = [
 export const heroWaypoints = [
   { step: "01", label: "Remember", left: 146, top: 581, active: true },
   { step: "02", label: "Discover", left: 321, top: 461, active: false },
-  { step: "03", label: "Practise", left: 479, top: 351, active: false },
+  { step: "03", label: "Practice", left: 479, top: 351, active: false },
   { step: "04", label: "Move Forward", left: 590, top: 287, active: false },
 ];
 
@@ -202,7 +202,7 @@ export const footerSection = {
       heading: "PRODUCT",
       links: [
         "How it works",
-        "Practise scenarios",
+        "Practice scenarios",
         "Your ePortfolio",
         "Start your journey",
       ],
@@ -216,7 +216,7 @@ export const footerSection = {
   copyright: "© 2026 CareerTimeMachine. All rights reserved.",
 };
 
-// "Practise" section — the Practice Window's scenario content.
+// "Practice" section — the Practice Window's scenario content.
 // Fixed demo scenario: "check-logs" carries the real feedback copy and
 // stays permanently selected; the other 3 options render for visual
 // completeness but aren't clickable.
@@ -240,10 +240,10 @@ export const practiceScenario = {
     { id: "rollback-deployment", label: "Rollback deployment" },
     { id: "monitor-alerts", label: "Monitor alerts" },
   ],
-  // Stage indicator shown under the feedback card. Only "Practise" has
+  // Stage indicator shown under the feedback card. Only "Practice" has
   // content right now — Learn/Improve aren't specced, so they're inert.
-  stages: ["PRACTISE", "LEARN", "IMPROVE"],
-  activeStage: "PRACTISE",
+  stages: ["PRACTICE", "LEARN", "IMPROVE"],
+  activeStage: "PRACTICE",
 };
 
 // Page-long scroll progress rail (rendered by components/JourneyLine.jsx).
@@ -271,12 +271,12 @@ export const journeyMilestones = [
     pending: false,
   },
   {
-    id: "practise",
+    id: "practice",
     step: "03",
-    title: "PRACTISE",
+    title: "PRACTICE",
     caption: "Try it before you return",
     top: 1743,
-    sectionId: "practise",
+    sectionId: "practice",
     pending: false,
   },
   {

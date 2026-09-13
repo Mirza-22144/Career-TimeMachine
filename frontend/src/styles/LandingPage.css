@@ -102,7 +102,7 @@
   text-decoration: none;
 }
 
-/* Demo-only: Practise and Your ePortfolio aren't clickable this iteration */
+/* Demo-only: Practice and Your ePortfolio aren't clickable this iteration */
 .lp-nav-link--static {
   color: rgba(15, 23, 40, 0.35);
   cursor: default;
@@ -146,20 +146,6 @@
   width: 40%;
   min-width: 420px;
   max-width: 576px;
-}
-
-.lp-eyebrow-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--violet-100);
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 1.98px;
-  color: var(--violet-600);
-  margin-bottom: 28px;
 }
 
 .lp-h1 {
@@ -454,7 +440,7 @@
   background: #ffffff;
 }
 
-.lp-practise {
+.lp-practice {
   background: var(--bg-app);
 }
 
@@ -855,7 +841,7 @@
   opacity: 0.38;
 }
 
-/* ---------- Practise: browser-chrome window ---------- */
+/* ---------- Practice: browser-chrome window ---------- */
 
 .lp-practice-window {
   width: 100%;
@@ -1229,7 +1215,7 @@
   color: rgba(15, 23, 40, 0.62);
 }
 
-/* ---------- Practise: scenario ---------- */
+/* ---------- Practice: scenario ---------- */
 
 .lp-scenario {
   display: flex;

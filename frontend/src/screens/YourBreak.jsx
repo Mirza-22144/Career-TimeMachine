@@ -150,7 +150,7 @@ export default function YourBreak() {
               <>
                 <div className="yb-timeline-ticks">
                   {timelineYears.map((y) => (
-                    <span key={y}>{y}</span>
+                    <span key={y}>{String(y).slice(-2)}</span>
                   ))}
                 </div>
                 <div className="yb-timeline-track">

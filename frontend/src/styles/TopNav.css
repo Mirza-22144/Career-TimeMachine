@@ -1,0 +1,180 @@
+/* Fixed top nav shared by every page (components/TopNav.jsx). Scoped under
+   .tn- so it doesn't collide with any page's own styles - it renders
+   outside every page's own root element via a React fragment. Redeclares
+   its own small palette subset rather than depending on .lp-page's scope,
+   matching the precedent already set by CareerJourney.css/OnboardingSidebar.css. */
+
+.tn-nav {
+  --violet-600: #7c3aed;
+  --violet-50: #f5f3ff;
+  --elevation-1: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+  --elevation-3: 0px 20px 48px -12px rgba(76, 29, 149, 0.16);
+  --bg-app: #f7f4ff;
+  --ink-900: #0f1728;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 84px;
+  padding: 0 clamp(24px, 4vw, 64px);
+  background: var(--bg-app);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+  font-family: 'Manrope', sans-serif;
+  box-sizing: border-box;
+}
+
+.tn-nav * {
+  box-sizing: border-box;
+}
+
+.tn-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tn-logo-mark {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  box-shadow: var(--elevation-1);
+  border-radius: 12px;
+}
+
+.tn-logo-emblem {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+}
+
+.tn-logo-word {
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 17px;
+  letter-spacing: -0.3px;
+  color: var(--ink-900);
+}
+
+.tn-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.tn-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.tn-nav-link {
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(15, 23, 40, 0.65);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Gated nav items (Career Journey, Practice Scenarios, ePortfolio) are real
+   buttons so they can run the token-gate check, styled to look identical
+   to the plain Home anchor. */
+.tn-nav-link--button {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tn-nav-link--active {
+  color: var(--violet-600);
+  border-bottom-color: var(--violet-600);
+}
+
+.tn-token-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 999px;
+  background: var(--bg-app);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--violet-600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tn-token-pill:hover {
+  background: var(--violet-50);
+}
+
+.tn-token-pill-dot {
+  width: 6px;
+  height: 6px;
+  min-width: 6px;
+  border-radius: 999px;
+  background: var(--violet-600);
+}
+
+/* Exception banners - shared by every access-token failure mode. */
+.tn-modal-error {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #0d1628;
+  border-radius: 12px;
+  box-shadow: var(--elevation-3);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.tn-modal-error button {
+  padding: 8px 16px;
+  background: var(--violet-600);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .tn-nav-links {
+    display: none;
+  }
+
+  .tn-token-pill {
+    display: none;
+  }
+}

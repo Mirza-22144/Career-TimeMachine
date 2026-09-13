@@ -1,114 +1,160 @@
 import { useEffect, useState } from 'react'
 import '../styles/CareerJourney.css'
+import TopNav from '../components/TopNav'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
-import { CheckIcon } from '../components/icons'
+import { consumeJustReturned } from '../accessToken.js'
 
-// Adds an "s" to a word when the count is more than one. Used to build the
-// "skills"/"years" text shown on this screen.
-const plural = (n, word) => (n === 1 ? `${n} ${word}` : `${n} ${word}s`)
-
-// One row of the timeline: a dot plus a label/text pair. `done` picks the
-// filled checkmark dot vs the pending outline; falls back to a muted
-// placeholder line when there's nothing to show yet.
-function Stage({ label, text, done, breakStage }) {
+// One row of the four-step journey timeline: a numbered badge, a title,
+// a value line, a caption, and an action button (Edit for steps the user
+// can still change, View for the read-only Skill Relevance Map).
+function JourneyStep({ number, title, value, caption, actionLabel, onAction }) {
   return (
-    <div className={`cj-stage ${breakStage ? 'cj-stage--break' : ''}`}>
-      <span className={`cj-stage-dot ${breakStage ? 'cj-stage-dot--break' : done ? '' : 'cj-stage-dot--pending'}`}>
-        {breakStage ? '◐' : done ? <CheckIcon size={12} color="#FFFFFF" /> : '•'}
-      </span>
-      <div className="cj-stage-body">
-        <span className="cj-stage-label">{label}</span>
-        {text ? <p className="cj-stage-text">{text}</p> : <p className="cj-stage-text cj-stage-text--muted">Not recorded yet.</p>}
+    <div className="cj-step">
+      <span className="cj-step-badge">{number}</span>
+      <div className="cj-step-body">
+        <span className="cj-step-title">{title}</span>
+        <p className="cj-step-value">{value || 'Not recorded yet.'}</p>
+        <p className="cj-step-caption">{caption}</p>
       </div>
+      <button type="button" className="cj-step-action" onClick={onAction}>
+        {actionLabel} <span aria-hidden="true">›</span>
+      </button>
     </div>
   )
 }
 
-// Final screen after the wizard, shown at the "/career-journey" URL.
-// Displays the completed journey as a timeline - the wizard steps collect
-// each piece, this screen shows them brought together, including the
-// return status which is only known once the wizard finishes.
+// Career Journey summary, shown at the "/career-journey" URL - reached via
+// the nav at any time (e.g. stepping away from a Workplace Scenario to fix
+// something), or right after entering a valid existing token, in which
+// case the heading briefly says "Welcome back" instead (AC 3.1.5/3.2.1).
 export default function CareerJourney() {
   const [loading, setLoading] = useState(true)
   const [journey, setJourney] = useState(null)
   const [direction, setDirection] = useState(null)
   const [areaLabel, setAreaLabel] = useState(null)
+  const [responsibilityLabels, setResponsibilityLabels] = useState([])
+  const [breakReasonLabel, setBreakReasonLabel] = useState(null)
+  const [translation, setTranslation] = useState(null)
+  // Read once on mount, not on every visit via the nav - only true right
+  // after AccessTokenModal validates an existing token.
+  const [justReturned] = useState(() => consumeJustReturned())
 
   useEffect(() => {
     async function load() {
-      const [journeyData, directionData, careerAreas] = await Promise.all([
-        api.getCareerJourney(),
-        api.getCareerDirection(),
-        api.getCatalogue('career-areas'),
-      ])
+      const [journeyData, directionData, careerAreas, profileData, responsibilities, breakReasons, translationData] =
+        await Promise.all([
+          api.getCareerJourney(),
+          api.getCareerDirection(),
+          api.getCatalogue('career-areas'),
+          api.getProfile(),
+          api.getCatalogue('responsibilities'),
+          api.getCatalogue('break-reasons'),
+          api.getCareerTranslation(),
+        ])
       setJourney(journeyData)
       setDirection(directionData)
       setAreaLabel(careerAreas.find((a) => a.id === directionData.area_to_explore)?.label)
+      setResponsibilityLabels(
+        [
+          ...profileData.responsibility_ids.map((id) => responsibilities.find((r) => r.id === id)?.label || id),
+          ...profileData.custom_responsibilities,
+        ],
+      )
+      setBreakReasonLabel(
+        profileData.break_reason === 'other'
+          ? profileData.break_reason_other_text
+          : breakReasons.find((r) => r.id === profileData.break_reason)?.label,
+      )
+      setTranslation(translationData)
       setLoading(false)
     }
     load()
   }, [])
 
-  if (loading) return <div className="cj-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="cj-page" />
+    </>
+  )
 
-  const skillCount = journey.selected_skills.catalogue_skills.length + journey.selected_skills.custom_skills.length
   const allSkills = [...journey.selected_skills.catalogue_skills.map((s) => s.label), ...journey.selected_skills.custom_skills]
-  const { career_break: careerBreak } = journey
 
-  let breakText = null
+  const { career_break: careerBreak } = journey
+  let breakValue = null
   if (careerBreak.break_started_on) {
-    const returnPart = careerBreak.return_date_unsure
-      ? 'return date still being decided'
-      : `returning ${careerBreak.planned_return_date?.slice(0, 4)}`
+    const startYear = careerBreak.break_started_on.slice(0, 4)
+    const endYear = careerBreak.return_date_unsure ? 'undecided' : careerBreak.planned_return_date?.slice(0, 4)
     const durationPart = careerBreak.break_duration_months != null
-      ? ` · ${plural(Math.round(careerBreak.break_duration_months / 12), 'year')} away`
+      ? ` · ${Math.round(careerBreak.break_duration_months / 12)} years away`
       : ''
-    breakText = `Started ${careerBreak.break_started_on.slice(0, 4)} · ${returnPart}${durationPart}`
+    breakValue = `${startYear} to ${endYear}${durationPart}`
   }
 
+  const ownedCount = translation.owned_skills.length + translation.custom_skills.length
+  const newHorizonsCount = translation.new_horizons.length
+
   return (
-    <div className="cj-page">
-      <main className="cj-content">
-        <span className="cj-eyebrow">YOUR CAREER JOURNEY</span>
-        <h1 className="cj-heading">Here is the journey you have built.</h1>
-        <p className="cj-subheading">Every stage below is part of your professional story, including the time you stepped away.</p>
+    <>
+      <TopNav />
+      <div className="cj-page">
+        <main className="cj-content">
+          <h1 className="cj-heading">{justReturned ? 'Welcome back' : 'Your Career Journey'}</h1>
+          <p className="cj-subheading">
+            Here&rsquo;s the journey you&rsquo;ve built so far. Everything is saved and ready when you are.
+          </p>
 
-        <div className="cj-timeline">
-          <Stage
-            label="Professional background"
-            done={!!journey.previous_role}
-            text={journey.previous_role && `${journey.previous_role.label} · ${journey.years_experience?.label || 'experience not recorded'}`}
-          />
-          <Stage
-            label="Skills you're bringing back"
-            done={allSkills.length > 0}
-            text={allSkills.length > 0 && `${plural(skillCount, 'skill')}: ${allSkills.join(', ')}`}
-          />
-          <Stage label="Career break" breakStage text={breakText} />
-          <Stage
-            label="Current return status"
-            done={!!journey.current_return_status}
-            text={journey.current_return_status?.label}
-          />
-        </div>
-
-        {direction?.area_to_explore && (
-          <div className="cj-direction-card">
-            <span className="cj-direction-label">YOUR CHOSEN DIRECTION</span>
-            <p className="cj-direction-text">{areaLabel || direction.area_to_explore}</p>
+          <div className="cj-timeline">
+            <JourneyStep
+              number="01"
+              title="Your Story"
+              value={journey.previous_role && `${journey.previous_role.label} · ${journey.years_experience?.label || ''}`}
+              caption="Where your professional story started"
+              actionLabel="Edit"
+              onAction={() => navigate('/your-story')}
+            />
+            <JourneyStep
+              number="02"
+              title="Your Experience"
+              value={allSkills.length > 0 ? allSkills.join(' · ') : null}
+              caption={responsibilityLabels.length > 0 ? responsibilityLabels.join(' · ') : 'No responsibilities recorded yet.'}
+              actionLabel="Edit"
+              onAction={() => navigate('/your-experience')}
+            />
+            <JourneyStep
+              number="03"
+              title="Your Break"
+              value={breakValue}
+              caption={breakReasonLabel || 'No reason shared.'}
+              actionLabel="Edit"
+              onAction={() => navigate('/your-break')}
+            />
+            <JourneyStep
+              number="04"
+              title="Skill Relevance Map"
+              value={`${ownedCount} skills you keep · ${newHorizonsCount} worth exploring`}
+              caption="What your field values now, based on what you already have"
+              actionLabel="View"
+              onAction={() => navigate('/skill-relevance-map')}
+            />
           </div>
-        )}
 
-        <div className="cj-scenario-note">
-          <strong>Workplace scenarios are coming soon.</strong>
-          <p>This is where you'll be able to practise a realistic scenario for your chosen direction.</p>
-        </div>
+          {direction?.area_to_explore && (
+            <div className="cj-direction-card">
+              <span className="cj-direction-label">YOUR CHOSEN DIRECTION</span>
+              <p className="cj-direction-text">{areaLabel || direction.area_to_explore}</p>
+            </div>
+          )}
 
-        <button type="button" className="cj-home-link" onClick={() => navigate('/')}>
-          Back to Home
-        </button>
-      </main>
-    </div>
+          <div className="cj-continue-row">
+            <button type="button" className="cj-continue" onClick={() => navigate('/workplace-scenario')}>
+              Continue your journey <span aria-hidden="true">→</span>
+            </button>
+            <span className="cj-continue-note">Or edit any stage above. Nothing is locked in.</span>
+          </div>
+        </main>
+      </div>
+    </>
   )
 }

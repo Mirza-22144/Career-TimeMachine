@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/YourExperience.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
+import TopNav from '../components/TopNav'
 import ExperienceSummaryCard from '../components/ExperienceSummaryCard'
 import { stepTwoData } from '../mockData/onboardingData'
 import { api } from '../api.js'
@@ -149,7 +150,12 @@ export default function YourExperience() {
     navigate('/your-break')
   }
 
-  if (loading) return <div className="ye-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="ye-page" />
+    </>
+  )
 
   // Looks up a skill's display label from its id.
   const skillLabel = (id) => allSkills.find((s) => s.id === id)?.label || catalogueSkills.find((s) => s.id === id)?.label || id
@@ -181,7 +187,9 @@ export default function YourExperience() {
   const suggestedSkills = [...extraSelectedSkills, ...topSkills]
 
   return (
-    <div className="ye-page">
+    <>
+      <TopNav />
+      <div className="ye-page">
       <OnboardingSidebar currentStep={2} showPhoto={false} />
 
       <main className="ye-form-panel">
@@ -397,6 +405,7 @@ export default function YourExperience() {
         skills={selectedSkillLabels}
         responsibilities={selectedResponsibilityLabels}
       />
-    </div>
+      </div>
+    </>
   )
 }

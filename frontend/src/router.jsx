@@ -6,6 +6,8 @@ import YourBreak from './screens/YourBreak.jsx'
 import SkillRelevanceMap from './screens/SkillRelevanceMap.jsx'
 import YourDirection from './screens/YourDirection.jsx'
 import CareerJourney from './screens/CareerJourney.jsx'
+import WorkplaceScenario from './screens/WorkplaceScenario.jsx'
+import { getCurrentPath } from './navigate.js'
 
 // Path -> screen component. Add an entry here as each new screen is built.
 const routes = {
@@ -16,13 +18,7 @@ const routes = {
   '/skill-relevance-map': SkillRelevanceMap,
   '/your-direction': YourDirection,
   '/career-journey': CareerJourney,
-}
-
-// Reads the current screen path out of the URL hash. Used by Router below
-// to pick which screen to show, and again each time the hash changes.
-function getCurrentPath() {
-  const hash = window.location.hash.replace(/^#/, '')
-  return hash || '/'
+  '/workplace-scenario': WorkplaceScenario,
 }
 
 // Renders whichever screen matches the current URL hash, and re-renders on

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import '../styles/SkillRelevanceMap.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
+import TopNav from '../components/TopNav'
 import { stepFourData } from '../mockData/onboardingData'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
@@ -75,7 +76,12 @@ export default function SkillRelevanceMap() {
 
   const { lines, top, bottom } = useFanLines(mapRef, [data?.new_horizons.length, data?.owned_skills.length, showAllHorizons])
 
-  if (loading) return <div className="srm-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="srm-page" />
+    </>
+  )
 
   const ownedSkills = [
     ...data.owned_skills,
@@ -86,7 +92,9 @@ export default function SkillRelevanceMap() {
   const hasMoreHorizons = horizons.length > DEFAULT_HORIZON_COUNT
 
   return (
-    <div className="srm-page">
+    <>
+      <TopNav />
+      <div className="srm-page">
       <OnboardingSidebar currentStep={4} showPhoto={false} />
 
       <main className="srm-form-panel">
@@ -181,6 +189,7 @@ export default function SkillRelevanceMap() {
           </button>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import '../styles/YourStory.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
+import TopNav from '../components/TopNav'
 import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, roleSearchAliases } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
@@ -88,10 +89,17 @@ export default function YourStory() {
     navigate('/your-experience')
   }
 
-  if (loading) return <div className="ys-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="ys-page" />
+    </>
+  )
 
   return (
-    <div className="ys-page">
+    <>
+      <TopNav />
+      <div className="ys-page">
       <OnboardingSidebar currentStep={1} backgroundImage={sidebarPhoto} />
 
       <main className="ys-form-panel">
@@ -187,6 +195,7 @@ export default function YourStory() {
           {!canContinue && <p className="ys-hint">{hint}</p>}
         </div>
       </main>
-    </div>
+      </div>
+    </>
   )
 }

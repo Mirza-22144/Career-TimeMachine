@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
+import TopNav from '../components/TopNav'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
@@ -95,10 +96,17 @@ export default function YourBreak() {
     }
   }
 
-  if (loading) return <div className="yb-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="yb-page" />
+    </>
+  )
 
   return (
-    <div className="yb-page">
+    <>
+      <TopNav />
+      <div className="yb-page">
       <OnboardingSidebar currentStep={3} showPhoto={false} />
 
       <main className="yb-form-panel">
@@ -180,6 +188,7 @@ export default function YourBreak() {
       </main>
 
       <SidePhotoPanel backgroundImage={breakPhoto} label={sidePhoto.label} value={sidePhoto.value} caption={sidePhoto.caption} />
-    </div>
+      </div>
+    </>
   )
 }

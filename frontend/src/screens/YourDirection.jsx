@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/YourDirection.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
+import TopNav from '../components/TopNav'
 import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
@@ -48,14 +49,20 @@ export default function YourDirection() {
   if (!pace) hint = 'Select a return status to continue.'
   else if (!areaId) hint = 'Select an area to explore to continue.'
 
-  // Saves the chosen pace and area, then moves to the Career Journey
-  // summary screen. Runs when the Continue button is clicked.
+  // Saves the chosen pace and area, then moves straight into a Workplace
+  // Scenario for the chosen area - Career Journey is reached later via the
+  // nav, not as part of finishing the wizard. Runs when Continue is clicked.
   const handleContinue = async () => {
     await api.patchCareerDirection({ return_readiness: pace, area_to_explore: areaId })
-    navigate('/career-journey')
+    navigate('/workplace-scenario')
   }
 
-  if (loading) return <div className="yd-page" />
+  if (loading) return (
+    <>
+      <TopNav />
+      <div className="yd-page" />
+    </>
+  )
 
   const skillCount = journey.selected_skills.catalogue_skills.length + journey.selected_skills.custom_skills.length
   const journeySteps = [
@@ -70,7 +77,9 @@ export default function YourDirection() {
   ]
 
   return (
-    <div className="yd-page">
+    <>
+      <TopNav />
+      <div className="yd-page">
       <OnboardingSidebar currentStep={5} showPhoto={false} />
 
       <main className="yd-form-panel">
@@ -153,6 +162,7 @@ export default function YourDirection() {
           {!canContinue && <p className="yd-hint">{hint}</p>}
         </div>
       </main>
-    </div>
+      </div>
+    </>
   )
 }

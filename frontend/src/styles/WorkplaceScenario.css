@@ -1,0 +1,64 @@
+.ws-page {
+  --violet-700: #6d28d9;
+  --violet-600: #7c3aed;
+  --violet-50: #f5f3ff;
+  --bg-app: #f7f4ff;
+  --ink-900: #0f1728;
+  --ink-600: #6b6685;
+
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 64px 24px;
+  padding-top: 148px;
+  font-family: 'Manrope', sans-serif;
+  color: var(--ink-900);
+  background: var(--bg-app);
+  box-sizing: border-box;
+}
+
+.ws-page * {
+  box-sizing: border-box;
+}
+
+.ws-content {
+  width: 100%;
+  max-width: 680px;
+  text-align: center;
+}
+
+.ws-eyebrow {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  color: var(--violet-600);
+}
+
+.ws-heading {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.ws-subheading {
+  margin: 0 0 36px;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--ink-600);
+}
+
+.ws-back-link {
+  padding: 14px 24px;
+  background: none;
+  border: 1px solid rgba(15, 23, 40, 0.15);
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-900);
+  cursor: pointer;
+}

@@ -1,11 +1,10 @@
 import '../styles/OnboardingSidebar.css'
-import logoEmblem from '../assets/Logo.png'
 import { onboardingSteps, sidebarBrand, sidebarStat, sidebarQuote } from '../mockData/onboardingData'
 import { navigate } from '../navigate.js'
 import { CheckIcon } from './icons'
 
-// Dark left-hand panel shared by every step of the onboarding wizard: logo
-// and name at the top, a step-by-step progress list, an optional photo
+// Left-hand panel shared by every step of the onboarding wizard, shown
+// below the shared TopNav: a step-by-step progress list, an optional photo
 // panel with a stat card and quote, and a progress bar at the bottom.
 //
 // `backgroundImage` is optional — falls back to a plain gradient until a
@@ -19,12 +18,6 @@ export default function OnboardingSidebar({ currentStep, backgroundImage, showPh
     <aside className={`ob-sidebar ${showPhoto ? '' : 'ob-sidebar--no-photo'}`}>
       <div className="ob-stepper-col">
         <div>
-          <button type="button" className="ob-brand" onClick={() => navigate('/')}>
-            <span className="ob-brand-mark">
-              <img src={logoEmblem} alt="CareerTimeMachine emblem" className="ob-brand-emblem" />
-            </span>
-            <span className="ob-brand-word">CareerTimeMachine</span>
-          </button>
           <p className="ob-brand-tagline">{sidebarBrand.tagline}</p>
 
           {previousStep && (

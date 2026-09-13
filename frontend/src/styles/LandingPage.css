@@ -34,23 +34,8 @@
   box-sizing: border-box;
 }
 
-/* ---------- Navigation ---------- */
-
-.lp-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 84px;
-  padding: 0 clamp(24px, 4vw, 64px);
-  background: var(--bg-app);
-  border-bottom: 1px solid rgba(124, 58, 237, 0.1);
-}
+/* ---------- Logo (nav itself now lives in components/TopNav.jsx; this
+   page still uses .lp-logo* for the footer's dark-theme wordmark) ---------- */
 
 .lp-logo {
   display: flex;
@@ -85,87 +70,6 @@
   line-height: 17px;
   letter-spacing: -0.3px;
   color: var(--ink-900);
-}
-
-.lp-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.lp-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-
-.lp-nav-link {
-  padding: 8px 0;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 18px;
-  color: rgba(15, 23, 40, 0.65);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-/* Gated nav items (Career Journey, Practice Scenarios, ePortfolio) are real
-   buttons so they can run the token-gate check, styled to look identical
-   to the plain anchor links above. */
-.lp-nav-link--button {
-  border: none;
-  background: none;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.lp-btn-outline {
-  display: flex;
-  align-items: center;
-  padding: 16px 28px;
-  border: 1px solid rgba(124, 58, 237, 0.25);
-  border-radius: 12px;
-  background: transparent;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--violet-600);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.lp-btn-outline:hover {
-  background: var(--violet-50);
-}
-
-/* Iteration 2's sign-on/token feature isn't built yet - visual placeholder */
-.lp-token-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border: 1px solid rgba(124, 58, 237, 0.35);
-  border-radius: 999px;
-  background: var(--bg-app);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--violet-600);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.lp-token-pill:hover {
-  background: var(--violet-50);
-}
-
-.lp-token-pill-dot {
-  width: 6px;
-  height: 6px;
-  min-width: 6px;
-  border-radius: 999px;
-  background: var(--violet-600);
 }
 
 /* ---------- Hero ---------- */
@@ -586,38 +490,6 @@
 
 /* ---------- Misc ---------- */
 
-/* AC 3.1.1 exception: shown if the Access Your Journey modal fails to open. */
-.lp-modal-error {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  z-index: 210;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 20px;
-  background: #0d1628;
-  border-radius: 12px;
-  box-shadow: var(--elevation-3);
-  font-weight: 500;
-  font-size: 13px;
-  color: #ffffff;
-}
-
-.lp-modal-error button {
-  padding: 8px 16px;
-  background: var(--violet-600);
-  border: none;
-  border-radius: 999px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 12px;
-  color: #ffffff;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
 .lp-spin {
   animation: lp-spin 0.8s linear infinite;
 }
@@ -644,14 +516,6 @@
 }
 
 @media (max-width: 900px) {
-  .lp-nav-links {
-    display: none;
-  }
-
-  .lp-token-pill {
-    display: none;
-  }
-
   .lp-hero-copy {
     width: 100%;
     max-width: none;

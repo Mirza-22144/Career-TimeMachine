@@ -11,15 +11,16 @@
   display: flex;
   align-items: stretch;
   flex: 0 0 640px;
-  /* Sticks to the top of the viewport as the page scrolls, instead of being
-     stretched to match a tall page and scrolling away with it - that
-     stretching is also what pushed the scrollbar for a 3-column step (e.g.
-     Your Experience) into the middle of the screen instead of the true
-     right edge, since the middle column had its own separate scrollbar. */
+  /* Sticks below the shared fixed TopNav (84px) as the page scrolls, instead
+     of being stretched to match a tall page and scrolling away with it -
+     that stretching is also what pushed the scrollbar for a 3-column step
+     (e.g. Your Experience) into the middle of the screen instead of the
+     true right edge, since the middle column had its own separate scrollbar. */
   position: sticky;
-  top: 0;
+  top: 84px;
   align-self: flex-start;
-  height: 100vh;
+  height: calc(100vh - 84px);
+  z-index: 10;
   background: var(--navy-900);
   font-family: 'Manrope', sans-serif;
   box-sizing: border-box;
@@ -42,15 +43,6 @@
   padding: 32px 24px;
 }
 
-.ob-brand {
-  all: unset;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  cursor: pointer;
-}
-
 .ob-back {
   all: unset;
   display: inline-flex;
@@ -63,31 +55,6 @@
 }
 
 .ob-back:hover {
-  color: #ffffff;
-}
-
-.ob-brand-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  padding: 4px;
-  background: #ffffff;
-  border-radius: 12px;
-}
-
-.ob-brand-emblem {
-  width: 28px;
-  height: 28px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-.ob-brand-word {
-  font-weight: 800;
-  font-size: 15px;
   color: #ffffff;
 }
 

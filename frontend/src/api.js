@@ -82,6 +82,10 @@ async function createSession(force = false) {
 
 export const api = {
   createSession,
+  // Points future requests at a specific, already-known session token -
+  // used to restore a returning visitor's session once her access token has
+  // been mapped back to it (see accessToken.js).
+  restoreSession: (token) => setToken(token),
   getCatalogue: (kind) => request(`/catalogue/${kind}`),
   // Skills depend on the previously selected role — omit roleId for the flat fallback list.
   getSkills: (roleId) => request(`/catalogue/skills${roleId ? `?role_id=${encodeURIComponent(roleId)}` : ''}`),

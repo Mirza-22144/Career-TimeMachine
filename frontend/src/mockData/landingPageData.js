@@ -1,14 +1,15 @@
 // Mock data for the Landing screen (frontend/src/screens/LandingPage.jsx).
 // Nothing here is wired to the backend yet — replace with real API data later.
 
-// Top navigation links. `gated: true` marks a token-dependent destination
-// (see LandingPage.jsx) - selecting it checks for an active access token
-// first and shows the "Access token required" notice if there isn't one,
-// instead of scrolling/navigating. "Home" is the only ungated link.
+// Top navigation links, shared across every page via components/TopNav.jsx.
+// `gated: true` marks a token-dependent destination - selecting it checks
+// for an active access token first and shows the "Access token required"
+// notice if there isn't one, instead of navigating. "Home" is the only
+// ungated link. ePortfolio has no real page yet, so its href stays "#".
 export const navLinks = [
-  { label: "Home", href: "#hero", gated: false },
+  { label: "Home", href: "/", gated: false },
   { label: "Career Journey", href: "/career-journey", gated: true },
-  { label: "Practice Scenarios", href: "#", gated: true },
+  { label: "Practice Scenarios", href: "/workplace-scenario", gated: true },
   { label: "ePortfolio", href: "#", gated: true },
 ];
 

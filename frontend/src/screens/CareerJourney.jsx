@@ -4,6 +4,7 @@ import TopNav from '../components/TopNav'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { consumeJustReturned } from '../accessToken.js'
+import { setEditReturn } from '../editReturn.js'
 
 // One row of the four-step journey timeline: a numbered badge, a title,
 // a value line, a caption, and an action button (Edit for steps the user
@@ -30,6 +31,7 @@ function JourneyStep({ number, title, value, caption, actionLabel, onAction }) {
 // case the heading briefly says "Welcome back" instead (AC 3.1.5/3.2.1).
 export default function CareerJourney() {
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
   const [direction, setDirection] = useState(null)
   const [areaLabel, setAreaLabel] = useState(null)
@@ -40,8 +42,8 @@ export default function CareerJourney() {
   // after AccessTokenModal validates an existing token.
   const [justReturned] = useState(() => consumeJustReturned())
 
-  useEffect(() => {
-    async function load() {
+  const load = async () => {
+    try {
       const [journeyData, directionData, careerAreas, profileData, responsibilities, breakReasons, translationData] =
         await Promise.all([
           api.getCareerJourney(),
@@ -68,14 +70,41 @@ export default function CareerJourney() {
       )
       setTranslation(translationData)
       setLoading(false)
+    } catch {
+      setLoadError(true)
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    async function run() {
+      await load()
+    }
+    run()
   }, [])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setLoadError(false)
+    load()
+  }
 
   if (loading) return (
     <>
       <TopNav />
       <div className="cj-page" />
+    </>
+  )
+
+  if (loadError) return (
+    <>
+      <TopNav />
+      <div className="cj-page">
+        <div className="cj-load-error">
+          <p>We couldn&rsquo;t load your saved information. Please try again.</p>
+          <button type="button" onClick={retryLoad}>Try Again</button>
+        </div>
+      </div>
     </>
   )
 
@@ -112,7 +141,7 @@ export default function CareerJourney() {
               value={journey.previous_role && `${journey.previous_role.label} · ${journey.years_experience?.label || ''}`}
               caption="Where your professional story started"
               actionLabel="Edit"
-              onAction={() => navigate('/your-story')}
+              onAction={() => { setEditReturn(); navigate('/your-story') }}
             />
             <JourneyStep
               number="02"
@@ -120,7 +149,7 @@ export default function CareerJourney() {
               value={allSkills.length > 0 ? allSkills.join(' · ') : null}
               caption={responsibilityLabels.length > 0 ? responsibilityLabels.join(' · ') : 'No responsibilities recorded yet.'}
               actionLabel="Edit"
-              onAction={() => navigate('/your-experience')}
+              onAction={() => { setEditReturn(); navigate('/your-experience') }}
             />
             <JourneyStep
               number="03"
@@ -128,7 +157,7 @@ export default function CareerJourney() {
               value={breakValue}
               caption={breakReasonLabel || 'No reason shared.'}
               actionLabel="Edit"
-              onAction={() => navigate('/your-break')}
+              onAction={() => { setEditReturn(); navigate('/your-break') }}
             />
             <JourneyStep
               number="04"

@@ -7,6 +7,7 @@ import { stepOneData, roleSearchAliases } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
 import { navigate } from '../navigate.js'
 import { api } from '../api.js'
+import { consumeEditReturn } from '../editReturn.js'
 
 /**
  * Step 1 of the onboarding wizard, shown at the "/your-story" URL, right
@@ -17,6 +18,8 @@ import { api } from '../api.js'
  */
 export default function YourStory() {
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [roles, setRoles] = useState([])
   const [experienceOptions, setExperienceOptions] = useState([])
 
@@ -24,9 +27,12 @@ export default function YourStory() {
   const [selectedRoleId, setSelectedRoleId] = useState(null)
   const [otherRoleText, setOtherRoleText] = useState('')
   const [selectedYearsId, setSelectedYearsId] = useState(null)
+  // Read once on mount - true only when this page was reached via Career
+  // Journey's Edit button, not via the normal linear wizard (AC 3.2.2/3.2.3).
+  const [isEditReturn] = useState(() => consumeEditReturn())
 
-  useEffect(() => {
-    async function load() {
+  const load = async () => {
+    try {
       const [rolesData, experienceData, profile] = await Promise.all([
         api.getCatalogue('roles'),
         api.getCatalogue('experience-options'),
@@ -41,9 +47,24 @@ export default function YourStory() {
       // directly selectable without having to drag away and back first.
       setSelectedYearsId(profile.years_experience || experienceData[0]?.id || null)
       setLoading(false)
+    } catch {
+      setLoadError(true)
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    async function run() {
+      await load()
+    }
+    run()
   }, [])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setLoadError(false)
+    load()
+  }
 
   // Capped to 10 - the real catalogue can run into the dozens, and a search
   // narrows it down further if the role isn't in the first 10 shown. A role
@@ -81,18 +102,44 @@ export default function YourStory() {
   // Saves the role and years chosen on this screen, then moves to step 2.
   // Runs when the Continue button is clicked.
   const handleContinue = async () => {
-    await api.patchProfile({
-      role_id: selectedRoleId,
-      role_other_text: isOther ? otherRoleText.trim() : null,
-      years_experience: selectedYearsId,
-    })
-    navigate('/your-experience')
+    setSaveError('')
+    try {
+      await api.patchProfile({
+        role_id: selectedRoleId,
+        role_other_text: isOther ? otherRoleText.trim() : null,
+        years_experience: selectedYearsId,
+      })
+      if (isEditReturn) {
+        // A profile edit clears the backend's confirmed flag, and Career
+        // Journey requires a confirmed profile to load - re-confirm before
+        // heading back there. Safe here: every required field was already
+        // filled in and confirmed the first time through the wizard.
+        await api.confirmProfile()
+        navigate('/career-journey')
+      } else {
+        navigate('/your-experience')
+      }
+    } catch {
+      setSaveError("We couldn't save your changes. Your previous information is still available.")
+    }
   }
 
   if (loading) return (
     <>
       <TopNav />
       <div className="ys-page" />
+    </>
+  )
+
+  if (loadError) return (
+    <>
+      <TopNav />
+      <div className="ys-page">
+        <div className="ys-load-error">
+          <p>We couldn&rsquo;t load your saved information. Please try again.</p>
+          <button type="button" onClick={retryLoad}>Try Again</button>
+        </div>
+      </div>
     </>
   )
 
@@ -196,6 +243,13 @@ export default function YourStory() {
         </div>
       </main>
       </div>
+
+      {saveError && (
+        <div className="tn-modal-error">
+          <span>{saveError}</span>
+          <button type="button" onClick={handleContinue}>Try Again</button>
+        </div>
+      )}
     </>
   )
 }

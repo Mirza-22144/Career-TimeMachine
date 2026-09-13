@@ -8,6 +8,7 @@ import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { ArrowRightIcon } from '../components/icons'
+import { consumeEditReturn } from '../editReturn.js'
 
 // Maps confirm-profile's missing-field codes to plain text, since they can
 // come from an earlier step (see PROFILE_INCOMPLETE in the API contract).
@@ -38,6 +39,7 @@ const dateToYear = (date) => (date ? date.slice(0, 4) : '')
 // before moving on to the Skill Relevance Map.
 export default function YourBreak() {
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   const [startYear, setStartYear] = useState('')
   const [returnYear, setReturnYear] = useState('')
@@ -46,17 +48,35 @@ export default function YourBreak() {
   // Only shows the incomplete-timeline hint after the user actually tries
   // to continue, not just because a year is still empty on first load.
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
+  // Read once on mount - true only when this page was reached via Career
+  // Journey's Edit button, not via the normal linear wizard (AC 3.2.2/3.2.3).
+  const [isEditReturn] = useState(() => consumeEditReturn())
 
-  useEffect(() => {
-    async function load() {
+  const load = async () => {
+    try {
       const profile = await api.getProfile()
       setStartYear(dateToYear(profile.break_started_on))
       setReturnYear(dateToYear(profile.planned_return_date))
       setReturnUnsure(profile.return_date_unsure)
       setLoading(false)
+    } catch {
+      setLoadError(true)
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    async function run() {
+      await load()
+    }
+    run()
   }, [])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setLoadError(false)
+    load()
+  }
 
   const start = Number(startYear)
   const end = Number(returnYear)
@@ -85,13 +105,13 @@ export default function YourBreak() {
         return_date_unsure: returnUnsure,
       })
       await api.confirmProfile()
-      navigate('/skill-relevance-map')
+      navigate(isEditReturn ? '/career-journey' : '/skill-relevance-map')
     } catch (err) {
       if (err instanceof ApiError && err.code === 'PROFILE_INCOMPLETE' && err.details?.length) {
         const missing = err.details.map((f) => MISSING_FIELD_LABELS[f] || f).join(', ')
         setConfirmError(`Please go back and complete: ${missing}.`)
       } else {
-        setConfirmError('Something went wrong saving your answers. Please try again.')
+        setConfirmError("We couldn't save your changes. Your previous information is still available.")
       }
     }
   }
@@ -100,6 +120,18 @@ export default function YourBreak() {
     <>
       <TopNav />
       <div className="yb-page" />
+    </>
+  )
+
+  if (loadError) return (
+    <>
+      <TopNav />
+      <div className="yb-page">
+        <div className="yb-load-error">
+          <p>We couldn&rsquo;t load your saved information. Please try again.</p>
+          <button type="button" onClick={retryLoad}>Try Again</button>
+        </div>
+      </div>
     </>
   )
 
@@ -183,7 +215,12 @@ export default function YourBreak() {
             <ArrowRightIcon size={16} />
           </button>
           {attemptedSubmit && !canContinue && <p className="yb-hint">{timelineMessage}</p>}
-          {confirmError && <p className="yb-hint">{confirmError}</p>}
+          {confirmError && (
+            <div className="tn-modal-error">
+              <span>{confirmError}</span>
+              <button type="button" onClick={handleContinue}>Try Again</button>
+            </div>
+          )}
         </div>
       </main>
 

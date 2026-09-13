@@ -7,6 +7,7 @@ import { stepTwoData } from '../mockData/onboardingData'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
+import { consumeEditReturn } from '../editReturn.js'
 
 // Default pill count and search/suggestion cap, so a role with hundreds of
 // linked skills never dumps a full list onto the screen.
@@ -55,6 +56,8 @@ function useTagDraft(commitValue, emptyErrorMessage) {
  */
 export default function YourExperience() {
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [catalogueSkills, setCatalogueSkills] = useState([])
   const [allSkills, setAllSkills] = useState([])
   const [catalogueResponsibilities, setCatalogueResponsibilities] = useState([])
@@ -68,9 +71,12 @@ export default function YourExperience() {
 
   const [selectedResponsibilityIds, setSelectedResponsibilityIds] = useState([])
   const [customResponsibilities, setCustomResponsibilities] = useState([])
+  // Read once on mount - true only when this page was reached via Career
+  // Journey's Edit button, not via the normal linear wizard (AC 3.2.2/3.2.3).
+  const [isEditReturn] = useState(() => consumeEditReturn())
 
-  useEffect(() => {
-    async function load() {
+  const load = async () => {
+    try {
       const [responsibilities, rolesData, experienceData, profileData] = await Promise.all([
         api.getCatalogue('responsibilities'),
         api.getCatalogue('roles'),
@@ -95,9 +101,24 @@ export default function YourExperience() {
       setSelectedResponsibilityIds(profileData.responsibility_ids || [])
       setCustomResponsibilities(profileData.custom_responsibilities || [])
       setLoading(false)
+    } catch {
+      setLoadError(true)
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    async function run() {
+      await load()
+    }
+    run()
   }, [])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setLoadError(false)
+    load()
+  }
 
   // Adds or removes a skill id from the selected list. Used when a skill
   // pill or suggestion is clicked.
@@ -141,19 +162,45 @@ export default function YourExperience() {
   // Saves the chosen skills and responsibilities, then moves to step 3.
   // Runs when the Continue button is clicked.
   const handleContinue = async () => {
-    await api.patchProfile({
-      skill_ids: selectedSkillIds,
-      custom_skills: customSkills,
-      responsibility_ids: selectedResponsibilityIds,
-      custom_responsibilities: customResponsibilities,
-    })
-    navigate('/your-break')
+    setSaveError('')
+    try {
+      await api.patchProfile({
+        skill_ids: selectedSkillIds,
+        custom_skills: customSkills,
+        responsibility_ids: selectedResponsibilityIds,
+        custom_responsibilities: customResponsibilities,
+      })
+      if (isEditReturn) {
+        // A profile edit clears the backend's confirmed flag, and Career
+        // Journey requires a confirmed profile to load - re-confirm before
+        // heading back there. Safe here: every required field was already
+        // filled in and confirmed the first time through the wizard.
+        await api.confirmProfile()
+        navigate('/career-journey')
+      } else {
+        navigate('/your-break')
+      }
+    } catch {
+      setSaveError("We couldn't save your changes. Your previous information is still available.")
+    }
   }
 
   if (loading) return (
     <>
       <TopNav />
       <div className="ye-page" />
+    </>
+  )
+
+  if (loadError) return (
+    <>
+      <TopNav />
+      <div className="ye-page">
+        <div className="ye-load-error">
+          <p>We couldn&rsquo;t load your saved information. Please try again.</p>
+          <button type="button" onClick={retryLoad}>Try Again</button>
+        </div>
+      </div>
     </>
   )
 
@@ -396,6 +443,7 @@ export default function YourExperience() {
             {stepTwoData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
+          {selectedSkillLabels.length === 0 && <p className="ye-hint">Select at least one skill to continue.</p>}
         </div>
       </main>
 
@@ -406,6 +454,13 @@ export default function YourExperience() {
         responsibilities={selectedResponsibilityLabels}
       />
       </div>
+
+      {saveError && (
+        <div className="tn-modal-error">
+          <span>{saveError}</span>
+          <button type="button" onClick={handleContinue}>Try Again</button>
+        </div>
+      )}
     </>
   )
 }

@@ -62,10 +62,21 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Blocks / Blocked by:** blocked by BE 2.2 (progress endpoints) and B2.
 
 ### FE 2.3 - Sign-on screen (placeholder)
-- **Status:** [TODO]  **Owner:** TBD  **Date:** TBD
-- **What:** entry point for the new sign-on. Token-based first; designed so TOTP can slot in later.
-- **Why:** goal 3.
-- **Blocks / Blocked by:** blocked by B3.
+- **Status:** [DONE]  **Owner:** Thiri  **Date:** 2026-09-13
+- **What:** Access Your Journey modal (generate new / enter existing token), the
+  generated-token display with copy, existing-token validation with the
+  empty/invalid error states, token-dependent nav gating (Career Journey,
+  Practice Scenarios, ePortfolio) with the "access token required" notice,
+  and the My Token view once a token is active. All exception-condition
+  messages from AC 3.1.1-3.1.5 are wired up. Token-based, designed so TOTP
+  can slot in later.
+- **Why:** goal 3 - covers the full frontend side of sign-on for this
+  iteration end to end.
+- **Blocks / Blocked by:** the token itself is a client-side mock
+  (sessionStorage only, see `frontend/src/accessToken.js`) - frontend is no
+  longer blocked by B3, but real persistence still needs B2/DB 2.1 and a
+  real backend-issued token still needs BE 2.3. Once those land, only
+  `accessToken.js` needs to change, not this UI.
 
 ### FE 2.4 - Robustness + security hardening (frontend)
 - **Status:** [TODO]  **Owner:** TBD  **Date:** TBD

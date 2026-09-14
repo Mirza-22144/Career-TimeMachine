@@ -48,6 +48,12 @@ class Profile:
     return_readiness: str | None = None
     area_to_explore: str | None = None
 
+    # Role chosen for workplace practice: a role catalogue id, and whether it
+    # is the user's "previous" role or a "predicted" one. Needs two new
+    # columns on the profile table for restart persistence.
+    practice_role_id: str | None = None
+    practice_role_source: str | None = None
+
     # Confirmation means the profile passed the completeness rules. Later edits
     # invalidate this flag so the frontend can ask the user to reconfirm.
     confirmed: bool = False

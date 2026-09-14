@@ -10,6 +10,7 @@ from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
 from app.services.catalogue_service import CatalogueService
+from app.services.practice_role_service import PracticeRoleService
 from app.services.profile_service import ProfileService
 from app.services.session_service import SessionService
 
@@ -75,3 +76,8 @@ def get_career_translation_service() -> CareerTranslationService:
 def get_career_direction_service() -> CareerDirectionService:
     """Build direction service with shared profile and catalogue repositories."""
     return CareerDirectionService(_profile_repository, _catalogue_repository)
+
+
+def get_practice_role_service() -> PracticeRoleService:
+    """Build practice-role service with shared profile and catalogue repositories."""
+    return PracticeRoleService(_profile_repository, _catalogue_repository)

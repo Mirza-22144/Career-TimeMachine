@@ -468,3 +468,70 @@ const res = await fetch("/api/v1/career-direction", {
   body: JSON.stringify({ area_to_explore: "cloud_native_engineering" }),
 });
 ```
+
+## Practice Role (Iteration 2)
+
+The role chosen on Your Direction for workplace practice (AC 4.1.2). It is
+stored against the token, so it is available after a refresh and to
+`POST /practice-sessions` without the user re-entering anything.
+
+### `GET /practice-role`
+
+Request body: none
+
+Success `200`:
+
+```json
+{
+  "role_id": "software_engineer",
+  "role_label": "Software Engineer",
+  "source": "previous"
+}
+```
+
+All three fields are `null` when no role is selected. A `previous` selection
+also reads as `null` once the saved previous role (`PATCH /profile` `role_id`)
+has been changed, so the user chooses again.
+
+Errors:
+
+- `401` when `X-Session-Token` is missing or invalid.
+
+### `PUT /practice-role`
+
+Request body (both fields required, no other fields allowed):
+
+```json
+{
+  "role_id": "web_developer",
+  "source": "predicted"
+}
+```
+
+- `role_id`: role catalogue id, 1-64 characters of `a-z 0-9 _`.
+- `source`: `"previous"` or `"predicted"`.
+
+Success `200`: same shape as `GET /practice-role`. For the `other` previous
+role, `role_label` is the user's `role_other_text`.
+
+Errors:
+
+- `400` `"Invalid role_id: <id>"` when the id is not in the role catalogue
+  (or is `other` with `source: "predicted"`).
+- `400` `"role_id must match the saved previous role"` when `source` is
+  `previous` but the id is not the profile's `role_id`.
+- `401` when `X-Session-Token` is missing or invalid.
+- `422` `REQUEST_VALIDATION_ERROR` for a missing field, bad `source`, bad id
+  format or an unexpected field.
+
+A rejected request leaves the existing selection unchanged.
+
+Frontend example:
+
+```js
+const res = await fetch("/api/v1/practice-role", {
+  method: "PUT",
+  headers,
+  body: JSON.stringify({ role_id: "software_engineer", source: "previous" }),
+});
+```

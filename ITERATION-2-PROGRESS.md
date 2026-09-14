@@ -50,6 +50,31 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: cards 1-7 UI (Get Started, Previous IT Experience, Skills & Experience, Career Break, Review Profile, Skills & Industry Relevance, Skill/Industry detail). Talks to the API using the `X-Session-Token` header, hash-based routing.
 
+### FE 2.6 - Returning-user journey retrieval hardening
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-14
+- **What:** closed a gap found while verifying the returning-user flow -
+  since sessions are in-memory only, a server restart or Cloud Run cold
+  start can wipe the backend session behind an access token, and the
+  existing 401-retry logic would silently swap in a brand new empty
+  session instead of failing loudly. Entering an existing token now
+  checks the restored profile is actually confirmed before continuing;
+  if not, it shows "We couldn't load your saved journey. Please try
+  again." with Try Again instead of opening an empty Career Journey.
+  Also added the same load-error handling to Your Direction ("We
+  couldn't load the information needed for this activity."), so saved
+  data reliably reaches it once a session is restored.
+- **Why:** covers AC 3.3.1 (retrieve saved career information - "do not
+  display incomplete or incorrect saved information") and the Your
+  Direction half of AC 3.3.2 (saved info available to journey features).
+- **Blocks / Blocked by:** the rest of AC 3.3.2 (feeding role/skills/
+  responsibilities to Workplace Practice for scenario generation, and
+  making data available to the future ePortfolio) is blocked - neither
+  feature exists yet (Workplace Scenario is still a placeholder, blocked
+  on B1/BE 2.1; ePortfolio has no page). The "redirect to the specific
+  page where missing info was entered" exception is also not built yet -
+  needs a decision on scope before picking it up.
+
 ### FE 2.1 - Workplace Scenarios screen
 
 - **Status:** [TODO] **Owner:** TBD **Date:** TBD

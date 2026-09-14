@@ -4,217 +4,218 @@
 |---|---|
 | Date | 2026-09-14 |
 | Branch | `iteration-2-backend` |
-| Backend scope in this handover | Token backend and career-profile continuity (US 3.1, 3.2, 3.3), CTM-F-001 fix |
-| Contract reference | `backend/docs/API-CONTRACT.md` |
+| Backend scope | Token and career-profile continuity (US 3.1-3.3), CTM-F-001, selected practice role (AC 4.1.2), workplace-practice sessions, scenario provider boundary, responses, reflective feedback and progress |
+| Contract reference | `backend/docs/API-CONTRACT.md` (also live at `/docs` when the API runs) |
 
-This handover is written for the frontend integration of the access token. It
-will be extended as the selected-role and workplace-practice backend lands.
+**Read this first:** everything below works end to end locally, but it is
+**not** a production integration yet:
 
-## 1. What is ready
+- Storage is **in-memory**. Tokens, profiles, practice roles and practice
+  sessions are lost when the API restarts.
+- Scenarios and feedback come from a **curated development provider**, not the
+  AI/LLM component.
 
-| Area | Status |
-|---|---|
-| Token generation (AC 3.1.2) | Ready - real backend token, replaces the frontend mock |
-| Token validation (AC 3.1.3) | Ready - `GET /anonymous-sessions/current` |
-| Save / edit / retrieve career info against one token (US 3.2, 3.3) | Ready - existing profile endpoints, verified with tests |
-| Cross-token isolation | Ready - verified with tests |
-| CTM-F-001 (rejected update partly saved) | Fixed - regression tests added |
-| Saved profile survives a backend restart | **Blocked** - storage is still in-memory (see section 7) |
+## 1. Backend card status
 
-## 2. Endpoints implemented or verified
+| Card | Status | Evidence / what is left |
+|---|---|---|
+| Subtask 1 - Confirm API contract | **Partial** | Endpoints, request/response examples, error codes and ownership documented in `API-CONTRACT.md` and this handover. **Left:** review with frontend, database and AI owners. |
+| Subtask 2 - Fix CTM-F-001 | **Done** | Validation runs on a copy; only a fully valid update is saved. `tests/test_profile_update_state.py`. **Left:** Security retest (SEC 2.1). |
+| Subtask 3 - Persistent token and profile repositories | **Blocked** | Interfaces kept as the boundary; only token hashes are stored; memory repos copy data like a DB. **Blocked on database:** see section 8. DB-backed repositories and DB-error mapping not written. |
+| Subtask 4 - Returning-user token access | **Done** (restart caveat) | Valid token restores profile, journey, practice role and practice session; missing/malformed/unknown tokens get a consistent 401; no raw token in storage, logs, URLs or later responses; cross-token tests. `tests/test_token_access_api.py`. |
+| Subtask 5 - Save selected practice role | **Partial** | Save/retrieve, previous vs predicted, invalid ids rejected, used by session start, no re-entry. **Blocked:** survives application restart (database). `tests/test_practice_role_api.py`. |
+| Subtask 6 - Practice session setup | **Partial** | Start with valid token and saved role; duration/difficulty validated; owner, role, settings, status, timestamps recorded; retrieval after refresh; isolation; clear 409s for missing profile/role. **Blocked:** retrieval after restart (database). `tests/test_practice_sessions_api.py`. |
+| Subtask 7 - Scenario provider | **Done (backend boundary)** / **Blocked (AI provider)** | `ScenarioProvider` interface and validated contract; minimal input; output validation; curated provider for dev/tests; timeout, failure and invalid output return a controlled 503; provider code not in routes/repositories; nothing executed. **Blocked on AI owner:** production provider. `tests/test_scenario_provider.py`. |
+| Subtask 8 - Responses, feedback and progress | **Partial** | Response only for a scenario in the user's active session; linked to token, session and scenario; duplicates return 409; feedback saved and retrieved; no score/pass-fail/judgement fields or wording; progress retrievable; resume with same token. **Blocked:** resume after restart (database). `tests/test_scenario_responses_api.py`. |
+| Subtask 9 - Validation and access controls | **Done** (new endpoints) | Types, allowed values and length limits on all new fields; unexpected fields rejected (422); ownership checked before every read/change; errors carry no stack traces or provider details; tokens, profile content and responses not logged; CORS still env-based. Existing profile free-text caps are a separate item (BE 2.5). |
+| Subtask 10 - Test, document, hand over | **Partial** | 192 tests pass; OpenAPI matches routes; contract and handover updated. **Left:** repository tests against a real database; LeanKit card updates. |
 
-All paths are under `/api/v1`. Every protected endpoint needs:
+## 2. Endpoints
+
+All paths are under `/api/v1`. Protected endpoints need:
 
 ```http
 X-Session-Token: <access token>
 Content-Type: application/json
 ```
 
-| Method | Path | Purpose | Token |
-|---|---|---|---|
-| `POST` | `/anonymous-sessions` | Generate a new access token (new journey) | No |
-| `GET` | `/anonymous-sessions/current` | Validate an existing token | Yes |
-| `GET` | `/profile` | Load saved career information (creates an empty draft for a token with none) | Yes |
-| `PATCH` | `/profile` | Save / edit career information (partial update) | Yes |
-| `POST` | `/profile/confirm` | Confirm the saved information | Yes |
-| `DELETE` | `/profile` | Delete the saved profile | Yes |
-| `GET` | `/career-journey` | Structured journey for the returning-user page (409 until confirmed) | Yes |
-| `GET` / `PATCH` | `/career-direction` | Your Direction selections | Yes |
-| `GET` | `/career-translation` | Skill Relevance Map | Yes |
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/anonymous-sessions` | Generate a new access token (no header) |
+| `GET` | `/anonymous-sessions/current` | Validate an existing token |
+| `GET` / `PATCH` / `DELETE` | `/profile` | Load / save or edit / delete career information |
+| `POST` | `/profile/confirm` | Confirm saved information |
+| `GET` | `/career-journey` | Returning-user Career Journey data (409 until confirmed) |
+| `GET` / `PATCH` | `/career-direction` | Your Direction selections |
+| `GET` | `/career-translation` | Skill Relevance Map |
+| `GET` / `PUT` | `/practice-role` | Selected previous or predicted practice role |
+| `POST` | `/practice-sessions` | Start workplace practice |
+| `GET` | `/practice-sessions/current` | Resume the active session |
+| `GET` | `/practice-sessions/{session_id}` | Read one session |
+| `POST` | `/practice-sessions/{session_id}/complete` | Complete the session |
+| `POST` | `/practice-sessions/{session_id}/scenarios/{scenario_id}/response` | Submit a response, get reflective feedback |
+| `GET` | `/practice-sessions/{session_id}/progress` | Practice progress |
 
-### Generate a token
+Full request/response examples and every error code are in `API-CONTRACT.md`.
+The most important shapes:
 
-```http
-POST /api/v1/anonymous-sessions
-```
-
-`201`:
-
-```json
-{
-  "token": "Q2x0Zk9yX2V4YW1wbGVfb25seV9ub3RfYV90b2tlbg",
-  "created_at": "2026-09-14T09:00:00Z",
-  "last_seen_at": "2026-09-14T09:00:00Z"
-}
-```
-
-This is the **only** response that contains the token. The backend stores just
-its SHA-256 hash, so it cannot show the token again - "My Token" must read it
-from frontend storage.
-
-### Validate an existing token
-
-```http
-GET /api/v1/anonymous-sessions/current
-X-Session-Token: <token the user typed>
-```
-
-`200` (token recognised - note the token is not echoed):
+**Generate token** - `POST /anonymous-sessions` → `201`
 
 ```json
-{
-  "created_at": "2026-09-14T09:00:00Z",
-  "last_seen_at": "2026-09-14T09:30:00Z"
-}
+{ "token": "<43 URL-safe characters>", "created_at": "2026-09-14T09:00:00Z", "last_seen_at": "2026-09-14T09:00:00Z" }
 ```
 
-`401` for an unknown, empty, over-128-character or otherwise malformed token
-(one identical response for all of them):
+This is the only response that contains the token. The backend stores only its
+SHA-256 hash and cannot show it again.
 
-```json
-{ "error": { "code": "HTTP_401", "message": "Invalid session token", "details": [] } }
-```
+**Validate token** - `GET /anonymous-sessions/current` → `200`
+`{ "created_at": ..., "last_seen_at": ... }` or `401`
+`{"error": {"code": "HTTP_401", "message": "Invalid session token", "details": []}}`.
 
-`401` with `"Missing session token"` when the header is absent.
+**Save practice role** - `PUT /practice-role`
+`{ "role_id": "software_engineer", "source": "previous" }` → `200`
+`{ "role_id": "software_engineer", "role_label": "Software Engineer", "source": "previous" }`.
 
-### Save and edit career information
+**Start practice** - `POST /practice-sessions`
+`{ "duration": "standard", "difficulty": "guided" }` → `201` session object with
+`role`, `duration_minutes`, `scenarios[0]` (`title`, `workplace_area`,
+`situation`, `task`, `guidance`, `skills_used`, `new_skill_focus`) and `progress`.
 
-```http
-PATCH /api/v1/profile
-X-Session-Token: <token>
+**Submit response** - `POST .../scenarios/{scenario_id}/response`
+`{ "response_text": "..." }` → `201` with `scenario.feedback`
+(`what_worked_well`, `areas_to_consider`, `skill_to_explore`), `feedback_status`
+and updated `progress`.
 
-{ "role_id": "software_engineer", "years_experience": "5", "skill_ids": ["python"] }
-```
+## 3. Frontend integration - access token
 
-`200` returns the full profile. Any successful edit sets `confirmed` to `false`;
-call `POST /profile/confirm` again after an edit (the frontend already does).
+The frontend currently generates a `CTM-XXXX-XXXX` token in the browser and maps
+it to the backend session token in `localStorage` (`frontend/src/accessToken.js`,
+`hooks/useAccessTokenFlow.js`). With the real backend **the access token and the
+session token are the same value**, so the mapping layer is no longer needed.
+Suggested changes (frontend owner; backend has not edited frontend code):
 
-Errors: `400` invalid catalogue ID or `planned_return_date` before
-`break_started_on`; `422` wrong types (e.g. malformed date); `400`
-`PROFILE_INCOMPLETE` from confirm with the missing field names in `details`.
-**A rejected update now leaves the saved profile exactly as it was**, which
-matches AC 3.2.3 "Your previous information is still available".
-
-## 3. Replacing the frontend token mock
-
-The frontend currently generates a `CTM-XXXX-XXXX` token in the browser and
-maps it to the backend session token in `localStorage`
-(`frontend/src/accessToken.js`, `hooks/useAccessTokenFlow.js`). With the real
-backend the **access token and the session token are the same value**, so the
-mapping layer is no longer needed.
-
-Suggested changes (frontend owner to make - backend has not edited frontend code):
-
-1. **Generate Token** (`handleGenerateToken`): call
-   `api.createSession(true)` and show the returned `token` in the
-   Generated Token modal. Drop `generateMockToken()` and `recordTokenSession()`.
-2. **Enter existing token** (`AccessTokenModal`): replace
-   `isKnownToken(trimmed)` with `GET /anonymous-sessions/current` using the
-   entered token as `X-Session-Token`.
-   - `200` → valid; set it as the active token.
-   - `401` → "That token isn't recognised. Please check it and try again."
-   - network error / `5xx` → "We couldn't verify your access. Please try again."
+1. **Generate Token** (`handleGenerateToken`): call `api.createSession(true)` and
+   show the returned `token`. Drop `generateMockToken()` and `recordTokenSession()`.
+2. **Enter existing token** (`AccessTokenModal`): replace `isKnownToken(trimmed)`
+   with `GET /anonymous-sessions/current` using the entered token.
+   `200` → valid; `401` → "That token isn't recognised. Please check it and try
+   again."; network error / `5xx` → "We couldn't verify your access. Please try again."
 3. **Returning journey** (`handleValidToken`): `api.restoreSession(token)`, then
-   `GET /profile`. `confirmed: true` → Career Journey ("Welcome back");
-   `confirmed: false` → the journey was never finished, send the user to Your Story.
-4. **Stop the silent 401 retry in `api.js`.** `request()` currently creates a
-   brand-new session on any `401`. For a returning user that silently swaps
-   in an empty journey (the issue FE 2.6 worked around). Surface the `401` to
-   the caller instead, and show the token-required / not-recognised message.
+   `GET /profile`. `confirmed: true` → Career Journey; `confirmed: false` → Your Story.
+4. **Stop the silent 401 retry in `api.js`.** `request()` creates a brand-new
+   session on any `401`, which silently swaps a returning user into an empty
+   journey (the issue FE 2.6 worked around). Surface the `401` instead.
 5. **Storage:** keep one token key (today `ctm_session_token` in `api.js` and
    `ctm_active_token` in `accessToken.js`). `KNOWN_TOKENS_KEY` and
-   `TOKEN_SESSION_MAP_KEY` can be removed; keeping a list of raw tokens in
-   `localStorage` is no longer needed.
-6. **Copy text:** the "Your token looks like CTM-XXXX-XXXX" hint no longer
-   matches. Real tokens are 43 URL-safe characters (`A-Z a-z 0-9 - _`).
+   `TOKEN_SESSION_MAP_KEY` can be removed.
+6. **Copy text:** "Your token looks like CTM-XXXX-XXXX" no longer matches; real
+   tokens are 43 characters of `A-Z a-z 0-9 - _`.
 
-## 4. Token and profile behaviour
+## 4. Frontend integration - workplace practice
 
-- Tokens come from `secrets.token_urlsafe(32)` (256 bits of randomness).
-- Only `sha256(token)` is stored, matching `anon_session.token_hash` in
-  `data/schema/careertimemachine_schema.sql`.
-- Raw tokens are never logged, never put in URLs and never returned after
-  creation.
-- Unknown and malformed tokens are rejected with the same `401`, and malformed
-  ones are rejected before any storage lookup.
-- Each successful token check updates `last_seen_at`.
-- One token owns exactly one profile; edits replace values on that profile and
-  never create a second one.
-- A token only ever reads or changes its own profile and direction data.
-- Profile validation runs on a copy; only a fully valid update is saved.
+| Frontend step | Backend call | AC copy for errors |
+|---|---|---|
+| Your Direction → "Try a Workplace Scenario" | `PUT /practice-role` with the chosen role and `source` | `400` → "We couldn't load your selected role. Please try again." |
+| Practice setup → Continue | `POST /practice-sessions` `{duration, difficulty}` | `422` → "Choose a practice time and difficulty to continue."; `409 PRACTICE_ROLE_REQUIRED` → "Please select a role to continue."; `409 PROFILE_NOT_CONFIRMED` → send to the page where information is missing; `503 SCENARIO_UNAVAILABLE` → "We couldn't start your workplace practice. Please try again." |
+| Preparation / workplace screen | Use the session object: `role`, `duration_minutes`, `difficulty`, `scenarios[0]` (`title`, `workplace_area`, `situation`, `task`, `guidance`, `skills_used`, `new_skill_focus`) | - |
+| Returning to practice / refresh | `GET /practice-sessions/current` | `404` → no active session; offer to start one |
+| Submit an activity | `POST /practice-sessions/{id}/scenarios/{scenario_id}/response` | `409 RESPONSE_ALREADY_SUBMITTED` → show the saved answer; `feedback_status: "unavailable"` → "We couldn't generate your personalised feedback. You can continue to the next activity." |
+| After feedback | `progress.current_scenario_id === null` while `status` is `active` | "You've completed the available activities for this practice session." |
+| Finish | `POST /practice-sessions/{id}/complete` | - |
 
-## 5. Tests run
+The Your Direction page does not currently offer previous/predicted role
+choices; it saves `return_readiness` and `area_to_explore` only. There is no
+role-prediction endpoint yet (AI owner), so for now only `source: "previous"`
+can be offered from real data.
+
+## 5. Behaviour notes
+
+- **Tokens:** `secrets.token_urlsafe(32)`; only `sha256(token)` stored
+  (`anon_session.token_hash`); unknown and malformed tokens get the same `401`;
+  each check updates `last_seen_at`.
+- **Profile:** one per token; edits replace values and never create a second
+  profile; rejected updates leave it unchanged.
+- **Practice role:** a `previous` choice is cleared once the saved previous role
+  is edited; a `predicted` choice survives profile edits. A `predicted` role is
+  checked against the role catalogue only, not against actual model predictions.
+- **Sessions:** one active session per token; starting another marks the older
+  one `abandoned`. Another token's session always returns the same `404` as a
+  missing one.
+- **Provider input:** role id and label, years of experience, catalogue skill
+  and responsibility labels, duration and difficulty. No token, ids, break
+  details or custom skills/responsibilities. Exception: for the `other`
+  previous role, `role_label` is the job title the user typed. Feedback
+  requests include the user's response text.
+- **Provider output:** validated against `ScenarioContent` / `FeedbackContent`.
+  Extra fields and score/pass-fail/employability wording are rejected. Calls
+  time out after `SCENARIO_PROVIDER_TIMEOUT_SECONDS` (default 10).
+- **Responses** are stored as text and never executed.
+
+## 6. Tests
 
 ```bash
 cd backend
 venv/bin/python -m pytest -q
 ```
 
-Result on 2026-09-14: **61 passed, 0 failed** (baseline before this work:
-19 passed, 10 failed).
+Result on 2026-09-14: **192 passed, 0 failed** (baseline before this work:
+19 passed, 10 failed because roles/skills are empty without a database `.env`;
+`tests/conftest.py` now supplies a fixed test catalogue).
 
-New or updated tests:
+| File | Covers |
+|---|---|
+| `test_token_access_api.py` | Token format, validation, malformed/unknown tokens, every protected endpoint, returning user, edits without duplication, isolation, hash-only storage, no token in logs |
+| `test_profile_update_state.py` | CTM-F-001 regression |
+| `test_practice_role_api.py` | Practice role save/retrieve, validation, stale choices, isolation, practice context |
+| `test_scenario_provider.py` | Provider contract, curated scenarios, rejection of scores/judgements, no code execution |
+| `test_practice_sessions_api.py` | Session start/resume/complete, settings validation, missing context, isolation, provider failure/invalid output/timeout, minimal provider input |
+| `test_scenario_responses_api.py` | Full token-to-feedback journey, resume, duplicates, validation, inactive sessions, isolation, feedback failure, no code execution, no response text in logs |
 
-- `tests/conftest.py` - fixed test catalogue. The 10 baseline failures were
-  caused by roles/skills being empty with no database `.env`; tests now run
-  offline and deterministically.
-- `tests/test_token_access_api.py` - token format, validation, malformed and
-  unknown tokens, every protected endpoint rejecting missing/invalid tokens,
-  returning-user restore, edit without duplication, cross-token isolation,
-  hash-only storage, no token in logs.
-- `tests/test_profile_update_state.py` - CTM-F-001 regression (date rule and
-  catalogue rejection leave stored state unchanged; valid edits still work).
-- `tests/test_anonymous_sessions_api.py`, `tests/test_memory_session_repository.py`
-  - updated for the hash-keyed store and the non-echoing `/current` response.
+## 7. Known limitations
 
-## 6. Known limitations
+- In-memory storage (section 8). A token that worked before a restart gets `401`.
+- Curated scenarios only; one scenario per session; written responses only. No
+  "next activity", coding/MCQ/drag-and-drop activities or "example approach"
+  (AC 4.4.3) yet.
+- No role-prediction endpoint (AI owner).
+- No token expiry policy; no rate limiting (SEC 2.3).
+- Free-text caps on existing profile fields not yet added (BE 2.5 / pen-test H-1, H-2).
+- Duplicate-submission protection is enforced in the service; a database
+  unique constraint on (practice session, scenario) response is recommended.
 
-- **In-memory storage.** Sessions and profiles are lost when the API restarts or a
-  Cloud Run instance is recycled. A token that worked before a restart then
-  gets `401`. The frontend should treat that as "token not recognised", not
-  silently create a new session.
-- **No token expiry.** AC 3.1 mentions expired tokens, but no expiry period has
-  been agreed. Needs a team/security decision.
-- **No rate limiting** on token creation or validation (tracked as SEC 2.3).
-- Free-text profile length caps (BE 2.5 / pen-test H-1, H-2) are not part of
-  this change.
-
-## 7. Blockers and dependencies
+## 8. Blockers and dependencies
 
 | Blocker | Needs | Owner |
 |---|---|---|
-| Restart persistence for sessions and profiles (card Subtask 3) | Confirmed deployed `anon_session` / `profile` / `profile_skill` / `profile_responsibility` tables and connection details. The `profile` table's foreign keys reference `career_area`, `return_status`, `break_reason`, `experience_option` and `responsibility`, which are still unseeded, so writes would fail until DB 2.3 is done. | Database |
-| Token expiry policy | Agreed expiry period (or "no expiry") | Team / Security |
-| Real token in the UI | Section 3 changes | Frontend |
+| Restart persistence for tokens and profiles | Deployed `anon_session`, `profile`, `profile_skill`, `profile_responsibility` tables and connection details. `profile` foreign keys reference `career_area`, `return_status`, `break_reason`, `experience_option` and `responsibility`, which are unseeded, so writes would fail until those are seeded (DB 2.3). | Database |
+| Restart persistence for practice role | Two new `profile` columns: `practice_role_id VARCHAR(64) REFERENCES role(id)` and `practice_role_source VARCHAR(16)` (`previous`/`predicted`) | Database |
+| Restart persistence for practice | Tables for practice session (id, owner token hash, role id/label/source, duration, difficulty, status, created/updated/completed timestamps), session scenarios (scenario content, status), responses (text, submitted_at, unique per session + scenario) and feedback (what worked well, areas to consider, skill to explore, feedback status). Shape mirrors `app/repositories/interfaces/practice_session_repository.py`. | Database |
+| Production scenario and feedback generation | A `ScenarioProvider` implementation that returns data matching `ScenarioContent` / `FeedbackContent`, plus content guardrails (AI 2.3) | AI |
+| Role predictions for Your Direction | A prediction endpoint or service contract | AI |
+| API contract sign-off | Review of `API-CONTRACT.md` | Frontend, Database, AI |
+| Token expiry | Agreed policy | Team / Security |
+| Real token and practice UI | Sections 3 and 4 | Frontend |
 
-## 8. Files changed (Phase 1)
+## 9. Files changed (all backend)
 
-- `backend/app/core/tokens.py` (new)
-- `backend/app/services/session_service.py`
-- `backend/app/services/profile_service.py`
-- `backend/app/repositories/interfaces/session_repository.py`
-- `backend/app/repositories/interfaces/profile_repository.py`
-- `backend/app/repositories/memory/memory_session_repository.py`
-- `backend/app/repositories/memory/memory_profile_repository.py`
-- `backend/app/schemas/anonymous_session.py`
-- `backend/app/api/routes/anonymous_sessions.py`, `profile.py`, `career_direction.py`, `career_journey.py`, `career_translation.py`
-- `backend/docs/API-CONTRACT.md`
-- `backend/tests/conftest.py` (new), `test_token_access_api.py` (new), `test_profile_update_state.py` (new), `test_anonymous_sessions_api.py`, `test_memory_session_repository.py`
+- **Token and profile:** `app/core/tokens.py` (new), `app/services/session_service.py`, `app/services/profile_service.py`, `app/repositories/interfaces/session_repository.py`, `app/repositories/interfaces/profile_repository.py`, `app/repositories/memory/memory_session_repository.py`, `app/repositories/memory/memory_profile_repository.py`, `app/schemas/anonymous_session.py`, `app/api/routes/anonymous_sessions.py`, `profile.py`, `career_direction.py`, `career_journey.py`, `career_translation.py`
+- **Practice role:** `app/schemas/practice_role.py`, `app/services/practice_role_service.py`, `app/api/routes/practice_role.py` (new)
+- **Provider:** `app/providers/scenario_provider.py`, `app/providers/curated_scenario_provider.py` (new)
+- **Practice:** `app/repositories/interfaces/practice_session_repository.py`, `app/repositories/memory/memory_practice_session_repository.py`, `app/schemas/practice_session.py`, `app/schemas/scenario_response.py`, `app/services/practice_session_service.py`, `app/services/scenario_response_service.py`, `app/api/routes/practice_sessions.py`, `app/api/routes/scenario_responses.py` (new)
+- **Wiring and config:** `app/api/dependencies.py`, `app/api/router.py`, `app/core/config.py`
+- **Docs:** `docs/API-CONTRACT.md`, `docs/BACKEND_HANDOVER_ITERATION_2.md`
+- **Tests:** `tests/conftest.py`, `test_token_access_api.py`, `test_profile_update_state.py`, `test_practice_role_api.py`, `test_scenario_provider.py`, `test_practice_sessions_api.py`, `test_scenario_responses_api.py` (new); `test_anonymous_sessions_api.py`, `test_memory_session_repository.py` (updated)
 
-## 9. Next recommended integration step
+No frontend, database schema/seed, AI or security files were changed.
 
-Frontend: apply section 3 steps 1-4 against a local backend
-(`uvicorn app.main:app --reload`), then run the generate → save → close tab →
-re-enter token → Career Journey flow end to end. Database: confirm the user
-data tables and seeded catalogue tables so the Postgres session/profile
-repositories can be written against them.
+## 10. Next recommended integration steps
+
+1. **Frontend:** apply section 3 steps 1-4 against a local backend
+   (`uvicorn app.main:app --reload`) and test generate → save → close tab →
+   re-enter token → Career Journey. Then build the practice screens from section 4.
+2. **Database:** confirm or create the tables in section 8 and seed the
+   catalogue tables so Postgres repositories can be written behind the existing
+   interfaces.
+3. **AI:** review `app/providers/scenario_provider.py` and implement the provider
+   against that contract; swap it in at `get_scenario_provider()` in
+   `app/api/dependencies.py`.

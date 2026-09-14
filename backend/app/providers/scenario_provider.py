@@ -26,7 +26,9 @@ class ScenarioRequest:
     """Input for one scenario.
 
     Career context only: no token, profile or session identifiers, break
-    details or free text the user typed.
+    details, or custom skills/responsibilities the user typed. The one
+    exception is role_label for the "other" previous role, which is the job
+    title the user entered.
     """
 
     role_id: str

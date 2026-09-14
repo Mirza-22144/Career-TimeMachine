@@ -40,8 +40,8 @@ Living document. Everyone updates their own section as they make progress. This 
 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
-| B1  | LLM output format (the exact JSON shape a scenario comes back as) is not yet agreed, so backend cannot build the scenario endpoints and frontend cannot build the scenario screen against a real contract | Backend   | AI to define and agree the scenario request/response contract            | `[BLOCKED]` open |
-| B2  | Sessions and profiles are still in-memory (lost on restart), so user progress cannot be persisted yet                                                                                                     | Backend   | Database to provide profile/session/progress tables + connection details | `[BLOCKED]` open |
+| B1  | LLM output format is not yet agreed. Backend has now built the scenario endpoints against a proposed provider contract (`backend/app/providers/scenario_provider.py`) using a curated development provider, but production AI scenarios and feedback cannot be connected until the contract is agreed | Backend   | AI to agree (or amend) the proposed contract and implement the production `ScenarioProvider`            | `[BLOCKED]` open |
+| B2  | Sessions, profiles, the selected practice role and practice sessions/responses/feedback are still in-memory (lost on restart), so user progress cannot be persisted yet                                                                                                     | Backend   | Database to provide session/profile tables, 2 practice-role columns on `profile`, practice session/response/feedback tables, seeded catalogue tables (profile FKs) + connection details - see backend handover section 8 | `[BLOCKED]` open |
 | B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
 
 ---
@@ -147,33 +147,47 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
 
+### BE 2.7 - Selected practice role
+
+- **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** done locally - `GET`/`PUT /practice-role` saves the previous or predicted role, rejects invalid role ids, and hands the saved role and career context to workplace practice so nothing is re-entered. 25 tests.
+- **Why:** backend Subtask 5 / AC 4.1.2.
+- **Blocks / Blocked by:** surviving a restart is blocked by B2 (`practice_role_id`, `practice_role_source` columns). Your Direction needs to call it (FE). Predicted roles still need AI role predictions.
+
+### BE 2.6 - Offline test suite and backend handover
+
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** `backend/tests/conftest.py` gives tests a fixed catalogue, fixing 10 tests that failed without a database `.env`. Full suite 192 passed. Added `backend/docs/BACKEND_HANDOVER_ITERATION_2.md` (card status, frontend integration steps, DB/AI needs) and updated `API-CONTRACT.md`.
+- **Why:** reliable tests; lets frontend, database and AI integrate against the documented API.
+- **Blocks / Blocked by:** contract review with FE, DB and AI still needed.
+
 ### BE 2.1 - Workplace Scenario endpoints
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** endpoints to generate a scenario for the current user (calls the AI service) and to submit/return an answer result. The AI call sits behind a new repository/service interface, same pattern as the existing code.
-- **Why:** serves the Workplace Scenarios feature.
-- **Blocks / Blocked by:** blocked by B1 (LLM contract). Blocks FE 2.1.
+- **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** done locally - start/resume/complete practice sessions (`/practice-sessions`) and submit a response with reflective feedback (no score, pass/fail or judgement). Scenario generation sits behind `ScenarioProvider` with validated output, a timeout and a controlled 503. A **curated development provider** supplies scenarios for now - this is not the AI integration.
+- **Why:** serves the Workplace Scenarios feature (backend Subtasks 6-8).
+- **Blocks / Blocked by:** production scenarios blocked by B1 (AI provider). FE 2.1 can build against the documented contract now.
 
 ### BE 2.2 - Progress persistence endpoints
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** save and fetch a user's scenario progress (completed scenarios, answers, timestamps).
+- **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** done locally - responses saved with timestamps, duplicate submissions rejected, progress on every session response and at `GET /practice-sessions/{id}/progress`, resume via `GET /practice-sessions/current`. Stored in-memory behind `PracticeSessionRepository`.
 - **Why:** goal 2 - resume, no repeats.
-- **Blocks / Blocked by:** blocked by B2 (DB tables). Blocks FE 2.2.
+- **Blocks / Blocked by:** surviving a restart is blocked by B2 (practice tables). FE 2.2 can build against the documented contract now.
 
 ### BE 2.3 - Token generation for sign-on
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** implement the token-generation sign-on flow for this iteration (kept swappable so a TOTP authenticator can replace/augment it in Iteration 3).
-- **Why:** goal 3.
-- **Blocks / Blocked by:** blocked by B3 (design decision from Security).
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** `POST /anonymous-sessions` issues a random 43-character token and stores only its SHA-256 hash; `GET /anonymous-sessions/current` validates a token without echoing it; unknown and malformed tokens get the same 401; cross-token isolation and "no token in logs" tested. Still swappable for TOTP later.
+- **Why:** goal 3; US 3.1-3.3.
+- **Blocks / Blocked by:** frontend can replace the `accessToken.js` mock now (handover section 3). Restart persistence blocked by B2. Token expiry policy still needs a decision (B3).
 
 ### BE 2.4 - Fix CTM-F-001 (broken atomicity on PATCH /profile)
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** reorder `ProfileService.update_profile()` so all validation (including the date-order rule) runs before any `setattr()` on the stored profile - or have the repository return a defensive copy and only commit in `save()`. Add a regression test (repeat pen-test CTM-PT-005b). Re-check `PATCH /career-direction` stays clean.
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** `ProfileService.update_profile()` now validates a copy and saves only a fully valid update, and the memory repository copies profiles in and out, so a rejected update leaves the stored profile unchanged. Regression tests in `backend/tests/test_profile_update_state.py` (CTM-PT-005b pattern). `PATCH /career-direction` already validated before changing anything.
 - **Why:** fixes the one confirmed pen-test vulnerability (integrity issue: a rejected update still partly saved).
-- **Blocks / Blocked by:** pair with SEC 2.1.
+- **Blocks / Blocked by:** ready for the SEC 2.1 retest.
 
 ### BE 2.5 - Input caps (hardening)
 

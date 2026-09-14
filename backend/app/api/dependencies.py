@@ -21,6 +21,10 @@ from app.services.profile_service import ProfileService
 from app.services.scenario_response_service import ScenarioResponseService
 from app.services.session_service import SessionService
 
+# Iteration 2 serves single-selection multiple-choice activities.
+# "written_response" is still supported for later iterations.
+PRACTICE_ACTIVITY_TYPE = "multiple_choice"
+
 # ONE shared store for the whole app run, so sessions persist between requests.
 # (Dev only. Session/profile stay in-memory - their tables are empty until
 # the app writes to them; there's no data to migrate from yet.)
@@ -101,8 +105,15 @@ def get_scenario_provider() -> ScenarioProvider:
     return _scenario_provider
 
 
+def get_practice_activity_type() -> str:
+    """Return the activity type new practice scenarios use. Tests override
+    this to exercise written responses."""
+    return PRACTICE_ACTIVITY_TYPE
+
+
 def get_practice_session_service(
     provider: ScenarioProvider = Depends(get_scenario_provider),
+    activity_type: str = Depends(get_practice_activity_type),
 ) -> PracticeSessionService:
     """Build practice-session service with shared repositories and the provider."""
     return PracticeSessionService(
@@ -110,6 +121,7 @@ def get_practice_session_service(
         get_practice_role_service(),
         provider,
         SCENARIO_PROVIDER_TIMEOUT_SECONDS,
+        activity_type,
     )
 
 

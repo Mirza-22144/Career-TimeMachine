@@ -50,12 +50,11 @@ class CrashingProvider(CuratedScenarioProvider):
 
 
 class MismatchedActivityProvider(CuratedScenarioProvider):
-    """Returns a valid scenario, but not of the activity type requested."""
+    """Returns a valid written scenario when multiple choice was requested."""
 
     def generate_scenario(self, request):
         scenario = super().generate_scenario(request)
-        options = [{"option_id": "option_a", "text": "One"}, {"option_id": "option_b", "text": "Two"}]
-        return {**scenario, "activity_type": "multiple_choice", "options": options}
+        return {**scenario, "activity_type": "written_response", "options": []}
 
 
 class RecordingProvider(CuratedScenarioProvider):
@@ -110,8 +109,8 @@ def test_start_practice_uses_saved_role_career_context_and_settings():
     [scenario] = body["scenarios"]
     assert scenario["status"] == "current"
     assert scenario["situation"] and scenario["task"]
-    assert scenario["activity_type"] == "written_response"
-    assert scenario["options"] == []
+    assert scenario["activity_type"] == "multiple_choice"
+    assert len(scenario["options"]) >= 2
     assert len(scenario["guidance"]) == 3
     assert {"Python", "Git"} <= set(scenario["skills_used"])
     assert scenario["response"] is None
@@ -123,6 +122,18 @@ def test_start_practice_uses_saved_role_career_context_and_settings():
         "completed_activities": 0,
         "current_scenario_id": scenario["scenario_id"],
     }
+
+
+def test_written_response_sessions_remain_available(use_activity_type):
+    use_activity_type("written_response")
+    headers = _headers()
+    _ready_for_practice(headers)
+
+    [scenario] = _start(headers).json()["scenarios"]
+
+    assert scenario["activity_type"] == "written_response"
+    assert scenario["options"] == []
+    assert scenario["task"].startswith("Write")
 
 
 def test_predicted_role_gets_a_scenario_for_that_role():
@@ -331,7 +342,7 @@ def test_provider_receives_only_the_career_context_it_needs(use_provider):
     assert request.years_experience == "5 years"
     assert request.skills == ("Python", "Git")
     assert (request.duration, request.difficulty) == ("standard", "guided")
-    assert request.activity_type == "written_response"
+    assert request.activity_type == "multiple_choice"
     sent = repr(request)
     for private in (token, hash_token(token), "Secret hobby project", "caregiving", "2024-01-01"):
         assert private not in sent

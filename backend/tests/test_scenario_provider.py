@@ -2,6 +2,7 @@
 (backend Subtask 7)."""
 
 import builtins
+from dataclasses import replace
 
 import pytest
 from pydantic import ValidationError
@@ -208,3 +209,92 @@ def test_scenario_contract_rejects_invalid_provider_output(change):
 
     with pytest.raises(ValidationError):
         ScenarioContent.model_validate({**valid, **change})
+
+
+# --- Multiple choice (active in Iteration 2) --------------------------------
+
+ALL_CURATED = [scenario for family in CURATED_SCENARIOS.values() for scenario in family]
+
+
+def _choice_feedback_request(scenario: ScenarioContent, option_id: str) -> FeedbackRequest:
+    option_texts = {option.option_id: option.text for option in scenario.options}
+    return FeedbackRequest(
+        role_label="Software Developer",
+        difficulty="standard",
+        scenario_id=scenario.scenario_id,
+        situation=scenario.situation,
+        task=scenario.task,
+        skills_used=tuple(scenario.skills_used),
+        new_skill_focus=scenario.new_skill_focus,
+        activity_type="multiple_choice",
+        selected_option_id=option_id,
+        selected_option_text=option_texts[option_id],
+        option_texts=tuple(option_texts.values()),
+    )
+
+
+@pytest.mark.parametrize("family", sorted(CURATED_SCENARIOS))
+@pytest.mark.parametrize("difficulty", ["guided", "standard", "challenge"])
+def test_every_curated_multiple_choice_scenario_and_option_passes_the_contract(family, difficulty):
+    for scenario in CURATED_SCENARIOS[family]:
+        exclude = tuple(s.scenario_id for s in CURATED_SCENARIOS[family] if s is not scenario)
+        request = _request(
+            role_id=REPRESENTATIVE_ROLES[family],
+            difficulty=difficulty,
+            activity_type="multiple_choice",
+            exclude_scenario_ids=exclude,
+        )
+
+        content = ScenarioContent.model_validate(provider.generate_scenario(request))
+
+        assert content.scenario_id == scenario.scenario_id
+        assert content.activity_type == "multiple_choice"
+        assert content.task == scenario.decision_prompt
+        assert len(content.options) >= 2
+        for option in content.options:
+            feedback = FeedbackContent.model_validate(
+                provider.generate_feedback(_choice_feedback_request(content, option.option_id))
+            )
+            assert feedback.what_worked_well and feedback.trade_offs and feedback.areas_to_consider
+            assert feedback.skill_to_explore is not None
+
+
+def test_curated_option_ids_are_stable_and_unique_across_scenarios():
+    option_ids = [option.option_id for scenario in ALL_CURATED for option in scenario.options]
+
+    assert len(option_ids) == len(set(option_ids))
+    for scenario in ALL_CURATED:
+        assert all(option.option_id.startswith(f"{scenario.scenario_id}_") for option in scenario.options)
+
+
+def test_multiple_choice_keeps_difficulty_guidance_without_the_written_instruction():
+    guided = provider.generate_scenario(_request(difficulty="guided", activity_type="multiple_choice"))
+    challenge = provider.generate_scenario(_request(difficulty="challenge", activity_type="multiple_choice"))
+
+    assert len(guided["guidance"]) == 3
+    assert challenge["guidance"] == []
+    assert challenge["task"] == guided["task"]
+    assert "Note any assumptions" not in challenge["task"]
+
+
+def test_multiple_choice_feedback_reflects_on_the_selected_option():
+    content = ScenarioContent.model_validate(provider.generate_scenario(_request(activity_type="multiple_choice")))
+
+    first, second = (
+        provider.generate_feedback(_choice_feedback_request(content, option.option_id))
+        for option in content.options[:2]
+    )
+
+    assert first["what_worked_well"] != second["what_worked_well"]
+    assert first["trade_offs"] != second["trade_offs"]
+    assert set(first) == {"what_worked_well", "trade_offs", "areas_to_consider", "skill_to_explore"}
+
+
+def test_unknown_option_or_activity_type_is_a_provider_error():
+    content = ScenarioContent.model_validate(provider.generate_scenario(_request(activity_type="multiple_choice")))
+    request = _choice_feedback_request(content, content.options[0].option_id)
+
+    with pytest.raises(ScenarioProviderError):
+        provider.generate_feedback(replace(request, selected_option_id="data_dashboard_mismatch_a"))
+    with pytest.raises(ScenarioProviderError):
+        provider.generate_scenario(_request(activity_type="drag_and_drop"))

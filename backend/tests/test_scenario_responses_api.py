@@ -1,5 +1,8 @@
-"""Scenario responses, reflective feedback and practice progress
-(backend Subtask 8; AC 4.4.2, 4.5.1, 4.5.2, 4.5.3)."""
+"""Written scenario responses, reflective feedback and practice progress
+(backend Subtask 8; AC 4.4.2, 4.5.1, 4.5.2, 4.5.3).
+
+Written responses are retained for later iterations. Multiple choice, the
+active Iteration 2 activity, is covered in test_multiple_choice_responses_api.py."""
 
 import builtins
 import logging
@@ -13,6 +16,12 @@ from app.providers.curated_scenario_provider import CuratedScenarioProvider
 from app.providers.scenario_provider import ScenarioProviderError
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def written_activities(use_activity_type):
+    use_activity_type("written_response")
+
 
 PROFILE = {
     "role_id": "software_engineer",

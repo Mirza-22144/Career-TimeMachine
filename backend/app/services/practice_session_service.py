@@ -71,7 +71,7 @@ class PracticeSessionService:
         practice_roles: PracticeRoleService,
         provider: ScenarioProvider,
         provider_timeout_seconds: float = 10.0,
-        activity_type: str = "written_response",
+        activity_type: str = "multiple_choice",
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.

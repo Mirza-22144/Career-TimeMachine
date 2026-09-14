@@ -15,6 +15,7 @@ from app.repositories.interfaces.practice_session_repository import (
     PracticeSession,
     ReflectiveFeedback,
     ScenarioAttempt,
+    ScenarioOption,
     SuggestedSkill,
 )
 from app.schemas.scenario_response import ScenarioResponseCreate
@@ -55,8 +56,12 @@ class ScenarioResponseService:
         scenario_id: str,
         submission: ScenarioResponseCreate,
     ) -> ScenarioSubmission:
-        """Store a response for a scenario in the owner's active session and
-        attach reflective feedback when the provider can supply it."""
+        """Store the answer to a scenario in the owner's active session and
+        attach reflective feedback when the provider can supply it.
+
+        Checks run in this order: session (404), scenario (404), session
+        active (409), not already answered (409), answer field matches the
+        activity type (400), selected option belongs to the scenario (400)."""
         session = self.practice_sessions.get_session(owner, session_id)
         scenario = self._find_scenario(session, scenario_id)
 
@@ -80,10 +85,20 @@ class ScenarioResponseService:
                 f"This activity expects {expected_field}",
             )
 
-        feedback = self._generate_feedback(session, scenario, submission.response_text)
+        selected_option = (
+            self._find_option(scenario, submission.selected_option_id)
+            if scenario.activity_type == "multiple_choice"
+            else None
+        )
+
+        feedback = self._generate_feedback(session, scenario, submission, selected_option)
 
         now = utc_now()
-        scenario.response = ScenarioAttempt(response_text=submission.response_text, submitted_at=now)
+        scenario.response = ScenarioAttempt(
+            submitted_at=now,
+            response_text=submission.response_text,
+            selected_option_id=submission.selected_option_id,
+        )
         scenario.feedback = feedback
         scenario.feedback_status = "available" if feedback is not None else "unavailable"
         scenario.status = "completed"
@@ -110,11 +125,24 @@ class ScenarioResponseService:
             )
         return scenario
 
+    def _find_option(self, scenario: PracticeScenario, option_id: str) -> ScenarioOption:
+        """Return the selected option only if it belongs to this scenario, so an
+        option id from another scenario is rejected."""
+        option = next((o for o in scenario.options if o.option_id == option_id), None)
+        if option is None:
+            raise practice_error(
+                status.HTTP_400_BAD_REQUEST,
+                "INVALID_OPTION_ID",
+                "selected_option_id is not an option for this scenario",
+            )
+        return option
+
     def _generate_feedback(
         self,
         session: PracticeSession,
         scenario: PracticeScenario,
-        response_text: str,
+        submission: ScenarioResponseCreate,
+        selected_option: ScenarioOption | None,
     ) -> ReflectiveFeedback | None:
         """Ask the provider for reflective feedback. A failure is not an error
         for the user: the response is still saved and practice can continue
@@ -128,7 +156,10 @@ class ScenarioResponseService:
             skills_used=tuple(scenario.skills_used),
             new_skill_focus=scenario.new_skill_focus,
             activity_type=scenario.activity_type,
-            response_text=response_text,
+            response_text=submission.response_text,
+            selected_option_id=selected_option.option_id if selected_option else None,
+            selected_option_text=selected_option.text if selected_option else None,
+            option_texts=tuple(option.text for option in scenario.options),
         )
         provider = self.practice_sessions.provider
         try:

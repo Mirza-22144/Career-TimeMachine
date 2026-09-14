@@ -77,3 +77,14 @@ def use_provider():
 
     yield _use
     app.dependency_overrides.pop(dependencies.get_scenario_provider, None)
+
+
+@pytest.fixture
+def use_activity_type():
+    """Switch the activity type new practice scenarios use for one test."""
+
+    def _use(activity_type: str) -> None:
+        app.dependency_overrides[dependencies.get_practice_activity_type] = lambda: activity_type
+
+    yield _use
+    app.dependency_overrides.pop(dependencies.get_practice_activity_type, None)

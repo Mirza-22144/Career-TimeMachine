@@ -535,3 +535,101 @@ const res = await fetch("/api/v1/practice-role", {
   body: JSON.stringify({ role_id: "software_engineer", source: "previous" }),
 });
 ```
+
+## Workplace Practice Sessions (Iteration 2)
+
+A practice session is started from the saved practice role and saved career
+information, so nothing is re-entered (AC 4.1.3, 4.2.2). Each session belongs
+to the token that started it. Another token's session always looks exactly
+like one that does not exist (`404`).
+
+> **Development provider:** scenarios currently come from a curated,
+> hand-written provider (`app/providers/curated_scenario_provider.py`), not the
+> production AI integration. The response shape below is the contract the AI
+> provider must satisfy (`app/providers/scenario_provider.py`).
+
+Session object (returned by every endpoint in this section):
+
+```json
+{
+  "session_id": "3f5b2c1e9a7d4e0f8b6a2c4d1e3f5a7b",
+  "role": { "id": "software_engineer", "label": "Software Engineer", "source": "previous" },
+  "duration": "standard",
+  "duration_minutes": 10,
+  "difficulty": "guided",
+  "status": "active",
+  "created_at": "2026-09-14T10:00:00Z",
+  "updated_at": "2026-09-14T10:00:00Z",
+  "completed_at": null,
+  "scenarios": [
+    {
+      "scenario_id": "software_slow_release",
+      "title": "Slow responses after a release",
+      "workplace_area": "Engineering team desk",
+      "situation": "Your team shipped an update ...",
+      "task": "Write a short message to your lead ...",
+      "activity_type": "written_response",
+      "guidance": ["Think about what changed in this morning's release."],
+      "skills_used": ["Debugging", "Communication", "API design", "Python"],
+      "new_skill_focus": "Observability",
+      "status": "current",
+      "response": null,
+      "feedback": null,
+      "feedback_status": null
+    }
+  ],
+  "progress": {
+    "status": "active",
+    "total_activities": 1,
+    "completed_activities": 0,
+    "current_scenario_id": "software_slow_release"
+  }
+}
+```
+
+- `status`: `active`, `completed` or `abandoned` (replaced by a newer session).
+- `guidance`: every hint for `guided`, one for `standard`, none for `challenge`.
+
+### `POST /practice-sessions`
+
+Request body (both required, no other fields):
+
+```json
+{ "duration": "standard", "difficulty": "guided" }
+```
+
+- `duration`: `quick` (5 min), `standard` (10 min), `challenge` (15 min).
+- `difficulty`: `guided`, `standard`, `challenge`.
+
+Starting a session while another is active marks the older one `abandoned`.
+
+Success `201`: session object.
+
+Errors:
+
+- `401` missing/invalid token.
+- `409` `PROFILE_NOT_CONFIRMED` - no confirmed profile yet.
+- `409` `PRACTICE_ROLE_REQUIRED` - no practice role saved (AC 4.1.2 "Please select a role to continue").
+- `422` `REQUEST_VALIDATION_ERROR` - missing or unsupported duration/difficulty
+  (AC 4.2.2 "Choose a practice time and difficulty to continue").
+- `503` `SCENARIO_UNAVAILABLE` - the provider failed, timed out or returned
+  invalid content. No session is created (AC 4.1.3 "We couldn't start your
+  workplace practice").
+
+### `GET /practice-sessions/current`
+
+Returns the active session so the user can resume (AC 4.3.4).
+
+Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND` when there is no active session.
+
+### `GET /practice-sessions/{session_id}`
+
+Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND`; `422` for an id longer than 64 characters.
+
+### `POST /practice-sessions/{session_id}/complete`
+
+Marks the session `completed` and sets `completed_at` (AC 4.5.3). Calling it
+again on a completed session returns the same result.
+
+Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND`; `409`
+`PRACTICE_SESSION_NOT_ACTIVE` for an abandoned session.

@@ -9,6 +9,7 @@ fixed catalogue instead, which keeps the suite deterministic and offline.
 import pytest
 
 from app.api import dependencies
+from app.main import app
 from app.repositories.interfaces.catalogue_repository import CatalogueItem
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 
@@ -65,3 +66,14 @@ def fake_catalogue(monkeypatch):
     repository = FakeCatalogueRepository()
     monkeypatch.setattr(dependencies, "_catalogue_repository", repository)
     return repository
+
+
+@pytest.fixture
+def use_provider():
+    """Swap the workplace-scenario provider for one test."""
+
+    def _use(provider) -> None:
+        app.dependency_overrides[dependencies.get_scenario_provider] = lambda: provider
+
+    yield _use
+    app.dependency_overrides.pop(dependencies.get_scenario_provider, None)

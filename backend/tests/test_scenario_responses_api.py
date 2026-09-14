@@ -30,7 +30,10 @@ ANSWER = (
     "compare slow and fast requests, and I would send support a short update every thirty minutes."
 )
 UNKNOWN_ID = "0" * 32
-JUDGEMENT_KEYS = {"score", "grade", "result", "passed", "pass_fail", "rating", "employability"}
+JUDGEMENT_KEYS = {
+    "score", "grade", "result", "passed", "pass_fail", "rating", "employability",
+    "is_correct", "correct_option_id", "readiness",
+}
 
 
 class FailingFeedbackProvider(CuratedScenarioProvider):
@@ -175,6 +178,7 @@ def test_duplicate_submission_is_rejected_and_first_response_kept():
         {"response_text": "x" * 5001},
         {"response_text": 42},
         {"response_text": "An answer", "score": 5},
+        {"response_text": "An answer", "selected_option_id": "option_a"},
     ],
 )
 def test_invalid_response_is_rejected_and_nothing_saved(body):
@@ -192,6 +196,23 @@ def test_longest_allowed_response_is_accepted():
     headers, session = _started_practice()
 
     assert _submit(headers, session, text="x" * 5000).status_code == 201
+
+
+def test_written_scenario_rejects_a_selected_option_and_saves_nothing():
+    headers, session = _started_practice()
+
+    response = client.post(_response_path(session), headers=headers, json={"selected_option_id": "option_a"})
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "error": {
+            "code": "ACTIVITY_TYPE_MISMATCH",
+            "message": "This activity expects response_text",
+            "details": [],
+        }
+    }
+    stored = client.get(f"/api/v1/practice-sessions/{session['session_id']}", headers=headers).json()
+    assert stored["scenarios"][0]["response"] is None
 
 
 def test_unknown_scenario_or_session_is_not_found():

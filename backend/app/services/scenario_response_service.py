@@ -27,6 +27,9 @@ from app.services.practice_session_service import (
 
 logger = logging.getLogger(__name__)
 
+# The one answer field each activity type accepts.
+EXPECTED_ANSWER_FIELD = {"multiple_choice": "selected_option_id", "written_response": "response_text"}
+
 
 @dataclass
 class ScenarioSubmission:
@@ -68,6 +71,13 @@ class ScenarioResponseService:
                 status.HTTP_409_CONFLICT,
                 "RESPONSE_ALREADY_SUBMITTED",
                 "A response has already been submitted for this scenario",
+            )
+        expected_field = EXPECTED_ANSWER_FIELD[scenario.activity_type]
+        if getattr(submission, expected_field) is None:
+            raise practice_error(
+                status.HTTP_400_BAD_REQUEST,
+                "ACTIVITY_TYPE_MISMATCH",
+                f"This activity expects {expected_field}",
             )
 
         feedback = self._generate_feedback(session, scenario, submission.response_text)
@@ -117,6 +127,7 @@ class ScenarioResponseService:
             task=scenario.task,
             skills_used=tuple(scenario.skills_used),
             new_skill_focus=scenario.new_skill_focus,
+            activity_type=scenario.activity_type,
             response_text=response_text,
         )
         provider = self.practice_sessions.provider
@@ -136,6 +147,7 @@ class ScenarioResponseService:
         return ReflectiveFeedback(
             what_worked_well=list(content.what_worked_well),
             areas_to_consider=list(content.areas_to_consider),
+            trade_offs=list(content.trade_offs),
             skill_to_explore=SuggestedSkill(skill=suggested.skill, why_relevant=suggested.why_relevant)
             if suggested is not None
             else None,

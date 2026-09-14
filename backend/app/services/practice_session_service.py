@@ -20,6 +20,7 @@ from app.repositories.interfaces.practice_session_repository import (
     PracticeScenario,
     PracticeSession,
     PracticeSessionRepository,
+    ScenarioOption,
 )
 from app.schemas.practice_session import PracticeSessionCreate
 from app.services.practice_role_service import PracticeRoleService
@@ -70,6 +71,7 @@ class PracticeSessionService:
         practice_roles: PracticeRoleService,
         provider: ScenarioProvider,
         provider_timeout_seconds: float = 10.0,
+        activity_type: str = "written_response",
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.
@@ -77,6 +79,8 @@ class PracticeSessionService:
         self.practice_roles = practice_roles
         self.provider = provider
         self.provider_timeout_seconds = provider_timeout_seconds
+        # The interaction new scenarios use (multiple_choice or written_response).
+        self.activity_type = activity_type
 
     def start_session(self, owner: str, settings: PracticeSessionCreate) -> PracticeSession:
         """Start practice with the saved role, saved career context and the
@@ -91,6 +95,7 @@ class PracticeSessionService:
                 responsibilities=tuple(context.responsibilities),
                 duration=settings.duration,
                 difficulty=settings.difficulty,
+                activity_type=self.activity_type,
             )
         )
 
@@ -162,7 +167,8 @@ class PracticeSessionService:
         return self.sessions.save(session)
 
     def _generate_scenario(self, request: ScenarioRequest) -> PracticeScenario:
-        """Get one scenario from the provider and validate it."""
+        """Get one scenario of the requested activity type from the provider
+        and validate it."""
         try:
             raw = call_provider(
                 self.provider.generate_scenario,
@@ -170,6 +176,8 @@ class PracticeSessionService:
                 self.provider_timeout_seconds,
             )
             content = ScenarioContent.model_validate(raw)
+            if content.activity_type != request.activity_type:
+                raise ScenarioProviderError("provider returned a different activity type")
         except (ScenarioProviderError, ValidationError) as exc:
             # Log the failure type only - never career context or provider output.
             logger.warning("Scenario provider could not supply a scenario (%s)", type(exc).__name__)
@@ -179,4 +187,8 @@ class PracticeSessionService:
                 "A practice scenario could not be prepared. Please try again.",
             ) from None
 
-        return PracticeScenario(**content.model_dump(), status="current")
+        return PracticeScenario(
+            **content.model_dump(exclude={"options"}),
+            options=[ScenarioOption(option_id=option.option_id, text=option.text) for option in content.options],
+            status="current",
+        )

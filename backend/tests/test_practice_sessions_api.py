@@ -49,6 +49,15 @@ class CrashingProvider(CuratedScenarioProvider):
         raise RuntimeError("unexpected internal detail")
 
 
+class MismatchedActivityProvider(CuratedScenarioProvider):
+    """Returns a valid scenario, but not of the activity type requested."""
+
+    def generate_scenario(self, request):
+        scenario = super().generate_scenario(request)
+        options = [{"option_id": "option_a", "text": "One"}, {"option_id": "option_b", "text": "Two"}]
+        return {**scenario, "activity_type": "multiple_choice", "options": options}
+
+
 class RecordingProvider(CuratedScenarioProvider):
     def __init__(self) -> None:
         self.requests = []
@@ -102,6 +111,7 @@ def test_start_practice_uses_saved_role_career_context_and_settings():
     assert scenario["status"] == "current"
     assert scenario["situation"] and scenario["task"]
     assert scenario["activity_type"] == "written_response"
+    assert scenario["options"] == []
     assert len(scenario["guidance"]) == 3
     assert {"Python", "Git"} <= set(scenario["skills_used"])
     assert scenario["response"] is None
@@ -283,7 +293,10 @@ def test_practice_sessions_require_a_valid_token(method, path):
     assert response.status_code == 401
 
 
-@pytest.mark.parametrize("provider", [FailingProvider(), InvalidScenarioProvider(), CrashingProvider()])
+@pytest.mark.parametrize(
+    "provider",
+    [FailingProvider(), InvalidScenarioProvider(), CrashingProvider(), MismatchedActivityProvider()],
+)
 def test_provider_failure_returns_controlled_error_and_stores_nothing(use_provider, provider):
     headers = _headers()
     _ready_for_practice(headers)
@@ -318,6 +331,7 @@ def test_provider_receives_only_the_career_context_it_needs(use_provider):
     assert request.years_experience == "5 years"
     assert request.skills == ("Python", "Git")
     assert (request.duration, request.difficulty) == ("standard", "guided")
+    assert request.activity_type == "written_response"
     sent = repr(request)
     for private in (token, hash_token(token), "Secret hobby project", "caregiving", "2024-01-01"):
         assert private not in sent

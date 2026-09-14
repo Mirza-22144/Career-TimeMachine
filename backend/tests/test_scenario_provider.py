@@ -40,6 +40,7 @@ def _request(role_id="software_developer", difficulty="standard", **overrides) -
         "responsibilities": ("API design",),
         "duration": "standard",
         "difficulty": difficulty,
+        "activity_type": "written_response",
     }
     values.update(overrides)
     return ScenarioRequest(**values)
@@ -54,6 +55,7 @@ def _feedback_request(scenario: ScenarioContent, response_text: str) -> Feedback
         task=scenario.task,
         skills_used=tuple(scenario.skills_used),
         new_skill_focus=scenario.new_skill_focus,
+        activity_type=scenario.activity_type,
         response_text=response_text,
     )
 

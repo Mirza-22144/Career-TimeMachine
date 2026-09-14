@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from app.providers.scenario_provider import ActivityType
+
 PracticeDuration = Literal["quick", "standard", "challenge"]
 PracticeDifficulty = Literal["guided", "standard", "challenge"]
 
@@ -41,14 +43,28 @@ class ReflectiveFeedbackResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     what_worked_well: list[str]
+    trade_offs: list[str]
     areas_to_consider: list[str]
     skill_to_explore: SuggestedSkillResponse | None
 
 
-class ScenarioAttemptResponse(BaseModel):
+class ScenarioOptionResponse(BaseModel):
+    """One multiple-choice option. No option is labelled correct."""
+
     model_config = ConfigDict(from_attributes=True)
 
-    response_text: str
+    option_id: str
+    text: str
+
+
+class ScenarioAttemptResponse(BaseModel):
+    """The saved answer: selected_option_id for multiple choice, response_text
+    for a written response. The other field is null."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    selected_option_id: str | None
+    response_text: str | None
     submitted_at: datetime
 
 
@@ -60,7 +76,8 @@ class PracticeScenarioResponse(BaseModel):
     workplace_area: str
     situation: str
     task: str
-    activity_type: str
+    activity_type: ActivityType
+    options: list[ScenarioOptionResponse]  # empty for written_response
     guidance: list[str]
     skills_used: list[str]
     new_skill_focus: str | None

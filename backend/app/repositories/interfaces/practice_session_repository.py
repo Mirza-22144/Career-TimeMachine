@@ -21,14 +21,28 @@ class ReflectiveFeedback:
     what_worked_well: list[str]
     areas_to_consider: list[str]
     skill_to_explore: SuggestedSkill | None = None
+    trade_offs: list[str] = field(default_factory=list)
+
+
+@dataclass
+class ScenarioOption:
+    """One choice in a multiple-choice scenario. No option is marked correct."""
+
+    option_id: str
+    text: str
 
 
 @dataclass
 class ScenarioAttempt:
-    """The user's submitted response, stored as text only."""
+    """The user's submitted answer, stored as data and never executed.
 
-    response_text: str
+    Multiple choice sets selected_option_id; a written response sets
+    response_text. The other field stays None.
+    """
+
     submitted_at: datetime
+    response_text: str | None = None
+    selected_option_id: str | None = None
 
 
 @dataclass
@@ -40,10 +54,12 @@ class PracticeScenario:
     workplace_area: str
     situation: str
     task: str
-    activity_type: str
+    activity_type: str  # "multiple_choice" | "written_response"
     guidance: list[str]
     skills_used: list[str]
     new_skill_focus: str | None
+    # Two or more for multiple_choice, empty for written_response.
+    options: list[ScenarioOption] = field(default_factory=list)
     status: str = "current"  # "current" | "completed"
     response: ScenarioAttempt | None = None
     feedback: ReflectiveFeedback | None = None

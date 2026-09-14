@@ -283,6 +283,8 @@ class CuratedScenarioProvider(ScenarioProvider):
     """Development/test provider backed by CURATED_SCENARIOS."""
 
     def generate_scenario(self, request: ScenarioRequest) -> dict[str, Any]:
+        if request.activity_type != "written_response":
+            raise ScenarioProviderError("No curated scenarios for this activity type")
         available = [
             scenario
             for scenario in CURATED_SCENARIOS[role_family(request.role_id)]

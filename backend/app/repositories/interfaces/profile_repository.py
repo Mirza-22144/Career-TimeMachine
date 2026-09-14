@@ -13,6 +13,8 @@ class Profile:
     """
 
     # The anonymous session owns the profile; routes never expose profile ids.
+    # Holds the SHA-256 hash of the session's access token (the DB schema's
+    # session_token_hash column), never the raw token.
     session_token: str
 
     # Previous career details captured from catalogue selections or free text.

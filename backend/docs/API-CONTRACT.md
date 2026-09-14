@@ -49,8 +49,13 @@ const res = await fetch("/api/v1/health");
 
 ### `POST /anonymous-sessions`
 
-Starts an anonymous journey. Store the returned token in the frontend and send it
-as `X-Session-Token` on later protected requests.
+Starts an anonymous journey and generates its access token (AC 3.1.2). Show the
+returned token to the user, store it in the frontend and send it as
+`X-Session-Token` on later protected requests.
+
+The token is a 43-character URL-safe random string. **This is the only
+response that ever contains it.** The backend stores only its SHA-256 hash, so
+a lost token cannot be recovered or re-displayed by the API.
 
 Request body: none
 
@@ -73,15 +78,30 @@ const session = await res.json();
 
 ### `GET /anonymous-sessions/current`
 
-Returns the current anonymous session.
+Validates an existing access token (AC 3.1.3). `200` means the token is
+recognised; the frontend can then set it as the active token and load the
+saved journey with `GET /profile` / `GET /career-journey`. Each successful
+check updates `last_seen_at`.
+
+**Changed in Iteration 2:** the response no longer echoes the token.
 
 Request body: none
 
-Success `200`: same shape as `POST /anonymous-sessions`
+Success `200`:
+
+```json
+{
+  "created_at": "2026-08-29T01:00:00Z",
+  "last_seen_at": "2026-09-14T09:30:00Z"
+}
+```
 
 Errors:
 
-- `401` when `X-Session-Token` is missing or invalid.
+- `401` `"Missing session token"` when the header is absent.
+- `401` `"Invalid session token"` when the token is unknown, empty, longer
+  than 128 characters or contains characters outside `A-Z a-z 0-9 - _`.
+  Unknown and malformed tokens get the identical response.
 
 Frontend example:
 

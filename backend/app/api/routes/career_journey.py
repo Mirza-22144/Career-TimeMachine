@@ -14,4 +14,4 @@ def read_career_journey(
     service: CareerJourneyService = Depends(get_career_journey_service),
 ):
     """Return the confirmed profile as a structured career journey."""
-    return service.build_for_session(session.token)
+    return service.build_for_session(session.token_hash)

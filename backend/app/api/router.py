@@ -10,6 +10,7 @@ from app.api.routes import (
     practice_role,
     practice_sessions,
     profile,
+    scenario_responses,
 )
 
 # Combines every route module into one router. main.py mounts this under
@@ -24,3 +25,4 @@ api_router.include_router(career_translation.router)
 api_router.include_router(career_direction.router)
 api_router.include_router(practice_role.router)
 api_router.include_router(practice_sessions.router)
+api_router.include_router(scenario_responses.router)

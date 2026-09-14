@@ -18,6 +18,7 @@ from app.services.catalogue_service import CatalogueService
 from app.services.practice_role_service import PracticeRoleService
 from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
+from app.services.scenario_response_service import ScenarioResponseService
 from app.services.session_service import SessionService
 
 # ONE shared store for the whole app run, so sessions persist between requests.
@@ -110,3 +111,10 @@ def get_practice_session_service(
         provider,
         SCENARIO_PROVIDER_TIMEOUT_SECONDS,
     )
+
+
+def get_scenario_response_service(
+    practice_sessions: PracticeSessionService = Depends(get_practice_session_service),
+) -> ScenarioResponseService:
+    """Build response service on top of the practice-session service."""
+    return ScenarioResponseService(practice_sessions)

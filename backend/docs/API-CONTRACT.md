@@ -633,3 +633,89 @@ again on a completed session returns the same result.
 
 Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND`; `409`
 `PRACTICE_SESSION_NOT_ACTIVE` for an abandoned session.
+
+## Scenario Responses, Feedback and Progress (Iteration 2)
+
+### `POST /practice-sessions/{session_id}/scenarios/{scenario_id}/response`
+
+Saves the user's written response to a scenario in her **active** session and
+returns reflective feedback (AC 4.4.2, 4.5.1, 4.5.2). The response is stored as
+text only; the backend never executes submitted content.
+
+Request body (no other fields allowed):
+
+```json
+{ "response_text": "I would first check what changed in this morning's release..." }
+```
+
+- `response_text`: 1-5000 characters after trimming outer whitespace.
+
+Success `201`:
+
+```json
+{
+  "session_id": "3f5b2c1e9a7d4e0f8b6a2c4d1e3f5a7b",
+  "scenario": {
+    "scenario_id": "software_slow_release",
+    "status": "completed",
+    "response": {
+      "response_text": "I would first check what changed ...",
+      "submitted_at": "2026-09-14T10:06:00Z"
+    },
+    "feedback_status": "available",
+    "feedback": {
+      "what_worked_well": ["You set out your own approach to the situation, ..."],
+      "areas_to_consider": ["How would you confirm the release caused the slowdown ...?"],
+      "skill_to_explore": {
+        "skill": "Observability",
+        "why_relevant": "Modern teams use logs, metrics and traces ..."
+      }
+    },
+    "...": "other scenario fields as in the session object"
+  },
+  "progress": {
+    "status": "active",
+    "total_activities": 1,
+    "completed_activities": 1,
+    "current_scenario_id": null
+  }
+}
+```
+
+Feedback never contains a score, pass/fail result or employability judgement.
+Provider feedback that includes extra fields or wording such as a score is
+discarded. If feedback cannot be generated (provider failure, timeout or
+invalid content), the response is **still saved**, `feedback` is `null` and
+`feedback_status` is `"unavailable"` (AC 4.5.1 "We couldn't generate your
+personalised feedback. You can continue to the next activity.").
+`skill_to_explore` may be `null` when no skill is identified (AC 4.5.2).
+
+Errors:
+
+- `401` missing/invalid token.
+- `404` `PRACTICE_SESSION_NOT_FOUND` - unknown session or another user's session.
+- `404` `SCENARIO_NOT_FOUND` - the scenario is not part of this session.
+- `409` `PRACTICE_SESSION_NOT_ACTIVE` - the session is completed or abandoned.
+- `409` `RESPONSE_ALREADY_SUBMITTED` - a response already exists; the first one is kept.
+- `422` `REQUEST_VALIDATION_ERROR` - empty, whitespace-only, over-length or extra fields.
+
+### `GET /practice-sessions/{session_id}/progress`
+
+Success `200`:
+
+```json
+{
+  "status": "active",
+  "total_activities": 1,
+  "completed_activities": 1,
+  "current_scenario_id": null
+}
+```
+
+When `status` is `active` and `current_scenario_id` is `null`, every available
+activity is done and the frontend can offer to complete the session (AC 4.5.3
+"You've completed the available activities for this practice session.").
+Each session currently contains one scenario; a "next activity" endpoint is not
+implemented yet.
+
+Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND`.

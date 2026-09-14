@@ -3,6 +3,8 @@ import '../styles/YourDirection.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
 import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
+import { getPredictedRoles } from '../mockData/predictedRoles'
+import { setSelectedRole as savePracticeRole } from '../practiceSession.js'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
@@ -21,24 +23,26 @@ export default function YourDirection() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
+  const [translation, setTranslation] = useState(null)
   const [returnStatuses, setReturnStatuses] = useState([])
-  const [careerAreas, setCareerAreas] = useState([])
   const [pace, setPace] = useState(null)
-  const [areaId, setAreaId] = useState(null)
+  // { type: 'previous' | 'predicted', id, label } - nothing is selected by
+  // default; Maya must explicitly pick a role (AC 4.1.2's "no role
+  // selected" exception is a real, reachable state, not just a fallback).
+  const [selectedRole, setSelectedRole] = useState(null)
 
   const load = async () => {
     try {
-      const [journeyData, statuses, areas, direction] = await Promise.all([
+      const [journeyData, statuses, direction, translationData] = await Promise.all([
         api.getCareerJourney(),
         api.getCatalogue('return-statuses'),
-        api.getCatalogue('career-areas'),
         api.getCareerDirection(),
+        api.getCareerTranslation(),
       ])
       setJourney(journeyData)
+      setTranslation(translationData)
       setReturnStatuses(statuses)
-      setCareerAreas(areas)
       setPace(direction.return_readiness)
-      setAreaId(direction.area_to_explore)
       setLoading(false)
     } catch {
       setLoadError(true)
@@ -59,17 +63,19 @@ export default function YourDirection() {
     load()
   }
 
-  const canContinue = !!pace && !!areaId
+  const canContinue = !!pace && !!selectedRole
 
   let hint = ''
   if (!pace) hint = 'Select a return status to continue.'
-  else if (!areaId) hint = 'Select an area to explore to continue.'
+  else if (!selectedRole) hint = 'Please select a role to continue.' // AC 4.1.2's exact exception copy
 
-  // Saves the chosen pace and area, then moves straight into a Workplace
-  // Scenario for the chosen area - Career Journey is reached later via the
-  // nav, not as part of finishing the wizard. Runs when Continue is clicked.
+  // Saves the chosen pace, carries the selected role into the practice
+  // session (AC 4.1.2), then moves into the Workplace Scenario intro -
+  // Career Journey is reached later via the nav, not as part of finishing
+  // the wizard. Runs when Continue is clicked.
   const handleContinue = async () => {
-    await api.patchCareerDirection({ return_readiness: pace, area_to_explore: areaId })
+    savePracticeRole(selectedRole)
+    await api.patchCareerDirection({ return_readiness: pace })
     navigate('/workplace-scenario')
   }
 
@@ -93,6 +99,8 @@ export default function YourDirection() {
   )
 
   const skillCount = journey.selected_skills.catalogue_skills.length + journey.selected_skills.custom_skills.length
+  const ownedCount = translation.owned_skills.length + translation.custom_skills.length
+  const newHorizonsCount = translation.new_horizons.length
   const journeySteps = [
     { label: 'Your Story', caption: journey.previous_role ? `${journey.previous_role.label}, ${journey.years_experience.label}` : '—' },
     { label: 'Your Experience', caption: `${plural(skillCount, 'skill')}` },
@@ -102,7 +110,10 @@ export default function YourDirection() {
         ? `${journey.career_break.break_started_on.slice(0, 4)} to ${journey.career_break.return_date_unsure ? 'undecided' : journey.career_break.planned_return_date?.slice(0, 4)}`
         : '—',
     },
+    { label: 'Journey Map', caption: `${ownedCount} kept, ${newHorizonsCount} new` },
   ]
+
+  const predictedRoles = journey.previous_role ? getPredictedRoles(journey.previous_role.id) : []
 
   return (
     <>
@@ -159,24 +170,50 @@ export default function YourDirection() {
             })}
           </div>
 
-          <h2 className="yd-question-label">{stepFiveData.areaQuestion}</h2>
-          <p className="yd-question-subtext">{stepFiveData.areaSubtext}</p>
-          <div className="yd-radio-grid">
-            {careerAreas.map((area) => {
-              const isActive = areaId === area.id
+          <h2 className="yd-question-label">{stepFiveData.rolesQuestion}</h2>
+          <p className="yd-question-subtext">{stepFiveData.rolesSubtext}</p>
+          <div className="yd-role-grid">
+            {journey.previous_role && (
+              <button
+                type="button"
+                className={`yd-role-card ${selectedRole?.type === 'previous' ? 'yd-role-card--active' : ''}`}
+                onClick={() => setSelectedRole({ type: 'previous', id: journey.previous_role.id, label: journey.previous_role.label })}
+              >
+                <span className="yd-role-badge">YOUR PREVIOUS ROLE</span>
+                <div className="yd-role-header">
+                  <strong>{journey.previous_role.label}</strong>
+                  <span className={`yd-role-check ${selectedRole?.type === 'previous' ? 'yd-role-check--active' : ''}`}>
+                    {selectedRole?.type === 'previous' && <CheckIcon size={11} color="#FFFFFF" />}
+                  </span>
+                </div>
+                <p>Your previous role. Practise with the experience you already have.</p>
+              </button>
+            )}
+
+            {predictedRoles.map((role) => {
+              const isActive = selectedRole?.type === 'predicted' && selectedRole.id === role.id
               return (
                 <button
                   type="button"
-                  key={area.id}
-                  className={`yd-radio ${isActive ? 'yd-radio--active' : ''}`}
-                  onClick={() => setAreaId(area.id)}
+                  key={role.id}
+                  className={`yd-role-card ${isActive ? 'yd-role-card--active' : ''}`}
+                  onClick={() => setSelectedRole({ type: 'predicted', id: role.id, label: role.label })}
                 >
-                  <span className={`yd-radio-dot ${isActive ? 'yd-radio-dot--active' : ''}`} />
-                  {area.label}
+                  <span className="yd-role-badge yd-role-badge--predicted">PREDICTED ROLE</span>
+                  <div className="yd-role-header">
+                    <strong>{role.label}</strong>
+                    <span className={`yd-role-radio ${isActive ? 'yd-role-radio--active' : ''}`} />
+                  </div>
+                  <p>{role.description}</p>
                 </button>
               )
             })}
           </div>
+          {predictedRoles.length === 0 && (
+            <p className="yd-role-note">
+              We couldn&rsquo;t generate career suggestions right now. You can continue with your previous role.
+            </p>
+          )}
 
           <div className="yd-note">
             <strong>{stepFiveData.noteTitle}</strong>

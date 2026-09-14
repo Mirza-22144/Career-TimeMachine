@@ -8,6 +8,12 @@ import GeneratedTokenModal from "./GeneratedTokenModal";
 import MyTokenModal from "./MyTokenModal";
 import TokenRequiredModal from "./TokenRequiredModal";
 
+// Every wizard step belongs conceptually under Career Journey (its Edit
+// buttons route back into these exact same steps), so the nav should show
+// Career Journey as active while inside any of them too, not just on the
+// literal "/career-journey" URL.
+const WIZARD_PATHS = ["/your-story", "/your-experience", "/your-break", "/skill-relevance-map", "/your-direction"];
+
 /**
  * Fixed top nav shared by every page (Landing, the onboarding wizard,
  * Career Journey, Workplace Scenario). Owns the access-token modals and
@@ -45,7 +51,8 @@ export default function TopNav({ flow: providedFlow }) {
         <div className="tn-nav-actions">
           <div className="tn-nav-links">
             {navLinks.map((link) => {
-              const isActive = link.href === currentPath;
+              const isActive = link.href === currentPath
+                || (link.href === "/career-journey" && WIZARD_PATHS.includes(currentPath));
               if (!link.gated) {
                 // "Home" is the only ungated link today - path-aware since
                 // it now renders on every page, not just Landing.

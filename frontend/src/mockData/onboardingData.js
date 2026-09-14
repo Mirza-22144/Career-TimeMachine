@@ -145,9 +145,9 @@ export const stepFiveData = {
   paceQuestion: "Where are you now?",
   paceSubtext:
     "Choose the pace that feels right for you. There is no wrong answer.",
-  areaQuestion: "Which area would you like to explore?",
-  areaSubtext:
-    "We will put you into a real workplace scenario for the area you choose.",
+  rolesQuestion: "Roles you could explore",
+  rolesSubtext:
+    "Your previous role is always available. Pick the one you want to practise.",
   noteTitle: "You choose the pace.",
   noteBody:
     "You are building on experience you already have, not starting from nothing.",

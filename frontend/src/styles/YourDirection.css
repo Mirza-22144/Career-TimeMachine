@@ -224,36 +224,84 @@
   color: #ffffff;
 }
 
-.yd-radio-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 28px;
+.yd-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
-.yd-radio-empty {
+.yd-role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.1);
+  border-radius: 12px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.yd-role-card--active {
+  border-color: var(--violet-600);
+  box-shadow: 0 0 0 1px var(--violet-600);
+}
+
+.yd-role-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--violet-50);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--violet-600);
+}
+
+.yd-role-badge--predicted {
+  background: rgba(15, 23, 40, 0.06);
+  color: var(--ink-600);
+}
+
+.yd-role-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.yd-role-header strong {
+  font-size: 16px;
+  color: var(--ink-900);
+}
+
+.yd-role-card p {
   margin: 0;
   font-weight: 500;
   font-size: 13px;
   color: var(--ink-600);
 }
 
-.yd-radio {
+.yd-role-check {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 20px;
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 40, 0.12);
-  border-radius: 12px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--ink-900);
-  cursor: pointer;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 999px;
+  border: 2px solid rgba(15, 23, 40, 0.2);
 }
 
-.yd-radio-dot {
+.yd-role-check--active {
+  border-color: var(--violet-600);
+  background: var(--violet-600);
+}
+
+.yd-role-radio {
   width: 16px;
   height: 16px;
   min-width: 16px;
@@ -261,15 +309,23 @@
   border: 2px solid rgba(15, 23, 40, 0.2);
 }
 
-.yd-radio-dot--active {
+.yd-role-radio--active {
   border-color: var(--violet-600);
   background: var(--violet-600);
   box-shadow: inset 0 0 0 3px #ffffff;
 }
 
-.yd-radio--active {
-  border-color: var(--violet-600);
-  box-shadow: 0 0 0 1px var(--violet-600);
+.yd-role-note {
+  margin: 0 0 28px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink-600);
+}
+
+@media (max-width: 900px) {
+  .yd-role-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .yd-note {

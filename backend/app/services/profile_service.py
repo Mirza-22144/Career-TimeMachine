@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date, datetime, timezone
 from typing import Any
 
@@ -30,8 +31,13 @@ class ProfileService:
         return self.profiles.save(Profile(session_token=session_token))
 
     def update_profile(self, session_token: str, update: ProfileUpdate) -> Profile:
-        """Apply a partial profile update and save the result."""
-        profile = self.get_or_create(session_token)
+        """Apply a partial profile update and save the result.
+
+        Every rule is checked against a candidate copy, and only a fully valid
+        candidate is saved, so a rejected update never changes the stored
+        profile (CTM-F-001).
+        """
+        current = self.get_or_create(session_token)
 
         # Only apply fields the client actually sent.
         changes = update.model_dump(exclude_unset=True)
@@ -54,18 +60,17 @@ class ProfileService:
         if changes.get("return_date_unsure") is True:
             changes["planned_return_date"] = None
 
-        # Apply the validated changes to the dataclass.
-        for field_name, value in changes.items():
-            setattr(profile, field_name, value)
+        # Build the updated profile as a copy; the stored one is left alone.
+        candidate = replace(current, **changes)
 
-        # Re-check the cross-field date rule after all fields are applied.
-        self._validate_date_rule(profile)
+        # Check the cross-field date rule on the combined result before saving.
+        self._validate_date_rule(candidate)
 
         # Any profile edit invalidates a previous confirmation.
-        profile.confirmed = False
-        profile.break_duration_months = self._calculate_break_duration_months(profile)
+        candidate.confirmed = False
+        candidate.break_duration_months = self._calculate_break_duration_months(candidate)
 
-        return self.profiles.save(profile)
+        return self.profiles.save(candidate)
 
     def confirm_profile(self, session_token: str) -> Profile:
         """Confirm the profile if all required fields are complete."""

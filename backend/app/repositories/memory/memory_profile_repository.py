@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
 
 
@@ -6,6 +8,9 @@ class MemoryProfileRepository(ProfileRepository):
 
     Data lives in memory and is lost when the app restarts. This class exists
     only so the backend can be exercised before the database handover.
+
+    Profiles are copied in and out, like rows from a database, so changing a
+    loaded profile has no effect until it is passed to save().
     """
 
     def __init__(self) -> None:
@@ -14,12 +19,13 @@ class MemoryProfileRepository(ProfileRepository):
 
     def get_by_session_token(self, session_token: str) -> Profile | None:
         """Look up a profile without creating one."""
-        return self._profiles.get(session_token)
+        profile = self._profiles.get(session_token)
+        return deepcopy(profile) if profile is not None else None
 
     def save(self, profile: Profile) -> Profile:
         """Store the latest profile state for the owning session."""
-        self._profiles[profile.session_token] = profile
-        return profile
+        self._profiles[profile.session_token] = deepcopy(profile)
+        return deepcopy(profile)
 
     def delete_by_session_token(self, session_token: str) -> bool:
         """Remove a session's profile and report whether anything changed."""

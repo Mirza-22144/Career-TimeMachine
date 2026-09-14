@@ -92,6 +92,15 @@ export function useAccessTokenFlow() {
       const mappedSession = getSessionForToken(token);
       if (mappedSession) {
         api.restoreSession(mappedSession);
+        // A mapped session can still be dead on the backend (sessions are
+        // in-memory only, so e.g. a server restart or Cloud Run cold start
+        // wipes them). api.js's 401 handling would then silently swap in a
+        // brand new, empty session and this call would still "succeed" -
+        // check the restored profile is actually the real one (confirmed)
+        // rather than showing Maya someone else's blank journey (AC 3.3.1:
+        // don't display incomplete or incorrect saved information).
+        const profile = await api.getProfile();
+        if (!profile.confirmed) throw new Error("restored session no longer exists on the backend");
       } else {
         recordTokenSession(token, await api.createSession());
       }

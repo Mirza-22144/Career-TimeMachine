@@ -155,7 +155,7 @@ export default function TopNav({ flow: providedFlow }) {
 
       {flow.sessionRestoreError && (
         <div className="tn-modal-error">
-          <span>We couldn&rsquo;t load your saved career journey. Please try again.</span>
+          <span>We couldn&rsquo;t load your saved journey. Please try again.</span>
           <button
             type="button"
             onClick={() => flow.lastValidToken && flow.handleValidToken(flow.lastValidToken)}

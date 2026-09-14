@@ -19,14 +19,15 @@ const plural = (n, word) => {
 // the user wants to explore.
 export default function YourDirection() {
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
   const [returnStatuses, setReturnStatuses] = useState([])
   const [careerAreas, setCareerAreas] = useState([])
   const [pace, setPace] = useState(null)
   const [areaId, setAreaId] = useState(null)
 
-  useEffect(() => {
-    async function load() {
+  const load = async () => {
+    try {
       const [journeyData, statuses, areas, direction] = await Promise.all([
         api.getCareerJourney(),
         api.getCatalogue('return-statuses'),
@@ -39,9 +40,24 @@ export default function YourDirection() {
       setPace(direction.return_readiness)
       setAreaId(direction.area_to_explore)
       setLoading(false)
+    } catch {
+      setLoadError(true)
+      setLoading(false)
     }
-    load()
+  }
+
+  useEffect(() => {
+    async function run() {
+      await load()
+    }
+    run()
   }, [])
+
+  const retryLoad = () => {
+    setLoading(true)
+    setLoadError(false)
+    load()
+  }
 
   const canContinue = !!pace && !!areaId
 
@@ -61,6 +77,18 @@ export default function YourDirection() {
     <>
       <TopNav />
       <div className="yd-page" />
+    </>
+  )
+
+  if (loadError) return (
+    <>
+      <TopNav />
+      <div className="yd-page">
+        <div className="yd-load-error">
+          <p>We couldn&rsquo;t load the information needed for this activity. Please try again.</p>
+          <button type="button" onClick={retryLoad}>Try Again</button>
+        </div>
+      </div>
     </>
   )
 

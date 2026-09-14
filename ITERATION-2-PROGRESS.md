@@ -147,6 +147,13 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
 
+### BE 2.8 - Multiple-choice workplace activities
+
+- **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
+- **What:** done locally - scenarios carry `activity_type`. **MCQs are active in Iteration 2:** each session serves a single-selection MCQ with stable option ids; unknown, other-scenario or wrong-field answers are rejected; feedback covers why the option may help, trade-offs, other considerations and a skill to explore (no score, pass/fail, correct/incorrect, readiness or employability). **Written responses are retained** for future iterations but not served. Curated provider only. 300 tests.
+- **Why:** AC 4.4.2, 4.5.1-4.5.3; backend Subtasks 7-8.
+- **Blocks / Blocked by:** restart persistence blocked by B2 (practice tables also need `activity_type`, options, `selected_option_id`, `trade_offs` - handover section 8). Production MCQs blocked by B1 (AI provider must follow the updated contract). FE 2.1 can build the MCQ screen against `API-CONTRACT.md` now.
+
 ### BE 2.7 - Selected practice role
 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14

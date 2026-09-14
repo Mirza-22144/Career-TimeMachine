@@ -544,9 +544,10 @@ to the token that started it. Another token's session always looks exactly
 like one that does not exist (`404`).
 
 > **Development provider:** scenarios currently come from a curated,
-> hand-written provider (`app/providers/curated_scenario_provider.py`), not the
-> production AI integration. The response shape below is the contract the AI
-> provider must satisfy (`app/providers/scenario_provider.py`).
+> hand-written provider (`app/providers/curated_scenario_provider.py`) that
+> serves single-selection multiple-choice activities. It is not the production
+> AI integration. The response shape below is the contract the AI provider must
+> satisfy (`app/providers/scenario_provider.py`).
 
 Session object (returned by every endpoint in this section):
 
@@ -566,11 +567,25 @@ Session object (returned by every endpoint in this section):
       "scenario_id": "software_slow_release",
       "title": "Slow responses after a release",
       "workplace_area": "Engineering team desk",
-      "situation": "Your team shipped an update ...",
-      "task": "Write a short message to your lead ...",
-      "activity_type": "written_response",
+      "situation": "Your team shipped an update to the customer orders service this morning ...",
+      "task": "What would you do first to investigate the slowdown?",
+      "activity_type": "multiple_choice",
+      "options": [
+        {
+          "option_id": "software_slow_release_a",
+          "text": "Compare this morning's release changes with the monitoring data for the order history page"
+        },
+        {
+          "option_id": "software_slow_release_b",
+          "text": "Roll back this morning's release straight away, then investigate"
+        },
+        {
+          "option_id": "software_slow_release_c",
+          "text": "Post an update for support and customers, then start gathering information"
+        }
+      ],
       "guidance": ["Think about what changed in this morning's release."],
-      "skills_used": ["Debugging", "Communication", "API design", "Python"],
+      "skills_used": ["Debugging", "Communication", "API design", "Python", "REST APIs"],
       "new_skill_focus": "Observability",
       "status": "current",
       "response": null,
@@ -588,7 +603,24 @@ Session object (returned by every endpoint in this section):
 ```
 
 - `status`: `active`, `completed` or `abandoned` (replaced by a newer session).
+- `situation` is the workplace context; `task` is the question or decision prompt.
 - `guidance`: every hint for `guided`, one for `standard`, none for `challenge`.
+
+### Activity types
+
+Every scenario has an explicit `activity_type`:
+
+| `activity_type` | Iteration 2 status | `options` | Answer field |
+|---|---|---|---|
+| `multiple_choice` | **Active.** Every new session uses it. | 2-6 options, each `{ "option_id", "text" }` with a unique, stable `option_id` | `selected_option_id` - exactly one option (single selection) |
+| `written_response` | Retained in the backend for future iterations. Not served in Iteration 2. | always `[]` | `response_text` |
+
+- Option ids are stable. Curated ids are `<scenario_id>_<letter>` (for example
+  `software_slow_release_b`), so they are unique across scenarios, not just
+  within one.
+- No option is marked correct and the API never returns a correct answer. Each
+  option is a plausible workplace approach with its own trade-offs.
+- Render options in the order returned as a single-selection control (radio group).
 
 ### `POST /practice-sessions`
 
@@ -613,7 +645,7 @@ Errors:
 - `422` `REQUEST_VALIDATION_ERROR` - missing or unsupported duration/difficulty
   (AC 4.2.2 "Choose a practice time and difficulty to continue").
 - `503` `SCENARIO_UNAVAILABLE` - the provider failed, timed out or returned
-  invalid content. No session is created (AC 4.1.3 "We couldn't start your
+  invalid content (including a scenario of a different activity type). No session is created (AC 4.1.3 "We couldn't start your
   workplace practice").
 
 ### `GET /practice-sessions/current`
@@ -638,40 +670,61 @@ Errors: `401`; `404` `PRACTICE_SESSION_NOT_FOUND`; `409`
 
 ### `POST /practice-sessions/{session_id}/scenarios/{scenario_id}/response`
 
-Saves the user's written response to a scenario in her **active** session and
-returns reflective feedback (AC 4.4.2, 4.5.1, 4.5.2). The response is stored as
-text only; the backend never executes submitted content.
+Saves the user's answer to a scenario in her **active** session and returns
+reflective feedback (AC 4.4.2, 4.5.1, 4.5.2). Send exactly one answer field,
+matching the scenario's `activity_type`. Answers are stored as data; the
+backend never executes submitted content.
 
-Request body (no other fields allowed):
+**Multiple choice (active in Iteration 2)** - request body (no other fields allowed):
 
 ```json
-{ "response_text": "I would first check what changed in this morning's release..." }
+{ "selected_option_id": "software_slow_release_b" }
+```
+
+- `selected_option_id`: one string of 1-64 characters (`a-z 0-9 _ -`) that must
+  be one of this scenario's `options`. A list is rejected: only one option can
+  be selected.
+
+**Written response (retained for future iterations)** - request body:
+
+```json
+{ "response_text": "I would begin by reviewing the tests and logs." }
 ```
 
 - `response_text`: 1-5000 characters after trimming outer whitespace.
 
-Success `201`:
+Success `201` (multiple choice):
 
 ```json
 {
   "session_id": "3f5b2c1e9a7d4e0f8b6a2c4d1e3f5a7b",
   "scenario": {
     "scenario_id": "software_slow_release",
+    "activity_type": "multiple_choice",
     "status": "completed",
     "response": {
-      "response_text": "I would first check what changed ...",
+      "selected_option_id": "software_slow_release_b",
+      "response_text": null,
       "submitted_at": "2026-09-14T10:06:00Z"
     },
     "feedback_status": "available",
     "feedback": {
-      "what_worked_well": ["You set out your own approach to the situation, ..."],
-      "areas_to_consider": ["How would you confirm the release caused the slowdown ...?"],
+      "what_worked_well": [
+        "Rolling back can restore normal service for customers quickly, which reduces the impact while the cause is found."
+      ],
+      "trade_offs": [
+        "A rollback also removes any fixes or features in the release, and the slowdown may turn out to have a different cause."
+      ],
+      "areas_to_consider": [
+        "Who would you check with before rolling back, and how would you confirm afterwards that it helped?",
+        "The other options could suit a different deadline, team or level of risk, so think about when you might choose one of them instead."
+      ],
       "skill_to_explore": {
         "skill": "Observability",
-        "why_relevant": "Modern teams use logs, metrics and traces ..."
+        "why_relevant": "Modern teams use logs, metrics and traces to see how a service behaves in production ..."
       }
     },
-    "...": "other scenario fields as in the session object"
+    "...": "other scenario fields (including options) as in the session object"
   },
   "progress": {
     "status": "active",
@@ -682,22 +735,77 @@ Success `201`:
 }
 ```
 
-Feedback never contains a score, pass/fail result or employability judgement.
-Provider feedback that includes extra fields or wording such as a score is
-discarded. If feedback cannot be generated (provider failure, timeout or
-invalid content), the response is **still saved**, `feedback` is `null` and
-`feedback_status` is `"unavailable"` (AC 4.5.1 "We couldn't generate your
-personalised feedback. You can continue to the next activity.").
-`skill_to_explore` may be `null` when no skill is identified (AC 4.5.2).
+For a written response, `response.response_text` holds the text,
+`response.selected_option_id` is `null`, and `feedback` has the same shape
+(`trade_offs` may be `[]`).
 
-Errors:
+Multiple-choice feedback fields:
 
-- `401` missing/invalid token.
-- `404` `PRACTICE_SESSION_NOT_FOUND` - unknown session or another user's session.
-- `404` `SCENARIO_NOT_FOUND` - the scenario is not part of this session.
-- `409` `PRACTICE_SESSION_NOT_ACTIVE` - the session is completed or abandoned.
-- `409` `RESPONSE_ALREADY_SUBMITTED` - a response already exists; the first one is kept.
-- `422` `REQUEST_VALIDATION_ERROR` - empty, whitespace-only, over-length or extra fields.
+| Field | Explains |
+|---|---|
+| `what_worked_well` | Why the selected option may be useful |
+| `trade_offs` | Workplace trade-offs of that choice |
+| `areas_to_consider` | Other considerations, including when another option could suit |
+| `skill_to_explore` | A related skill to explore and why it is relevant; may be `null` when none is identified (AC 4.5.2) |
+
+Feedback never contains a numerical score, pass/fail result, employability
+rating, readiness gauge or "correct"/"incorrect" label. Provider feedback that
+includes extra fields (such as `is_correct`) or wording like that is discarded.
+If feedback cannot be generated (provider failure, timeout or invalid content),
+the answer is **still saved**, `feedback` is `null` and `feedback_status` is
+`"unavailable"` (AC 4.5.1 "We couldn't generate your personalised feedback. You
+can continue to the next activity.").
+
+**Duplicate submissions:** the first answer is kept. Any later submission for
+the same scenario - the same option, a different option or a different answer
+field - returns `409 RESPONSE_ALREADY_SUBMITTED` and changes nothing. Reload the
+session to show the saved answer.
+
+Errors. Every error uses the standard envelope and a rejected request saves
+nothing. After the token and body checks, the service checks run in the order
+listed:
+
+| Status | Code | When |
+|---|---|---|
+| `401` | `HTTP_401` | Missing or invalid token |
+| `422` | `REQUEST_VALIDATION_ERROR` | Neither or both answer fields, a `null` answer, a missing/empty/malformed/over-length `selected_option_id`, a list of options, empty/whitespace-only/over-length `response_text`, or any extra field |
+| `404` | `PRACTICE_SESSION_NOT_FOUND` | Unknown session, or another token's session (identical response) |
+| `404` | `SCENARIO_NOT_FOUND` | The scenario is not part of this session |
+| `409` | `PRACTICE_SESSION_NOT_ACTIVE` | The session is completed or abandoned |
+| `409` | `RESPONSE_ALREADY_SUBMITTED` | The scenario already has an answer |
+| `400` | `ACTIVITY_TYPE_MISMATCH` | `response_text` sent to a `multiple_choice` scenario, or `selected_option_id` sent to a `written_response` scenario |
+| `400` | `INVALID_OPTION_ID` | `selected_option_id` is not one of this scenario's options, including an option id from a different scenario |
+
+Examples:
+
+```json
+{ "error": { "code": "INVALID_OPTION_ID", "message": "selected_option_id is not an option for this scenario", "details": [] } }
+```
+
+```json
+{ "error": { "code": "ACTIVITY_TYPE_MISMATCH", "message": "This activity expects selected_option_id", "details": [] } }
+```
+
+```json
+{
+  "error": {
+    "code": "REQUEST_VALIDATION_ERROR",
+    "message": "Request validation failed",
+    "details": [
+      { "field": "body", "message": "Value error, send exactly one of selected_option_id or response_text", "type": "value_error" }
+    ]
+  }
+}
+```
+
+Frontend example:
+
+```js
+const res = await fetch(
+  `/api/v1/practice-sessions/${sessionId}/scenarios/${scenarioId}/response`,
+  { method: "POST", headers, body: JSON.stringify({ selected_option_id: optionId }) },
+);
+```
 
 ### `GET /practice-sessions/{session_id}/progress`
 

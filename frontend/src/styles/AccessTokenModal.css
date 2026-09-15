@@ -18,6 +18,7 @@
   max-width: 460px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 28px;
   background: #ffffff;
   border-radius: 20px;
@@ -273,11 +274,13 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 20px;
   margin-bottom: 20px;
   background: #faf9fd;
   border: 1px dashed rgba(124, 58, 237, 0.35);
   border-radius: 14px;
+  overflow: hidden;
 }
 
 .atm-token-label {
@@ -288,10 +291,16 @@
 }
 
 .atm-token-value {
-  font-weight: 800;
-  font-size: 22px;
-  letter-spacing: 1px;
+  width: 100%;
+  max-width: 100%;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  line-height: 1.5;
   color: #7c3aed;
+  text-align: center;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .atm-safety-banner {

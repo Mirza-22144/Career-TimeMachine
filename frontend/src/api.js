@@ -56,11 +56,6 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
   const json = await res.json().catch(() => null)
 
   if (!res.ok) {
-    // A dead/expired session — start a fresh one and retry once.
-    if (res.status === 401 && auth) {
-      await createSession(true)
-      return request(path, { method, body, auth })
-    }
     const err = json?.error || { code: `HTTP_${res.status}`, message: 'Request failed', details: [] }
     throw new ApiError(err.code, err.message, err.details)
   }
@@ -80,11 +75,32 @@ async function createSession(force = false) {
   return session.token
 }
 
+// Checks whether a given token is recognised by the backend, without
+// switching the active session to it - used to validate a token the user
+// just typed in before committing to it via restoreSession(). Returns
+// true/false for a definitive answer; throws for anything else (network
+// failure, 5xx) so the caller can tell "not recognised" apart from
+// "couldn't check".
+async function validateToken(token) {
+  const res = await fetch(`${API_BASE}/anonymous-sessions/current`, {
+    headers: { 'X-Session-Token': token },
+  })
+  if (res.status === 401) return false
+  if (!res.ok) {
+    const json = await res.json().catch(() => null)
+    const err = json?.error || { code: `HTTP_${res.status}`, message: 'Request failed', details: [] }
+    throw new ApiError(err.code, err.message, err.details)
+  }
+  return true
+}
+
 export const api = {
   createSession,
-  // Points future requests at a specific, already-known session token -
-  // used to restore a returning visitor's session once her access token has
-  // been mapped back to it (see accessToken.js).
+  validateToken,
+  getToken,
+  // Points future requests at a specific, already-validated token - used to
+  // restore a returning visitor's session once her entered access token has
+  // been confirmed via validateToken().
   restoreSession: (token) => setToken(token),
   getCatalogue: (kind) => request(`/catalogue/${kind}`),
   // Skills depend on the previously selected role — omit roleId for the flat fallback list.

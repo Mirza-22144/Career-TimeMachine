@@ -12,6 +12,8 @@ from app.api import dependencies
 from app.main import app
 from app.repositories.interfaces.catalogue_repository import CatalogueItem
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
+from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
+from app.repositories.memory.memory_session_repository import MemorySessionRepository
 
 TEST_ROLES = [
     CatalogueItem("software_engineer", "Software Engineer"),
@@ -66,6 +68,22 @@ def fake_catalogue(monkeypatch):
     repository = FakeCatalogueRepository()
     monkeypatch.setattr(dependencies, "_catalogue_repository", repository)
     return repository
+
+
+@pytest.fixture(autouse=True)
+def fake_session_and_profile_stores(monkeypatch):
+    """Swap session/profile storage for fresh in-memory repositories.
+
+    dependencies.py wires these to Postgres when a database is configured
+    (HAS_DATABASE), same as the catalogue. But the fixed test catalogue
+    above uses ids like "software_engineer" that only exist in the test
+    fixture, not in the real role/skill tables - saving them through a real
+    Postgres profile repository would fail on a genuine foreign-key
+    violation. Tests must stay deterministic and offline regardless of
+    which real infrastructure is configured, exactly like fake_catalogue.
+    """
+    monkeypatch.setattr(dependencies, "_session_repository", MemorySessionRepository())
+    monkeypatch.setattr(dependencies, "_profile_repository", MemoryProfileRepository())
 
 
 @pytest.fixture

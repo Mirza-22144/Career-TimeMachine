@@ -41,7 +41,7 @@ Living document. Everyone updates their own section as they make progress. This 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
 | B1  | LLM output format is not yet agreed. Backend has now built the scenario endpoints against a proposed provider contract (`backend/app/providers/scenario_provider.py`) using a curated development provider, but production AI scenarios and feedback cannot be connected until the contract is agreed | Backend   | AI to agree (or amend) the proposed contract and implement the production `ScenarioProvider`            | `[BLOCKED]` open |
-| B2  | Sessions, profiles, the selected practice role and practice sessions/responses/feedback are still in-memory (lost on restart), so user progress cannot be persisted yet                                                                                                     | Backend   | Database to provide session/profile tables, 2 practice-role columns on `profile`, practice session/response/feedback tables, seeded catalogue tables (profile FKs) + connection details - see backend handover section 8 | `[BLOCKED]` open |
+| B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. Still in-memory: the selected practice role and practice sessions/responses/feedback, so that part of user progress is still lost on restart | Backend   | Database to add 2 practice-role columns on `profile` and practice session/response/feedback tables - see backend handover section 8 | `[WIP]` open |
 | B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
 
 ---
@@ -49,6 +49,29 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Frontend (FE)
 
 **Iteration 1 baseline** `[DONE]`: cards 1-7 UI (Get Started, Previous IT Experience, Skills & Experience, Career Break, Review Profile, Skills & Industry Relevance, Skill/Industry detail). Talks to the API using the `X-Session-Token` header, hash-based routing.
+
+### FE 2.7 - Real backend token (replaces the client-side mock)
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-15
+- **What:** followed `BACKEND_HANDOVER_ITERATION_2.md` section 3 - Generate
+  Token now calls the real `POST /anonymous-sessions` and shows the actual
+  43-character token (no more `CTM-XXXX-XXXX` client-side format). Entering
+  an existing token validates it against `GET /anonymous-sessions/current`
+  (`api.validateToken`) before switching sessions, with distinct messages
+  for "not recognised" (401) vs "couldn't verify" (network/5xx) - one
+  request, no duplicate check. Removed `api.js`'s silent 401-retry (a dead
+  token now surfaces as a real error instead of silently starting an empty
+  session). An unconfirmed profile now resumes at Your Story instead of
+  hitting Career Journey's 409; a confirmed one still gets "Welcome back".
+  Deleted the whole `accessToken.js` mock/mapping layer
+  (`isKnownToken`/`recordTokenSession`/`getSessionForToken`/etc.) - it's
+  now a thin wrapper over `api.js`'s one real token.
+- **Why:** BE 2.3/BE 2.9 delivered the real endpoints; this closes the loop
+  so every already-built wizard screen (Your Story - Your Direction) saves
+  against a real, persistent token instead of a client-side mock mapping.
+- **Blocks / Blocked by:** none - fully working now that DB 2.5/BE 2.9
+  landed. Practice-role and workplace-scenario screens are a separate,
+  not-yet-started piece (deferred per Thiri, 2026-09-15).
 
 ### FE 2.6 - Returning-user journey retrieval hardening
 
@@ -147,6 +170,34 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
 
+### BE 2.9 - Postgres-backed session and profile repositories
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-15
+- **What:** new `PostgresSessionRepository`/`PostgresProfileRepository`
+  (`app/repositories/postgres/`), wired into `dependencies.py` behind the
+  same `HAS_DATABASE` check already used for the catalogue - no changes to
+  routes, schemas or services, purely a repository swap behind the
+  existing interfaces. Verified live: generated a token, saved a full
+  profile (role, skills, responsibilities, break dates), killed and
+  restarted the backend process twice, confirmed everything was still
+  there both via direct API calls and through the real frontend UI.
+  Skipped `practice_role_id`/`practice_role_source` (no columns for them
+  yet - separate schema change, see B2) and practice sessions (still
+  in-memory, unrelated tables). Also fixed a test-isolation gap this
+  surfaced: `tests/conftest.py` only faked the catalogue repository, not
+  session/profile, so tests using fixture-only role ids (e.g.
+  `"software_engineer"`, not a real `role` row) started hitting genuine
+  foreign-key violations once those repos could be real. Added a matching
+  autouse fixture that swaps session/profile for fresh in-memory stores
+  per test. All 300 tests pass again (offline, ~4s, unchanged from before).
+- **Why:** closes the "restart loses everything" gap for tokens and
+  profiles (BE 2.3/BE 2.7's stated caveat) - the actual blocker was DB 2.1
+  wiring, not a technical limitation, once DB 2.5 seeded the tables the
+  real repositories needed.
+- **Blocks / Blocked by:** paired with DB 2.5 (seeding). Practice role and
+  practice session restart-persistence are still blocked on new
+  tables/columns - see B2.
+
 ### BE 2.8 - Multiple-choice workplace activities
 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
@@ -208,6 +259,27 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Database (DB)
 
 **Iteration 1 baseline** `[DONE]`: `role`, `skill`, `role_skill` tables live in Postgres and drive roles/skills. Other catalogue lists still come from in-memory placeholders. Sessions and profiles are **not** persisted (in-memory only).
+
+### DB 2.5 - Seeded 3 catalogue tables; sessions/profiles now persist
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-15
+- **What:** seeded `experience_option`, `responsibility` and `return_status`
+  directly in the live database with the exact ids/labels already used by
+  the mock catalogue fallback (`data/schema/seed_placeholder_catalogues.sql`)
+  - no new schema, just rows, since `profile` has foreign keys into these
+  and they were empty, which blocked any real profile save past role/skills.
+  This substantially completes DB 2.1 (sessions/profiles now genuinely
+  persist - see BE 2.9) and partially completes DB 2.3.
+- **Why:** DB 2.1 was blocked on exactly this - the Postgres repositories
+  existed in design but every write would have failed on a foreign-key
+  violation without these rows.
+- **Blocks / Blocked by:** **not seeded** - `career_area` (pending real
+  content from the AI role-prediction work; has `growth_outlook`/
+  `evidence_source`/`source_date` columns meant for sourced data, not a
+  placeholder list) and `break_reason` (field is being removed from the
+  wizard UI, so nothing needs it). DB 2.3 remains open for those two plus
+  real (non-placeholder) content generally. Practice-role columns and
+  practice session tables (B2) are unrelated, still open.
 
 ### DB 2.1 - Persist sessions and profiles
 

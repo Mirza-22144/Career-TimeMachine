@@ -25,11 +25,24 @@ from app.services.session_service import SessionService
 # "written_response" is still supported for later iterations.
 PRACTICE_ACTIVITY_TYPE = "multiple_choice"
 
-# ONE shared store for the whole app run, so sessions persist between requests.
-# (Dev only. Session/profile stay in-memory - their tables are empty until
-# the app writes to them; there's no data to migrate from yet.)
-_session_repository = MemorySessionRepository()
-_profile_repository = MemoryProfileRepository()
+# Sessions and profiles use the real database once the DB_* env vars are
+# set; falls back to the in-memory store otherwise (e.g. a fresh checkout
+# with no .env yet). Practice sessions stay in-memory either way - their
+# tables don't exist yet (see backend/docs/BACKEND_HANDOVER_ITERATION_2.md
+# section 8).
+if HAS_DATABASE:
+    from app.repositories.postgres.postgres_profile_repository import (
+        PostgresProfileRepository,
+    )
+    from app.repositories.postgres.postgres_session_repository import (
+        PostgresSessionRepository,
+    )
+
+    _session_repository = PostgresSessionRepository()
+    _profile_repository = PostgresProfileRepository()
+else:
+    _session_repository = MemorySessionRepository()
+    _profile_repository = MemoryProfileRepository()
 _practice_session_repository = MemoryPracticeSessionRepository()
 
 # Curated development scenarios until the AI owner's provider is connected.

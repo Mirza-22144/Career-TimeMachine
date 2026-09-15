@@ -292,3 +292,378 @@
     grid-template-columns: 1fr;
   }
 }
+
+.ws-prep-subtitle {
+  margin: 0 0 32px;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--violet-600);
+}
+
+.ws-prep-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 640px;
+  padding: 32px;
+  margin-bottom: 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.14);
+}
+
+.ws-prep-card hr.ws-intro-divider {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.ws-prep-eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--ink-600);
+}
+
+.ws-prep-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--ink-900);
+}
+
+.ws-prep-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ws-prep-pill {
+  padding: 10px 18px;
+  background: var(--violet-50);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--violet-700);
+}
+
+.ws-prep-task {
+  margin: 0;
+  max-width: 520px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-900);
+}
+
+.ws-prep-footer {
+  display: flex;
+  gap: 48px;
+  width: 100%;
+}
+
+.ws-prep-footer-value {
+  display: block;
+  font-size: 18px;
+  color: var(--ink-900);
+}
+
+@media (max-width: 700px) {
+  .ws-prep-footer {
+    gap: 24px;
+  }
+}
+
+/* ---------- Interactive workplace (AC 4.3.1-4.3.4) ---------- */
+
+.ws-workplace-page {
+  --violet-700: #6d28d9;
+  --violet-600: #7c3aed;
+  --violet-50: #f5f3ff;
+  --bg-app: #f7f4ff;
+  --ink-900: #0f1728;
+  --ink-600: #6b6685;
+
+  width: 100%;
+  padding-top: 84px;
+  font-family: 'Manrope', sans-serif;
+  color: var(--ink-900);
+  background: var(--bg-app);
+  box-sizing: border-box;
+}
+
+.ws-workplace-page * {
+  box-sizing: border-box;
+}
+
+.ws-workplace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px clamp(20px, 4vw, 48px);
+  background: #ffffff;
+}
+
+.ws-workplace-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ws-workplace-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--violet-50);
+}
+
+.ws-workplace-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--ink-900);
+}
+
+.ws-workplace-subtitle {
+  margin: 2px 0 0;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink-600);
+}
+
+.ws-workplace-header-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.ws-workplace-role {
+  display: block;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink-900);
+}
+
+.ws-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ws-progress-track {
+  width: 90px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 40, 0.1);
+  overflow: hidden;
+}
+
+.ws-progress-fill {
+  height: 100%;
+  background: var(--violet-600);
+  border-radius: 999px;
+}
+
+.ws-progress-label {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-900);
+}
+
+.ws-scenario-toggle {
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.15);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-900);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ws-scenario-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 14px clamp(20px, 4vw, 48px);
+  background: var(--violet-50);
+  border-top: 1px solid rgba(124, 58, 237, 0.12);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+}
+
+.ws-scenario-banner-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  color: var(--violet-700);
+}
+
+.ws-scenario-banner-text {
+  margin: 0;
+  flex: 1;
+  min-width: 240px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-900);
+}
+
+.ws-scenario-banner-hint {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--violet-600);
+}
+
+.ws-workplace-canvas {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+}
+
+.ws-workplace-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ws-hotspot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: normal;
+}
+
+.ws-hotspot-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 40, 0.3);
+}
+
+.ws-hotspot--active .ws-hotspot-icon {
+  background: var(--violet-600);
+}
+
+.ws-hotspot--active .ws-hotspot-icon svg {
+  stroke: #ffffff;
+}
+
+.ws-hotspot-label {
+  padding: 6px 12px;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 40, 0.25);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink-900);
+  white-space: nowrap;
+}
+
+.ws-hotspot--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ws-area-panel {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  width: min(420px, calc(100% - 48px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 24px 60px -12px rgba(15, 23, 40, 0.35);
+  overflow-y: auto;
+  /* .ws-workplace-canvas sets line-height: 0 to remove the inline gap
+     under its background image; reset it here so the panel's own text
+     (title, todo list, buttons) doesn't inherit a collapsed line box. */
+  line-height: normal;
+}
+
+.ws-area-panel-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ws-area-panel-title {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--ink-900);
+}
+
+.ws-area-panel-text {
+  margin: 0 0 20px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-900);
+}
+
+.ws-area-panel-todo {
+  width: 100%;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  background: var(--violet-50);
+  border-radius: 12px;
+}
+
+.ws-area-panel-todo p {
+  margin: 4px 0 0;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--violet-700);
+}
+
+.ws-area-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .ws-workplace-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ws-workplace-header-right {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .ws-area-panel {
+    position: static;
+    width: 100%;
+    margin-top: 16px;
+  }
+}

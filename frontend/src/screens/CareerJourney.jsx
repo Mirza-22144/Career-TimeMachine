@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/CareerJourney.css'
 import TopNav from '../components/TopNav'
-import { api } from '../api.js'
+import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { consumeJustReturned } from '../accessToken.js'
 import { setEditReturn } from '../editReturn.js'
@@ -70,7 +70,17 @@ export default function CareerJourney() {
       )
       setTranslation(translationData)
       setLoading(false)
-    } catch {
+    } catch (err) {
+      // A token can be active with no confirmed profile yet (e.g. generated
+      // but the wizard was never finished) - Career Journey requires a
+      // confirmed profile (409) to load at all. That's not a real load
+      // failure, it just means there's nothing to show here yet - send her
+      // into the wizard to pick up where she left off, same rule already
+      // used when entering an existing token.
+      if (err instanceof ApiError && err.code === 'HTTP_409') {
+        navigate('/your-story')
+        return
+      }
       setLoadError(true)
       setLoading(false)
     }

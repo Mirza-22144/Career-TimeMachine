@@ -12,6 +12,7 @@ import logoEmblem from "../assets/Logo.png";
 import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
 import TopNav from "../components/TopNav";
 import { useAccessTokenFlow } from "../hooks/useAccessTokenFlow.js";
+import { api } from "../api.js";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -31,6 +32,20 @@ export default function LandingPage() {
   const scrollToId = (id) => (e) => {
     e.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // "Continue your journey" (shown when a token is already active in this
+  // tab). Career Journey requires a confirmed profile (409 otherwise) - a
+  // token generated but never taken through the wizard has no confirmed
+  // profile yet, so check first and resume at Your Story instead, same
+  // rule already used for entering an existing token (handleValidToken).
+  const handleContinueJourney = async () => {
+    try {
+      const profile = await api.getProfile();
+      navigate(profile.confirmed ? "/career-journey" : "/your-story");
+    } catch {
+      navigate("/your-story");
+    }
   };
 
   return (
@@ -77,7 +92,7 @@ export default function LandingPage() {
               <button
                 type="button"
                 className="lp-btn-primary"
-                onClick={() => navigate("/career-journey")}
+                onClick={handleContinueJourney}
               >
                 <span className="lp-btn-label">Continue your journey</span>
                 <ArrowRightIcon size={16} />

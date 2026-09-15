@@ -5,6 +5,7 @@ import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { consumeJustReturned } from '../accessToken.js'
 import { setEditReturn } from '../editReturn.js'
+import { getResumeStep } from '../resumeStep.js'
 
 // One row of the four-step journey timeline: a numbered badge, a title,
 // a value line, a caption, and an action button (Edit for steps the user
@@ -71,14 +72,18 @@ export default function CareerJourney() {
       setTranslation(translationData)
       setLoading(false)
     } catch (err) {
-      // A token can be active with no confirmed profile yet (e.g. generated
-      // but the wizard was never finished) - Career Journey requires a
-      // confirmed profile (409) to load at all. That's not a real load
-      // failure, it just means there's nothing to show here yet - send her
-      // into the wizard to pick up where she left off, same rule already
-      // used when entering an existing token.
+      // A token can be active with no confirmed profile yet (e.g. she left
+      // partway through the wizard) - Career Journey requires a confirmed
+      // profile (409) to load at all. That's not a real load failure, it
+      // just means there's nothing to show here yet - send her back into
+      // the wizard at whichever step is actually still incomplete, not
+      // always Step 1, so already-filled steps aren't repeated.
       if (err instanceof ApiError && err.code === 'HTTP_409') {
-        navigate('/your-story')
+        try {
+          navigate(getResumeStep(await api.getProfile()))
+        } catch {
+          navigate('/your-story')
+        }
         return
       }
       setLoadError(true)

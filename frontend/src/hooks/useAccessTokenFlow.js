@@ -2,6 +2,7 @@ import { useState } from "react";
 import { navigate } from "../navigate.js";
 import { api } from "../api.js";
 import { getActiveToken, hasActiveToken, setJustReturned } from "../accessToken.js";
+import { getResumeStep } from "../resumeStep.js";
 
 /**
  * All the access-token/modal state shared by TopNav (every page) and the
@@ -92,7 +93,7 @@ export function useAccessTokenFlow() {
         setJustReturned();
         navigate("/career-journey");
       } else {
-        navigate("/your-story");
+        navigate(getResumeStep(profile));
       }
       return "ok";
     } catch {

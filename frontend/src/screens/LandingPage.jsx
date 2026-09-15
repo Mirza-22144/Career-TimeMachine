@@ -13,6 +13,7 @@ import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
 import TopNav from "../components/TopNav";
 import { useAccessTokenFlow } from "../hooks/useAccessTokenFlow.js";
 import { api } from "../api.js";
+import { getResumeStep } from "../resumeStep.js";
 
 /**
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
@@ -42,7 +43,7 @@ export default function LandingPage() {
   const handleContinueJourney = async () => {
     try {
       const profile = await api.getProfile();
-      navigate(profile.confirmed ? "/career-journey" : "/your-story");
+      navigate(profile.confirmed ? "/career-journey" : getResumeStep(profile));
     } catch {
       navigate("/your-story");
     }

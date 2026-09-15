@@ -1,23 +1,7 @@
 import { useState } from "react";
 import { navigate } from "../navigate.js";
 import { api } from "../api.js";
-import {
-  getActiveToken,
-  hasActiveToken,
-  setActiveToken,
-  recordTokenSession,
-  getSessionForToken,
-  setJustReturned,
-} from "../accessToken.js";
-
-// Chars exclude visually-ambiguous ones (0/O, 1/I, etc). Placeholder client-
-// side generator until BE 3.x wires up a real backend-issued token.
-const TOKEN_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-function generateMockToken() {
-  const segment = () =>
-    Array.from({ length: 4 }, () => TOKEN_CHARS[Math.floor(Math.random() * TOKEN_CHARS.length)]).join("");
-  return `CTM-${segment()}-${segment()}`;
-}
+import { getActiveToken, hasActiveToken, setJustReturned } from "../accessToken.js";
 
 /**
  * All the access-token/modal state shared by TopNav (every page) and the
@@ -61,18 +45,14 @@ export function useAccessTokenFlow() {
     }
   };
 
-  // Generates a new token, starts a real session for it, and moves to the
-  // token-display modal (AC 3.1.2). The token itself is still a client-side
-  // mock, but the session behind it is real - swap the mock generator for a
-  // real backend call once BE 3.x exists, keeping this same try/catch shape
-  // for the failure case. Not reachable while a token is already active
-  // (AC 3.1.5) - the nav only offers Generate/Access Token before that point.
+  // Generates a new real access token and moves to the token-display modal
+  // (AC 3.1.2). `force: true` always mints a brand-new token, even if one is
+  // already stored - Generate Token is a deliberate "start a new journey"
+  // action. Not reachable while a token is already active (AC 3.1.5) - the
+  // nav only offers Generate/Access Token before that point.
   const handleGenerateToken = async () => {
     try {
-      const token = generateMockToken();
-      const sessionToken = await api.createSession();
-      recordTokenSession(token, sessionToken);
-      setActiveToken(token);
+      const token = await api.createSession(true);
       setActiveTokenState(token);
       setTokenGenerationError(false);
       setModalView("token");
@@ -81,35 +61,43 @@ export function useAccessTokenFlow() {
     }
   };
 
-  // AC 3.2.1: restores the session behind a validated existing token (or
-  // starts a fresh one if this token has no known mapping yet - e.g. it was
-  // generated on a different browser, or local storage was cleared; that's
-  // an absent mock mapping, not a real save failure, so it isn't treated as
-  // one), then takes her to a "welcome back" Career Journey.
-  const handleValidToken = async (token) => {
+  // AC 3.2.1: validates an entered token against the real backend, restores
+  // its session, then takes her to Career Journey ("welcome back") if her
+  // profile is already confirmed, or back into the wizard at Your Story if
+  // she never finished it. `silent: true` (used by AccessTokenModal) skips
+  // the sessionRestoreError toast so the modal can show its own inline
+  // message instead, without a second network round-trip - the toast's own
+  // "Try Again" retry (no modal open) still uses the default, non-silent
+  // path. Returns 'ok' | 'invalid' | 'network' so callers can react without
+  // re-checking anything themselves.
+  const handleValidToken = async (token, { silent = false } = {}) => {
     setLastValidToken(token);
+    let isValid;
     try {
-      const mappedSession = getSessionForToken(token);
-      if (mappedSession) {
-        api.restoreSession(mappedSession);
-        // A mapped session can still be dead on the backend (sessions are
-        // in-memory only, so e.g. a server restart or Cloud Run cold start
-        // wipes them). api.js's 401 handling would then silently swap in a
-        // brand new, empty session and this call would still "succeed" -
-        // check the restored profile is actually the real one (confirmed)
-        // rather than showing Maya someone else's blank journey (AC 3.3.1:
-        // don't display incomplete or incorrect saved information).
-        const profile = await api.getProfile();
-        if (!profile.confirmed) throw new Error("restored session no longer exists on the backend");
-      } else {
-        recordTokenSession(token, await api.createSession());
-      }
+      isValid = await api.validateToken(token);
+    } catch {
+      if (!silent) setSessionRestoreError(true);
+      return "network";
+    }
+    if (!isValid) {
+      if (!silent) setSessionRestoreError(true);
+      return "invalid";
+    }
+    try {
+      api.restoreSession(token);
+      const profile = await api.getProfile();
       setSessionRestoreError(false);
       setActiveTokenState(token);
-      setJustReturned();
-      navigate("/career-journey");
+      if (profile.confirmed) {
+        setJustReturned();
+        navigate("/career-journey");
+      } else {
+        navigate("/your-story");
+      }
+      return "ok";
     } catch {
-      setSessionRestoreError(true);
+      if (!silent) setSessionRestoreError(true);
+      return "network";
     }
   };
 

@@ -17,7 +17,7 @@ const HOW_IT_WORKS = [
 // backend/AI work - Continue leads to a placeholder for now.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
-  // null | 'no-role' | 'session-failed'
+  // null | 'no-role' | 'intro-failed'
   const [loadError, setLoadError] = useState(null)
   const [role, setRole] = useState(null)
   const [started, setStarted] = useState(false)
@@ -31,12 +31,14 @@ export default function WorkplaceScenario() {
     }
     try {
       // Mocked "create a practice session" step (AC 4.1.3) - stands in for
-      // a real backend session-creation call once BE/AI are ready.
+      // a real backend session-creation call once BE/AI are ready. Also
+      // covers AC 4.2.1's "introduction cannot be loaded" exception, since
+      // this is the same load step that prepares the intro screen below.
       setRole(selected)
       setLoadError(null)
       setLoading(false)
     } catch {
-      setLoadError('session-failed')
+      setLoadError('intro-failed')
       setLoading(false)
     }
   }
@@ -68,7 +70,7 @@ export default function WorkplaceScenario() {
           <p>
             {loadError === 'no-role'
               ? "We couldn't load your selected role. Please try again."
-              : "We couldn't start your workplace practice. Please try again."}
+              : "We couldn't load your practice introduction. Please try again."}
           </p>
           <button type="button" onClick={retryLoad}>Try Again</button>
           <button type="button" className="ws-load-error-link" onClick={() => navigate('/your-direction')}>

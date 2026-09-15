@@ -1,23 +1,40 @@
 from fastapi import Depends, Header, HTTPException, status
 
-from app.core.config import HAS_DATABASE
+from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
+from app.providers.curated_scenario_provider import CuratedScenarioProvider
+from app.providers.scenario_provider import ScenarioProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.session_repository import AnonSession
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
+from app.repositories.memory.memory_practice_session_repository import (
+    MemoryPracticeSessionRepository,
+)
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
 from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
 from app.services.catalogue_service import CatalogueService
+from app.services.practice_role_service import PracticeRoleService
+from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
+from app.services.scenario_response_service import ScenarioResponseService
 from app.services.session_service import SessionService
+
+# Iteration 2 serves single-selection multiple-choice activities.
+# "written_response" is still supported for later iterations.
+PRACTICE_ACTIVITY_TYPE = "multiple_choice"
 
 # ONE shared store for the whole app run, so sessions persist between requests.
 # (Dev only. Session/profile stay in-memory - their tables are empty until
 # the app writes to them; there's no data to migrate from yet.)
 _session_repository = MemorySessionRepository()
 _profile_repository = MemoryProfileRepository()
+_practice_session_repository = MemoryPracticeSessionRepository()
+
+# Curated development scenarios until the AI owner's provider is connected.
+# This is not the production AI integration.
+_scenario_provider: ScenarioProvider = CuratedScenarioProvider()
 
 # Roles and skills use the real database once the DB_* env vars are set;
 # falls back to the placeholder list otherwise.
@@ -75,3 +92,41 @@ def get_career_translation_service() -> CareerTranslationService:
 def get_career_direction_service() -> CareerDirectionService:
     """Build direction service with shared profile and catalogue repositories."""
     return CareerDirectionService(_profile_repository, _catalogue_repository)
+
+
+def get_practice_role_service() -> PracticeRoleService:
+    """Build practice-role service with shared profile and catalogue repositories."""
+    return PracticeRoleService(_profile_repository, _catalogue_repository)
+
+
+def get_scenario_provider() -> ScenarioProvider:
+    """Return the workplace-scenario provider. The AI provider plugs in here;
+    tests override this to simulate provider failures."""
+    return _scenario_provider
+
+
+def get_practice_activity_type() -> str:
+    """Return the activity type new practice scenarios use. Tests override
+    this to exercise written responses."""
+    return PRACTICE_ACTIVITY_TYPE
+
+
+def get_practice_session_service(
+    provider: ScenarioProvider = Depends(get_scenario_provider),
+    activity_type: str = Depends(get_practice_activity_type),
+) -> PracticeSessionService:
+    """Build practice-session service with shared repositories and the provider."""
+    return PracticeSessionService(
+        _practice_session_repository,
+        get_practice_role_service(),
+        provider,
+        SCENARIO_PROVIDER_TIMEOUT_SECONDS,
+        activity_type,
+    )
+
+
+def get_scenario_response_service(
+    practice_sessions: PracticeSessionService = Depends(get_practice_session_service),
+) -> ScenarioResponseService:
+    """Build response service on top of the practice-session service."""
+    return ScenarioResponseService(practice_sessions)

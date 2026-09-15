@@ -16,4 +16,4 @@ def read_career_translation(
     """Return the Skill Relevance Map for step 4 of the wizard: skills the
     user brings back vs current in-demand skills ('New Horizons') for her
     selected role."""
-    return service.build_for_session(session.token)
+    return service.build_for_session(session.token_hash)

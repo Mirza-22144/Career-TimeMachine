@@ -17,7 +17,7 @@ def read_career_direction(
     service: CareerDirectionService = Depends(get_career_direction_service),
 ):
     """Return the current session's saved direction choices."""
-    return service.get_for_session(session.token)
+    return service.get_for_session(session.token_hash)
 
 
 @router.patch("", response_model=CareerDirectionResponse)
@@ -27,4 +27,4 @@ def update_career_direction(
     service: CareerDirectionService = Depends(get_career_direction_service),
 ):
     """Save direction choices for later use without generating scenarios."""
-    return service.update_for_session(session.token, update)
+    return service.update_for_session(session.token_hash, update)

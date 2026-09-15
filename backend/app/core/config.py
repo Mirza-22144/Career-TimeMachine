@@ -22,3 +22,7 @@ CORS_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", *_extra_origin
 # to the in-memory repositories when they're not (e.g. a fresh checkout with
 # no .env yet).
 HAS_DATABASE = all([DB_HOST, DB_NAME, DB_USER, DB_PASSWORD])
+
+# How long to wait for the workplace-scenario provider before returning a
+# controlled "scenario unavailable" error instead.
+SCENARIO_PROVIDER_TIMEOUT_SECONDS = float(os.environ.get("SCENARIO_PROVIDER_TIMEOUT_SECONDS", "10"))

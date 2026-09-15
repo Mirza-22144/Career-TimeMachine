@@ -13,7 +13,8 @@ def test_create_then_fetch_session():
     r2 = client.get("/api/v1/anonymous-sessions/current",
                     headers={"X-Session-Token": token})
     assert r2.status_code == 200
-    assert r2.json()["token"] == token             # same session comes back
+    assert r2.json()["created_at"] == r.json()["created_at"]  # same session comes back
+    assert "token" not in r2.json()                # token is never echoed back
 
 
 def test_current_without_token_is_401():

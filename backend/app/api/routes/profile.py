@@ -14,7 +14,7 @@ def read_profile(
     service: ProfileService = Depends(get_profile_service),
 ):
     """Return the current session's profile, creating an empty draft if needed."""
-    return service.get_or_create(session.token)
+    return service.get_or_create(session.token_hash)
 
 
 @router.patch("", response_model=ProfileResponse)
@@ -24,7 +24,7 @@ def update_profile(
     service: ProfileService = Depends(get_profile_service),
 ):
     """Save partial profile data for the current anonymous session."""
-    return service.update_profile(session.token, update)
+    return service.update_profile(session.token_hash, update)
 
 
 @router.post("/confirm", response_model=ProfileResponse)
@@ -33,7 +33,7 @@ def confirm_profile(
     service: ProfileService = Depends(get_profile_service),
 ):
     """Mark the current profile as confirmed if it is complete."""
-    return service.confirm_profile(session.token)
+    return service.confirm_profile(session.token_hash)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -42,5 +42,5 @@ def delete_profile(
     service: ProfileService = Depends(get_profile_service),
 ):
     """Delete the current session's profile and return an empty 204 response."""
-    service.delete_profile(session.token)
+    service.delete_profile(session.token_hash)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

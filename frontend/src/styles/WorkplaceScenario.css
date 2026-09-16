@@ -198,6 +198,11 @@
   cursor: pointer;
 }
 
+.ws-intro-continue:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   .ws-intro-steps {
     grid-template-columns: 1fr;
@@ -588,10 +593,11 @@
 
 .ws-area-panel {
   position: absolute;
-  top: 24px;
+  top: 50%;
   right: 24px;
-  bottom: 24px;
-  width: min(420px, calc(100% - 48px));
+  transform: translateY(-50%);
+  width: min(400px, calc(100% - 48px));
+  max-height: calc(100% - 64px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -675,4 +681,329 @@
     width: 100%;
     margin-top: 16px;
   }
+}
+
+.ws-area-panel-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var(--violet-50);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--violet-700);
+}
+
+/* --- AC 4.4.1/4.4.2: the MCQ activity screen and
+   AC 4.5.1/4.5.2: the reflective feedback screen. Both use a full-width,
+   left-aligned layout with a breadcrumb topbar, unlike the centred
+   .ws-content used by the intro/setup/prep screens. --- */
+
+.ws-activity-page {
+  --violet-700: #6d28d9;
+  --violet-600: #7c3aed;
+  --violet-50: #f5f3ff;
+  --bg-app: #f7f4ff;
+  --ink-900: #0f1728;
+  --ink-600: #6b6685;
+
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 84px;
+  font-family: 'Manrope', sans-serif;
+  color: var(--ink-900);
+  background: var(--bg-app);
+  box-sizing: border-box;
+}
+
+.ws-activity-page * {
+  box-sizing: border-box;
+}
+
+.ws-activity-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px clamp(20px, 4vw, 64px);
+  border-bottom: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.ws-activity-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-900);
+  cursor: pointer;
+}
+
+.ws-activity-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-600);
+}
+
+.ws-activity-dot {
+  color: rgba(15, 23, 40, 0.3);
+}
+
+.ws-activity-body {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  padding: 40px clamp(20px, 4vw, 64px) 64px;
+  max-width: 1100px;
+}
+
+.ws-activity-main {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.ws-eyebrow--left {
+  text-align: left;
+}
+
+.ws-activity-heading {
+  margin: 0 0 24px;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.2;
+  color: var(--ink-900);
+}
+
+.ws-mcq-card {
+  max-width: 620px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.08);
+  border-radius: 20px;
+  box-shadow: 0px 12px 32px -16px rgba(15, 23, 40, 0.15);
+}
+
+.ws-mcq-question {
+  margin: 0 0 20px;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-900);
+}
+
+.ws-mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ws-mcq-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1.5px solid rgba(15, 23, 40, 0.15);
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-900);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ws-mcq-option--selected {
+  border-color: var(--violet-600);
+  box-shadow: 0 0 0 1px var(--violet-600);
+}
+
+.ws-mcq-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(15, 23, 40, 0.25);
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.ws-mcq-radio--selected {
+  background: var(--violet-600);
+  border-color: var(--violet-600);
+}
+
+.ws-activity-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.ws-hint-panel {
+  width: 100%;
+  padding: 18px 20px;
+  background: var(--violet-50);
+  border-left: 3px solid var(--violet-600);
+  border-radius: 12px;
+}
+
+.ws-hint-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-900);
+}
+
+.ws-hint-panel p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-600);
+}
+
+.ws-activity-continue {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  .ws-activity-body {
+    flex-direction: column;
+  }
+
+  .ws-activity-side {
+    width: 100%;
+  }
+}
+
+.ws-feedback-body {
+  max-width: 620px;
+  padding: 40px clamp(20px, 4vw, 64px) 64px;
+  text-align: left;
+}
+
+.ws-feedback-card {
+  padding: 8px 28px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.08);
+  border-radius: 20px;
+  box-shadow: 0px 12px 32px -16px rgba(15, 23, 40, 0.15);
+}
+
+.ws-feedback-section {
+  padding: 20px 0;
+}
+
+.ws-feedback-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--ink-600);
+}
+
+.ws-feedback-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--ink-600);
+}
+
+.ws-feedback-dot--green {
+  background: #15803d;
+}
+
+.ws-feedback-ring {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid var(--violet-600);
+}
+
+.ws-feedback-section p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-900);
+}
+
+.ws-feedback-skill-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ink-900);
+}
+
+.ws-feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.ws-complete-card {
+  text-align: left;
+}
+
+.ws-complete-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(15, 23, 40, 0.06);
+  font-size: 14px;
+}
+
+.ws-complete-row span {
+  color: var(--ink-600);
+  font-weight: 500;
+}
+
+.ws-complete-row strong {
+  color: var(--ink-900);
+  font-weight: 700;
+}
+
+.ws-summary-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 16px 20px;
+  background: var(--violet-50);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--ink-900);
+  text-align: left;
 }

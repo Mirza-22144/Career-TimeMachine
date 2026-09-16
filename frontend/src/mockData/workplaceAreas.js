@@ -49,3 +49,11 @@ const ROLE_AREAS = {
 export function getRelevantAreaIds(roleId) {
   return new Set([...(ROLE_AREAS[roleId] || []), ...UNIVERSAL_AREAS])
 }
+
+// Just the role-specific areas (no general_workspace/reception) - each one
+// of these is a real practice activity for the session (AC 4.4.1). The
+// universal areas stay clickable/relevant for exploration but don't carry
+// their own graded activity.
+export function getRoleAreaIds(roleId) {
+  return ROLE_AREAS[roleId] || []
+}

@@ -230,3 +230,4 @@ export function LayoutIcon({ size = 16, color = '#7C3AED' }) {
     </svg>
   )
 }
+

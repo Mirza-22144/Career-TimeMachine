@@ -439,7 +439,7 @@ export default function WorkplaceScenario() {
           })}
 
           {selectedArea && (
-            <div className="ws-area-panel">
+            <div className={`ws-area-panel ${selectedArea.left > 50 ? 'ws-area-panel--left' : ''}`}>
               <span className="ws-prep-eyebrow ws-area-panel-eyebrow">
                 {(() => { const Icon = AREA_ICONS[selectedArea.icon]; return <Icon size={14} color="#7C3AED" /> })()}
                 {selectedArea.label.toUpperCase()}

@@ -606,6 +606,15 @@
   line-height: normal;
 }
 
+/* Areas positioned in the right half of the workplace image (for example
+   Development Studio) would otherwise sit directly behind the panel, which
+   always opens on the right - flip it to the left so the hotspot the user
+   just clicked stays visible. */
+.ws-area-panel--left {
+  right: auto;
+  left: 24px;
+}
+
 .ws-area-panel-eyebrow {
   display: inline-flex;
   align-items: center;

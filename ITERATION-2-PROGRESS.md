@@ -33,7 +33,7 @@ Living document. Everyone updates their own section as they make progress. This 
 
 1. **Workplace Scenarios** - an LLM (that we are training) turns each user's captured profile into personalised workplace scenario questions to practise.
 2. **Save user progress** in the database so a returning user resumes where they left off instead of repeating scenarios.
-3. **Move toward a sign-on method.** Token generation is in scope this iteration; a TOTP authenticator sign-on (suggested by our tutor) is a possibility for Iteration 3.
+3. **Move toward a sign-on method.** Token generation is in scope this iteration and is complete; a TOTP authenticator sign-on (suggested by our tutor) is deferred to Iteration 3 (team decision, 2026-09-17).
 4. **Fix the confirmed Iteration 1 pen-test finding** (CTM-F-001) and the security hardening items.
 
 ## Cross-team blockers (live - keep this current)
@@ -42,7 +42,7 @@ Living document. Everyone updates their own section as they make progress. This 
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
 | B1  | ~~LLM output format is not yet agreed~~ partially resolved (BE 2.10, 2026-09-17): the real `ScenarioProvider` (`AiPoolScenarioProvider`) is wired in as the default and serves the AI team's actual Version 1 dataset (81 real scenarios, 27 roles x 3 difficulties, answer key stripped) - no longer the curated placeholder. Still open: the AI team is rebuilding this as Version 2 against the agreed reflective-format contract (no option marked correct) - swapping the file in is a contained change once delivered (see BE 2.10's notes). Role prediction is a separate, still-unstarted model - no data or endpoint exists yet (AI 2.1/2.2 remain fully open) | Backend, Frontend | AI to deliver Version 2 (reflective format) to replace the current file; AI to scope and build role prediction separately | `[WIP]` open |
 | B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. ~~Database has nowhere to store practice role/session data~~ resolved (DB 2.6, 2026-09-17): schema added and applied live. ~~Practice role doesn't persist through Postgres~~ resolved (BE 2.11, 2026-09-17). ~~Practice sessions/responses/feedback still use `MemoryPracticeSessionRepository`~~ resolved (BE 2.12, 2026-09-17): `PostgresPracticeSessionRepository` built against the DB 2.6 tables, verified live - a full start-session/submit-response/feedback/complete round trip survives a real backend restart. **B2 is fully resolved** - practice progress no longer resets on restart or redeploy. AC 4.3.4's database-backed restoration requirement (`AC_Full_Review_Epic4.docx`) is now met | Backend   | none - closed | `[DONE]` closed |
-| B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
+| B3  | ~~Sign-on method for Iteration 2 not finalised~~ resolved (team decision, 2026-09-17): TOTP is pushed to Iteration 3 - Iteration 2 ships token-only sign-on, which is already fully built end to end (BE 2.3, FE 2.3/2.7) | Security  | none - closed | `[DONE]` closed |
 
 ---
 
@@ -218,20 +218,6 @@ Living document. Everyone updates their own section as they make progress. This 
   page where missing info was entered" exception is also not built yet -
   needs a decision on scope before picking it up.
 
-### FE 2.1 - Workplace Scenarios screen
-
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** new screen that requests a personalised scenario, shows the question(s), lets the user answer, and shows the result.
-- **Why:** the core Iteration 2 user-facing feature.
-- **Blocks / Blocked by:** blocked by B1 (needs the agreed LLM scenario contract) and BE 2.1.
-
-### FE 2.2 - Progress / resume UI
-
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** show which scenarios are done vs remaining; resume from where the user left off.
-- **Why:** goal 2 - returning users continue rather than repeat.
-- **Blocks / Blocked by:** blocked by BE 2.2 (progress endpoints) and B2.
-
 ### FE 2.3 - Sign-on screen (placeholder)
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-13
@@ -246,8 +232,9 @@ Living document. Everyone updates their own section as they make progress. This 
   iteration end to end.
 - **Blocks / Blocked by:** the token itself is a client-side mock
   (sessionStorage only, see `frontend/src/accessToken.js`) - frontend is no
-  longer blocked by B3, but real persistence still needs B2/DB 2.1 and a
-  real backend-issued token still needs BE 2.3. Once those land, only
+  longer blocked by B3, but real persistence still needs B2/the database
+  session-and-profile work (delivered under DB 2.5) and a real
+  backend-issued token still needs BE 2.3. Once those land, only
   `accessToken.js` needs to change, not this UI.
 
   ### FE 2.5 - Career Journey: save, edit and update confirmed career info
@@ -274,8 +261,9 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Blocks / Blocked by:** same as FE 2.3 - the access token is still
   linked to its backend session via a client-side mock mapping (see
   `frontend/src/accessToken.js`), not a real `anon_session` row. Once
-  BE 2.3/DB 2.1 land, that mapping layer goes away and the access token
-  becomes the same identifier as the session token.
+  BE 2.3/the database persistence work (DB 2.5) land, that mapping layer
+  goes away and the access token becomes the same identifier as the
+  session token.
 
 ### FE 2.4 - Robustness + security hardening (frontend)
 
@@ -408,7 +396,7 @@ Living document. Everyone updates their own section as they make progress. This 
   autouse fixture that swaps session/profile for fresh in-memory stores
   per test. All 300 tests pass again (offline, ~4s, unchanged from before).
 - **Why:** closes the "restart loses everything" gap for tokens and
-  profiles (BE 2.3/BE 2.7's stated caveat) - the actual blocker was DB 2.1
+  profiles (BE 2.3/BE 2.7's stated caveat) - the actual blocker was database
   wiring, not a technical limitation, once DB 2.5 seeded the tables the
   real repositories needed.
 - **Blocks / Blocked by:** paired with DB 2.5 (seeding). Practice role and
@@ -420,7 +408,7 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** done locally - scenarios carry `activity_type`. **MCQs are active in Iteration 2:** each session serves a single-selection MCQ with stable option ids; unknown, other-scenario or wrong-field answers are rejected; feedback covers why the option may help, trade-offs, other considerations and a skill to explore (no score, pass/fail, correct/incorrect, readiness or employability). **Written responses are retained** for future iterations but not served. Curated provider only. 300 tests.
 - **Why:** AC 4.4.2, 4.5.1-4.5.3; backend Subtasks 7-8.
-- **Blocks / Blocked by:** restart persistence blocked by B2 (practice tables also need `activity_type`, options, `selected_option_id`, `trade_offs` - handover section 8). Production MCQs blocked by B1 (AI provider must follow the updated contract). FE 2.1 can build the MCQ screen against `API-CONTRACT.md` now.
+- **Blocks / Blocked by:** restart persistence blocked by B2 (practice tables also need `activity_type`, options, `selected_option_id`, `trade_offs` - handover section 8). Production MCQs blocked by B1 (AI provider must follow the updated contract). The MCQ screen itself was built against this contract (see FE 2.11).
 
 ### BE 2.7 - Selected practice role
 
@@ -441,14 +429,14 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** done locally - start/resume/complete practice sessions (`/practice-sessions`) and submit a response with reflective feedback (no score, pass/fail or judgement). Scenario generation sits behind `ScenarioProvider` with validated output, a timeout and a controlled 503. A **curated development provider** supplies scenarios for now - this is not the AI integration.
 - **Why:** serves the Workplace Scenarios feature (backend Subtasks 6-8).
-- **Blocks / Blocked by:** production scenarios blocked by B1 (AI provider). FE 2.1 can build against the documented contract now.
+- **Blocks / Blocked by:** production scenarios blocked by B1 (AI provider). The frontend already built against this contract (see FE 2.9-2.12).
 
 ### BE 2.2 - Progress persistence endpoints
 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** done locally - responses saved with timestamps, duplicate submissions rejected, progress on every session response and at `GET /practice-sessions/{id}/progress`, resume via `GET /practice-sessions/current`. Stored in-memory behind `PracticeSessionRepository`.
 - **Why:** goal 2 - resume, no repeats.
-- **Blocks / Blocked by:** surviving a restart is blocked by B2 (practice tables). FE 2.2 can build against the documented contract now.
+- **Blocks / Blocked by:** surviving a restart is blocked by B2 (practice tables). The resume/progress UI itself was already built (see FE 2.11).
 
 ### BE 2.3 - Token generation for sign-on
 
@@ -515,39 +503,38 @@ Living document. Everyone updates their own section as they make progress. This 
   the mock catalogue fallback (`data/schema/seed_placeholder_catalogues.sql`)
   - no new schema, just rows, since `profile` has foreign keys into these
   and they were empty, which blocked any real profile save past role/skills.
-  This substantially completes DB 2.1 (sessions/profiles now genuinely
-  persist - see BE 2.9) and partially completes DB 2.3.
-- **Why:** DB 2.1 was blocked on exactly this - the Postgres repositories
-  existed in design but every write would have failed on a foreign-key
-  violation without these rows.
-- **Blocks / Blocked by:** **not seeded** - `career_area` (pending real
-  content from the AI role-prediction work; has `growth_outlook`/
-  `evidence_source`/`source_date` columns meant for sourced data, not a
-  placeholder list) and `break_reason` (field is being removed from the
-  wizard UI, so nothing needs it). DB 2.3 remains open for those two plus
-  real (non-placeholder) content generally. Practice-role columns and
-  practice session tables (B2) are unrelated, still open.
-
-### DB 2.1 - Persist sessions and profiles
-
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** create tables for anonymous sessions and profiles matching the backend's data model; provide connection details for the backend `.env`.
-- **Why:** without this, all user state is lost on restart - blocks progress saving.
-- **Blocks / Blocked by:** blocks B2, BE 2.2.
-
-### DB 2.2 - Progress storage
-
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** table(s) for scenario progress (which scenarios a user has done, their answers/results, timestamps).
-- **Why:** goal 2 - resume / no repeats.
-- **Blocks / Blocked by:** blocks BE 2.2. Coordinate the shape with AI (scenario ids).
+  Sessions and profiles now genuinely persist as a result (see BE 2.9), and
+  this partially completes DB 2.3.
+- **Why:** persisting sessions/profiles was blocked on exactly this - the
+  Postgres repositories existed in design but every write would have failed
+  on a foreign-key violation without these rows.
+- **Blocks / Blocked by:** **not seeded** - `career_area` (has
+  `growth_outlook`/`evidence_source`/`source_date` columns meant for real,
+  sourced labor-market data, not a placeholder list - unlike the tables
+  seeded above, making up rows for it would defeat the point. Whether the
+  AI team's role-prediction work will actually deliver this content, versus
+  it being a separate unscoped task, hasn't been confirmed - worth checking
+  with them directly rather than assuming) and `break_reason` (field is
+  being removed from the wizard UI, so nothing needs it). DB 2.3 remains
+  open for those two plus real (non-placeholder) content generally.
+  Practice-role columns and practice session tables (B2) are unrelated,
+  now resolved (see DB 2.6).
 
 ### DB 2.3 - Seed remaining catalogue tables
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** fill the responsibilities, break-reasons, return-statuses and career-areas tables (currently placeholder-only) with real data; keep ids stable.
-- **Why:** removes the in-memory placeholder fallback.
-- **Blocks / Blocked by:** none.
+- **Status:** [WIP] **Owner:** TBD **Date:** TBD
+- **What:** originally scoped to fill responsibilities, break-reasons,
+  return-statuses and career-areas with real data. `responsibility` and
+  `return_status` are done (DB 2.5). `break_reason` no longer needs seeding
+  - that field is being removed from the wizard UI entirely. `career_area`
+  is the one genuinely remaining piece: it needs real, sourced labor-market
+  data (growth outlook + evidence source + date), not a placeholder list -
+  see DB 2.5's note on why that's not just typed in like the others were.
+- **Why:** removes the in-memory placeholder fallback for the one catalogue
+  that still needs it.
+- **Blocks / Blocked by:** needs someone to source real career-growth-area
+  content (see DB 2.5's note - unclear yet whether that's the AI team's
+  role-prediction work or a separate task).
 
 ### DB 2.4 - Startup mode indicator (pen-test R09)
 
@@ -592,10 +579,16 @@ Living document. Everyone updates their own section as they make progress. This 
 
 ### SEC 2.5 - Sign-on design (token now, TOTP later)
 
-- **Status:** [WIP] **Owner:** TBD **Date:** TBD
-- **What:** spec the token-generation sign-on for this iteration. Also research a TOTP authenticator method for Iteration 3 as suggested by the tutor. Note: TOTP (RFC 6238, time-based one-time passwords, e.g. Google Authenticator) is not yet understood by the team - the action is to research a Python approach (for example the `pyotp` library and a QR provisioning URI) and write it up before committing to it. TOTP is a possibility for this iteration only if time allows; the plan is token this iteration, TOTP in Iteration 3.
-- **Why:** goal 3.
-- **Blocks / Blocked by:** B3. Blocks FE 2.3, BE 2.3.
+- **Status:** [DONE] **Owner:** TBD **Date:** 2026-09-17
+- **What:** team decision: TOTP is pushed to Iteration 3, not attempted this
+  iteration. Iteration 2 ships token-only sign-on (already fully built and
+  live - BE 2.3, FE 2.3/2.7). TOTP (RFC 6238, time-based one-time passwords,
+  e.g. Google Authenticator) research - a Python approach such as the
+  `pyotp` library and a QR provisioning URI - moves to the Iteration 3
+  backlog rather than being attempted alongside this iteration's other work.
+- **Why:** goal 3 - closes the sign-on method decision for this iteration.
+- **Blocks / Blocked by:** none - B3 is resolved. TOTP research/design is a
+  fresh Iteration 3 item, not carried over as unfinished work.
 
 ### SEC 2.6 - Threat-model the new surfaces
 
@@ -615,7 +608,8 @@ New for Iteration 2. Goal: an LLM we are training that turns a user's captured p
 - **Status:** [TODO] **Owner:** TBD **Date:** TBD
 - **What:** agree the exact request (which profile fields the model receives) and response (the JSON shape of a scenario: id, prompt/question, options or expected-answer form, scoring) that the backend will consume.
 - **Why:** everything downstream (backend endpoints, frontend screen, progress storage) depends on this shape.
-- **Blocks / Blocked by:** blocks B1, BE 2.1, FE 2.1, DB 2.2.
+- **Blocks / Blocked by:** blocks B1, BE 2.1. The practice progress schema
+  was ultimately built without waiting on this (see DB 2.6).
 
 ### AI 2.2 - Model and training
 

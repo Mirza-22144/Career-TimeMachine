@@ -34,8 +34,7 @@ export default function CareerJourney() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
-  const [direction, setDirection] = useState(null)
-  const [areaLabel, setAreaLabel] = useState(null)
+  const [practiceRole, setPracticeRole] = useState(null)
   const [responsibilityLabels, setResponsibilityLabels] = useState([])
   const [breakReasonLabel, setBreakReasonLabel] = useState(null)
   const [translation, setTranslation] = useState(null)
@@ -45,19 +44,17 @@ export default function CareerJourney() {
 
   const load = async () => {
     try {
-      const [journeyData, directionData, careerAreas, profileData, responsibilities, breakReasons, translationData] =
+      const [journeyData, practiceRoleData, profileData, responsibilities, breakReasons, translationData] =
         await Promise.all([
           api.getCareerJourney(),
-          api.getCareerDirection(),
-          api.getCatalogue('career-areas'),
+          api.getPracticeRole(),
           api.getProfile(),
           api.getCatalogue('responsibilities'),
           api.getCatalogue('break-reasons'),
           api.getCareerTranslation(),
         ])
       setJourney(journeyData)
-      setDirection(directionData)
-      setAreaLabel(careerAreas.find((a) => a.id === directionData.area_to_explore)?.label)
+      setPracticeRole(practiceRoleData)
       setResponsibilityLabels(
         [
           ...profileData.responsibility_ids.map((id) => responsibilities.find((r) => r.id === id)?.label || id),
@@ -184,10 +181,10 @@ export default function CareerJourney() {
             />
           </div>
 
-          {direction?.area_to_explore && (
+          {practiceRole?.source === 'predicted' && (
             <div className="cj-direction-card">
               <span className="cj-direction-label">YOUR CHOSEN DIRECTION</span>
-              <p className="cj-direction-text">{areaLabel || direction.area_to_explore}</p>
+              <p className="cj-direction-text">{practiceRole.role_label}</p>
             </div>
           )}
 

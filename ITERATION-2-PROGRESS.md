@@ -50,6 +50,36 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: cards 1-7 UI (Get Started, Previous IT Experience, Skills & Experience, Career Break, Review Profile, Skills & Industry Relevance, Skill/Industry detail). Talks to the API using the `X-Session-Token` header, hash-based routing.
 
+### FE 2.14 - Career Journey's "chosen direction" now shows the real predicted role
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** team decision: `area_to_explore`/`career_area` (Iteration 1
+  scaffolding - a broader "growth direction" catalogue with
+  `growth_outlook`/`evidence_source`/`source_date` columns) has been empty
+  since Iteration 1 with no picker UI ever built for it (DB 2.3, still
+  open) and no realistic path to getting seeded with real, sourced content.
+  Meanwhile BE 2.14 now provides a real, working predicted future role. The
+  team decided to stop treating these as separate concepts: Career
+  Journey's "YOUR CHOSEN DIRECTION" card now shows the practice role
+  (`GET /practice-role`) whenever its source is `predicted`, instead of the
+  dead `direction.area_to_explore` field. Removed the now-unused
+  `getCareerDirection()`/`getCatalogue('career-areas')` calls and the
+  `direction`/`areaLabel` state from `CareerJourney.jsx` - both were only
+  ever feeding the one field being replaced. `career_area` is not touched
+  in the database - the table and column stay in place, just genuinely
+  unused going forward, not dropped. Verified live: predicted role saved as
+  the practice role -> card shows the real predicted role label; switched
+  to the previous role as the practice role -> card correctly disappears
+  (only a predicted choice counts as a "new direction"). Frontend lints and
+  builds clean.
+- **Why:** removes a permanently-empty field and a piece of dead schema
+  from the user-facing product, replacing it with something real that
+  already exists rather than waiting on a catalogue that was never going to
+  get populated.
+- **Blocks / Blocked by:** none. `DB 2.3`'s `career_area` note should be
+  updated to reflect this is no longer planned to be used, not just
+  pending content.
+
 ### FE 2.13 - Real predicted role on Your Direction
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
@@ -617,33 +647,32 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Why:** persisting sessions/profiles was blocked on exactly this - the
   Postgres repositories existed in design but every write would have failed
   on a foreign-key violation without these rows.
-- **Blocks / Blocked by:** **not seeded** - `career_area` (has
-  `growth_outlook`/`evidence_source`/`source_date` columns meant for real,
-  sourced labor-market data, not a placeholder list - unlike the tables
-  seeded above, making up rows for it would defeat the point. Whether the
-  AI team's role-prediction work will actually deliver this content, versus
-  it being a separate unscoped task, hasn't been confirmed - worth checking
-  with them directly rather than assuming) and `break_reason` (field is
-  being removed from the wizard UI, so nothing needs it). DB 2.3 remains
-  open for those two plus real (non-placeholder) content generally.
-  Practice-role columns and practice session tables (B2) are unrelated,
-  now resolved (see DB 2.6).
+- **Blocks / Blocked by:** none - at the time, **not seeded**: `career_area`
+  (has `growth_outlook`/`evidence_source`/`source_date` columns meant for
+  real, sourced labor-market data, not a placeholder list - unlike the
+  tables seeded above, making up rows for it would defeat the point) and
+  `break_reason` (field is being removed from the wizard UI, so nothing
+  needs it). Since resolved differently than anticipated: `career_area` is
+  retired from the product entirely rather than ever getting seeded (team
+  decision, FE 2.14/DB 2.3, 2026-09-17) - the AI-predicted role (BE 2.14)
+  replaced it. Practice-role columns and practice session tables (B2) are
+  unrelated, now resolved (see DB 2.6).
 
 ### DB 2.3 - Seed remaining catalogue tables
 
-- **Status:** [WIP] **Owner:** TBD **Date:** TBD
+- **Status:** [DONE] **Owner:** TBD **Date:** 2026-09-17
 - **What:** originally scoped to fill responsibilities, break-reasons,
   return-statuses and career-areas with real data. `responsibility` and
   `return_status` are done (DB 2.5). `break_reason` no longer needs seeding
   - that field is being removed from the wizard UI entirely. `career_area`
-  is the one genuinely remaining piece: it needs real, sourced labor-market
-  data (growth outlook + evidence source + date), not a placeholder list -
-  see DB 2.5's note on why that's not just typed in like the others were.
-- **Why:** removes the in-memory placeholder fallback for the one catalogue
-  that still needs it.
-- **Blocks / Blocked by:** needs someone to source real career-growth-area
-  content (see DB 2.5's note - unclear yet whether that's the AI team's
-  role-prediction work or a separate task).
+  no longer needs seeding either - team decision (FE 2.14, 2026-09-17):
+  `area_to_explore`/`career_area` is retired from the product entirely,
+  replaced by the real AI-predicted role (BE 2.14) wherever "chosen
+  direction" is shown. The table and column stay in the schema, unused,
+  rather than being dropped as part of this decision.
+- **Why:** nothing left to seed - every catalogue this card originally
+  scoped is either populated or intentionally retired.
+- **Blocks / Blocked by:** none.
 
 ### DB 2.4 - Startup mode indicator (pen-test R09)
 

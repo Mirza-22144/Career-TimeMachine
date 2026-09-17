@@ -1,0 +1,39 @@
+{
+  "operation": "future_role_prediction",
+  "request": {
+    "role": {
+      "id": "software_developer",
+      "label": "Software Developer"
+    },
+    "skills": {
+      "catalogue": [
+        {
+          "id": "python",
+          "label": "Python"
+        },
+        {
+          "id": "java",
+          "label": "Java"
+        },
+        {
+          "id": "sql",
+          "label": "SQL"
+        }
+      ],
+      "custom": [
+        "Machine learning"
+      ]
+    }
+  },
+  "response": {
+    "predicted_role": {
+      "id": "data_scientist",
+      "label": "Data Scientist"
+    }
+  },
+  "constraints": {
+    "supported_prediction_count": 27,
+    "current_role_excluded": true,
+    "other_excluded": true
+  }
+}

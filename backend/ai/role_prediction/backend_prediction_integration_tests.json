@@ -1,0 +1,271 @@
+{
+  "tested_at_utc": "2026-09-17T08:02:06.691475+00:00",
+  "model_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/models/career_role_classifier_27_roles.joblib",
+  "backend_contract": {
+    "input": "current role and skills",
+    "output": "one supported predicted role",
+    "current_role_must_be_excluded": true,
+    "other_may_be_predicted": false
+  },
+  "total_tests": 4,
+  "passed_tests": 4,
+  "tests": [
+    {
+      "test_name": "catalogue_skills_test",
+      "request": {
+        "role": {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "java",
+              "label": "Java"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": []
+        }
+      },
+      "backend_response": {
+        "predicted_role": {
+          "id": "computer_programmer",
+          "label": "Computer Programmer"
+        }
+      },
+      "diagnostics": {
+        "response": {
+          "predicted_role": {
+            "id": "computer_programmer",
+            "label": "Computer Programmer"
+          }
+        },
+        "current_role_excluded": true,
+        "recognised_catalogue_skill_count": 3,
+        "top_three_candidates": [
+          {
+            "id": "computer_programmer",
+            "label": "Computer Programmer",
+            "final_score": 0.6949,
+            "model_component": 1.0,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.633
+          },
+          {
+            "id": "software_qa_analyst_tester",
+            "label": "Software QA Analyst / Tester",
+            "final_score": 0.3574,
+            "model_component": 0.3457,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 1.0
+          },
+          {
+            "id": "computer_systems_engineer_architect",
+            "label": "Computer Systems Engineer / Architect",
+            "final_score": 0.2743,
+            "model_component": 0.2912,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.6639
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "test_name": "custom_skills_test",
+      "request": {
+        "role": {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": [
+            "Python",
+            "Data analysis",
+            "Machine learning"
+          ]
+        }
+      },
+      "backend_response": {
+        "predicted_role": {
+          "id": "data_scientist",
+          "label": "Data Scientist"
+        }
+      },
+      "diagnostics": {
+        "response": {
+          "predicted_role": {
+            "id": "data_scientist",
+            "label": "Data Scientist"
+          }
+        },
+        "current_role_excluded": true,
+        "recognised_catalogue_skill_count": 3,
+        "top_three_candidates": [
+          {
+            "id": "data_scientist",
+            "label": "Data Scientist",
+            "final_score": 0.6203,
+            "model_component": 1.0,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.1355
+          },
+          {
+            "id": "software_qa_analyst_tester",
+            "label": "Software QA Analyst / Tester",
+            "final_score": 0.3644,
+            "model_component": 0.0005,
+            "skill_fit_component": 1.0,
+            "role_similarity_component": 0.7609
+          },
+          {
+            "id": "software_developer",
+            "label": "Software Developer",
+            "final_score": 0.3596,
+            "model_component": 0.0055,
+            "skill_fit_component": 1.0,
+            "role_similarity_component": 0.7089
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "test_name": "other_current_role_test",
+      "request": {
+        "role": {
+          "id": "other",
+          "label": "Other"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": [
+            "Data visualisation"
+          ]
+        }
+      },
+      "backend_response": {
+        "predicted_role": {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        }
+      },
+      "diagnostics": {
+        "response": {
+          "predicted_role": {
+            "id": "business_intelligence_analyst",
+            "label": "Business Intelligence Analyst"
+          }
+        },
+        "current_role_excluded": true,
+        "recognised_catalogue_skill_count": 2,
+        "top_three_candidates": [
+          {
+            "id": "business_intelligence_analyst",
+            "label": "Business Intelligence Analyst",
+            "final_score": 0.6,
+            "model_component": 1.0,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.0
+          },
+          {
+            "id": "data_scientist",
+            "label": "Data Scientist",
+            "final_score": 0.3949,
+            "model_component": 0.6582,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.0
+          },
+          {
+            "id": "database_administrator",
+            "label": "Database Administrator",
+            "final_score": 0.2377,
+            "model_component": 0.3961,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.0
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "test_name": "missing_skills_robustness_test",
+      "request": {
+        "role": {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        "skills": {
+          "catalogue": [],
+          "custom": []
+        }
+      },
+      "backend_response": {
+        "predicted_role": {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      },
+      "diagnostics": {
+        "response": {
+          "predicted_role": {
+            "id": "computer_systems_engineer_architect",
+            "label": "Computer Systems Engineer / Architect"
+          }
+        },
+        "current_role_excluded": true,
+        "recognised_catalogue_skill_count": 0,
+        "top_three_candidates": [
+          {
+            "id": "computer_systems_engineer_architect",
+            "label": "Computer Systems Engineer / Architect",
+            "final_score": 0.6996,
+            "model_component": 1.0,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.6639
+          },
+          {
+            "id": "computer_systems_analyst",
+            "label": "Computer Systems Analyst",
+            "final_score": 0.4462,
+            "model_component": 0.5715,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.6888
+          },
+          {
+            "id": "computer_programmer",
+            "label": "Computer Programmer",
+            "final_score": 0.434,
+            "model_component": 0.5651,
+            "skill_fit_component": 0.0,
+            "role_similarity_component": 0.633
+          }
+        ]
+      },
+      "passed": true
+    }
+  ]
+}

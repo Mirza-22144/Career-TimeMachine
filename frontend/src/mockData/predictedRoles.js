@@ -7,13 +7,13 @@
 const PREDICTED_ROLES = {
   software_developer: [
     {
-      id: "business_analyst",
-      label: "Business Analyst",
+      id: "business_intelligence_analyst",
+      label: "Business Intelligence Analyst",
       description: "Builds on your requirements, stakeholder and delivery work.",
     },
     {
-      id: "data_analyst",
-      label: "Data Analyst",
+      id: "data_warehousing_specialist",
+      label: "Data Warehousing Specialist",
       description: "Builds on the reporting and analysis you already did.",
     },
   ],
@@ -24,8 +24,8 @@ const PREDICTED_ROLES = {
       description: "Builds on the interface and user-facing work you already did.",
     },
     {
-      id: "business_analyst",
-      label: "Business Analyst",
+      id: "business_intelligence_analyst",
+      label: "Business Intelligence Analyst",
       description: "Builds on the client and stakeholder work behind your projects.",
     },
   ],
@@ -36,8 +36,8 @@ const PREDICTED_ROLES = {
       description: "Builds on the planning and cross-team coordination you already did.",
     },
     {
-      id: "business_analyst",
-      label: "Business Analyst",
+      id: "business_intelligence_analyst",
+      label: "Business Intelligence Analyst",
       description: "Builds on the requirements work behind every systems project.",
     },
   ],

@@ -18,42 +18,56 @@ export const WORKPLACE_AREAS = [
 ]
 
 // Every role gets these two, regardless of specialisation - they're not
-// role-specific areas.
+// role-specific, and never carry a real activity (AC 4.3.1 exploration
+// flavour only).
 const UNIVERSAL_AREAS = ['general_workspace', 'reception']
 
-// Which areas are relevant to each role (AC 4.3.1: "visually distinguish
-// relevant areas from non-relevant areas" - the Figma mock shows every
-// area as selectable, but that's a sample; the real screen only lights up
-// and allows clicking the areas that make sense for the selected role).
-const ROLE_AREAS = {
-  business_analyst: ['stakeholder_client_studio', 'data_analytics_lab', 'project_delivery_board', 'product_collaboration_studio'],
-  data_analyst: ['data_analytics_lab', 'dashboard_analytics'],
-  software_developer: ['development_studio', 'testing_quality_lab', 'project_delivery_board'],
-  web_developer: ['development_studio', 'product_collaboration_studio', 'testing_quality_lab'],
-  web_and_digital_interface_designer: ['product_collaboration_studio', 'development_studio'],
-  computer_systems_analyst: ['project_delivery_board', 'stakeholder_client_studio', 'dashboard_analytics'],
-  it_project_manager: ['project_delivery_board', 'stakeholder_client_studio', 'product_collaboration_studio'],
-  database_administrator: ['data_analytics_lab', 'network_infrastructure_hub', 'dashboard_analytics'],
-  database_architect: ['data_analytics_lab', 'development_studio', 'network_infrastructure_hub'],
-  data_scientist: ['data_analytics_lab', 'dashboard_analytics', 'development_studio'],
-  information_security_analyst: ['security_operations_room', 'network_infrastructure_hub', 'support_desk_operations'],
-  information_security_engineer: ['security_operations_room', 'network_infrastructure_hub', 'development_studio'],
-  computer_network_support_specialist: ['network_infrastructure_hub', 'support_desk_operations', 'security_operations_room'],
-  network_and_systems_administrator: ['network_infrastructure_hub', 'security_operations_room', 'support_desk_operations'],
+// Since the AI's real content is one MCQ per (role, difficulty) - not one
+// per workplace area - each of the real 27 database roles gets exactly one
+// "primary" area: the single relevant, clickable hotspot that opens that
+// role's activity. Every other area stays visible but disabled, honestly
+// reflecting that there's only one real activity behind this session, not
+// several distinct ones per area.
+const PRIMARY_AREA_BY_ROLE = {
+  blockchain_engineer: 'development_studio',
+  business_intelligence_analyst: 'data_analytics_lab',
+  computer_and_information_research_scientist: 'development_studio',
+  computer_and_information_systems_manager: 'project_delivery_board',
+  computer_network_architect: 'network_infrastructure_hub',
+  computer_network_support_specialist: 'network_infrastructure_hub',
+  computer_programmer: 'development_studio',
+  computer_systems_analyst: 'project_delivery_board',
+  computer_systems_engineer_architect: 'development_studio',
+  computer_user_support_specialist: 'support_desk_operations',
+  data_scientist: 'data_analytics_lab',
+  data_warehousing_specialist: 'data_analytics_lab',
+  database_administrator: 'data_analytics_lab',
+  database_architect: 'data_analytics_lab',
+  digital_forensics_analyst: 'security_operations_room',
+  information_security_analyst: 'security_operations_room',
+  information_security_engineer: 'security_operations_room',
+  it_project_manager: 'project_delivery_board',
+  network_and_systems_administrator: 'network_infrastructure_hub',
+  penetration_tester: 'security_operations_room',
+  software_developer: 'development_studio',
+  software_qa_analyst_tester: 'testing_quality_lab',
+  telecommunications_engineering_specialist: 'network_infrastructure_hub',
+  video_game_designer: 'development_studio',
+  web_administrator: 'network_infrastructure_hub',
+  web_and_digital_interface_designer: 'product_collaboration_studio',
+  web_developer: 'development_studio',
 }
 
-// Returns the set of area ids relevant to a role - always includes the two
-// universal areas, plus whatever role-specific ones are mapped. Unmapped
-// roles still get the universal areas, so there's always something to
-// click rather than a fully disabled workplace.
+// Returns the set of area ids relevant to a role - the two universal areas,
+// plus the role's one primary area (falls back to just the universal areas
+// for a role outside the 27 the AI has covered so far).
 export function getRelevantAreaIds(roleId) {
-  return new Set([...(ROLE_AREAS[roleId] || []), ...UNIVERSAL_AREAS])
+  const primary = PRIMARY_AREA_BY_ROLE[roleId]
+  return new Set(primary ? [primary, ...UNIVERSAL_AREAS] : UNIVERSAL_AREAS)
 }
 
-// Just the role-specific areas (no general_workspace/reception) - each one
-// of these is a real practice activity for the session (AC 4.4.1). The
-// universal areas stay clickable/relevant for exploration but don't carry
-// their own graded activity.
-export function getRoleAreaIds(roleId) {
-  return ROLE_AREAS[roleId] || []
+// The one area id that opens this role's real activity, or null if the
+// role isn't in the AI's covered set yet (falls back to general_workspace).
+export function getPrimaryAreaId(roleId) {
+  return PRIMARY_AREA_BY_ROLE[roleId] || 'general_workspace'
 }

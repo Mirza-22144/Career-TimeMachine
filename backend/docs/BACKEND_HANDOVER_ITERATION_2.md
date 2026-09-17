@@ -193,7 +193,7 @@ cd backend
 venv/bin/python -m pytest -q
 ```
 
-Result on 2026-09-14: **300 passed, 0 failed** after the multi-activity update (192 before it; baseline before the Iteration 2 backend work:
+Result on 2026-09-17: **310 passed, 0 failed** after the database error handling update (300 after the multi-activity update; 192 before it; baseline before the Iteration 2 backend work:
 19 passed, 10 failed because roles/skills are empty without a database `.env`;
 `tests/conftest.py` now supplies a fixed test catalogue).
 
@@ -208,6 +208,7 @@ Result on 2026-09-14: **300 passed, 0 failed** after the multi-activity update (
 | `test_multiple_choice_responses_api.py` | MCQ journey, feedback per selected option, resume, duplicates, missing/malformed/unknown/other-scenario option ids, written answer rejected, inactive sessions, cross-token isolation, feedback failure and correctness labels, minimal feedback input; service saves the option through the repository |
 | `test_practice_activity_contract.py` | Activity-type schemas: MCQ options, submission shape, trade-offs, blocked labels |
 | `test_memory_practice_session_repository.py` | Options, selected option and feedback round-trip, copy isolation, owner scoping |
+| `test_database_errors_api.py` | Database error handling (10 tests, offline fake pool): unreachable database, exhausted pool, failed reads and writes in all four Postgres repositories return `503` `DATABASE_UNAVAILABLE` with no driver detail; failed statements roll back before the connection returns to the pool; non-database bugs are not reported as `503`; catch-all `500` `INTERNAL_SERVER_ERROR` envelope; failures still logged server-side |
 
 ## 7. Known limitations
 
@@ -223,6 +224,11 @@ Result on 2026-09-14: **300 passed, 0 failed** after the multi-activity update (
 - Free-text caps on existing profile fields not yet added (BE 2.5 / pen-test H-1, H-2).
 - Duplicate-submission protection is enforced in the service; a database
   unique constraint on (practice session, scenario) response is recommended.
+- The catch-all `500` `INTERNAL_SERVER_ERROR` response has no CORS headers:
+  Starlette sends it from `ServerErrorMiddleware`, outside `CORSMiddleware`, so
+  a browser reports a CORS error instead of exposing the error envelope. The
+  frontend should treat a failed request with no readable body as a generic
+  error. `503` `DATABASE_UNAVAILABLE` and other handled errors are unaffected.
 
 ## 8. Blockers and dependencies
 

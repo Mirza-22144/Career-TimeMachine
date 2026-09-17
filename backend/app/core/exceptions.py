@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
@@ -6,8 +7,11 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+logger = logging.getLogger(__name__)
+
 # Kept as a local constant so a future FastAPI rename does not break this file.
 REQUEST_VALIDATION_STATUS_CODE = 422
+INTERNAL_SERVER_ERROR_STATUS_CODE = 500
 
 
 def _error_body(code: str, message: str, details: list[Any] | None = None) -> dict[str, Any]:
@@ -85,5 +89,25 @@ async def request_validation_exception_handler(
                 "Request validation failed",
                 details,
             )
+        ),
+    )
+
+
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Last-resort handler for any exception no other handler caught. The
+    full exception is logged server-side only; the client gets the standard
+    envelope with a generic message, never a traceback or internal detail."""
+    logger.error(
+        "Unhandled %s on %s %s",
+        type(exc).__name__,
+        request.method,
+        request.url.path,
+        exc_info=exc,
+    )
+    return JSONResponse(
+        status_code=INTERNAL_SERVER_ERROR_STATUS_CODE,
+        content=_error_body(
+            "INTERNAL_SERVER_ERROR",
+            "Something went wrong. Please try again.",
         ),
     )

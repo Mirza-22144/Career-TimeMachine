@@ -4,6 +4,7 @@ from psycopg2.extras import execute_values
 
 from app.core.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_SSLMODE, DB_USER
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
+from app.repositories.postgres.db_errors import database_unavailable
 
 # One shared pool of database connections, reused across every request
 # instead of opening a new connection each time.
@@ -28,30 +29,41 @@ _PROFILE_COLUMNS = (
 
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
-    conn = _pool.getconn()
     try:
-        with conn.cursor() as cur:
-            cur.execute(sql, params)
-            return cur.fetchall()
-    finally:
-        _pool.putconn(conn)
+        conn = _pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+                return cur.fetchall()
+        except Exception:
+            # A failed statement leaves the connection in an aborted
+            # transaction; roll back so the pool doesn't hand it out broken.
+            conn.rollback()
+            raise
+        finally:
+            _pool.putconn(conn)
+    except psycopg2.Error as exc:
+        raise database_unavailable(exc) from exc
 
 
 def _run_in_transaction(fn):
     """Runs fn(cursor) and commits only if it completes without raising, so
     the profile upsert and its junction-table delete+insert either all land
     or none do."""
-    conn = _pool.getconn()
     try:
-        with conn.cursor() as cur:
-            result = fn(cur)
-        conn.commit()
-        return result
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        _pool.putconn(conn)
+        conn = _pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                result = fn(cur)
+            conn.commit()
+            return result
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            _pool.putconn(conn)
+    except psycopg2.Error as exc:
+        raise database_unavailable(exc) from exc
 
 
 class PostgresProfileRepository(ProfileRepository):

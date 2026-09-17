@@ -23,6 +23,15 @@ All error responses use this shape:
 }
 ```
 
+Any endpoint can also return these server-side errors. They are not repeated
+in each endpoint's error list below, and neither exposes internal detail
+(driver messages, SQL, hosts or tracebacks):
+
+| Status | Code | When |
+|---|---|---|
+| `503` | `DATABASE_UNAVAILABLE` | A database read or write failed (connection failure, timeout, constraint violation, pool exhausted). Nothing from the failed write is saved; the request can be retried. Message: `"We couldn't complete your request. Please try again."` |
+| `500` | `INTERNAL_SERVER_ERROR` | Any other unexpected server error. Message: `"Something went wrong. Please try again."` A browser may not be able to read this body: the response has no CORS headers (see the backend handover, Known limitations). |
+
 ## Health
 
 ### `GET /health`

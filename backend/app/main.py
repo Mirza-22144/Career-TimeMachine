@@ -8,9 +8,12 @@ from app.core.config import CORS_ORIGINS
 from app.core.exceptions import (
     http_exception_handler,
     request_validation_exception_handler,
+    unhandled_exception_handler,
 )
 
-app = FastAPI(title="Career TimeMachine API")
+# debug is pinned off on purpose: with debug=True, Starlette skips the
+# catch-all Exception handler below and returns a traceback page instead.
+app = FastAPI(title="Career TimeMachine API", debug=False)
 
 # Allows the frontend (a different origin/port) to call this API from the
 # browser. Without this, every request from the React app is blocked by
@@ -31,5 +34,8 @@ app.add_exception_handler(
     RequestValidationError,
     request_validation_exception_handler,
 )
+# Last resort for anything else (e.g. a bug): logged server-side, returned to
+# the client as a generic 500 in the same envelope.
+app.add_exception_handler(Exception, unhandled_exception_handler)
 
 app.include_router(api_router, prefix="/api/v1")  # include the API router with a prefix 

@@ -13,6 +13,7 @@ from app.repositories.interfaces.practice_session_repository import (
     ScenarioOption,
     SuggestedSkill,
 )
+from app.repositories.postgres.db_errors import database_unavailable
 
 # One shared pool of database connections, reused across every request
 # instead of opening a new connection each time.
@@ -76,29 +77,40 @@ _UPSERT_SCENARIO_SQL = """
 
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
-    conn = _pool.getconn()
     try:
-        with conn.cursor() as cur:
-            cur.execute(sql, params)
-            return cur.fetchall()
-    finally:
-        _pool.putconn(conn)
+        conn = _pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+                return cur.fetchall()
+        except Exception:
+            # A failed statement leaves the connection in an aborted
+            # transaction; roll back so the pool doesn't hand it out broken.
+            conn.rollback()
+            raise
+        finally:
+            _pool.putconn(conn)
+    except psycopg2.Error as exc:
+        raise database_unavailable(exc) from exc
 
 
 def _run_in_transaction(fn):
     """Runs fn(cursor) and commits only if it completes without raising, so
     a session and its scenarios either all land or none do."""
-    conn = _pool.getconn()
     try:
-        with conn.cursor() as cur:
-            result = fn(cur)
-        conn.commit()
-        return result
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        _pool.putconn(conn)
+        conn = _pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                result = fn(cur)
+            conn.commit()
+            return result
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            _pool.putconn(conn)
+    except psycopg2.Error as exc:
+        raise database_unavailable(exc) from exc
 
 
 def _upsert_session(cur, session: PracticeSession) -> None:

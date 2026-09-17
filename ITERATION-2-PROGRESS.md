@@ -40,7 +40,7 @@ Living document. Everyone updates their own section as they make progress. This 
 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
-| B1  | LLM output format is not yet agreed. Backend has now built the scenario endpoints against a proposed provider contract (`backend/app/providers/scenario_provider.py`) using a curated development provider, but production AI scenarios and feedback cannot be connected until the contract is agreed | Backend   | AI to agree (or amend) the proposed contract and implement the production `ScenarioProvider`            | `[BLOCKED]` open |
+| B1  | LLM output format is not yet agreed. Backend has now built the scenario endpoints against a proposed provider contract (`backend/app/providers/scenario_provider.py`) using a curated development provider, but production AI scenarios and feedback cannot be connected until the contract is agreed. Frontend/product also sent the AI team a data-contract proposal for role prediction (role + skills in, predicted role(s) out) and MCQ matching (role + skills + difficulty in, matched against their pre-trained question set out), plus a note that the backend integrates with one point of contact only, never their external LLM directly - still awaiting the AI team's confirmation (2026-09-17) | Backend, Frontend | AI to agree (or amend) the proposed contracts and implement the production `ScenarioProvider` and role-prediction endpoint | `[BLOCKED]` open |
 | B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. Still in-memory: the selected practice role and practice sessions/responses/feedback, so that part of user progress is still lost on restart | Backend   | Database to add 2 practice-role columns on `profile` and practice session/response/feedback tables - see backend handover section 8 | `[WIP]` open |
 | B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
 
@@ -49,6 +49,100 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Frontend (FE)
 
 **Iteration 1 baseline** `[DONE]`: cards 1-7 UI (Get Started, Previous IT Experience, Skills & Experience, Career Break, Review Profile, Skills & Industry Relevance, Skill/Industry detail). Talks to the API using the `X-Session-Token` header, hash-based routing.
+
+### FE 2.11 - AC 4.4.1-4.4.2/4.5.1-4.5.3 - Multi-activity workplace practice, reflective feedback, session completion
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** replaced the earlier single-shared-activity assumption - each
+  role-relevant workplace area now has its own real MCQ activity, not one
+  shared activity for the whole session - after new reference designs
+  clarified the intended flow (this reverses two calls made in an earlier
+  version of this section: dropping duration, and giving only one area a
+  real activity). Built the MCQ activity screen (AC 4.4.1/4.4.2) -
+  single-selection options, nothing pre-selected, Continue disabled until
+  she picks one, a "Worth remembering" hint. Built the reflective feedback
+  screen (AC 4.5.1/4.5.2) - what worked well, what to consider, and a skill
+  to explore, with no score/pass-fail/correct-incorrect wording anywhere.
+  Built "Next activity" progression through all of a role's relevant areas
+  (AC 4.5.3), a "Practice complete" session summary (role, focus, duration/
+  difficulty, activities completed, last skill to explore), and the inline
+  "Practice summary coming soon" placeholder. Which activities are done now
+  persists across a reload alongside the rest of the practice state. Also
+  fixed a real bug: the area detail popup opened full-canvas-height and
+  could cover the very hotspot just clicked - it's now a compact card that
+  opens on whichever side keeps that hotspot visible. Authored full
+  3-activity mock content for Business Analyst, Data Analyst and Software
+  Developer, one hand-written activity for each of the other 11 roles, and
+  a generic fallback so every relevant area always opens something real.
+- **Why:** closes out US 4.4 and US 4.5 end to end on the frontend (Epic
+  4.0's full acceptance criteria, MCQ-only scope for this iteration), using
+  mock data shaped to match the real AI contract once agreed. Also sent the
+  AI team a data-contract proposal (role + skills in for role prediction;
+  role + skills + difficulty in for MCQ matching against their pre-trained
+  question set; the backend never calls their external LLM directly, only
+  their one integration point) and a consolidated AC review of all of Epic
+  4.0, which explicitly supersedes two earlier, narrower documents once the
+  new reference designs corrected the duration and single-activity
+  assumptions above.
+- **Blocks / Blocked by:** blocked by B1/AI 2.1 for real predicted roles and
+  real (pre-trained, not mock) MCQ content - proposal sent to the AI team,
+  awaiting confirmation. Coding activities (AC 4.4.2's other interaction
+  types, AC 4.4.3) are explicitly out of scope for this iteration per
+  product decision - moved to a later iteration's backlog.
+
+### FE 2.10 - AC 4.3.1-4.3.4 - Interactive Workplace
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-16
+- **What:** built the interactive workplace screen - a clickable hotspot
+  map over `assets/workplace.png`, filtered by role relevance
+  (`mockData/workplaceAreas.js`'s `ROLE_AREAS` mapping) so only areas
+  relevant to the user's selected role are coloured and clickable; every
+  other area is genuinely disabled, not just styled - a real requirement,
+  not just the Figma sample's "everything selectable." The scenario banner
+  shows the current situation with a hide/show toggle. Practice role,
+  duration, difficulty and progress persist across a reload via
+  `sessionStorage` (`practiceSession.js`).
+- **Why:** closes out US 4.3 end to end on the frontend.
+- **Blocks / Blocked by:** none - fully working against mock data.
+
+### FE 2.9 - AC 4.2.1/4.2.2/4.2.3 - Practice intro, setup and preparation
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-16
+- **What:** fixed AC 4.2.1's exception message to the exact required text
+  ("We couldn't load your practice introduction. Please try again.").
+  Built AC 4.2.2 (Select Practice Time and Difficulty) - duration
+  (Quick/Standard/Extended) and difficulty (Easy/Standard/Complex,
+  matching the AC's wording) as two independent selections, nothing
+  pre-selected, "Choose a practice time and difficulty to continue" until
+  both are chosen. Built AC 4.2.3 (Review Practice Preparation) - shows
+  the selected role, practice focus, the skills she'll use, a new
+  in-demand skill not already on her profile (real data via
+  `GET /career-translation`'s `new_horizons`), and the chosen duration/
+  difficulty, with an Enter Workplace button that carries all of it into
+  the workplace session.
+- **Why:** closes out US 4.2 end to end on the frontend, using mock
+  scenario data shaped to match the eventual real contract.
+- **Blocks / Blocked by:** mock scenario data
+  (`mockData/practiceScenario.js`) stands in for BE 2.1/AI 2.1-2.2;
+  swapping to the real endpoint is a small change once those land.
+
+### FE 2.8 - Real-token bug fixes from live testing
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-15
+- **What:** fixed three real bugs found while testing the real token end
+  to end: (1) the token display modal overflowed the page on a real
+  43-character token - `.atm-token-value` now wraps (`word-break:
+  break-all`) instead of forcing a horizontal scrollbar; (2) clicking
+  "Continue your journey" on an unconfirmed profile hit Career Journey's
+  409 and showed a raw error instead of resuming the wizard; (3) leaving
+  the wizard mid-way and returning via "Career Journey" always restarted
+  at Your Story instead of resuming where she left off. Fixed both
+  redirect bugs with a shared `getResumeStep(profile)` helper (checks
+  whether the role/break steps are actually complete) used consistently in
+  `CareerJourney.jsx`, `LandingPage.jsx` and `useAccessTokenFlow.js`.
+- **Why:** all three were found through the user's own live testing of
+  FE 2.7's real-token integration, not caught by the existing test suite.
+- **Blocks / Blocked by:** none.
 
 ### FE 2.7 - Real backend token (replaces the client-side mock)
 

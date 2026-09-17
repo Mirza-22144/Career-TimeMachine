@@ -443,7 +443,7 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** `POST /anonymous-sessions` issues a random 43-character token and stores only its SHA-256 hash; `GET /anonymous-sessions/current` validates a token without echoing it; unknown and malformed tokens get the same 401; cross-token isolation and "no token in logs" tested. Still swappable for TOTP later.
 - **Why:** goal 3; US 3.1-3.3.
-- **Blocks / Blocked by:** frontend can replace the `accessToken.js` mock now (handover section 3). Restart persistence blocked by B2. Token expiry policy still needs a decision (B3).
+- **Blocks / Blocked by:** frontend can replace the `accessToken.js` mock now (handover section 3). Restart persistence blocked by B2. Token expiry: decided, intentionally not implemented - tokens do not expire (handover section 7).
 
 ### BE 2.4 - Fix CTM-F-001 (broken atomicity on PATCH /profile)
 

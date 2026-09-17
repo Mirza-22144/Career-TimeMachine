@@ -8,7 +8,13 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from app.core.security_events import log_security_event
+from app.core.tokens import hash_token, is_well_formed_token
+
 logger = logging.getLogger(__name__)
+
+# Enough of the stored token hash to tell repeat offenders apart in logs.
+TOKEN_HASH_LOG_PREFIX_LENGTH = 12
 
 # Kept as a local constant so a future FastAPI rename does not break this file.
 REQUEST_VALIDATION_STATUS_CODE = 422
@@ -101,7 +107,16 @@ async def rate_limit_exceeded_handler(
 ) -> JSONResponse:
     """Handle a rate-limit rejection with the standard envelope. The limit
     itself is not echoed back. Limits are per minute, so retrying after 60
-    seconds always gets a fresh window."""
+    seconds always gets a fresh window.
+
+    Logged as a security event. For a request with a valid-looking token the
+    log carries a prefix of the token's stored hash (never the token);
+    session creation has no token."""
+    fields = {}
+    token = request.headers.get("X-Session-Token")
+    if token is not None and is_well_formed_token(token):
+        fields["token_hash_prefix"] = hash_token(token)[:TOKEN_HASH_LOG_PREFIX_LENGTH]
+    log_security_event("rate_limited", request, **fields)
     return JSONResponse(
         status_code=TOO_MANY_REQUESTS_STATUS_CODE,
         content=_error_body(

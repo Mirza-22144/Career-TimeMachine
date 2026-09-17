@@ -1,6 +1,8 @@
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, Header, HTTPException, Request, status
 
 from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
+from app.core.security_events import log_security_event
+from app.core.tokens import is_well_formed_token
 from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
 from app.providers.scenario_provider import ScenarioProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
@@ -73,16 +75,25 @@ def get_session_service() -> SessionService:
 
 
 def get_current_session(
+    request: Request,
     # FastAPI maps this param to the "X-Session-Token" request header.
     x_session_token: str | None = Header(default=None),
     service: SessionService = Depends(get_session_service),
 ) -> AnonSession:
     """Turn the header token into a real session, or reject the request.
-    Used by every protected route to identify who is calling."""
+    Used by every protected route to identify who is calling.
+
+    Every rejection is logged as a security event. Only the reason is
+    logged, never the presented token (it may be a mistyped real token or
+    something else the user pasted). The client still gets the same
+    response for malformed and unknown tokens."""
     if x_session_token is None:
+        log_security_event("auth_failed", request, reason="missing_token")
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing session token")
     session = service.get_current(x_session_token)
     if session is None:
+        reason = "unknown_token" if is_well_formed_token(x_session_token) else "malformed_token"
+        log_security_event("auth_failed", request, reason=reason)
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session token")
     return session
 

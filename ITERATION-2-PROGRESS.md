@@ -586,7 +586,7 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** `POST /anonymous-sessions` issues a random 43-character token and stores only its SHA-256 hash; `GET /anonymous-sessions/current` validates a token without echoing it; unknown and malformed tokens get the same 401; cross-token isolation and "no token in logs" tested. Still swappable for TOTP later.
 - **Why:** goal 3; US 3.1-3.3.
-- **Blocks / Blocked by:** frontend can replace the `accessToken.js` mock now (handover section 3). Restart persistence resolved (BE 2.9). Token expiry policy still needs a decision (B3) - not touched here, Mirza has separate unmerged work on this (see his `docs(api): state that access tokens do not expire by design` commit on `iteration-2-backend`).
+- **Blocks / Blocked by:** frontend can replace the `accessToken.js` mock now (handover section 3). Restart persistence resolved (BE 2.9). Token expiry: decided, intentionally not implemented - tokens do not expire (handover section 7).
 
 ### BE 2.4 - Fix CTM-F-001 (broken atomicity on PATCH /profile)
 
@@ -597,10 +597,18 @@ Living document. Everyone updates their own section as they make progress. This 
 
 ### BE 2.5 - Input caps (hardening)
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** add `max_length` on free-text fields (H-1) and a max list size (H-2) in the Pydantic schemas.
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-17
+- **What:** added `max_length` on every free-text field (H-1) and a max list
+  size on every list field (H-2) across `ProfileUpdate` and
+  `CareerDirectionUpdate` - catalogue ids capped at 64, `role_other_text` at
+  120, `custom_skills` entries at 120, `custom_responsibilities` entries at
+  300, `break_reason_other_text` at 500; id lists capped at 50 items, custom
+  lists at 20. Also rejects unknown fields (`extra="forbid"`) on all five
+  request schemas, not just these two. No `min_length` added - `ProfileService`
+  already blanks "other" text to `null` and drops blank list entries, and
+  that stays intact. Regression tests in `backend/tests/test_input_limits_api.py`.
 - **Why:** storage hygiene and abuse resistance before the DB goes live.
-- **Blocks / Blocked by:** none.
+- **Blocks / Blocked by:** none. Closes SEC's H-1/H-2 hardening items.
 
 ---
 
@@ -676,10 +684,15 @@ Living document. Everyone updates their own section as they make progress. This 
 
 ### DB 2.4 - Startup mode indicator (pen-test R09)
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** make the app log at startup whether it is using the database or the in-memory fallback.
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-17
+- **What:** the app now logs one line at startup saying whether storage is
+  `database (PostgreSQL)` or `in-memory` (never connection settings). Also
+  added `app.security` event logging for `auth_failed` and `rate_limited`
+  events as searchable `key=value` lines - never tokens, token hashes in
+  full, profile data, break details or submitted text. Tests in
+  `backend/tests/test_security_logging_api.py`.
 - **Why:** the pen test flagged silent fallback to mock data as a risk.
-- **Blocks / Blocked by:** small, do with backend.
+- **Blocks / Blocked by:** none.
 
 ---
 
@@ -703,10 +716,21 @@ Living document. Everyone updates their own section as they make progress. This 
 
 ### SEC 2.3 - Rate limiting (H-4)
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** add rate limiting, including on anonymous session creation (currently unbounded).
+- **Status:** [DONE] **Owner:** Mirza **Date:** 2026-09-17
+- **What:** added `slowapi`-based rate limiting, keyed on client address, to
+  the two endpoints the pen test flagged: `POST /anonymous-sessions` (10/minute)
+  and the scenario-response submission endpoint (30/minute). Going over
+  returns `429 RATE_LIMITED` in the standard error envelope with
+  `Retry-After: 60`; no other endpoint is limited. Tests in
+  `backend/tests/test_rate_limiting_api.py`.
 - **Why:** pen-test H-4 / team risk R05.
-- **Blocks / Blocked by:** with backend.
+- **Blocks / Blocked by:** none, but two things to check before relying on
+  this in production: counts are in memory per server instance and reset on
+  restart (no shared state across instances), and Cloud Run sits behind a
+  proxy - if every request arrives from the same address there, the limit
+  may end up applying to all users combined rather than per user, and may
+  need a `FORWARDED_ALLOW_IPS`-style fix. Worth a live check before
+  considering H-4 fully closed on the deployed system.
 
 ### SEC 2.4 - /docs and /openapi.json exposure decision
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CareerDirectionUpdate(BaseModel):
@@ -8,8 +8,11 @@ class CareerDirectionUpdate(BaseModel):
     Sending null clears the saved selection.
     """
 
-    return_readiness: str | None = None
-    area_to_explore: str | None = None
+    model_config = ConfigDict(extra="forbid")
+
+    # Catalogue ids (VARCHAR(64)); unknown ids are still rejected by the service.
+    return_readiness: str | None = Field(default=None, max_length=64)
+    area_to_explore: str | None = Field(default=None, max_length=64)
 
 
 class CareerDirectionResponse(BaseModel):

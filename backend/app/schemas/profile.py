@@ -1,6 +1,22 @@
 from datetime import date
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+
+# Input caps (pen-test H-1, H-2). Text lengths follow the conventions in
+# app/providers/scenario_provider.py: 120 (ShortText) for a label, 300
+# (OptionText) for a one-sentence action, 500 (SentenceText) for a sentence.
+# There is no min_length: ProfileService already trims these, turns blank
+# "other" text into null and drops blank list entries, and that is kept.
+CatalogueId = Annotated[str, StringConstraints(max_length=64)]  # catalogue ids are VARCHAR(64)
+LabelInput = Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)]
+ActionInput = Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)]
+SentenceInput = Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
+
+# Skills and responsibilities are picked one at a time, so 50 is well above
+# normal use; typed-in entries are fewer.
+MAX_SELECTED_IDS = 50
+MAX_CUSTOM_ENTRIES = 20
 
 
 class ProfileUpdate(BaseModel):
@@ -11,15 +27,19 @@ class ProfileUpdate(BaseModel):
     from "sent as null".
     """
 
-    role_id: str | None = None
-    role_other_text: str | None = None
-    years_experience: str | None = None
-    skill_ids: list[str] | None = None
-    custom_skills: list[str] | None = None
-    responsibility_ids: list[str] | None = None
-    custom_responsibilities: list[str] | None = None
-    break_reason: str | None = None
-    break_reason_other_text: str | None = None
+    model_config = ConfigDict(extra="forbid")
+
+    role_id: CatalogueId | None = None
+    role_other_text: LabelInput | None = None  # job title for the "other" role
+    years_experience: CatalogueId | None = None
+    skill_ids: list[CatalogueId] | None = Field(default=None, max_length=MAX_SELECTED_IDS)
+    custom_skills: list[LabelInput] | None = Field(default=None, max_length=MAX_CUSTOM_ENTRIES)
+    responsibility_ids: list[CatalogueId] | None = Field(default=None, max_length=MAX_SELECTED_IDS)
+    custom_responsibilities: list[ActionInput] | None = Field(
+        default=None, max_length=MAX_CUSTOM_ENTRIES
+    )
+    break_reason: CatalogueId | None = None
+    break_reason_other_text: SentenceInput | None = None
     break_started_on: date | None = None
     planned_return_date: date | None = None
     return_date_unsure: bool | None = None

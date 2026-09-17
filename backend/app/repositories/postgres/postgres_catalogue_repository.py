@@ -7,6 +7,7 @@ from app.repositories.interfaces.catalogue_repository import (
     CatalogueRepository,
 )
 from app.repositories.memory.memory_catalogue_repository import CATALOGUES
+from app.repositories.postgres.db_errors import database_unavailable
 
 # role, skill, and role_skill are the only tables filled in so far. Every
 # other kind's table is still empty, so those keep using the placeholder
@@ -29,13 +30,21 @@ _pool = psycopg2.pool.SimpleConnectionPool(
 # Runs one SQL query and returns all matching rows. Used by every method
 # below instead of repeating the connect/cursor/close steps each time.
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
-    conn = _pool.getconn()
     try:
-        with conn.cursor() as cur:
-            cur.execute(sql, params)
-            return cur.fetchall()
-    finally:
-        _pool.putconn(conn)
+        conn = _pool.getconn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+                return cur.fetchall()
+        except Exception:
+            # A failed statement leaves the connection in an aborted
+            # transaction; roll back so the pool doesn't hand it out broken.
+            conn.rollback()
+            raise
+        finally:
+            _pool.putconn(conn)
+    except psycopg2.Error as exc:
+        raise database_unavailable(exc) from exc
 
 
 class PostgresCatalogueRepository(CatalogueRepository):

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 
 from app.api.dependencies import get_current_session, get_session_service
+from app.core.rate_limit import SESSION_CREATION_LIMIT, limiter
 from app.repositories.interfaces.session_repository import AnonSession
 from app.schemas.anonymous_session import AnonSessionResponse, AnonSessionStatusResponse
 from app.services.session_service import SessionService
@@ -9,7 +10,8 @@ router = APIRouter(prefix="/anonymous-sessions", tags=["anonymous-sessions"])
 
 
 @router.post("", response_model=AnonSessionResponse, status_code=status.HTTP_201_CREATED)
-def create_session(service: SessionService = Depends(get_session_service)):
+@limiter.limit(SESSION_CREATION_LIMIT)
+def create_session(request: Request, service: SessionService = Depends(get_session_service)):
     """Screen 1: start a journey. Returns a token the client stores and
     sends back as X-Session-Token on later requests. The token is only
     ever returned here."""

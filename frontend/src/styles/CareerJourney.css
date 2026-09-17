@@ -132,29 +132,6 @@
   background: var(--violet-50);
 }
 
-.cj-direction-card {
-  padding: 20px 24px;
-  margin-bottom: 28px;
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 40, 0.1);
-  border-radius: 16px;
-}
-
-.cj-direction-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 1px;
-  color: var(--violet-600);
-}
-
-.cj-direction-text {
-  margin: 0;
-  font-weight: 700;
-  font-size: 16px;
-}
-
 .cj-continue-row {
   display: flex;
   align-items: center;

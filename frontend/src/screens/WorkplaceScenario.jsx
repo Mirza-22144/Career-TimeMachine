@@ -30,15 +30,11 @@ const HOW_IT_WORKS = [
   { number: 3, text: 'Get feedback on what you did well and what you could explore further.' },
 ]
 
-// Matches the backend's duration enum (quick/standard/challenge - see
-// backend/docs/API-CONTRACT.md); "Extended" is only the on-screen label for
-// "challenge", chosen to avoid duplicating "Challenge" as both a duration
-// and a difficulty option.
-const DURATIONS = [
-  { value: 'quick', label: 'Quick', caption: '5 min' },
-  { value: 'standard', label: 'Standard', caption: '10 min' },
-  { value: 'challenge', label: 'Extended', caption: '15 min' },
-]
+// Duration is no longer a user-facing choice (iteration 2 dropped it - a
+// scenario's content doesn't actually vary by duration, only by difficulty),
+// but the backend's /practice-sessions contract still requires one, so every
+// session starts with this fixed value under the hood.
+const SESSION_DURATION = 'quick'
 
 // Labels match AC 4.2.2 ("Easy, Standard, Complex"); values are the
 // backend's own guided/standard/challenge enum.
@@ -66,8 +62,7 @@ export default function WorkplaceScenario() {
   const [role, setRole] = useState(null)
   // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'complete'
   const [step, setStep] = useState('intro')
-  // Nothing pre-selected - Maya must explicitly choose both.
-  const [duration, setDuration] = useState(null)
+  // Nothing pre-selected - Maya must explicitly choose this.
   const [difficulty, setDifficulty] = useState(null)
   const [attemptedContinue, setAttemptedContinue] = useState(false)
   // AC 4.2.3 - the prep screen's own data and loading/error state. Starting
@@ -103,7 +98,6 @@ export default function WorkplaceScenario() {
       try {
         const current = await api.getCurrentPracticeSession()
         setSession(current)
-        setDuration(current.duration)
         setDifficulty(current.difficulty)
         const activeScenario = current.scenarios[0]
         if (current.status === 'completed') setStep('complete')
@@ -141,7 +135,7 @@ export default function WorkplaceScenario() {
 
   const handleSetupContinue = () => {
     setAttemptedContinue(true)
-    if (!duration || !difficulty) return
+    if (!difficulty) return
     setStep('prep')
     loadPrep()
   }
@@ -150,16 +144,15 @@ export default function WorkplaceScenario() {
   // skill she hasn't already recorded (GET /career-translation's
   // new_horizons), and starts the real practice session (POST
   // /practice-sessions), which is what actually generates the scenario
-  // she'll see. Starting again here (e.g. after changing duration/
-  // difficulty) abandons any previous active session, per the backend
-  // contract.
+  // she'll see. Starting again here (e.g. after changing difficulty)
+  // abandons any previous active session, per the backend contract.
   const loadPrep = async () => {
     setPrepLoading(true)
     setPrepError(false)
     try {
       const [translation, newSession] = await Promise.all([
         api.getCareerTranslation(),
-        api.startPracticeSession(duration, difficulty),
+        api.startPracticeSession(SESSION_DURATION, difficulty),
       ])
       setNewSkillFocus(translation.new_horizons?.[0]?.label || null)
       setSession(newSession)
@@ -335,33 +328,32 @@ export default function WorkplaceScenario() {
         </div>
         <main className="ws-feedback-body">
           <h1 className="ws-activity-heading">Your practice feedback</h1>
-          <div className="ws-feedback-card">
-            <div className="ws-feedback-section">
-              <span className="ws-feedback-label">
-                <span className="ws-feedback-dot ws-feedback-dot--green" aria-hidden="true" /> WHAT WORKED WELL
-              </span>
-              {activity.feedback.what_worked_well.map((line) => <p key={line}>{line}</p>)}
-            </div>
-            <hr className="ws-intro-divider" />
-            <div className="ws-feedback-section">
-              <span className="ws-feedback-label">
-                <span className="ws-feedback-dot" aria-hidden="true" /> CONSIDER
-              </span>
-              {[...activity.feedback.trade_offs, ...activity.feedback.areas_to_consider].map((line) => (
-                <p key={line}>{line}</p>
-              ))}
+          <div className="ws-feedback-layout">
+            <div className="ws-feedback-card">
+              <div className="ws-feedback-section">
+                <span className="ws-feedback-label">
+                  <span className="ws-feedback-dot ws-feedback-dot--green" aria-hidden="true" /> WHAT WORKED WELL
+                </span>
+                {activity.feedback.what_worked_well.map((line) => <p key={line}>{line}</p>)}
+              </div>
+              <hr className="ws-intro-divider" />
+              <div className="ws-feedback-section">
+                <span className="ws-feedback-label">
+                  <span className="ws-feedback-dot" aria-hidden="true" /> CONSIDER
+                </span>
+                {[...activity.feedback.trade_offs, ...activity.feedback.areas_to_consider].map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
             </div>
             {activity.feedback.skill_to_explore && (
-              <>
-                <hr className="ws-intro-divider" />
-                <div className="ws-feedback-section">
-                  <span className="ws-feedback-label">
-                    <span className="ws-feedback-ring" aria-hidden="true" /> SKILL TO EXPLORE
-                  </span>
-                  <h3 className="ws-feedback-skill-title">{activity.feedback.skill_to_explore.skill}</h3>
-                  <p>{activity.feedback.skill_to_explore.why_relevant}</p>
-                </div>
-              </>
+              <aside className="ws-hint-panel ws-feedback-skill-panel">
+                <span className="ws-hint-label">
+                  <LightbulbIcon size={16} color="#7C3AED" /> SKILL TO EXPLORE
+                </span>
+                <h3 className="ws-feedback-skill-title">{activity.feedback.skill_to_explore.skill}</h3>
+                <p>{activity.feedback.skill_to_explore.why_relevant}</p>
+              </aside>
             )}
           </div>
           <div className="ws-feedback-actions">
@@ -397,8 +389,8 @@ export default function WorkplaceScenario() {
               <strong>{activity?.title}</strong>
             </div>
             <div className="ws-complete-row">
-              <span>Setup</span>
-              <strong>{DURATIONS.find((d) => d.value === duration)?.caption} &middot; {difficultyLabel}</strong>
+              <span>Difficulty</span>
+              <strong>{difficultyLabel}</strong>
             </div>
             <div className="ws-complete-row">
               <span>Activities</span>
@@ -440,31 +432,8 @@ export default function WorkplaceScenario() {
         <main className="ws-intro-content">
           <h1 className="ws-intro-heading">Set up your practice</h1>
           <p className="ws-intro-subheading">
-            Time and challenge are set separately. A shorter session is not an easier one.
+            Choose how challenging you&rsquo;d like this practice to be.
           </p>
-
-          <h2 className="ws-setup-label">How much time do you have?</h2>
-          <div className="ws-setup-grid">
-            {DURATIONS.map((option) => {
-              const isActive = duration === option.value
-              return (
-                <button
-                  type="button"
-                  key={option.value}
-                  className={`ws-setup-card ${isActive ? 'ws-setup-card--active' : ''}`}
-                  onClick={() => setDuration(option.value)}
-                >
-                  <div className="ws-setup-card-header">
-                    <strong>{option.label}</strong>
-                    <span className={`ws-setup-radio ${isActive ? 'ws-setup-radio--active' : ''}`}>
-                      {isActive && <span aria-hidden="true">✓</span>}
-                    </span>
-                  </div>
-                  <span className="ws-setup-caption ws-setup-caption--mono">{option.caption}</span>
-                </button>
-              )
-            })}
-          </div>
 
           <h2 className="ws-setup-label">How challenging would you like it to be?</h2>
           <div className="ws-setup-grid">
@@ -492,8 +461,8 @@ export default function WorkplaceScenario() {
           <button type="button" className="ws-intro-continue" onClick={handleSetupContinue}>
             Continue <span aria-hidden="true">→</span>
           </button>
-          {attemptedContinue && (!duration || !difficulty) && (
-            <p className="ws-setup-hint">Choose a practice time and difficulty to continue.</p>
+          {attemptedContinue && !difficulty && (
+            <p className="ws-setup-hint">Choose a difficulty to continue.</p>
           )}
         </main>
       </div>
@@ -523,47 +492,37 @@ export default function WorkplaceScenario() {
     <>
       <TopNav />
       <div className="ws-page">
-        <main className="ws-intro-content">
+        <main className="ws-prep-content">
           <h1 className="ws-intro-heading">Your practice</h1>
           <p className="ws-prep-subtitle">{role.label}</p>
 
-          <div className="ws-prep-card">
-            <span className="ws-prep-eyebrow">TODAY&rsquo;S FOCUS</span>
-            <h2 className="ws-prep-title">{activity.title}</h2>
-            <hr className="ws-intro-divider" />
-
-            <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
-            <div className="ws-prep-pills">
-              {activity.skills_used.map((skill) => (
-                <span key={skill} className="ws-prep-pill">{skill}</span>
-              ))}
+          <div className="ws-prep-layout">
+            <div className="ws-prep-main">
+              <span className="ws-prep-eyebrow">TODAY&rsquo;S FOCUS</span>
+              <h2 className="ws-prep-title">{activity.title}</h2>
+              <span className="ws-prep-eyebrow ws-prep-eyebrow--spaced">YOU&rsquo;LL PRACTISE</span>
+              <p className="ws-prep-task">{activity.task}</p>
             </div>
-            <hr className="ws-intro-divider" />
-
-            <span className="ws-prep-eyebrow">YOU&rsquo;LL PRACTISE</span>
-            <p className="ws-prep-task">{activity.task}</p>
-            <hr className="ws-intro-divider" />
-
-            {newSkillFocus && (
-              <>
-                <span className="ws-prep-eyebrow">NEW SKILL TO EXPLORE</span>
-                <p className="ws-prep-task">{newSkillFocus}</p>
-                <hr className="ws-intro-divider" />
-              </>
-            )}
-
-            <div className="ws-prep-footer">
-              <div>
-                <span className="ws-prep-eyebrow">ESTIMATED TIME</span>
-                <strong className="ws-prep-footer-value ws-setup-caption--mono">
-                  {DURATIONS.find((d) => d.value === duration)?.caption}
-                </strong>
-              </div>
+            <aside className="ws-prep-side">
               <div>
                 <span className="ws-prep-eyebrow">DIFFICULTY</span>
                 <strong className="ws-prep-footer-value">{difficultyLabel}</strong>
               </div>
-            </div>
+              <div>
+                <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
+                <div className="ws-prep-pills">
+                  {activity.skills_used.map((skill) => (
+                    <span key={skill} className="ws-prep-pill">{skill}</span>
+                  ))}
+                </div>
+              </div>
+              {newSkillFocus && (
+                <div>
+                  <span className="ws-prep-eyebrow">NEW SKILL TO EXPLORE</span>
+                  <p className="ws-prep-task ws-prep-task--small">{newSkillFocus}</p>
+                </div>
+              )}
+            </aside>
           </div>
 
           <button type="button" className="ws-intro-continue" onClick={handleEnterWorkplace}>

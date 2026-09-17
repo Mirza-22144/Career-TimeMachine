@@ -281,10 +281,6 @@
   color: var(--ink-600);
 }
 
-.ws-setup-caption--mono {
-  font-family: 'Consolas', 'Courier New', monospace;
-}
-
 .ws-setup-hint {
   margin: 12px 0 0;
   font-weight: 500;
@@ -299,10 +295,43 @@
 }
 
 .ws-prep-subtitle {
-  margin: 0 0 32px;
+  margin: 0 0 24px;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 16px;
   color: var(--violet-600);
+}
+
+/* Wider than .ws-intro-content so the prep card can sit side-by-side with
+   its sidebar instead of stacking everything in one tall column. */
+.ws-prep-content {
+  width: 100%;
+  max-width: 960px;
+}
+
+.ws-prep-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.14);
+}
+
+.ws-prep-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-prep-side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 240px;
+  flex-shrink: 0;
+  padding-left: 28px;
+  border-left: 1px solid rgba(15, 23, 40, 0.08);
 }
 
 .ws-prep-card {
@@ -324,32 +353,36 @@
 
 .ws-prep-eyebrow {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 1px;
   color: var(--ink-600);
 }
 
+.ws-prep-eyebrow--spaced {
+  margin-top: 20px;
+}
+
 .ws-prep-title {
   margin: 0;
   font-weight: 800;
-  font-size: 26px;
+  font-size: 22px;
   color: var(--ink-900);
 }
 
 .ws-prep-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .ws-prep-pill {
-  padding: 10px 18px;
+  padding: 8px 14px;
   background: var(--violet-50);
   border-radius: 999px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--violet-700);
 }
 
@@ -357,26 +390,33 @@
   margin: 0;
   max-width: 520px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--ink-900);
 }
 
-.ws-prep-footer {
-  display: flex;
-  gap: 48px;
-  width: 100%;
+.ws-prep-task--small {
+  max-width: none;
+  font-size: 13px;
 }
 
 .ws-prep-footer-value {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--ink-900);
 }
 
-@media (max-width: 700px) {
-  .ws-prep-footer {
-    gap: 24px;
+@media (max-width: 800px) {
+  .ws-prep-layout {
+    flex-direction: column;
+  }
+
+  .ws-prep-side {
+    width: 100%;
+    padding-left: 0;
+    padding-top: 18px;
+    border-left: none;
+    border-top: 1px solid rgba(15, 23, 40, 0.08);
   }
 }
 
@@ -777,26 +817,26 @@
 }
 
 .ws-activity-heading {
-  margin: 0 0 24px;
+  margin: 0 0 14px;
   font-weight: 800;
-  font-size: 30px;
-  line-height: 1.2;
+  font-size: 18px;
+  line-height: 1.3;
   color: var(--ink-900);
 }
 
 .ws-mcq-card {
-  max-width: 620px;
-  padding: 28px;
+  max-width: 520px;
+  padding: 16px 18px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.08);
-  border-radius: 20px;
+  border-radius: 14px;
   box-shadow: 0px 12px 32px -16px rgba(15, 23, 40, 0.15);
 }
 
 .ws-mcq-question {
-  margin: 0 0 20px;
+  margin: 0 0 12px;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--ink-900);
 }
@@ -804,22 +844,22 @@
 .ws-mcq-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .ws-mcq-option {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
-  padding: 16px 18px;
+  padding: 10px 12px;
   background: #ffffff;
   border: 1.5px solid rgba(15, 23, 40, 0.15);
-  border-radius: 14px;
+  border-radius: 10px;
   font-family: inherit;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--ink-900);
   text-align: left;
   cursor: pointer;
@@ -835,13 +875,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   margin-top: 1px;
   border-radius: 999px;
   border: 1.5px solid rgba(15, 23, 40, 0.25);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .ws-mcq-radio--selected {
@@ -900,28 +940,41 @@
 }
 
 .ws-feedback-body {
-  max-width: 620px;
-  padding: 40px clamp(20px, 4vw, 64px) 64px;
+  max-width: 900px;
+  padding: 32px clamp(20px, 4vw, 64px) 64px;
   text-align: left;
 }
 
+.ws-feedback-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+}
+
 .ws-feedback-card {
-  padding: 8px 28px;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 24px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.08);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: 0px 12px 32px -16px rgba(15, 23, 40, 0.15);
 }
 
+.ws-feedback-skill-panel {
+  width: 260px;
+  flex-shrink: 0;
+}
+
 .ws-feedback-section {
-  padding: 20px 0;
+  padding: 14px 0;
 }
 
 .ws-feedback-label {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 1px;
@@ -939,18 +992,11 @@
   background: #15803d;
 }
 
-.ws-feedback-ring {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border: 2px solid var(--violet-600);
-}
-
 .ws-feedback-section p {
   margin: 0;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--ink-900);
 }
 
@@ -967,6 +1013,16 @@
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 32px;
+}
+
+@media (max-width: 800px) {
+  .ws-feedback-layout {
+    flex-direction: column;
+  }
+
+  .ws-feedback-skill-panel {
+    width: 100%;
+  }
 }
 
 .ws-complete-card {

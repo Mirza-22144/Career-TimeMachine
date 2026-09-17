@@ -179,14 +179,21 @@ export default function CareerJourney() {
               actionLabel="View"
               onAction={() => navigate('/skill-relevance-map')}
             />
+            <JourneyStep
+              number="05"
+              title="Practice Role"
+              value={practiceRole?.role_label || null}
+              caption={
+                practiceRole?.source === 'predicted'
+                  ? 'AI-predicted future role'
+                  : practiceRole?.source === 'previous'
+                    ? 'Your previous role'
+                    : 'Choose which role to practise with'
+              }
+              actionLabel="Edit"
+              onAction={() => navigate('/your-direction')}
+            />
           </div>
-
-          {practiceRole?.source === 'predicted' && (
-            <div className="cj-direction-card">
-              <span className="cj-direction-label">YOUR CHOSEN DIRECTION</span>
-              <p className="cj-direction-text">{practiceRole.role_label}</p>
-            </div>
-          )}
 
           <div className="cj-continue-row">
             <button type="button" className="cj-continue" onClick={() => navigate('/workplace-scenario')}>

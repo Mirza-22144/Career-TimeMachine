@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, Path, Request, status
 
 from app.api.dependencies import get_current_session, get_scenario_response_service
+from app.core.rate_limit import RESPONSE_SUBMISSION_LIMIT, limiter
 from app.repositories.interfaces.session_repository import AnonSession
 from app.schemas.practice_session import PracticeProgressResponse
 from app.schemas.scenario_response import ScenarioResponseCreate, ScenarioSubmissionResponse
@@ -17,7 +18,9 @@ ScenarioId = Path(min_length=1, max_length=64)
     response_model=ScenarioSubmissionResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit(RESPONSE_SUBMISSION_LIMIT)
 def submit_scenario_response(
+    request: Request,
     submission: ScenarioResponseCreate,
     session_id: str = SessionId,
     scenario_id: str = ScenarioId,

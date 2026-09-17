@@ -3,6 +3,7 @@ from typing import Any
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
+from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Kept as a local constant so a future FastAPI rename does not break this file.
 REQUEST_VALIDATION_STATUS_CODE = 422
+TOO_MANY_REQUESTS_STATUS_CODE = 429
 INTERNAL_SERVER_ERROR_STATUS_CODE = 500
 
 
@@ -90,6 +92,23 @@ async def request_validation_exception_handler(
                 details,
             )
         ),
+    )
+
+
+async def rate_limit_exceeded_handler(
+    request: Request,
+    exc: RateLimitExceeded,
+) -> JSONResponse:
+    """Handle a rate-limit rejection with the standard envelope. The limit
+    itself is not echoed back. Limits are per minute, so retrying after 60
+    seconds always gets a fresh window."""
+    return JSONResponse(
+        status_code=TOO_MANY_REQUESTS_STATUS_CODE,
+        content=_error_body(
+            "RATE_LIMITED",
+            "Too many requests. Please wait a minute and try again.",
+        ),
+        headers={"Retry-After": "60"},
     )
 
 

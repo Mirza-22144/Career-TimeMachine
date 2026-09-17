@@ -9,6 +9,7 @@ fixed catalogue instead, which keeps the suite deterministic and offline.
 import pytest
 
 from app.api import dependencies
+from app.core.rate_limit import limiter
 from app.main import app
 from app.repositories.interfaces.catalogue_repository import CatalogueItem
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
@@ -112,3 +113,24 @@ def use_activity_type():
 
     yield _use
     app.dependency_overrides.pop(dependencies.get_practice_activity_type, None)
+
+
+@pytest.fixture(autouse=True)
+def rate_limiting_off():
+    """Turn rate limiting off for every test and start with fresh counts.
+
+    The suite creates hundreds of sessions from one test-client address in
+    well under a minute, so the real limits would reject most tests.
+    test_rate_limiting_api.py turns it back on with `rate_limiting_on`.
+    """
+    limiter.reset()
+    limiter.enabled = False
+    yield
+    limiter.enabled = True
+    limiter.reset()
+
+
+@pytest.fixture
+def rate_limiting_on():
+    """Enforce the real rate limits for one test."""
+    limiter.enabled = True

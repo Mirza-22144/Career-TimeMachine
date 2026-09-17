@@ -115,6 +115,21 @@ def use_activity_type():
     app.dependency_overrides.pop(dependencies.get_practice_activity_type, None)
 
 
+@pytest.fixture
+def use_role_predictor():
+    """Swap the role-prediction model for one test, without loading the
+    real 13MB bundle."""
+    from app.services.role_prediction_service import RolePredictionService
+
+    def _use(predictor) -> None:
+        app.dependency_overrides[dependencies.get_role_prediction_service] = lambda: RolePredictionService(
+            dependencies._profile_repository, dependencies._catalogue_repository, predictor
+        )
+
+    yield _use
+    app.dependency_overrides.pop(dependencies.get_role_prediction_service, None)
+
+
 @pytest.fixture(autouse=True)
 def rate_limiting_off():
     """Turn rate limiting off for every test and start with fresh counts.

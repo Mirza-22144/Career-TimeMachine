@@ -1,3 +1,6 @@
+import logging
+from pathlib import Path
+
 from fastapi import Depends, Header, HTTPException, Request, status
 
 from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
@@ -20,8 +23,11 @@ from app.services.catalogue_service import CatalogueService
 from app.services.practice_role_service import PracticeRoleService
 from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
+from app.services.role_prediction_service import RolePredictionService, RolePredictor
 from app.services.scenario_response_service import ScenarioResponseService
 from app.services.session_service import SessionService
+
+logger = logging.getLogger(__name__)
 
 # Iteration 2 serves single-selection multiple-choice activities.
 # "written_response" is still supported for later iterations.
@@ -67,6 +73,28 @@ if HAS_DATABASE:
     _catalogue_repository = PostgresCatalogueRepository()
 else:
     _catalogue_repository = MemoryCatalogueRepository()
+
+
+_ROLE_PREDICTOR_BUNDLE_PATH = (
+    Path(__file__).resolve().parent.parent / "data" / "career_role_recommender_bundle.joblib"
+)
+
+
+def _load_role_predictor() -> RolePredictor | None:
+    """Load the AI team's role-prediction model. Guarded on purpose: a
+    missing dependency (scikit-learn et al.) or a corrupt/absent bundle file
+    must not prevent the whole app from starting - only the one endpoint
+    that needs it degrades, returning 503 (see RolePredictionService)."""
+    try:
+        from app.ml.career_role_predictor import CareerRolePredictor
+
+        return CareerRolePredictor(str(_ROLE_PREDICTOR_BUNDLE_PATH))
+    except Exception:
+        logger.warning("Role prediction model unavailable - predicted-role endpoint will return 503", exc_info=True)
+        return None
+
+
+_role_predictor: RolePredictor | None = _load_role_predictor()
 
 
 def get_session_service() -> SessionService:
@@ -126,6 +154,12 @@ def get_career_direction_service() -> CareerDirectionService:
 def get_practice_role_service() -> PracticeRoleService:
     """Build practice-role service with shared profile and catalogue repositories."""
     return PracticeRoleService(_profile_repository, _catalogue_repository)
+
+
+def get_role_prediction_service() -> RolePredictionService:
+    """Build the role-prediction service. Tests override this to substitute
+    a fake predictor instead of loading the real model bundle."""
+    return RolePredictionService(_profile_repository, _catalogue_repository, _role_predictor)
 
 
 def get_scenario_provider() -> ScenarioProvider:

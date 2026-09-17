@@ -145,9 +145,10 @@ Written-response activities (`activity_type: "written_response"`, textarea and
 `response_text`) are not served in Iteration 2 and do not need a UI yet.
 
 The Your Direction page does not currently offer previous/predicted role
-choices; it saves `return_readiness` and `area_to_explore` only. There is no
-role-prediction endpoint yet (AI owner), so for now only `source: "previous"`
-can be offered from real data.
+choices; it saves `return_readiness` and `area_to_explore` only.
+`GET /practice-role/predicted` now returns a real predicted role (AI 2.1/2.2/2.3,
+BE 2.13) - frontend still needs to call it and offer `source: "predicted"`
+alongside `source: "previous"`.
 
 ## 5. Behaviour notes
 
@@ -193,14 +194,15 @@ cd backend
 venv/bin/python -m pytest -q
 ```
 
-Result on 2026-09-17: **351 passed, 0 failed** after the H-1/H-2 input caps,
-H-4 rate limiting and R09 logging work (310 after the database error handling
-update; 300 after the multi-activity update; 192 before it; baseline before
-the Iteration 2 backend work: 19 passed, 10 failed because roles/skills are
-empty without a database `.env`; `tests/conftest.py` now supplies a fixed
-test catalogue). Two `slowapi`/Python 3.14 deprecation warnings appear when
-running under Python 3.14 - the Docker image runs Python 3.13 and is
-unaffected.
+Result on 2026-09-17: **373 passed, 0 failed** after wiring in the AI team's
+PR #4 (BE 2.13 - Version 2 reflective scenarios and role prediction; 351
+before it, after the H-1/H-2 input caps, H-4 rate limiting and R09 logging
+work; 310 after the database error handling update; 300 after the
+multi-activity update; 192 before it; baseline before the Iteration 2
+backend work: 19 passed, 10 failed because roles/skills are empty without a
+database `.env`; `tests/conftest.py` now supplies a fixed test catalogue).
+Two `slowapi`/Python 3.14 deprecation warnings appear when running under
+Python 3.14 - the Docker image runs Python 3.13 and is unaffected.
 
 | File | Covers |
 |---|---|
@@ -217,6 +219,8 @@ unaffected.
 | `test_input_limits_api.py` | Pen-test H-1/H-2: over-length text and id fields, over-length list items, over-count lists, and unknown fields are all rejected `422 REQUEST_VALIDATION_ERROR` naming the field, on both `PATCH /profile` and `PATCH /career-direction`; rejected values are not echoed back |
 | `test_rate_limiting_api.py` | Pen-test H-4: `POST /anonymous-sessions` (10/minute) and scenario-response submission (30/minute) return `429 RATE_LIMITED` with `Retry-After: 60` once their limit is exceeded; no other endpoint is limited |
 | `test_security_logging_api.py` | Pen-test R09: startup logs the storage mode (database vs in-memory) with no connection detail; `auth_failed` and `rate_limited` events are logged on `app.security` as searchable key=value lines with no tokens, profile data, break details or submitted text |
+| `test_ai_pool_scenario_provider.py` | AI 2.1/BE 2.13: Version 2 dataset loads (80 of 81 valid, 1 dropped and logged for an over-length option), every loaded scenario and its feedback validates against `ScenarioContent`/`FeedbackContent`, real per-option feedback varies by option, generic fallback still used outside the pool |
+| `test_role_prediction_api.py` | AI 2.2/2.3/BE 2.13: `GET /practice-role/predicted` requires a confirmed profile with a role; only role and skill labels reach the model; malformed model output, an unsupported role, a missing model, a result of `other`, and a result matching the current role are all rejected without a 500; a real end-to-end pass against the actual model bundle; no skill or profile content in logs |
 
 ## 7. Known limitations
 
@@ -227,7 +231,15 @@ unaffected.
   (AC 4.4.3) yet.
 - The feedback backstop rejects the words "correct" and "incorrect", so
   provider feedback that uses "correct" as a verb is treated as unavailable.
-- No role-prediction endpoint (AI owner).
+- Role prediction (`GET /practice-role/predicted`) is live, but the
+  underlying model has very little training data for several of the 27
+  roles (e.g. Blockchain Engineer: precision/recall 0 on 1 training
+  example) - predictions for underrepresented roles should be treated as
+  low-confidence. One reflective-scenario dataset entry (a
+  `computer_network_support_specialist` guided scenario) has an
+  over-length option and is dropped at load time; that role/difficulty
+  falls back to the generic activity until the AI team ships a corrected
+  entry.
 - Access tokens are intentionally persistent and do not expire. This was
   decided in a team discussion; it is a design decision, not a gap awaiting one.
 - Rate limiting (SEC 2.3 / H-4) is in place on session creation and response
@@ -252,8 +264,8 @@ unaffected.
 | Restart persistence for tokens and profiles | Deployed `anon_session`, `profile`, `profile_skill`, `profile_responsibility` tables and connection details. `profile` foreign keys reference `career_area`, `return_status`, `break_reason`, `experience_option` and `responsibility`, which are unseeded, so writes would fail until those are seeded (DB 2.3). | Database |
 | Restart persistence for practice role | Two new `profile` columns: `practice_role_id VARCHAR(64) REFERENCES role(id)` and `practice_role_source VARCHAR(16)` (`previous`/`predicted`) | Database |
 | Restart persistence for practice | Tables for practice session (id, owner token hash, role id/label/source, duration, difficulty, status, created/updated/completed timestamps), session scenarios (scenario content, `activity_type`, status), scenario options (`option_id`, `text`, display order; no correctness column), responses (`selected_option_id` and `response_text`, both nullable with exactly one set, `submitted_at`, unique per session + scenario) and feedback (what worked well, trade-offs, areas to consider, skill to explore, feedback status). Shape mirrors `app/repositories/interfaces/practice_session_repository.py`. | Database |
-| Production scenario and feedback generation | A `ScenarioProvider` implementation that returns the requested `activity_type` (single-selection MCQs with 2-6 stable, unique option ids for Iteration 2) matching `ScenarioContent`, and MCQ feedback with `trade_offs` matching `FeedbackContent`, plus content guardrails (AI 2.3) | AI |
-| Role predictions for Your Direction | A prediction endpoint or service contract | AI |
+| ~~Production scenario and feedback generation~~ | ~~A `ScenarioProvider` implementation...~~ delivered and wired in (BE 2.13): Version 2 reflective dataset, real per-option feedback, `ScenarioContent`/`FeedbackContent` validated | AI - resolved |
+| ~~Role predictions for Your Direction~~ | ~~A prediction endpoint or service contract~~ delivered and wired in (BE 2.13): `GET /practice-role/predicted`, model output re-validated before serving | AI - resolved |
 | API contract sign-off | Review of `API-CONTRACT.md` | Frontend, Database, AI |
 | Real token and practice UI | Sections 3 and 4 | Frontend |
 

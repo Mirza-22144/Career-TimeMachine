@@ -564,6 +564,47 @@ const res = await fetch("/api/v1/practice-role", {
 });
 ```
 
+### `GET /practice-role/predicted`
+
+Predicts one future IT role from the confirmed profile's previous role and
+skills (AI 2.1/2.2/2.3), for Your Direction to offer alongside "previous
+role". Read-only - it does not save anything; `PUT /practice-role` with
+`source: "predicted"` saves the result if the user picks it. The model only
+ever receives the previous role and skill labels (catalogue and custom) -
+no token, break details or other profile fields.
+
+Request body: none
+
+Success `200`:
+
+```json
+{
+  "predicted_role": {
+    "id": "data_scientist",
+    "label": "Data Scientist"
+  }
+}
+```
+
+The predicted role is always one of the 27 supported IT roles, is never
+`other`, and is never the same as the profile's own previous `role_id`.
+
+Errors:
+
+- `401` when `X-Session-Token` is missing or invalid.
+- `409` `PROFILE_NOT_CONFIRMED` when the career profile has not been confirmed.
+- `409` `PROFILE_ROLE_REQUIRED` when the confirmed profile has no previous role.
+- `409` `ROLE_PREDICTION_UNSUPPORTED_ROLE` when the previous role isn't one the
+  prediction model recognises.
+- `503` `ROLE_PREDICTION_UNAVAILABLE` when the model failed to load, or its
+  output failed the backend's own validation - never served un-checked.
+
+Frontend example:
+
+```js
+const res = await fetch("/api/v1/practice-role/predicted", { headers });
+```
+
 ## Workplace Practice Sessions (Iteration 2)
 
 A practice session is started from the saved practice role and saved career

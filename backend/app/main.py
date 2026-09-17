@@ -15,6 +15,7 @@ from app.core.exceptions import (
     request_validation_exception_handler,
     unhandled_exception_handler,
 )
+from app.api.dependencies import _role_predictor
 from app.core.logging_config import configure_logging
 from app.core.rate_limit import limiter
 
@@ -35,9 +36,21 @@ def log_storage_mode() -> None:
         )
 
 
+def log_role_prediction_availability() -> None:
+    """Say at startup whether the role-prediction model loaded, for the
+    same reason as log_storage_mode: a silent fallback (here, every
+    GET /practice-role/predicted returning 503) should be easy to spot
+    rather than discovered from a support ticket."""
+    if _role_predictor is not None:
+        logger.info("Role prediction: enabled")
+    else:
+        logger.warning("Role prediction: unavailable - GET /practice-role/predicted will return 503")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log_storage_mode()
+    log_role_prediction_availability()
     yield
 
 

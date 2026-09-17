@@ -40,7 +40,7 @@ Living document. Everyone updates their own section as they make progress. This 
 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
-| B1  | ~~LLM output format is not yet agreed~~ partially resolved (BE 2.10, 2026-09-17): the real `ScenarioProvider` (`AiPoolScenarioProvider`) is wired in as the default and serves the AI team's actual Version 1 dataset (81 real scenarios, 27 roles x 3 difficulties, answer key stripped) - no longer the curated placeholder. Still open: the AI team is rebuilding this as Version 2 against the agreed reflective-format contract (no option marked correct) - swapping the file in is a contained change once delivered (see BE 2.10's notes). Role prediction is a separate, still-unstarted model - no data or endpoint exists yet (AI 2.1/2.2 remain fully open) | Backend, Frontend | AI to deliver Version 2 (reflective format) to replace the current file; AI to scope and build role prediction separately | `[WIP]` open |
+| B1  | ~~LLM output format is not yet agreed~~ resolved (BE 2.10, 2026-09-17, superseded by BE 2.13, 2026-09-17): the real `ScenarioProvider` (`AiPoolScenarioProvider`) is wired in as the default and now serves the AI team's Version 2 reflective-format dataset (81 scenarios delivered, 80 pass validation and are served; 1 dropped at load time for an over-length option and falls back to the generic activity - see BE 2.13), with real per-option feedback, not the synthesised placeholder. ~~Role prediction is a separate, still-unstarted model~~ resolved (BE 2.13): the AI team's trained model (PR #4 into `iteration-2-testing`) is wired in behind `GET /practice-role/predicted`, with output re-validated and never served if it breaks its own "no other, no current role" contract. **B1 is fully resolved.** | Backend, Frontend | none - closed | `[DONE]` closed |
 | B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. ~~Database has nowhere to store practice role/session data~~ resolved (DB 2.6, 2026-09-17): schema added and applied live. ~~Practice role doesn't persist through Postgres~~ resolved (BE 2.11, 2026-09-17). ~~Practice sessions/responses/feedback still use `MemoryPracticeSessionRepository`~~ resolved (BE 2.12, 2026-09-17): `PostgresPracticeSessionRepository` built against the DB 2.6 tables, verified live - a full start-session/submit-response/feedback/complete round trip survives a real backend restart. **B2 is fully resolved** - practice progress no longer resets on restart or redeploy. AC 4.3.4's database-backed restoration requirement (`AC_Full_Review_Epic4.docx`) is now met | Backend   | none - closed | `[DONE]` closed |
 | B3  | ~~Sign-on method for Iteration 2 not finalised~~ resolved (team decision, 2026-09-17): TOTP is pushed to Iteration 3 - Iteration 2 ships token-only sign-on, which is already fully built end to end (BE 2.3, FE 2.3/2.7) | Security  | none - closed | `[DONE]` closed |
 
@@ -110,11 +110,14 @@ Living document. Everyone updates their own section as they make progress. This 
   4.0, which explicitly supersedes two earlier, narrower documents once the
   new reference designs corrected the duration and single-activity
   assumptions above.
-- **Blocks / Blocked by:** blocked by B1/AI 2.1 for real predicted roles and
-  real (pre-trained, not mock) MCQ content - proposal sent to the AI team,
-  awaiting confirmation. Coding activities (AC 4.4.2's other interaction
-  types, AC 4.4.3) are explicitly out of scope for this iteration per
-  product decision - moved to a later iteration's backlog.
+- **Blocks / Blocked by:** no longer blocked on the backend side (see
+  BE 2.13, 2026-09-17): real MCQ content and reflective feedback are live
+  on `AiPoolScenarioProvider`, and `GET /practice-role/predicted` now
+  returns a real predicted role. Frontend still needs to call the new
+  endpoint and swap out the mock predicted-role UI on Your Direction for it.
+  Coding activities (AC 4.4.2's other interaction types, AC 4.4.3) are
+  explicitly out of scope for this iteration per product decision - moved
+  to a later iteration's backlog.
 
 ### FE 2.10 - AC 4.3.1-4.3.4 - Interactive Workplace
 
@@ -278,6 +281,51 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
 
+### BE 2.13 - Wire in the AI team's PR #4 (Version 2 scenarios + role prediction)
+
+- **Status:** [DONE] **Owner:** Backend **Date:** 2026-09-17
+- **What:** two independent pieces of AI-delivered content (PR #4, merged
+  into `iteration-2-testing`, pulled into this branch's `app/data/` and
+  `app/ml/`):
+  1. **Version 2 reflective scenario dataset** -
+     `reflective_mcq_scenario_pool_v2.json` replaces Version 1 as
+     `AiPoolScenarioProvider`'s data source. Every scenario and every one of
+     its four options' feedback is validated against the real
+     `ScenarioContent`/`FeedbackContent` models at import time (matching
+     BE 2.10's own bar): 80 of 81 pass and are served with their real,
+     per-option authored feedback (no longer synthesised); 1 has an
+     over-length option, is logged and dropped, and falls through to the
+     existing generic-scenario fallback rather than crashing anything.
+     `generate_feedback()` now looks up the real authored feedback first and
+     only synthesises when none exists (a generic-fallback scenario, or a
+     dropped entry), so behaviour for every role outside the pool is
+     unchanged.
+  2. **Role prediction** - the AI team's trained model
+     (`career_role_recommender_bundle.joblib`, TF-IDF + logistic regression
+     blended with skill-fit/role-transition scoring) is wired in behind new
+     `GET /practice-role/predicted`. New `RolePredictionService`
+     (`app/services/role_prediction_service.py`) builds the model's request
+     from the confirmed profile's previous role and skills only, and
+     re-validates the model's response against `PredictedRoleResponse`
+     (`extra="forbid"`) before it can reach a client - a result of `other`
+     or the user's own current role is rejected as a `503` even though the
+     model already excludes both by construction. The model bundle loads
+     once at startup behind a try/except (`app/api/dependencies.py`); if it
+     fails, the app still starts and only this one endpoint returns `503`
+     `ROLE_PREDICTION_UNAVAILABLE` (logged at startup, matching the DB 2.4
+     storage-mode pattern). Added `joblib`/`numpy`/`scipy`/`scikit-learn` to
+     `requirements.txt`.
+  22 new tests (`test_ai_pool_scenario_provider.py`,
+  `test_role_prediction_api.py`); all 373 tests pass.
+- **Why:** closes B1 and AI 2.1/2.2/2.3 - Workplace Scenarios now runs on
+  the agreed reflective contract with real feedback, and Your Direction can
+  offer a real predicted role alongside the previous one.
+- **Blocks / Blocked by:** none. Two things worth the AI team's attention
+  separately, not blocking this card: the one dropped dataset entry (option
+  text over 300 characters) and the model's low accuracy on several
+  underrepresented roles (see AI 2.2). Frontend still needs to call the new
+  endpoint (see FE follow-up in the Career Direction section).
+
 ### BE 2.12 - Practice sessions now persist through Postgres
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
@@ -368,10 +416,10 @@ Living document. Everyone updates their own section as they make progress. This 
   now runs on the AI team's actual generated content, not placeholder
   scenarios, and is a one-file swap away from a live external API call once
   the AI team exposes one.
-- **Blocks / Blocked by:** Version 2 (reflective format, in progress by the
-  AI team) will replace the current file - swap-in is a contained change
-  per the module's own comments, nothing else needs to change. Role
-  prediction is unrelated and still fully unbuilt (AI 2.1/2.2). Practice
+- **Blocks / Blocked by:** Version 2 (reflective format) has now replaced
+  the current file exactly as anticipated here - see BE 2.13. Role
+  prediction, then unrelated and unbuilt, is also now wired in (BE 2.13,
+  AI 2.1/2.2/2.3). Practice
   role/session persistence through a real Postgres run is blocked by B2 -
   confirmed live during this work, not just anticipated.
 
@@ -415,7 +463,7 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Status:** [BLOCKED] **Owner:** Mirza **Date:** 2026-09-14
 - **What:** done locally - `GET`/`PUT /practice-role` saves the previous or predicted role, rejects invalid role ids, and hands the saved role and career context to workplace practice so nothing is re-entered. 25 tests.
 - **Why:** backend Subtask 5 / AC 4.1.2.
-- **Blocks / Blocked by:** surviving a restart is blocked by B2 (`practice_role_id`, `practice_role_source` columns). Your Direction needs to call it (FE). Predicted roles still need AI role predictions.
+- **Blocks / Blocked by:** restart survival now resolved (see B2/BE 2.11). Your Direction needs to call it (FE). Predicted roles are now available from `GET /practice-role/predicted` (BE 2.13).
 
 ### BE 2.6 - Offline test suite and backend handover
 
@@ -521,8 +569,10 @@ Living document. Everyone updates their own section as they make progress. This 
   sourced labor-market data, not a placeholder list - unlike the tables
   seeded above, making up rows for it would defeat the point. Whether the
   AI team's role-prediction work will actually deliver this content, versus
-  it being a separate unscoped task, hasn't been confirmed - worth checking
-  with them directly rather than assuming) and `break_reason` (field is
+  it being a separate unscoped task, hasn't been confirmed - **now confirmed
+  it's a separate task**: the AI team's actual role-prediction deliverable
+  (BE 2.13, 2026-09-17) is a previous-role -> future-role classifier only,
+  with no labor-market growth-outlook data in it) and `break_reason` (field is
   being removed from the wizard UI, so nothing needs it). DB 2.3 remains
   open for those two plus real (non-placeholder) content generally.
   Practice-role columns and practice session tables (B2) are unrelated,
@@ -541,8 +591,8 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Why:** removes the in-memory placeholder fallback for the one catalogue
   that still needs it.
 - **Blocks / Blocked by:** needs someone to source real career-growth-area
-  content (see DB 2.5's note - unclear yet whether that's the AI team's
-  role-prediction work or a separate task).
+  content (see DB 2.5's note - confirmed separate from the AI team's
+  role-prediction work, which is now delivered and wired in, see BE 2.13).
 
 ### DB 2.4 - Startup mode indicator (pen-test R09)
 
@@ -629,22 +679,45 @@ New for Iteration 2. Goal: an LLM we are training that turns a user's captured p
 
 ### AI 2.1 - Define the scenario contract
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** agree the exact request (which profile fields the model receives) and response (the JSON shape of a scenario: id, prompt/question, options or expected-answer form, scoring) that the backend will consume.
+- **Status:** [DONE] **Owner:** AI team / Backend **Date:** 2026-09-17
+- **What:** the reflective-format contract (no option marked correct, real
+  per-option feedback, no score anywhere) is now delivered as data
+  (`reflective_mcq_scenario_pool_v2.json`, PR #4) and wired in against the
+  same `ScenarioContent`/`FeedbackContent` shape agreed for Version 1 - see
+  BE 2.13.
 - **Why:** everything downstream (backend endpoints, frontend screen, progress storage) depends on this shape.
-- **Blocks / Blocked by:** blocks B1, BE 2.1. The practice progress schema
-  was ultimately built without waiting on this (see DB 2.6).
+- **Blocks / Blocked by:** none - blocked B1, BE 2.1; both now closed. The
+  practice progress schema was ultimately built without waiting on this
+  (see DB 2.6).
 
 ### AI 2.2 - Model and training
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** decide the model/provider, gather/prepare training data, design prompts, and produce structured, validated output.
-- **Why:** the engine behind Workplace Scenarios.
-- **Blocks / Blocked by:** none to start; feeds AI 2.1.
+- **Status:** [DONE] **Owner:** AI team **Date:** 2026-09-17
+- **What:** the AI team delivered a trained career-role prediction model
+  (TF-IDF + weighted logistic regression over skill labels, blended with a
+  skill-fit and role-transition score) as `career_role_recommender_bundle.joblib`
+  plus its loader (PR #4 into `iteration-2-testing`, merged). Evaluated
+  accuracy 80%, balanced accuracy 73%, top-3 accuracy 95% - several of the
+  27 roles have very little training support (e.g. Blockchain Engineer:
+  precision/recall 0 on 1 example), so predictions for underrepresented
+  roles should be treated as low-confidence. Not this card's concern to fix,
+  but worth the AI team's attention in a later iteration.
+- **Why:** the engine behind role prediction on Your Direction.
+- **Blocks / Blocked by:** none - fed into AI 2.1/2.3 and BE 2.13.
 
 ### AI 2.3 - Serving and guardrails
 
-- **Status:** [TODO] **Owner:** TBD **Date:** TBD
-- **What:** expose the model to the backend behind an agreed interface; add guardrails (no leaking of personal data, safe/appropriate content, predictable output the backend can parse).
+- **Status:** [DONE] **Owner:** Backend **Date:** 2026-09-17
+- **What:** the model is exposed behind `GET /practice-role/predicted`
+  (BE 2.13). Guardrails: the model receives only the previous role and
+  skill labels, nothing else from the profile; a missing/corrupt model
+  bundle degrades to a `503` on this one endpoint rather than crashing the
+  whole app; every prediction is re-validated against a Pydantic schema
+  (`extra="forbid"`, matching the same guardrail `ScenarioContent` already
+  applies to scenarios) before it can reach a response; and a predicted
+  role matching `other` or the user's own current role is rejected as a
+  `503` even though the model already excludes both by construction - a
+  backstop, not the primary control.
 - **Why:** safe, reliable integration.
-- **Blocks / Blocked by:** coordinate with SEC 2.6 and BE 2.1.
+- **Blocks / Blocked by:** none - coordinated with SEC 2.6 and BE 2.1, both
+  satisfied by BE 2.13's design.

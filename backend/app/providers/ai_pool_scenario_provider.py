@@ -1,34 +1,42 @@
 """Scenario provider backed by the AI team's real generated dataset.
 
-This is Version 1 of the AI team's content: one multiple-choice scenario per
-(role, difficulty), 27 roles x 3 difficulties = 81 total (see
-app/data/practice_mcq_scenario_pool.json). The dataset's own private answer
-key (assessment_reference) has already been stripped out of that file
-entirely - this provider never sees which option was "correct" and never
-could leak it, by construction.
+This is Version 2 of the AI team's content (see
+app/data/reflective_mcq_scenario_pool_v2.json): one multiple-choice scenario
+per (role, difficulty), 27 roles x 3 difficulties = 81 total, each with real
+per-option reflective feedback authored against the agreed contract - no
+option marked correct, no score anywhere in the file. Version 1
+(app/data/practice_mcq_scenario_pool.json) is graded-format evidence only and
+is no longer loaded; it is kept on disk for reference.
 
-The AI team has flagged this dataset as graded-format evidence and is
-building a reflective-format Version 2 against the agreed contract (no
-option marked correct, no score in feedback). Until that lands,
-generate_feedback() below synthesises lightweight reflective feedback from
-the scenario's own fields (skills_used, new_skill_focus) rather than
-inventing a verdict - swap the body of generate_feedback for a real lookup
-into Version 2's own feedback content once it is delivered, matching the
-same file-loading pattern used in generate_scenario.
+Every scenario and every one of its four options' feedback is validated
+against the real ScenarioContent/FeedbackContent Pydantic models at import
+time, exactly like the rest of this codebase validates provider output
+before it reaches a user. An entry that fails validation (a delivered
+dataset is external input, not code this team wrote) is logged and dropped
+rather than crashing the app - generate_scenario() then falls through to the
+same generic fallback already used for a role outside the pool, so one bad
+row degrades gracefully instead of taking down every session for that role.
 """
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
+
 from app.providers.scenario_provider import (
+    FeedbackContent,
     FeedbackRequest,
+    ScenarioContent,
     ScenarioProvider,
     ScenarioProviderError,
     ScenarioRequest,
 )
 
-_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "practice_mcq_scenario_pool.json"
+logger = logging.getLogger(__name__)
+
+_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "reflective_mcq_scenario_pool_v2.json"
 
 # Same three hints, sliced per difficulty (all for guided, one for standard,
 # none for challenge - the documented contract in API-CONTRACT.md). Used
@@ -72,17 +80,89 @@ def _generic_scenario(request: ScenarioRequest) -> dict[str, Any]:
     }
 
 
-def _load_scenarios_by_role_difficulty() -> dict[tuple[str, str], dict[str, Any]]:
+def _scenario_dict(question: dict[str, Any]) -> dict[str, Any]:
+    body = question["question"]
+    role_label = question["role_label"]
+    target_skills = question["target_skills"]
+
+    return {
+        "scenario_id": question["question_id"],
+        "title": f"{role_label} — {question['difficulty'].title()} Scenario",
+        "workplace_area": role_label,
+        "situation": body["situation"],
+        "task": body["task"],
+        "activity_type": "multiple_choice",
+        "options": [{"option_id": o["id"], "text": o["text"]} for o in body["options"]],
+        "guidance": body.get("hints") or [],
+        "skills_used": target_skills,
+        "new_skill_focus": target_skills[0] if target_skills else None,
+    }
+
+
+def _feedback_dict(raw: dict[str, Any]) -> dict[str, Any]:
+    skill_to_explore = raw.get("skill_to_explore")
+    return {
+        "what_worked_well": raw["what_worked_well"],
+        "trade_offs": raw.get("trade_offs", []),
+        "areas_to_consider": raw["areas_to_consider"],
+        "skill_to_explore": (
+            {
+                "skill": skill_to_explore["skill"],
+                "why_relevant": skill_to_explore.get("why_relevant") or skill_to_explore["skill"],
+            }
+            if skill_to_explore
+            else None
+        ),
+    }
+
+
+def _load_dataset() -> tuple[dict[tuple[str, str], dict[str, Any]], dict[tuple[str, str], dict[str, Any]]]:
+    """Return (scenarios_by_role_difficulty, feedback_by_scenario_and_option).
+
+    Only entries that pass the real ScenarioContent/FeedbackContent
+    validation are kept - see the module docstring. A scenario is only kept
+    if all of its own options' feedback also validates, so a session can
+    never reach an option with no valid feedback behind it.
+    """
     with open(_DATA_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    return {(q["role_id"], q["difficulty"]): q["scenario"] for q in data["questions"]}
+
+    scenarios: dict[tuple[str, str], dict[str, Any]] = {}
+    feedback: dict[tuple[str, str], dict[str, Any]] = {}
+
+    for question in data["questions"]:
+        scenario_id = question["question_id"]
+        key = (question["role_id"], question["difficulty"])
+
+        try:
+            scenario_content = _scenario_dict(question)
+            ScenarioContent.model_validate(scenario_content)
+
+            option_feedback = {
+                option_id: _feedback_dict(raw) for option_id, raw in question["option_feedback"].items()
+            }
+            for option_id, feedback_content in option_feedback.items():
+                FeedbackContent.model_validate(feedback_content)
+        except (ValidationError, KeyError) as exc:
+            logger.warning(
+                "Dropping invalid reflective-MCQ dataset entry scenario_id=%s: %s",
+                scenario_id,
+                exc,
+            )
+            continue
+
+        scenarios[key] = scenario_content
+        for option_id, feedback_content in option_feedback.items():
+            feedback[(scenario_id, option_id)] = feedback_content
+
+    return scenarios, feedback
 
 
 # Loaded once at import time - 81 small JSON scenarios, not worth re-reading
 # per request. Swap this whole module for a real HTTP client once the AI
 # team exposes an external API, keeping this same (role_id, difficulty) ->
 # scenario shape as the contract other code already depends on.
-_SCENARIOS_BY_ROLE_DIFFICULTY = _load_scenarios_by_role_difficulty()
+_SCENARIOS_BY_ROLE_DIFFICULTY, _FEEDBACK_BY_SCENARIO_AND_OPTION = _load_dataset()
 
 
 class AiPoolScenarioProvider(ScenarioProvider):
@@ -94,24 +174,14 @@ class AiPoolScenarioProvider(ScenarioProvider):
 
         scenario = _SCENARIOS_BY_ROLE_DIFFICULTY.get((request.role_id, request.difficulty))
         if scenario is None:
-            # Not one of the AI pool's 27 roles - most notably the real
-            # "other" role (a typed-in previous role with no catalogue
+            # Not one of the AI pool's 27 roles, or the one dropped at load
+            # time for failing validation - most notably also covers the
+            # real "other" role (a typed-in previous role with no catalogue
             # entry). Fall back to a generic activity rather than failing
             # the whole session outright.
             content = _generic_scenario(request)
         else:
-            content = {
-                "scenario_id": scenario["scenario_id"],
-                "title": scenario["title"],
-                "workplace_area": scenario["workplace_area"],
-                "situation": scenario["situation"],
-                "task": scenario["task"],
-                "activity_type": "multiple_choice",
-                "options": scenario["options"],
-                "guidance": scenario["guidance"],
-                "skills_used": scenario["skills_used"],
-                "new_skill_focus": scenario["new_skill_focus"],
-            }
+            content = dict(scenario)
 
         if content["scenario_id"] in request.exclude_scenario_ids:
             # There is exactly one scenario per (role, difficulty) in this
@@ -126,14 +196,23 @@ class AiPoolScenarioProvider(ScenarioProvider):
         if request.activity_type != "multiple_choice" or request.selected_option_id is None:
             raise ScenarioProviderError("The AI pool only has multiple_choice feedback")
 
+        authored = _FEEDBACK_BY_SCENARIO_AND_OPTION.get((request.scenario_id, request.selected_option_id))
+        if authored is not None:
+            # Real feedback the AI team wrote for this exact option -
+            # already validated at load time.
+            return dict(authored)
+
+        # No authored feedback for this (scenario, option) - either the
+        # scenario came from the generic fallback, or its dataset entry was
+        # dropped at load time. Synthesise lightweight reflective feedback
+        # from the scenario's own fields instead of failing the request.
         skill = request.skills_used[0] if request.skills_used else "this area"
         other_options = [text for text in request.option_texts if text != request.selected_option_text]
 
         return {
             # References her actual selected option, not just the scenario in
             # general, so feedback genuinely differs by which option she
-            # picked (the AI pool's raw option text is all we have per option
-            # - there's no curated "why this may help" text to draw on yet).
+            # picked.
             "what_worked_well": [
                 f"Choosing “{request.selected_option_text}” draws on {skill.lower()}, which is "
                 f"already part of your experience as a {request.role_label.lower()}."

@@ -81,6 +81,13 @@ Success `201`:
 }
 ```
 
+Errors:
+
+- `429` `RATE_LIMITED` after 10 requests per minute from the same client
+  address (pen-test H-4). Response includes `Retry-After: 60`. Counted per
+  server instance, in memory - resets on restart and does not share state
+  across instances.
+
 Frontend example:
 
 ```js
@@ -245,7 +252,14 @@ Errors:
 
 - `400` for invalid catalogue IDs or invalid date rule.
 - `401` when `X-Session-Token` is missing or invalid.
-- `422` for invalid request types, such as a malformed date.
+- `422` `REQUEST_VALIDATION_ERROR` for invalid request types (such as a
+  malformed date), an unknown field, a catalogue-id field over 64
+  characters, `role_other_text` over 120 characters,
+  `break_reason_other_text` over 500 characters, a `custom_skills`/
+  `custom_responsibilities` entry over its per-item cap (120 / 300
+  characters), or `skill_ids`/`responsibility_ids`/`custom_skills`/
+  `custom_responsibilities` exceeding its list-length cap (50 selected
+  ids, 20 custom entries). Rejected values are not echoed back.
 
 Frontend example:
 
@@ -469,7 +483,9 @@ Errors:
 
 - `400` for invalid `return-statuses` or `career-areas` catalogue IDs.
 - `401` when `X-Session-Token` is missing or invalid.
-- `422` for invalid request body types.
+- `422` `REQUEST_VALIDATION_ERROR` for invalid request body types, an
+  unknown field, or `return_readiness`/`area_to_explore` over 64
+  characters.
 
 Frontend example:
 
@@ -787,6 +803,7 @@ listed:
 | `409` | `RESPONSE_ALREADY_SUBMITTED` | The scenario already has an answer |
 | `400` | `ACTIVITY_TYPE_MISMATCH` | `response_text` sent to a `multiple_choice` scenario, or `selected_option_id` sent to a `written_response` scenario |
 | `400` | `INVALID_OPTION_ID` | `selected_option_id` is not one of this scenario's options, including an option id from a different scenario |
+| `429` | `RATE_LIMITED` | More than 30 requests in a minute from the same client address (pen-test H-4). Response includes `Retry-After: 60`. Counted per server instance, in memory - resets on restart and does not share state across instances |
 
 Examples:
 

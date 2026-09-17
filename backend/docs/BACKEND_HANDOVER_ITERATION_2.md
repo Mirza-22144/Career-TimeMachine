@@ -193,9 +193,14 @@ cd backend
 venv/bin/python -m pytest -q
 ```
 
-Result on 2026-09-17: **310 passed, 0 failed** after the database error handling update (300 after the multi-activity update; 192 before it; baseline before the Iteration 2 backend work:
-19 passed, 10 failed because roles/skills are empty without a database `.env`;
-`tests/conftest.py` now supplies a fixed test catalogue).
+Result on 2026-09-17: **351 passed, 0 failed** after the H-1/H-2 input caps,
+H-4 rate limiting and R09 logging work (310 after the database error handling
+update; 300 after the multi-activity update; 192 before it; baseline before
+the Iteration 2 backend work: 19 passed, 10 failed because roles/skills are
+empty without a database `.env`; `tests/conftest.py` now supplies a fixed
+test catalogue). Two `slowapi`/Python 3.14 deprecation warnings appear when
+running under Python 3.14 - the Docker image runs Python 3.13 and is
+unaffected.
 
 | File | Covers |
 |---|---|
@@ -209,6 +214,9 @@ Result on 2026-09-17: **310 passed, 0 failed** after the database error handling
 | `test_practice_activity_contract.py` | Activity-type schemas: MCQ options, submission shape, trade-offs, blocked labels |
 | `test_memory_practice_session_repository.py` | Options, selected option and feedback round-trip, copy isolation, owner scoping |
 | `test_database_errors_api.py` | Database error handling (10 tests, offline fake pool): unreachable database, exhausted pool, failed reads and writes in all four Postgres repositories return `503` `DATABASE_UNAVAILABLE` with no driver detail; failed statements roll back before the connection returns to the pool; non-database bugs are not reported as `503`; catch-all `500` `INTERNAL_SERVER_ERROR` envelope; failures still logged server-side |
+| `test_input_limits_api.py` | Pen-test H-1/H-2: over-length text and id fields, over-length list items, over-count lists, and unknown fields are all rejected `422 REQUEST_VALIDATION_ERROR` naming the field, on both `PATCH /profile` and `PATCH /career-direction`; rejected values are not echoed back |
+| `test_rate_limiting_api.py` | Pen-test H-4: `POST /anonymous-sessions` (10/minute) and scenario-response submission (30/minute) return `429 RATE_LIMITED` with `Retry-After: 60` once their limit is exceeded; no other endpoint is limited |
+| `test_security_logging_api.py` | Pen-test R09: startup logs the storage mode (database vs in-memory) with no connection detail; `auth_failed` and `rate_limited` events are logged on `app.security` as searchable key=value lines with no tokens, profile data, break details or submitted text |
 
 ## 7. Known limitations
 
@@ -222,8 +230,13 @@ Result on 2026-09-17: **310 passed, 0 failed** after the database error handling
 - No role-prediction endpoint (AI owner).
 - Access tokens are intentionally persistent and do not expire. This was
   decided in a team discussion; it is a design decision, not a gap awaiting one.
-- No rate limiting (SEC 2.3).
-- Free-text caps on existing profile fields not yet added (BE 2.5 / pen-test H-1, H-2).
+- Rate limiting (SEC 2.3 / H-4) is in place on session creation and response
+  submission, but counts are in memory per server instance (reset on
+  restart, not shared across instances), and on Cloud Run - behind a proxy -
+  every user may arrive from the same address, which could make the limit
+  apply across all users rather than per user; needs a live check and
+  possibly a `FORWARDED_ALLOW_IPS`-style fix before this is considered fully
+  closed on the deployed system.
 - Duplicate-submission protection is enforced in the service; a database
   unique constraint on (practice session, scenario) response is recommended.
 - The catch-all `500` `INTERNAL_SERVER_ERROR` response has no CORS headers:

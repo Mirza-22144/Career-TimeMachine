@@ -41,7 +41,7 @@ Living document. Everyone updates their own section as they make progress. This 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
 | B1  | ~~LLM output format is not yet agreed~~ partially resolved (BE 2.10, 2026-09-17): the real `ScenarioProvider` (`AiPoolScenarioProvider`) is wired in as the default and serves the AI team's actual Version 1 dataset (81 real scenarios, 27 roles x 3 difficulties, answer key stripped) - no longer the curated placeholder. Still open: the AI team is rebuilding this as Version 2 against the agreed reflective-format contract (no option marked correct) - swapping the file in is a contained change once delivered (see BE 2.10's notes). Role prediction is a separate, still-unstarted model - no data or endpoint exists yet (AI 2.1/2.2 remain fully open) | Backend, Frontend | AI to deliver Version 2 (reflective format) to replace the current file; AI to scope and build role prediction separately | `[WIP]` open |
-| B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. Still in-memory: the selected practice role and practice sessions/responses/feedback. Confirmed live (BE 2.10, 2026-09-17): `PUT /practice-role` returns 200, but a following `GET /practice-role` returns null when run against the real Postgres profile repository - `PostgresProfileRepository` has no columns to store `practice_role_id`/`practice_role_source` in yet, so this isn't just a theoretical gap, it's a reproduced live bug. Verified the full role -> session -> response -> feedback -> complete contract instead using the in-memory profile repository (same pattern the test suite already uses) - works correctly end to end once these columns exist. AC 4.3.4 was updated (2026-09-17, see `AC_Full_Review_Epic4.docx`) to explicitly require database-backed restoration after leaving and returning, not just an active session, so this is now a named acceptance criterion, not just an implied gap. See `Practice_Progress_DB_Additions.docx` for the exact columns/tables needed | Backend   | Database to add 2 practice-role columns on `profile` and practice session/response/feedback tables - see backend handover section 8 and `Practice_Progress_DB_Additions.docx` | `[WIP]` open |
+| B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. ~~Database has nowhere to store practice role/session data~~ resolved (DB 2.6, 2026-09-17): schema added and applied live. ~~Practice role doesn't persist through Postgres~~ resolved (BE 2.11, 2026-09-17). ~~Practice sessions/responses/feedback still use `MemoryPracticeSessionRepository`~~ resolved (BE 2.12, 2026-09-17): `PostgresPracticeSessionRepository` built against the DB 2.6 tables, verified live - a full start-session/submit-response/feedback/complete round trip survives a real backend restart. **B2 is fully resolved** - practice progress no longer resets on restart or redeploy. AC 4.3.4's database-backed restoration requirement (`AC_Full_Review_Epic4.docx`) is now met | Backend   | none - closed | `[DONE]` closed |
 | B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
 
 ---
@@ -70,12 +70,11 @@ Living document. Everyone updates their own section as they make progress. This 
 - **Why:** closes the loop opened by FE 2.9-2.11's mock-data practice
   screens now that BE 2.10 gives them something real to call - completes
   "connect frontend and backend" for the practice flow specifically.
-- **Blocks / Blocked by:** blocked by B2 for anything to actually persist
-  through a real Postgres-backed run (see BE 2.10's notes and B2) - the
-  frontend/backend contract itself is verified working via BE 2.10's direct
-  walkthrough using the in-memory profile repository; a live browser test
-  against the real deployed backend will currently lose the selected
-  practice role, purely because of B2, not this work.
+- **Blocks / Blocked by:** was blocked by B2 for anything to actually
+  persist through a real Postgres-backed run; B2 is now fully resolved
+  (BE 2.11/2.12) and this flow has been verified end to end (via curl)
+  against the real deployed database, surviving a backend restart - nothing
+  left open here.
 
 ### FE 2.11 - AC 4.4.1-4.4.2/4.5.1-4.5.3 - Multi-activity workplace practice, reflective feedback, session completion
 
@@ -291,6 +290,64 @@ Living document. Everyone updates their own section as they make progress. This 
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
 
+### BE 2.12 - Practice sessions now persist through Postgres
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** built `PostgresPracticeSessionRepository`, implementing the same
+  `PracticeSessionRepository` interface `MemoryPracticeSessionRepository`
+  already used (`add`, `get_for_owner`, `get_active_for_owner`, `save`),
+  against the `practice_session`/`practice_scenario`/`practice_scenario_option`
+  tables added in DB 2.6. A session and its scenario(s) are upserted together
+  in one transaction on both `add()` and `save()`, since submitting a
+  response mutates a scenario's response/feedback fields in place and then
+  calls `save()` with the whole session - matches how
+  `ScenarioResponseService` already works, no service-layer changes needed.
+  Wired in behind `HAS_DATABASE` in `dependencies.py`, same pattern as
+  sessions/profiles. Added a matching autouse fixture to `tests/conftest.py`
+  (`fake_session_and_profile_stores` now also swaps
+  `_practice_session_repository` for the in-memory version) so the test
+  catalogue's fake role ids don't hit a real foreign-key violation through
+  this repository either - all 300 tests still pass. Verified live against
+  the real database: full round trip (start session -> real AI-pool
+  scenario generated -> submit a multiple-choice response -> reflective
+  feedback generated and saved -> progress updated -> complete session),
+  confirmed every field (status, response, feedback, `completed_at`)
+  survives a full backend restart. Also confirmed starting a second session
+  correctly becomes the new active one once the first is completed.
+- **Why:** this was the one remaining piece of B2 - closes it out
+  completely. Practice progress no longer resets on every backend restart
+  or deploy.
+- **Blocks / Blocked by:** nothing left open on the storage side of B2. AI
+  2.1/2.2 (role prediction) remain a separate, unrelated gap (see B1).
+
+### BE 2.11 - Practice role now persists through Postgres
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** added `practice_role_id`/`practice_role_source` to
+  `PostgresProfileRepository`'s `_PROFILE_COLUMNS` now that DB 2.6 added the
+  matching columns - a one-line fix, since `get_by_session_token`/`save`
+  already build their SQL generically from that tuple. Verified live
+  against the real database (not just pytest's in-memory stores): `PUT
+  /practice-role` followed by `GET /practice-role` now correctly returns
+  the saved role instead of null, and it survives a full backend restart
+  (killed and restarted uvicorn against real Postgres, same token still
+  returned the saved role). All 300 tests still pass. Also hit and
+  confirmed an unrelated, pre-existing thing while testing: `break_reason`
+  is a real foreign key and its catalogue table is intentionally unseeded
+  (DB 2.5's note), so sending a `break_reason` value that doesn't exist
+  there 500s the whole `PATCH /profile` - not new, just newly reproduced
+  live while verifying this fix, worth the database/frontend teams knowing
+  if `break_reason` is still being sent anywhere.
+- **Why:** closes the concrete live bug found while building BE 2.10 - this
+  was the actual, reproducible impact of B2's missing columns, now fixed
+  for the profile half of it.
+- **Blocks / Blocked by:** the practice *session* half of B2 (its own
+  `practice_session`/`practice_scenario`/`practice_scenario_option` tables
+  from DB 2.6) is not done yet - practice sessions/responses/feedback still
+  use `MemoryPracticeSessionRepository`, so that part is still lost on
+  restart. A `PostgresPracticeSessionRepository` implementing the same
+  interface is the remaining piece.
+
 ### BE 2.10 - Real AI-pool scenario provider (replaces the curated placeholder)
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
@@ -419,6 +476,36 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Database (DB)
 
 **Iteration 1 baseline** `[DONE]`: `role`, `skill`, `role_skill` tables live in Postgres and drive roles/skills. Other catalogue lists still come from in-memory placeholders. Sessions and profiles are **not** persisted (in-memory only).
+
+### DB 2.6 - Practice progress schema (columns + tables added, live)
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** applied `data/schema/add_practice_progress_tables.sql` directly
+  to the live database in one transaction (verified: all 38 existing
+  `profile` rows untouched). Added `practice_role_id VARCHAR(64) REFERENCES
+  role(id)` and `practice_role_source VARCHAR(16)` to `profile`. Added three
+  new tables: `practice_session` (one row per practice session - role,
+  duration, difficulty, status, timestamps), `practice_scenario` (one row
+  per activity - its content, her submitted answer and its reflective
+  feedback all on the same row, since each is strictly one-to-one with the
+  scenario), and `practice_scenario_option` (one row per answer option, a
+  junction table rather than a JSON array). No JSONB used anywhere - `TEXT[]`
+  only where `profile.custom_skills`/`custom_responsibilities` already set
+  the precedent, and a real junction table for the one genuinely one-to-many
+  relationship (options), matching this schema's existing conventions
+  throughout. Full rationale, column-by-column notes and ERD relationships
+  are in `Practice_Progress_DB_Additions.docx`.
+- **Why:** this is exactly what Cross-team blocker B2 and BE 2.10's
+  confirmed live bug (`PUT /practice-role` succeeds, a following `GET`
+  returns null) were waiting on - the schema simply had nowhere to put this
+  data before now.
+- **Blocks / Blocked by:** the schema exists now, but the backend doesn't
+  read/write through it yet - `PostgresProfileRepository`'s
+  `_PROFILE_COLUMNS` still excludes `practice_role_id`/`practice_role_source`
+  by design (see its own comment), and there is no
+  `PostgresPracticeSessionRepository` yet; both still use the in-memory
+  store. Backend work to swap those repositories (same pattern as BE 2.9)
+  is the natural next step, not done as part of this entry.
 
 ### DB 2.5 - Seeded 3 catalogue tables; sessions/profiles now persist
 

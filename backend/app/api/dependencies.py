@@ -25,12 +25,13 @@ from app.services.session_service import SessionService
 # "written_response" is still supported for later iterations.
 PRACTICE_ACTIVITY_TYPE = "multiple_choice"
 
-# Sessions and profiles use the real database once the DB_* env vars are
-# set; falls back to the in-memory store otherwise (e.g. a fresh checkout
-# with no .env yet). Practice sessions stay in-memory either way - their
-# tables don't exist yet (see backend/docs/BACKEND_HANDOVER_ITERATION_2.md
-# section 8).
+# Sessions, profiles and practice sessions use the real database once the
+# DB_* env vars are set; falls back to the in-memory store otherwise (e.g. a
+# fresh checkout with no .env yet).
 if HAS_DATABASE:
+    from app.repositories.postgres.postgres_practice_session_repository import (
+        PostgresPracticeSessionRepository,
+    )
     from app.repositories.postgres.postgres_profile_repository import (
         PostgresProfileRepository,
     )
@@ -40,10 +41,11 @@ if HAS_DATABASE:
 
     _session_repository = PostgresSessionRepository()
     _profile_repository = PostgresProfileRepository()
+    _practice_session_repository = PostgresPracticeSessionRepository()
 else:
     _session_repository = MemorySessionRepository()
     _profile_repository = MemoryProfileRepository()
-_practice_session_repository = MemoryPracticeSessionRepository()
+    _practice_session_repository = MemoryPracticeSessionRepository()
 
 # Real AI-generated scenarios (27 roles x 3 difficulties, Version 1 -
 # app/data/practice_mcq_scenario_pool.json) until the AI team exposes their

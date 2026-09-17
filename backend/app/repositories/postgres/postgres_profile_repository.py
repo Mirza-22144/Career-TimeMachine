@@ -18,15 +18,12 @@ _pool = psycopg2.pool.SimpleConnectionPool(
     sslmode=DB_SSLMODE,
 )
 
-# practice_role_id/practice_role_source are not included here - the
-# database has no columns for them yet (needs a schema change, tracked
-# separately alongside the rest of the workplace-practice persistence
-# work). They stay at their dataclass default (None) until then.
 _PROFILE_COLUMNS = (
     "role_id", "role_other_text", "years_experience", "custom_skills",
     "custom_responsibilities", "break_reason", "break_reason_other_text",
     "break_started_on", "planned_return_date", "return_date_unsure",
     "break_duration_months", "return_readiness", "area_to_explore", "confirmed",
+    "practice_role_id", "practice_role_source",
 )
 
 

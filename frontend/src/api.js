@@ -112,6 +112,15 @@ export const api = {
   getCareerTranslation: () => request('/career-translation'),
   getCareerDirection: () => request('/career-direction'),
   patchCareerDirection: (patch) => request('/career-direction', { method: 'PATCH', body: patch }),
+  // Iteration 2 - Workplace Practice (see backend/docs/API-CONTRACT.md).
+  getPracticeRole: () => request('/practice-role'),
+  putPracticeRole: (roleId, source) => request('/practice-role', { method: 'PUT', body: { role_id: roleId, source } }),
+  startPracticeSession: (duration, difficulty) => request('/practice-sessions', { method: 'POST', body: { duration, difficulty } }),
+  getCurrentPracticeSession: () => request('/practice-sessions/current'),
+  getPracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}`),
+  completePracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}/complete`, { method: 'POST' }),
+  submitScenarioResponse: (sessionId, scenarioId, answer) =>
+    request(`/practice-sessions/${sessionId}/scenarios/${scenarioId}/response`, { method: 'POST', body: answer }),
 }
 
 export { ApiError }

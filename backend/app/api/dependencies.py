@@ -1,7 +1,7 @@
 from fastapi import Depends, Header, HTTPException, status
 
 from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
-from app.providers.curated_scenario_provider import CuratedScenarioProvider
+from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
 from app.providers.scenario_provider import ScenarioProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.session_repository import AnonSession
@@ -45,9 +45,12 @@ else:
     _profile_repository = MemoryProfileRepository()
 _practice_session_repository = MemoryPracticeSessionRepository()
 
-# Curated development scenarios until the AI owner's provider is connected.
-# This is not the production AI integration.
-_scenario_provider: ScenarioProvider = CuratedScenarioProvider()
+# Real AI-generated scenarios (27 roles x 3 difficulties, Version 1 -
+# app/data/practice_mcq_scenario_pool.json) until the AI team exposes their
+# model as a live external API - this is a drop-in replacement for that call,
+# same ScenarioProvider interface, so swapping in the real API later only
+# touches this one provider class, not any route/service code.
+_scenario_provider: ScenarioProvider = AiPoolScenarioProvider()
 
 # Roles and skills use the real database once the DB_* env vars are set;
 # falls back to the placeholder list otherwise.

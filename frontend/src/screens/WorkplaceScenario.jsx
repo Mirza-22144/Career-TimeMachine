@@ -2,14 +2,12 @@ import { useEffect, useState } from 'react'
 import '../styles/WorkplaceScenario.css'
 import TopNav from '../components/TopNav'
 import workplaceImg from '../assets/workplace.png'
-import { getSelectedRole, getPracticeState, setPracticeState } from '../practiceSession.js'
-import { getPracticeSession } from '../mockData/practiceScenario.js'
 import { WORKPLACE_AREAS, getRelevantAreaIds, getPrimaryAreaId } from '../mockData/workplaceAreas.js'
 import {
   UserIcon, BarChartIcon, HeadsetIcon, FileTextIcon, LightbulbIcon, UsersIcon,
   FlaskIcon, CodeIcon, ShieldIcon, GlobeIcon, BellIcon, LayoutIcon, ClockIcon,
 } from '../components/icons'
-import { api } from '../api.js'
+import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 
 const AREA_ICONS = {
@@ -32,23 +30,18 @@ const HOW_IT_WORKS = [
   { number: 3, text: 'Get feedback on what you did well and what you could explore further.' },
 ]
 
-// value must match the backend's duration enum (quick/standard/challenge -
-// see backend/docs/API-CONTRACT.md); "Extended" is only the on-screen
-// label, chosen to avoid duplicating "Challenge" as both a duration and a
-// difficulty option (the AC text says "Challenge (15 min)" for duration,
-// but the approved Figma design labels it "Extended" instead). Duration
-// currently has no effect on which activity is served - the AI team's
-// content is keyed by (role, difficulty) only - it's kept in the UI as an
-// approved selection either way.
+// Matches the backend's duration enum (quick/standard/challenge - see
+// backend/docs/API-CONTRACT.md); "Extended" is only the on-screen label for
+// "challenge", chosen to avoid duplicating "Challenge" as both a duration
+// and a difficulty option.
 const DURATIONS = [
   { value: 'quick', label: 'Quick', caption: '5 min' },
   { value: 'standard', label: 'Standard', caption: '10 min' },
   { value: 'challenge', label: 'Extended', caption: '15 min' },
 ]
 
-// Labels match AC 4.2.2 ("Easy, Standard, Complex"); values are also the
-// exact keys the AI team's dataset uses (guided/standard/challenge), so
-// picking a difficulty here directly selects which real scenario is served.
+// Labels match AC 4.2.2 ("Easy, Standard, Complex"); values are the
+// backend's own guided/standard/challenge enum.
 const DIFFICULTIES = [
   { value: 'guided', label: 'Easy', caption: 'More prompts along the way' },
   { value: 'standard', label: 'Standard', caption: 'Work through it as you would at work' },
@@ -60,9 +53,12 @@ const DIFFICULTIES = [
 // through the intro (AC 4.2.1), the time/difficulty setup (AC 4.2.2), the
 // prep screen (AC 4.2.3), the interactive workplace (AC 4.3.1-4.3.4), and
 // the activity itself (AC 4.4.1-4.4.2, AC 4.5.1-4.5.3) for whichever role
-// was carried over from Your Direction. A session is a single activity,
-// matching the AI team's real content: one MCQ per (role, difficulty), not
-// one per workplace area.
+// was saved on Your Direction. Talks to the real backend end to end -
+// practice role, session, scenario and feedback all come from
+// POST/GET /practice-role and /practice-sessions, not mock data. Sessions
+// are still in-memory on the backend (not yet in Postgres - see Cross-team
+// blocker B2), so progress does not survive a backend restart yet, but the
+// frontend/backend contract itself is real.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
   // null | 'no-role' | 'intro-failed' | 'restore-failed'
@@ -74,9 +70,9 @@ export default function WorkplaceScenario() {
   const [duration, setDuration] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
   const [attemptedContinue, setAttemptedContinue] = useState(false)
-  // AC 4.2.3 - the prep screen's own data and loading/error state, kept
-  // separate from the intro's loadError so a failure here doesn't wipe out
-  // the duration/difficulty she already chose on the setup screen.
+  // AC 4.2.3 - the prep screen's own data and loading/error state. Starting
+  // the real backend session happens here (POST /practice-sessions), since
+  // that call is what actually generates the scenario shown on this screen.
   const [prepLoading, setPrepLoading] = useState(false)
   const [prepError, setPrepError] = useState(false)
   const [session, setSession] = useState(null)
@@ -88,43 +84,41 @@ export default function WorkplaceScenario() {
   const [selectedAreaId, setSelectedAreaId] = useState(null)
   // AC 4.4.2 - nothing pre-selected; she must explicitly choose an option.
   const [selectedOptionId, setSelectedOptionId] = useState(null)
-  // AC 4.3.4/4.5.3 - whether this session's one activity is already done.
-  const [isCompleted, setIsCompleted] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
   const [showSummaryPlaceholder, setShowSummaryPlaceholder] = useState(false)
 
-  const load = () => {
-    const selected = getSelectedRole()
-    if (!selected) {
-      setLoadError('no-role')
-      setLoading(false)
-      return
-    }
-    setRole(selected)
+  const load = async () => {
+    try {
+      const practiceRole = await api.getPracticeRole()
+      if (!practiceRole.role_id) {
+        setLoadError('no-role')
+        setLoading(false)
+        return
+      }
+      setRole({ id: practiceRole.role_id, label: practiceRole.role_label, source: practiceRole.source })
 
-    // AC 4.3.4: resume mid-practice (e.g. she left via the nav and came
-    // back through "Practice Scenarios") instead of restarting the intro.
-    const saved = getPracticeState()
-    if (saved && saved.roleId === selected.id) {
+      // AC 4.3.4: resume an already-active session (e.g. she left via the
+      // nav and came back through "Practice Scenarios") instead of
+      // restarting the intro.
       try {
-        setSession(getPracticeSession(selected.id, selected.label, saved.difficulty))
-        setDuration(saved.duration)
-        setDifficulty(saved.difficulty)
-        setIsCompleted(!!saved.isCompleted)
-        setStep('workplace')
+        const current = await api.getCurrentPracticeSession()
+        setSession(current)
+        setDuration(current.duration)
+        setDifficulty(current.difficulty)
+        const activeScenario = current.scenarios[0]
+        if (current.status === 'completed') setStep('complete')
+        else if (activeScenario?.response) setStep('feedback')
+        else setStep('workplace')
         setLoadError(null)
         setLoading(false)
-      } catch {
-        setLoadError('restore-failed')
-        setLoading(false)
+        return
+      } catch (err) {
+        if (!(err instanceof ApiError && err.code === 'PRACTICE_SESSION_NOT_FOUND')) {
+          throw err
+        }
+        // No active session yet - fall through to the intro flow below.
       }
-      return
-    }
 
-    try {
-      // Mocked "create a practice session" step (AC 4.1.3) - stands in for
-      // a real backend session-creation call once BE/AI are ready. Also
-      // covers AC 4.2.1's "introduction cannot be loaded" exception, since
-      // this is the same load step that prepares the intro screen below.
       setLoadError(null)
       setLoading(false)
     } catch {
@@ -152,18 +146,23 @@ export default function WorkplaceScenario() {
     loadPrep()
   }
 
-  // AC 4.2.3: gathers what the prep screen shows - the real (role,
-  // difficulty) scenario from the AI team's dataset, plus a real, current
-  // in-demand skill she hasn't already recorded (GET /career-translation's
-  // new_horizons - the same "New Horizons" data already used on the Skill
-  // Relevance Map).
+  // AC 4.2.3: gathers what the prep screen shows - a real, current in-demand
+  // skill she hasn't already recorded (GET /career-translation's
+  // new_horizons), and starts the real practice session (POST
+  // /practice-sessions), which is what actually generates the scenario
+  // she'll see. Starting again here (e.g. after changing duration/
+  // difficulty) abandons any previous active session, per the backend
+  // contract.
   const loadPrep = async () => {
     setPrepLoading(true)
     setPrepError(false)
     try {
-      const translation = await api.getCareerTranslation()
+      const [translation, newSession] = await Promise.all([
+        api.getCareerTranslation(),
+        api.startPracticeSession(duration, difficulty),
+      ])
       setNewSkillFocus(translation.new_horizons?.[0]?.label || null)
-      setSession(getPracticeSession(role.id, role.label, difficulty))
+      setSession(newSession)
       setPrepLoading(false)
     } catch {
       setPrepError(true)
@@ -171,28 +170,45 @@ export default function WorkplaceScenario() {
     }
   }
 
-  const persist = (nextCompleted) => {
-    setPracticeState({ roleId: role.id, duration, difficulty, isCompleted: nextCompleted })
-  }
-
-  // AC 4.3.1/4.3.4: entering the workplace is what actually starts the
-  // persisted practice session, so leaving and coming back restores it.
+  // The session already exists (started during loadPrep) - entering the
+  // workplace is just a UI transition, no further backend call needed.
   const handleEnterWorkplace = () => {
-    setPracticeState({ roleId: role.id, duration, difficulty, isCompleted: false })
     setStep('workplace')
   }
 
   const handleStartTask = () => {
     setSelectedOptionId(null)
+    setSubmitError(false)
     setStep('activity')
   }
 
-  // AC 4.4.2: records her answer and moves to reflective feedback (AC 4.5.1).
-  const handleSubmitActivity = () => {
+  // AC 4.4.2: records her answer and gets reflective feedback back in the
+  // same call (AC 4.5.1).
+  const handleSubmitActivity = async () => {
     if (!selectedOptionId) return
-    setIsCompleted(true)
-    persist(true)
-    setStep('feedback')
+    setSubmitError(false)
+    try {
+      const result = await api.submitScenarioResponse(
+        session.session_id, activity.scenario_id, { selected_option_id: selectedOptionId },
+      )
+      setSession((prev) => ({ ...prev, scenarios: [result.scenario], progress: result.progress }))
+      setStep('feedback')
+    } catch {
+      setSubmitError(true)
+    }
+  }
+
+  // AC 4.5.3: marks the session completed on the backend before showing the
+  // completion summary.
+  const handleCompletePractice = async () => {
+    try {
+      const completed = await api.completePracticeSession(session.session_id)
+      setSession(completed)
+    } catch {
+      // Non-critical for what's already been done locally - still show the
+      // completion summary from what we already have.
+    }
+    setStep('complete')
   }
 
   const handleBackToWorkplace = () => {
@@ -203,7 +219,8 @@ export default function WorkplaceScenario() {
   const primaryAreaId = role ? getPrimaryAreaId(role.id) : null
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
   const relevantAreaIds = role ? getRelevantAreaIds(role.id) : new Set()
-  const activity = session?.activity || null
+  const activity = session?.scenarios?.[0] || null
+  const isCompleted = activity?.status === 'completed'
   const selectedArea = selectedAreaId ? WORKPLACE_AREAS.find((a) => a.id === selectedAreaId) : null
   const isPrimaryAreaSelected = selectedAreaId && selectedAreaId === primaryAreaId
 
@@ -272,6 +289,9 @@ export default function WorkplaceScenario() {
                 })}
               </div>
             </div>
+            {submitError && (
+              <p className="ws-setup-hint">We couldn&rsquo;t submit your response. Please try again.</p>
+            )}
           </div>
           <aside className="ws-activity-side">
             {activity.guidance.length > 0 && (
@@ -301,7 +321,7 @@ export default function WorkplaceScenario() {
 
   // AC 4.5.1/4.5.2: reflective feedback plus a skill to explore, shown
   // right after she submits the activity.
-  if (step === 'feedback' && activity) return (
+  if (step === 'feedback' && activity?.feedback) return (
     <>
       <TopNav />
       <div className="ws-activity-page">
@@ -320,26 +340,32 @@ export default function WorkplaceScenario() {
               <span className="ws-feedback-label">
                 <span className="ws-feedback-dot ws-feedback-dot--green" aria-hidden="true" /> WHAT WORKED WELL
               </span>
-              <p>{activity.feedback.worked_well}</p>
+              {activity.feedback.what_worked_well.map((line) => <p key={line}>{line}</p>)}
             </div>
             <hr className="ws-intro-divider" />
             <div className="ws-feedback-section">
               <span className="ws-feedback-label">
                 <span className="ws-feedback-dot" aria-hidden="true" /> CONSIDER
               </span>
-              <p>{activity.feedback.consider}</p>
+              {[...activity.feedback.trade_offs, ...activity.feedback.areas_to_consider].map((line) => (
+                <p key={line}>{line}</p>
+              ))}
             </div>
-            <hr className="ws-intro-divider" />
-            <div className="ws-feedback-section">
-              <span className="ws-feedback-label">
-                <span className="ws-feedback-ring" aria-hidden="true" /> SKILL TO EXPLORE
-              </span>
-              <h3 className="ws-feedback-skill-title">{activity.feedback.skill.title}</h3>
-              <p>{activity.feedback.skill.text}</p>
-            </div>
+            {activity.feedback.skill_to_explore && (
+              <>
+                <hr className="ws-intro-divider" />
+                <div className="ws-feedback-section">
+                  <span className="ws-feedback-label">
+                    <span className="ws-feedback-ring" aria-hidden="true" /> SKILL TO EXPLORE
+                  </span>
+                  <h3 className="ws-feedback-skill-title">{activity.feedback.skill_to_explore.skill}</h3>
+                  <p>{activity.feedback.skill_to_explore.why_relevant}</p>
+                </div>
+              </>
+            )}
           </div>
           <div className="ws-feedback-actions">
-            <button type="button" className="ws-intro-continue" onClick={() => setStep('complete')}>
+            <button type="button" className="ws-intro-continue" onClick={handleCompletePractice}>
               Complete practice <span aria-hidden="true">→</span>
             </button>
             <button type="button" className="ws-back-link" onClick={handleBackToWorkplace}>
@@ -368,7 +394,7 @@ export default function WorkplaceScenario() {
             </div>
             <div className="ws-complete-row">
               <span>Focus</span>
-              <strong>{session?.focus}</strong>
+              <strong>{activity?.title}</strong>
             </div>
             <div className="ws-complete-row">
               <span>Setup</span>
@@ -378,11 +404,11 @@ export default function WorkplaceScenario() {
               <span>Activities</span>
               <strong>1 of 1 completed</strong>
             </div>
-            {activity && (
+            {activity?.feedback?.skill_to_explore && (
               <>
                 <hr className="ws-intro-divider" />
                 <span className="ws-prep-eyebrow">SKILL TO EXPLORE</span>
-                <h2 className="ws-prep-title">{activity.feedback.skill.title}</h2>
+                <h2 className="ws-prep-title">{activity.feedback.skill_to_explore.skill}</h2>
               </>
             )}
           </div>
@@ -503,19 +529,19 @@ export default function WorkplaceScenario() {
 
           <div className="ws-prep-card">
             <span className="ws-prep-eyebrow">TODAY&rsquo;S FOCUS</span>
-            <h2 className="ws-prep-title">{session.focus}</h2>
+            <h2 className="ws-prep-title">{activity.title}</h2>
             <hr className="ws-intro-divider" />
 
             <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
             <div className="ws-prep-pills">
-              {session.skills_used.map((skill) => (
+              {activity.skills_used.map((skill) => (
                 <span key={skill} className="ws-prep-pill">{skill}</span>
               ))}
             </div>
             <hr className="ws-intro-divider" />
 
             <span className="ws-prep-eyebrow">YOU&rsquo;LL PRACTISE</span>
-            <p className="ws-prep-task">{session.activity.task}</p>
+            <p className="ws-prep-task">{activity.task}</p>
             <hr className="ws-intro-divider" />
 
             {newSkillFocus && (
@@ -592,7 +618,7 @@ export default function WorkplaceScenario() {
             <span className="ws-scenario-banner-label">
               <FileTextIcon size={14} color="#7C3AED" /> SCENARIO
             </span>
-            <p className="ws-scenario-banner-text">{session.situation}</p>
+            <p className="ws-scenario-banner-text">{activity.situation}</p>
             <span className="ws-scenario-banner-hint">
               {selectedArea ? selectedArea.label : 'Choose a highlighted area to begin.'}
             </span>
@@ -631,7 +657,7 @@ export default function WorkplaceScenario() {
               {isPrimaryAreaSelected ? (
                 <>
                   <h2 className="ws-area-panel-title">{activity.title}</h2>
-                  <p className="ws-area-panel-text">{session.situation}</p>
+                  <p className="ws-area-panel-text">{activity.situation}</p>
                   <div className="ws-area-panel-todo">
                     <span className="ws-prep-eyebrow">WHAT YOU NEED TO DO</span>
                     <p>{activity.task}</p>

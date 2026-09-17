@@ -4,7 +4,6 @@ import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
 import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
 import { getPredictedRoles } from '../mockData/predictedRoles'
-import { setSelectedRole as savePracticeRole } from '../practiceSession.js'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
@@ -30,6 +29,7 @@ export default function YourDirection() {
   // default; Maya must explicitly pick a role (AC 4.1.2's "no role
   // selected" exception is a real, reachable state, not just a fallback).
   const [selectedRole, setSelectedRole] = useState(null)
+  const [saveError, setSaveError] = useState('')
 
   const load = async () => {
     try {
@@ -70,13 +70,18 @@ export default function YourDirection() {
   else if (!selectedRole) hint = 'Please select a role to continue.' // AC 4.1.2's exact exception copy
 
   // Saves the chosen pace, carries the selected role into the practice
-  // session (AC 4.1.2), then moves into the Workplace Scenario intro -
-  // Career Journey is reached later via the nav, not as part of finishing
-  // the wizard. Runs when Continue is clicked.
+  // session (AC 4.1.2) via the real PUT /practice-role, then moves into the
+  // Workplace Scenario intro - Career Journey is reached later via the nav,
+  // not as part of finishing the wizard. Runs when Continue is clicked.
   const handleContinue = async () => {
-    savePracticeRole(selectedRole)
-    await api.patchCareerDirection({ return_readiness: pace })
-    navigate('/workplace-scenario')
+    setSaveError('')
+    try {
+      await api.putPracticeRole(selectedRole.id, selectedRole.type)
+      await api.patchCareerDirection({ return_readiness: pace })
+      navigate('/workplace-scenario')
+    } catch {
+      setSaveError("We couldn't save your changes. Your previous information is still available.")
+    }
   }
 
   if (loading) return (
@@ -225,6 +230,12 @@ export default function YourDirection() {
             <ArrowRightIcon size={16} />
           </button>
           {!canContinue && <p className="yd-hint">{hint}</p>}
+          {saveError && (
+            <div className="tn-modal-error">
+              <span>{saveError}</span>
+              <button type="button" onClick={handleContinue}>Try Again</button>
+            </div>
+          )}
         </div>
       </main>
       </div>

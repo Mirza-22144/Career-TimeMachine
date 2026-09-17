@@ -40,8 +40,8 @@ Living document. Everyone updates their own section as they make progress. This 
 
 | #   | Blocker                                                                                                                                                                                                   | Raised by | Needs (owner)                                                            | Status           |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------ | ---------------- |
-| B1  | LLM output format is not yet agreed. Backend has now built the scenario endpoints against a proposed provider contract (`backend/app/providers/scenario_provider.py`) using a curated development provider, but production AI scenarios and feedback cannot be connected until the contract is agreed. Frontend/product also sent the AI team a data-contract proposal for role prediction (role + skills in, predicted role(s) out) and MCQ matching (role + skills + difficulty in, matched against their pre-trained question set out), plus a note that the backend integrates with one point of contact only, never their external LLM directly - still awaiting the AI team's confirmation (2026-09-17) | Backend, Frontend | AI to agree (or amend) the proposed contracts and implement the production `ScenarioProvider` and role-prediction endpoint | `[BLOCKED]` open |
-| B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. Still in-memory: the selected practice role and practice sessions/responses/feedback, so that part of user progress is still lost on restart. FE 2.11's practice-progress persistence (which activities are done) is currently `sessionStorage` only - survives a reload but not closing the browser - so it needs this same database work. AC 4.3.4 was updated (2026-09-17, see `AC_Full_Review_Epic4.docx`) to explicitly require database-backed restoration after leaving and returning, not just an active session, so this is now a named acceptance criterion, not just an implied gap | Backend   | Database to add 2 practice-role columns on `profile` and practice session/response/feedback tables - see backend handover section 8 | `[WIP]` open |
+| B1  | ~~LLM output format is not yet agreed~~ partially resolved (BE 2.10, 2026-09-17): the real `ScenarioProvider` (`AiPoolScenarioProvider`) is wired in as the default and serves the AI team's actual Version 1 dataset (81 real scenarios, 27 roles x 3 difficulties, answer key stripped) - no longer the curated placeholder. Still open: the AI team is rebuilding this as Version 2 against the agreed reflective-format contract (no option marked correct) - swapping the file in is a contained change once delivered (see BE 2.10's notes). Role prediction is a separate, still-unstarted model - no data or endpoint exists yet (AI 2.1/2.2 remain fully open) | Backend, Frontend | AI to deliver Version 2 (reflective format) to replace the current file; AI to scope and build role prediction separately | `[WIP]` open |
+| B2  | ~~Sessions and profiles~~ now persist to Postgres (DB 2.5/FE 2.7, 2026-09-15) - restart-proof, verified live. Still in-memory: the selected practice role and practice sessions/responses/feedback. Confirmed live (BE 2.10, 2026-09-17): `PUT /practice-role` returns 200, but a following `GET /practice-role` returns null when run against the real Postgres profile repository - `PostgresProfileRepository` has no columns to store `practice_role_id`/`practice_role_source` in yet, so this isn't just a theoretical gap, it's a reproduced live bug. Verified the full role -> session -> response -> feedback -> complete contract instead using the in-memory profile repository (same pattern the test suite already uses) - works correctly end to end once these columns exist. AC 4.3.4 was updated (2026-09-17, see `AC_Full_Review_Epic4.docx`) to explicitly require database-backed restoration after leaving and returning, not just an active session, so this is now a named acceptance criterion, not just an implied gap. See `Practice_Progress_DB_Additions.docx` for the exact columns/tables needed | Backend   | Database to add 2 practice-role columns on `profile` and practice session/response/feedback tables - see backend handover section 8 and `Practice_Progress_DB_Additions.docx` | `[WIP]` open |
 | B3  | Sign-on method for Iteration 2 not finalised (token generation now, TOTP later) - affects the frontend sign-on screen and the security design                                                             | Security  | Team decision, then Security to spec the token flow                      | `[WIP]` open     |
 
 ---
@@ -49,6 +49,33 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Frontend (FE)
 
 **Iteration 1 baseline** `[DONE]`: cards 1-7 UI (Get Started, Previous IT Experience, Skills & Experience, Career Break, Review Profile, Skills & Industry Relevance, Skill/Industry detail). Talks to the API using the `X-Session-Token` header, hash-based routing.
+
+### FE 2.12 - Connected practice role/session screens to the real backend
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** replaced the last remaining mock data in the practice flow with
+  real backend calls, matching BE 2.10's new real `ScenarioProvider`. Added
+  `getPracticeRole`/`putPracticeRole`/`startPracticeSession`/
+  `getCurrentPracticeSession`/`submitScenarioResponse`/
+  `completePracticeSession` to `api.js`. `YourDirection.jsx` now calls the
+  real `PUT /practice-role` instead of a local mock, with the same
+  "couldn't save" error handling pattern already used elsewhere. Rewrote
+  `WorkplaceScenario.jsx` end to end: the real practice role, session
+  creation, MCQ answer submission and completion all go through actual
+  HTTP calls - no client-side mock data left in this flow at all. Deleted
+  `practiceSession.js` and the mock `mockData/practiceScenario.js` once
+  nothing referenced them anymore. Field names now match the backend's
+  schemas exactly (e.g. feedback is `what_worked_well`/`trade_offs`/
+  `areas_to_consider`/`skill_to_explore`, not the earlier mock's shape).
+- **Why:** closes the loop opened by FE 2.9-2.11's mock-data practice
+  screens now that BE 2.10 gives them something real to call - completes
+  "connect frontend and backend" for the practice flow specifically.
+- **Blocks / Blocked by:** blocked by B2 for anything to actually persist
+  through a real Postgres-backed run (see BE 2.10's notes and B2) - the
+  frontend/backend contract itself is verified working via BE 2.10's direct
+  walkthrough using the in-memory profile repository; a live browser test
+  against the real deployed backend will currently lose the selected
+  practice role, purely because of B2, not this work.
 
 ### FE 2.11 - AC 4.4.1-4.4.2/4.5.1-4.5.3 - Multi-activity workplace practice, reflective feedback, session completion
 
@@ -263,6 +290,45 @@ Living document. Everyone updates their own section as they make progress. This 
 ## Backend (BE)
 
 **Iteration 1 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, catalogue endpoints, profile capture + confirm + delete, career journey, career translation, career direction, unified error envelope. All behind repository interfaces so storage can be swapped.
+
+### BE 2.10 - Real AI-pool scenario provider (replaces the curated placeholder)
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-09-17
+- **What:** new `AiPoolScenarioProvider` (`app/providers/ai_pool_scenario_provider.py`)
+  reads the AI team's real Version 1 dataset (`app/data/practice_mcq_scenario_pool.json`
+  - 81 scenarios, 27 roles x 3 difficulties) and serves it as the default
+  `ScenarioProvider` in `dependencies.py`, replacing `CuratedScenarioProvider`
+  for the real multiple-choice path (curated stays as the dev/test provider
+  for the still-dormant `written_response` type). The dataset's private
+  `assessment_reference` (graded answer key) is stripped out entirely before
+  it ever reaches this file - never loaded, never exposed. Validated all 81
+  scenarios and their synthesised feedback against the real
+  `ScenarioContent`/`FeedbackContent` Pydantic models before wiring anything
+  in (0 failures). Added a generic fallback (same guided/standard/challenge
+  hint-count pattern as the real data, and blends in the user's own skills)
+  for any role outside the AI pool's 27 - covers the real `"other"` role
+  case (a typed-in previous role with no catalogue entry), not just a test
+  convenience. Feedback now genuinely varies by which option she selected
+  (references her actual choice and one alternative), not one static blob
+  per scenario. Fixed 3 tests that assumed curated-provider-specific
+  behaviour (written-response tests now explicitly request
+  `CuratedScenarioProvider`; the predicted-role test uses a role that
+  exists in both the fixed test catalogue and the real AI pool). All 300
+  tests pass. Verified the full contract directly end to end (role save ->
+  session start -> real scenario -> answer -> feedback -> complete) using
+  the in-memory profile repository, since the real Postgres one can't
+  persist the practice role yet (see B2) - confirmed that gap is real and
+  reproducible, not just theoretical.
+- **Why:** closes B1's scenario-content half - Iteration 2's MCQ practice
+  now runs on the AI team's actual generated content, not placeholder
+  scenarios, and is a one-file swap away from a live external API call once
+  the AI team exposes one.
+- **Blocks / Blocked by:** Version 2 (reflective format, in progress by the
+  AI team) will replace the current file - swap-in is a contained change
+  per the module's own comments, nothing else needs to change. Role
+  prediction is unrelated and still fully unbuilt (AI 2.1/2.2). Practice
+  role/session persistence through a real Postgres run is blocked by B2 -
+  confirmed live during this work, not just anticipated.
 
 ### BE 2.9 - Postgres-backed session and profile repositories
 

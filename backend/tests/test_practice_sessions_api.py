@@ -124,8 +124,12 @@ def test_start_practice_uses_saved_role_career_context_and_settings():
     }
 
 
-def test_written_response_sessions_remain_available(use_activity_type):
+def test_written_response_sessions_remain_available(use_activity_type, use_provider):
+    # written_response isn't served by the real AI pool (multiple_choice
+    # only for Iteration 2) - the curated dev provider still supports it,
+    # keeping this dormant-but-retained path covered.
     use_activity_type("written_response")
+    use_provider(CuratedScenarioProvider())
     headers = _headers()
     _ready_for_practice(headers)
 
@@ -137,13 +141,16 @@ def test_written_response_sessions_remain_available(use_activity_type):
 
 
 def test_predicted_role_gets_a_scenario_for_that_role():
+    # web_developer is one of the fixed test roles that also exists in the
+    # real AI pool (see app/data/practice_mcq_scenario_pool.json), so this
+    # exercises a genuine role-specific scenario, not the generic fallback.
     headers = _headers()
-    _ready_for_practice(headers, role_id="data_analyst", source="predicted")
+    _ready_for_practice(headers, role_id="web_developer", source="predicted")
 
     body = _start(headers).json()
 
-    assert body["role"] == {"id": "data_analyst", "label": "Data Analyst", "source": "predicted"}
-    assert body["scenarios"][0]["scenario_id"].startswith("data_")
+    assert body["role"] == {"id": "web_developer", "label": "Web Developer", "source": "predicted"}
+    assert body["scenarios"][0]["scenario_id"].startswith("web_developer_")
 
 
 @pytest.mark.parametrize(("duration", "minutes"), [("quick", 5), ("standard", 10), ("challenge", 15)])

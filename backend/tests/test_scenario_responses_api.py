@@ -19,8 +19,13 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
-def written_activities(use_activity_type):
+def written_activities(use_activity_type, use_provider):
+    # written_response is retained for a later iteration but not served by
+    # the real AI pool (multiple_choice only for Iteration 2), so this whole
+    # file - dedicated to exercising that dormant path - keeps using the
+    # curated dev provider, which still fully supports it.
     use_activity_type("written_response")
+    use_provider(CuratedScenarioProvider())
 
 
 PROFILE = {

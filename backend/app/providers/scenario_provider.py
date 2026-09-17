@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 
 ShortText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
 SentenceText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
-OptionText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=300)]
+OptionText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=320)]
 OptionId = Annotated[str, StringConstraints(min_length=1, max_length=64, pattern=r"^[a-z0-9_-]+$")]
 
 # How the user completes a scenario. Iteration 2 serves multiple_choice;

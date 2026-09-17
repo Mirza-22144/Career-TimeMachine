@@ -77,7 +77,7 @@ def test_written_response_scenario_has_no_options():
         {"options": [OPTION_A, {**OPTION_B, "option_id": ""}]},
         {"options": [OPTION_A, {**OPTION_B, "option_id": "x" * 65}]},
         {"options": [OPTION_A, {**OPTION_B, "text": "   "}]},
-        {"options": [OPTION_A, {**OPTION_B, "text": "x" * 301}]},
+        {"options": [OPTION_A, {**OPTION_B, "text": "x" * 321}]},
         {"options": [OPTION_A, {"option_id": "option_b"}]},
         {"options": [OPTION_A, {**OPTION_B, "is_correct": True}]},
         {"options": [{"option_id": f"option_{n}", "text": "An approach"} for n in range(7)]},

@@ -114,6 +114,7 @@ export const api = {
   patchCareerDirection: (patch) => request('/career-direction', { method: 'PATCH', body: patch }),
   // Iteration 2 - Workplace Practice (see backend/docs/API-CONTRACT.md).
   getPracticeRole: () => request('/practice-role'),
+  getPredictedRole: () => request('/predicted-role'),
   putPracticeRole: (roleId, source) => request('/practice-role', { method: 'PUT', body: { role_id: roleId, source } }),
   startPracticeSession: (duration, difficulty) => request('/practice-sessions', { method: 'POST', body: { duration, difficulty } }),
   getCurrentPracticeSession: () => request('/practice-sessions/current'),

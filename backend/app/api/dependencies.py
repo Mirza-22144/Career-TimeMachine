@@ -2,6 +2,8 @@ from fastapi import Depends, Header, HTTPException, status
 
 from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
 from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
+from app.providers.ml_role_prediction_provider import MLRolePredictionProvider
+from app.providers.role_prediction_provider import RolePredictionProvider
 from app.providers.scenario_provider import ScenarioProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.session_repository import AnonSession
@@ -18,6 +20,7 @@ from app.services.catalogue_service import CatalogueService
 from app.services.practice_role_service import PracticeRoleService
 from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
+from app.services.role_prediction_service import RolePredictionService
 from app.services.scenario_response_service import ScenarioResponseService
 from app.services.session_service import SessionService
 
@@ -47,12 +50,17 @@ else:
     _profile_repository = MemoryProfileRepository()
     _practice_session_repository = MemoryPracticeSessionRepository()
 
-# Real AI-generated scenarios (27 roles x 3 difficulties, Version 1 -
-# app/data/practice_mcq_scenario_pool.json) until the AI team exposes their
-# model as a live external API - this is a drop-in replacement for that call,
-# same ScenarioProvider interface, so swapping in the real API later only
-# touches this one provider class, not any route/service code.
+# Real AI-generated scenarios (27 roles x 3 difficulties, Version 2 -
+# app/data/reflective_mcq_scenario_pool_v2.json) until the AI team exposes
+# their model as a live external API - this is a drop-in replacement for
+# that call, same ScenarioProvider interface, so swapping in the real API
+# later only touches this one provider class, not any route/service code.
 _scenario_provider: ScenarioProvider = AiPoolScenarioProvider()
+
+# Real trained career-role classifier (see app/ml/career_role_predictor.py),
+# runs in-process - no external API or key involved (see role_prediction
+# handover, app/../ai/role_prediction/README.md).
+_role_prediction_provider: RolePredictionProvider = MLRolePredictionProvider()
 
 # Roles and skills use the real database once the DB_* env vars are set;
 # falls back to the placeholder list otherwise.
@@ -115,6 +123,12 @@ def get_career_direction_service() -> CareerDirectionService:
 def get_practice_role_service() -> PracticeRoleService:
     """Build practice-role service with shared profile and catalogue repositories."""
     return PracticeRoleService(_profile_repository, _catalogue_repository)
+
+
+def get_role_prediction_service() -> RolePredictionService:
+    """Build role-prediction service with shared repositories and the
+    trained-model provider; tests override this to fake predictions."""
+    return RolePredictionService(_profile_repository, _catalogue_repository, _role_prediction_provider)
 
 
 def get_scenario_provider() -> ScenarioProvider:

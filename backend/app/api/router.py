@@ -9,6 +9,7 @@ from app.api.routes import (
     health,
     practice_role,
     practice_sessions,
+    predicted_role,
     profile,
     scenario_responses,
 )
@@ -24,5 +25,6 @@ api_router.include_router(career_journey.router)
 api_router.include_router(career_translation.router)
 api_router.include_router(career_direction.router)
 api_router.include_router(practice_role.router)
+api_router.include_router(predicted_role.router)
 api_router.include_router(practice_sessions.router)
 api_router.include_router(scenario_responses.router)

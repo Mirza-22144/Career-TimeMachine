@@ -142,8 +142,8 @@ def test_written_response_sessions_remain_available(use_activity_type, use_provi
 
 def test_predicted_role_gets_a_scenario_for_that_role():
     # web_developer is one of the fixed test roles that also exists in the
-    # real AI pool (see app/data/practice_mcq_scenario_pool.json), so this
-    # exercises a genuine role-specific scenario, not the generic fallback.
+    # real AI pool (see app/data/reflective_mcq_scenario_pool_v2.json), so
+    # this exercises a genuine role-specific scenario, not the generic fallback.
     headers = _headers()
     _ready_for_practice(headers, role_id="web_developer", source="predicted")
 

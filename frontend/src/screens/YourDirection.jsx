@@ -3,7 +3,6 @@ import '../styles/YourDirection.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
 import { stepFiveData, paceCaptions } from '../mockData/onboardingData'
-import { getPredictedRoles } from '../mockData/predictedRoles'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { CheckIcon, ArrowRightIcon } from '../components/icons'
@@ -24,6 +23,7 @@ export default function YourDirection() {
   const [journey, setJourney] = useState(null)
   const [translation, setTranslation] = useState(null)
   const [returnStatuses, setReturnStatuses] = useState([])
+  const [predictedRole, setPredictedRole] = useState(null)
   const [pace, setPace] = useState(null)
   // { type: 'previous' | 'predicted', id, label } - nothing is selected by
   // default; Maya must explicitly pick a role (AC 4.1.2's "no role
@@ -33,15 +33,17 @@ export default function YourDirection() {
 
   const load = async () => {
     try {
-      const [journeyData, statuses, direction, translationData] = await Promise.all([
+      const [journeyData, statuses, direction, translationData, predicted] = await Promise.all([
         api.getCareerJourney(),
         api.getCatalogue('return-statuses'),
         api.getCareerDirection(),
         api.getCareerTranslation(),
+        api.getPredictedRole(),
       ])
       setJourney(journeyData)
       setTranslation(translationData)
       setReturnStatuses(statuses)
+      setPredictedRole(predicted.role_id ? predicted : null)
       setPace(direction.return_readiness)
       setLoading(false)
     } catch {
@@ -118,8 +120,6 @@ export default function YourDirection() {
     { label: 'Journey Map', caption: `${ownedCount} kept, ${newHorizonsCount} new` },
   ]
 
-  const predictedRoles = journey.previous_role ? getPredictedRoles(journey.previous_role.id) : []
-
   return (
     <>
       <TopNav />
@@ -195,26 +195,27 @@ export default function YourDirection() {
               </button>
             )}
 
-            {predictedRoles.map((role) => {
-              const isActive = selectedRole?.type === 'predicted' && selectedRole.id === role.id
+            {predictedRole && (() => {
+              const isActive = selectedRole?.type === 'predicted' && selectedRole.id === predictedRole.role_id
               return (
                 <button
                   type="button"
-                  key={role.id}
                   className={`yd-role-card ${isActive ? 'yd-role-card--active' : ''}`}
-                  onClick={() => setSelectedRole({ type: 'predicted', id: role.id, label: role.label })}
+                  onClick={() =>
+                    setSelectedRole({ type: 'predicted', id: predictedRole.role_id, label: predictedRole.role_label })
+                  }
                 >
                   <span className="yd-role-badge yd-role-badge--predicted">PREDICTED ROLE</span>
                   <div className="yd-role-header">
-                    <strong>{role.label}</strong>
+                    <strong>{predictedRole.role_label}</strong>
                     <span className={`yd-role-radio ${isActive ? 'yd-role-radio--active' : ''}`} />
                   </div>
-                  <p>{role.description}</p>
+                  <p>Suggested based on your previous role and skills.</p>
                 </button>
               )
-            })}
+            })()}
           </div>
-          {predictedRoles.length === 0 && (
+          {!predictedRole && (
             <p className="yd-role-note">
               We couldn&rsquo;t generate career suggestions right now. You can continue with your previous role.
             </p>

@@ -16,10 +16,15 @@ from app.repositories.interfaces.practice_session_repository import (
 from app.repositories.postgres.db_errors import database_unavailable
 
 # One shared pool of database connections, reused across every request
-# instead of opening a new connection each time.
-_pool = psycopg2.pool.SimpleConnectionPool(
+# instead of opening a new connection each time. FastAPI runs these sync
+# routes in a thread pool, so this must be the threaded pool variant -
+# SimpleConnectionPool's own docstring says it "can't be shared across
+# different threads"; using it here silently corrupted concurrent requests
+# (a write from one thread going missing with no raised error) until this
+# was caught and fixed.
+_pool = psycopg2.pool.ThreadedConnectionPool(
     minconn=1,
-    maxconn=5,
+    maxconn=10,
     host=DB_HOST,
     port=DB_PORT,
     dbname=DB_NAME,

@@ -66,6 +66,9 @@ The token is a 43-character URL-safe random string. **This is the only
 response that ever contains it.** The backend stores only its SHA-256 hash, so
 a lost token cannot be recovered or re-displayed by the API.
 
+Tokens do not expire. This is intentional (team decision): there is no time
+limit on how long a token stays valid.
+
 Request body: none
 
 Success `201`:

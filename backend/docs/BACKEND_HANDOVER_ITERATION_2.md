@@ -220,7 +220,9 @@ Result on 2026-09-17: **310 passed, 0 failed** after the database error handling
 - The feedback backstop rejects the words "correct" and "incorrect", so
   provider feedback that uses "correct" as a verb is treated as unavailable.
 - No role-prediction endpoint (AI owner).
-- No token expiry policy; no rate limiting (SEC 2.3).
+- Access tokens are intentionally persistent and do not expire. This was
+  decided in a team discussion; it is a design decision, not a gap awaiting one.
+- No rate limiting (SEC 2.3).
 - Free-text caps on existing profile fields not yet added (BE 2.5 / pen-test H-1, H-2).
 - Duplicate-submission protection is enforced in the service; a database
   unique constraint on (practice session, scenario) response is recommended.
@@ -240,7 +242,6 @@ Result on 2026-09-17: **310 passed, 0 failed** after the database error handling
 | Production scenario and feedback generation | A `ScenarioProvider` implementation that returns the requested `activity_type` (single-selection MCQs with 2-6 stable, unique option ids for Iteration 2) matching `ScenarioContent`, and MCQ feedback with `trade_offs` matching `FeedbackContent`, plus content guardrails (AI 2.3) | AI |
 | Role predictions for Your Direction | A prediction endpoint or service contract | AI |
 | API contract sign-off | Review of `API-CONTRACT.md` | Frontend, Database, AI |
-| Token expiry | Agreed policy | Team / Security |
 | Real token and practice UI | Sections 3 and 4 | Frontend |
 
 ## 9. Files changed (all backend)

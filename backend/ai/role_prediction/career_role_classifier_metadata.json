@@ -1,0 +1,209 @@
+{
+  "created_at_utc": "2026-09-17T07:55:09.406837+00:00",
+  "model_type": "TF-IDF and weighted multinomial logistic regression",
+  "random_seed": 5120,
+  "input_field": "job_skills",
+  "output_field": "target_role_id",
+  "backend_role_count": 27,
+  "backend_role_labels": {
+    "blockchain_engineer": "Blockchain Engineer",
+    "business_intelligence_analyst": "Business Intelligence Analyst",
+    "computer_and_information_research_scientist": "Computer and Information Research Scientist",
+    "computer_and_information_systems_manager": "Computer and Information Systems Manager",
+    "computer_network_architect": "Computer Network Architect",
+    "computer_network_support_specialist": "Computer Network Support Specialist",
+    "computer_programmer": "Computer Programmer",
+    "computer_systems_analyst": "Computer Systems Analyst",
+    "computer_systems_engineer_architect": "Computer Systems Engineer / Architect",
+    "computer_user_support_specialist": "Computer User Support Specialist",
+    "data_scientist": "Data Scientist",
+    "data_warehousing_specialist": "Data Warehousing Specialist",
+    "database_administrator": "Database Administrator",
+    "database_architect": "Database Architect",
+    "digital_forensics_analyst": "Digital Forensics Analyst",
+    "information_security_analyst": "Information Security Analyst",
+    "information_security_engineer": "Information Security Engineer",
+    "it_project_manager": "IT Project Manager",
+    "network_and_systems_administrator": "Network and Systems Administrator",
+    "penetration_tester": "Penetration Tester",
+    "software_developer": "Software Developer",
+    "software_qa_analyst_tester": "Software QA Analyst / Tester",
+    "telecommunications_engineering_specialist": "Telecommunications Engineering Specialist",
+    "video_game_designer": "Video Game Designer",
+    "web_administrator": "Web Administrator",
+    "web_and_digital_interface_designer": "Web and Digital Interface Designer",
+    "web_developer": "Web Developer"
+  },
+  "model_classes": [
+    "blockchain_engineer",
+    "business_intelligence_analyst",
+    "computer_and_information_research_scientist",
+    "computer_and_information_systems_manager",
+    "computer_network_architect",
+    "computer_network_support_specialist",
+    "computer_programmer",
+    "computer_systems_analyst",
+    "computer_systems_engineer_architect",
+    "computer_user_support_specialist",
+    "data_scientist",
+    "data_warehousing_specialist",
+    "database_administrator",
+    "database_architect",
+    "digital_forensics_analyst",
+    "information_security_analyst",
+    "information_security_engineer",
+    "it_project_manager",
+    "network_and_systems_administrator",
+    "penetration_tester",
+    "software_developer",
+    "software_qa_analyst_tester",
+    "telecommunications_engineering_specialist",
+    "video_game_designer",
+    "web_administrator",
+    "web_and_digital_interface_designer",
+    "web_developer"
+  ],
+  "maximum_records_per_class": 2500,
+  "rows_before_cleaning": 19523,
+  "rows_after_cleaning": 19519,
+  "training_records": 10142,
+  "testing_records": 2534,
+  "split_evidence": {
+    "blockchain_engineer": {
+      "available_after_cleaning_and_cap": 6,
+      "training_records": 5,
+      "testing_records": 1
+    },
+    "business_intelligence_analyst": {
+      "available_after_cleaning_and_cap": 597,
+      "training_records": 478,
+      "testing_records": 119
+    },
+    "computer_and_information_research_scientist": {
+      "available_after_cleaning_and_cap": 1,
+      "training_records": 1,
+      "testing_records": 0
+    },
+    "computer_and_information_systems_manager": {
+      "available_after_cleaning_and_cap": 202,
+      "training_records": 162,
+      "testing_records": 40
+    },
+    "computer_network_architect": {
+      "available_after_cleaning_and_cap": 135,
+      "training_records": 108,
+      "testing_records": 27
+    },
+    "computer_network_support_specialist": {
+      "available_after_cleaning_and_cap": 30,
+      "training_records": 24,
+      "testing_records": 6
+    },
+    "computer_programmer": {
+      "available_after_cleaning_and_cap": 59,
+      "training_records": 47,
+      "testing_records": 12
+    },
+    "computer_systems_analyst": {
+      "available_after_cleaning_and_cap": 1277,
+      "training_records": 1022,
+      "testing_records": 255
+    },
+    "computer_systems_engineer_architect": {
+      "available_after_cleaning_and_cap": 2500,
+      "training_records": 2000,
+      "testing_records": 500
+    },
+    "computer_user_support_specialist": {
+      "available_after_cleaning_and_cap": 689,
+      "training_records": 551,
+      "testing_records": 138
+    },
+    "data_scientist": {
+      "available_after_cleaning_and_cap": 525,
+      "training_records": 420,
+      "testing_records": 105
+    },
+    "data_warehousing_specialist": {
+      "available_after_cleaning_and_cap": 84,
+      "training_records": 67,
+      "testing_records": 17
+    },
+    "database_administrator": {
+      "available_after_cleaning_and_cap": 457,
+      "training_records": 366,
+      "testing_records": 91
+    },
+    "database_architect": {
+      "available_after_cleaning_and_cap": 255,
+      "training_records": 204,
+      "testing_records": 51
+    },
+    "digital_forensics_analyst": {
+      "available_after_cleaning_and_cap": 15,
+      "training_records": 12,
+      "testing_records": 3
+    },
+    "information_security_analyst": {
+      "available_after_cleaning_and_cap": 319,
+      "training_records": 255,
+      "testing_records": 64
+    },
+    "information_security_engineer": {
+      "available_after_cleaning_and_cap": 227,
+      "training_records": 182,
+      "testing_records": 45
+    },
+    "it_project_manager": {
+      "available_after_cleaning_and_cap": 721,
+      "training_records": 577,
+      "testing_records": 144
+    },
+    "network_and_systems_administrator": {
+      "available_after_cleaning_and_cap": 778,
+      "training_records": 622,
+      "testing_records": 156
+    },
+    "penetration_tester": {
+      "available_after_cleaning_and_cap": 22,
+      "training_records": 18,
+      "testing_records": 4
+    },
+    "software_developer": {
+      "available_after_cleaning_and_cap": 2500,
+      "training_records": 2000,
+      "testing_records": 500
+    },
+    "software_qa_analyst_tester": {
+      "available_after_cleaning_and_cap": 468,
+      "training_records": 374,
+      "testing_records": 94
+    },
+    "telecommunications_engineering_specialist": {
+      "available_after_cleaning_and_cap": 23,
+      "training_records": 18,
+      "testing_records": 5
+    },
+    "video_game_designer": {
+      "available_after_cleaning_and_cap": 25,
+      "training_records": 20,
+      "testing_records": 5
+    },
+    "web_administrator": {
+      "available_after_cleaning_and_cap": 10,
+      "training_records": 8,
+      "testing_records": 2
+    },
+    "web_and_digital_interface_designer": {
+      "available_after_cleaning_and_cap": 381,
+      "training_records": 305,
+      "testing_records": 76
+    },
+    "web_developer": {
+      "available_after_cleaning_and_cap": 370,
+      "training_records": 296,
+      "testing_records": 74
+    }
+  },
+  "important_limitation": "The classifier estimates role fit from skills. It does not learn observed career transitions. The final integration will use the current role for role-aware reranking and exclusion."
+}

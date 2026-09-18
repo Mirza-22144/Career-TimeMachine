@@ -5,13 +5,20 @@
 
 DO $$
 DECLARE
-    pk_name text;
+    option_fk_name text;
+    scenario_pk_name text;
 BEGIN
-    SELECT conname INTO pk_name
+    -- Must drop the option table's FK first - it depends on the index
+    -- backing practice_scenario's current primary key.
+    SELECT conname INTO option_fk_name
+    FROM pg_constraint
+    WHERE conrelid = 'practice_scenario_option'::regclass AND contype = 'f';
+    EXECUTE format('ALTER TABLE practice_scenario_option DROP CONSTRAINT %I', option_fk_name);
+
+    SELECT conname INTO scenario_pk_name
     FROM pg_constraint
     WHERE conrelid = 'practice_scenario'::regclass AND contype = 'p';
-
-    EXECUTE format('ALTER TABLE practice_scenario DROP CONSTRAINT %I', pk_name);
+    EXECUTE format('ALTER TABLE practice_scenario DROP CONSTRAINT %I', scenario_pk_name);
     EXECUTE 'ALTER TABLE practice_scenario ADD PRIMARY KEY (session_id, scenario_id)';
 END $$;
 
@@ -29,19 +36,13 @@ DELETE FROM practice_scenario_option WHERE session_id IS NULL;
 
 DO $$
 DECLARE
-    pk_name text;
-    fk_name text;
+    option_pk_name text;
 BEGIN
-    SELECT conname INTO pk_name
+    SELECT conname INTO option_pk_name
     FROM pg_constraint
     WHERE conrelid = 'practice_scenario_option'::regclass AND contype = 'p';
 
-    SELECT conname INTO fk_name
-    FROM pg_constraint
-    WHERE conrelid = 'practice_scenario_option'::regclass AND contype = 'f';
-
-    EXECUTE format('ALTER TABLE practice_scenario_option DROP CONSTRAINT %I', pk_name);
-    EXECUTE format('ALTER TABLE practice_scenario_option DROP CONSTRAINT %I', fk_name);
+    EXECUTE format('ALTER TABLE practice_scenario_option DROP CONSTRAINT %I', option_pk_name);
     EXECUTE 'ALTER TABLE practice_scenario_option ALTER COLUMN session_id SET NOT NULL';
     EXECUTE 'ALTER TABLE practice_scenario_option ADD PRIMARY KEY (session_id, scenario_id, option_id)';
     EXECUTE '

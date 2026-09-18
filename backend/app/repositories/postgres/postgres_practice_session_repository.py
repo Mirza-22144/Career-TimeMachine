@@ -67,7 +67,7 @@ _UPSERT_SCENARIO_SQL = """
         feedback_what_worked_well, feedback_areas_to_consider, feedback_trade_offs,
         feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT (scenario_id) DO UPDATE SET
+    ON CONFLICT (session_id, scenario_id) DO UPDATE SET
         status = EXCLUDED.status,
         response_selected_option_id = EXCLUDED.response_selected_option_id,
         response_text = EXCLUDED.response_text,
@@ -168,19 +168,21 @@ def _upsert_scenario(cur, session_id: str, scenario: PracticeScenario) -> None:
     )
 
 
-def _insert_options(cur, scenario: PracticeScenario) -> None:
+def _insert_options(cur, session_id: str, scenario: PracticeScenario) -> None:
     # Options are set once when a scenario is created and never change, so a
-    # later save() re-inserting the same rows is a harmless no-op.
+    # later save() re-inserting the same rows is a harmless no-op. Keyed by
+    # (session_id, scenario_id, option_id) - see fix_practice_scenario_
+    # session_scoping.sql for why scenario_id alone is not unique.
     if not scenario.options:
         return
     execute_values(
         cur,
         """
-        INSERT INTO practice_scenario_option (scenario_id, option_id, text)
+        INSERT INTO practice_scenario_option (session_id, scenario_id, option_id, text)
         VALUES %s
-        ON CONFLICT (scenario_id, option_id) DO NOTHING
+        ON CONFLICT (session_id, scenario_id, option_id) DO NOTHING
         """,
-        [(scenario.scenario_id, option.option_id, option.text) for option in scenario.options],
+        [(session_id, scenario.scenario_id, option.option_id, option.text) for option in scenario.options],
     )
 
 
@@ -252,8 +254,9 @@ def _load_scenarios(session_id: str) -> list[PracticeScenario]:
     scenarios = []
     for row in _query(_SELECT_SCENARIOS_SQL, (session_id,)):
         option_rows = _query(
-            "SELECT option_id, text FROM practice_scenario_option WHERE scenario_id = %s ORDER BY option_id",
-            (row[0],),
+            "SELECT option_id, text FROM practice_scenario_option "
+            "WHERE session_id = %s AND scenario_id = %s ORDER BY option_id",
+            (session_id, row[0]),
         )
         options = [ScenarioOption(option_id=option_id, text=text) for option_id, text in option_rows]
         scenarios.append(_row_to_scenario(row, options))
@@ -273,7 +276,7 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
             _upsert_session(cur, session)
             for scenario in session.scenarios:
                 _upsert_scenario(cur, session.session_id, scenario)
-                _insert_options(cur, scenario)
+                _insert_options(cur, session.session_id, scenario)
 
         _run_in_transaction(_do)
         return session

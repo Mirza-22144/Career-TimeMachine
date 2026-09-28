@@ -1,0 +1,25 @@
+{
+  "role": {
+    "id": "software_developer",
+    "label": "Software Developer"
+  },
+  "skills": {
+    "catalogue": [
+      {
+        "id": "python",
+        "label": "Python"
+      },
+      {
+        "id": "java",
+        "label": "Java"
+      },
+      {
+        "id": "sql",
+        "label": "SQL"
+      }
+    ],
+    "custom": [
+      "Machine learning"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "created_at_utc": "2026-09-17T08:04:38.292223+00:00",
+  "project": "CareerTimeMachine",
+  "model_purpose": "Recommend one supported future IT role from a current role and selected skills",
+  "deployment_bundle": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/models/career_role_recommender_bundle.joblib",
+  "deployment_bundle_sha256": "2173c68946a718a93633688358ebc91d5d6e7495bc36af6d6b995a83b5c20b8c",
+  "training_data": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/data/ai_training_data_27_roles.csv",
+  "model_metadata": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/models/career_role_classifier_metadata.json",
+  "evaluation_report": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/reports/career_role_model_evaluation.json",
+  "confusion_matrix": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/reports/career_role_confusion_matrix.csv",
+  "integration_tests": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/reports/backend_prediction_integration_tests.json",
+  "distribution_audit": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/reports/career_role_distribution_audit.json",
+  "key_metrics": {
+    "accuracy": 0.8007103393843725,
+    "balanced_accuracy": 0.731272193061798,
+    "macro_f1_evaluable_classes": 0.7141364923694747,
+    "top_3_accuracy": 0.94672454617206
+  },
+  "backend_constraints": {
+    "exact_backend_role_ids": true,
+    "current_role_excluded": true,
+    "other_excluded_from_predictions": true,
+    "backend_json_contract_verified": true
+  }
+}

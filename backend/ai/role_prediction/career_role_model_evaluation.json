@@ -1,0 +1,191 @@
+{
+  "created_at_utc": "2026-09-17T07:55:09.416056+00:00",
+  "accuracy": 0.8007103393843725,
+  "balanced_accuracy": 0.731272193061798,
+  "macro_f1_evaluable_classes": 0.7141364923694747,
+  "macro_f1_all_27_roles": 0.6876869926520868,
+  "weighted_f1": 0.8059084577138389,
+  "top_3_accuracy": 0.94672454617206,
+  "evaluable_test_class_count": 26,
+  "roles_without_test_support": [
+    "computer_and_information_research_scientist"
+  ],
+  "per_class_report": {
+    "Blockchain Engineer": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1.0
+    },
+    "Business Intelligence Analyst": {
+      "precision": 0.8174603174603174,
+      "recall": 0.865546218487395,
+      "f1-score": 0.8408163265306122,
+      "support": 119.0
+    },
+    "Computer and Information Research Scientist": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 0.0
+    },
+    "Computer and Information Systems Manager": {
+      "precision": 0.7297297297297297,
+      "recall": 0.675,
+      "f1-score": 0.7012987012987013,
+      "support": 40.0
+    },
+    "Computer Network Architect": {
+      "precision": 0.696969696969697,
+      "recall": 0.8518518518518519,
+      "f1-score": 0.7666666666666667,
+      "support": 27.0
+    },
+    "Computer Network Support Specialist": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 6.0
+    },
+    "Computer Programmer": {
+      "precision": 0.14,
+      "recall": 0.5833333333333334,
+      "f1-score": 0.22580645161290322,
+      "support": 12.0
+    },
+    "Computer Systems Analyst": {
+      "precision": 0.8212765957446808,
+      "recall": 0.7568627450980392,
+      "f1-score": 0.7877551020408163,
+      "support": 255.0
+    },
+    "Computer Systems Engineer / Architect": {
+      "precision": 0.859122401847575,
+      "recall": 0.744,
+      "f1-score": 0.797427652733119,
+      "support": 500.0
+    },
+    "Computer User Support Specialist": {
+      "precision": 0.7852760736196319,
+      "recall": 0.927536231884058,
+      "f1-score": 0.8504983388704319,
+      "support": 138.0
+    },
+    "Data Scientist": {
+      "precision": 0.8454545454545455,
+      "recall": 0.8857142857142857,
+      "f1-score": 0.8651162790697674,
+      "support": 105.0
+    },
+    "Data Warehousing Specialist": {
+      "precision": 0.3888888888888889,
+      "recall": 0.8235294117647058,
+      "f1-score": 0.5283018867924528,
+      "support": 17.0
+    },
+    "Database Administrator": {
+      "precision": 0.8666666666666667,
+      "recall": 0.8571428571428571,
+      "f1-score": 0.861878453038674,
+      "support": 91.0
+    },
+    "Database Architect": {
+      "precision": 0.7674418604651163,
+      "recall": 0.6470588235294118,
+      "f1-score": 0.7021276595744681,
+      "support": 51.0
+    },
+    "Digital Forensics Analyst": {
+      "precision": 0.6666666666666666,
+      "recall": 0.6666666666666666,
+      "f1-score": 0.6666666666666666,
+      "support": 3.0
+    },
+    "Information Security Analyst": {
+      "precision": 0.7123287671232876,
+      "recall": 0.8125,
+      "f1-score": 0.7591240875912408,
+      "support": 64.0
+    },
+    "Information Security Engineer": {
+      "precision": 0.6521739130434783,
+      "recall": 0.6666666666666666,
+      "f1-score": 0.6593406593406593,
+      "support": 45.0
+    },
+    "IT Project Manager": {
+      "precision": 0.8666666666666667,
+      "recall": 0.9027777777777778,
+      "f1-score": 0.8843537414965986,
+      "support": 144.0
+    },
+    "Network and Systems Administrator": {
+      "precision": 0.6424581005586593,
+      "recall": 0.7371794871794872,
+      "f1-score": 0.6865671641791045,
+      "support": 156.0
+    },
+    "Penetration Tester": {
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1-score": 0.4,
+      "support": 4.0
+    },
+    "Software Developer": {
+      "precision": 0.8830022075055187,
+      "recall": 0.8,
+      "f1-score": 0.8394543546694648,
+      "support": 500.0
+    },
+    "Software QA Analyst / Tester": {
+      "precision": 0.8804347826086957,
+      "recall": 0.8617021276595744,
+      "f1-score": 0.8709677419354839,
+      "support": 94.0
+    },
+    "Telecommunications Engineering Specialist": {
+      "precision": 0.6666666666666666,
+      "recall": 0.4,
+      "f1-score": 0.5,
+      "support": 5.0
+    },
+    "Video Game Designer": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 5.0
+    },
+    "Web Administrator": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 2.0
+    },
+    "Web and Digital Interface Designer": {
+      "precision": 0.961038961038961,
+      "recall": 0.9736842105263158,
+      "f1-score": 0.9673202614379085,
+      "support": 76.0
+    },
+    "Web Developer": {
+      "precision": 0.6703296703296703,
+      "recall": 0.8243243243243243,
+      "f1-score": 0.7393939393939394,
+      "support": 74.0
+    },
+    "accuracy": 0.8007103393843725,
+    "macro avg": {
+      "precision": 0.7155575251501897,
+      "recall": 0.7041880377632128,
+      "f1-score": 0.6876869926520868,
+      "support": 2534.0
+    },
+    "weighted avg": {
+      "precision": 0.8196168168438158,
+      "recall": 0.8007103393843725,
+      "f1-score": 0.8059084577138388,
+      "support": 2534.0
+    }
+  },
+  "methodological_note": "Classes with very few mapped real examples have limited or no independent test support. These classes will also use the O*NET role-skill fallback in the hybrid recommender."
+}

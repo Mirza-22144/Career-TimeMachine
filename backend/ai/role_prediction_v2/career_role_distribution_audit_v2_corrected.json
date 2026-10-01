@@ -1,0 +1,2069 @@
+{
+  "created_at_utc": "2026-10-01T13:44:43.008554+00:00",
+  "audit_version": "corrected_distinctiveness_weighting",
+  "audit_type": "Catalogue-profile role coverage audit",
+  "important_note": "This is an integration and catalogue coverage audit. It is not independent test accuracy.",
+  "supported_role_count": 27,
+  "recommendations_per_profile": 2,
+  "hybrid_weights": {
+    "trained_model": 0.5,
+    "selected_skill_fit": 0.4,
+    "current_role_similarity": 0.1
+  },
+  "skill_weighting": "Industry importance multiplied by inverse role frequency",
+  "target_as_first_choice_count": 14,
+  "target_in_top_two_count": 20,
+  "top_one_catalogue_coverage": 0.5185185185185185,
+  "top_two_catalogue_coverage": 0.7407407407407407,
+  "unique_first_choice_roles": 14,
+  "unique_roles_across_top_two": 21,
+  "first_choice_distribution": {
+    "software_developer": 3,
+    "business_intelligence_analyst": 3,
+    "data_scientist": 2,
+    "computer_and_information_systems_manager": 1,
+    "computer_systems_engineer_architect": 3,
+    "computer_user_support_specialist": 2,
+    "web_developer": 3,
+    "computer_systems_analyst": 1,
+    "data_warehousing_specialist": 1,
+    "penetration_tester": 3,
+    "network_and_systems_administrator": 1,
+    "software_qa_analyst_tester": 1,
+    "telecommunications_engineering_specialist": 1,
+    "web_and_digital_interface_designer": 2
+  },
+  "all_top_two_distribution": {
+    "software_developer": 9,
+    "computer_systems_engineer_architect": 10,
+    "business_intelligence_analyst": 4,
+    "data_scientist": 2,
+    "computer_and_information_research_scientist": 1,
+    "computer_and_information_systems_manager": 1,
+    "computer_network_architect": 1,
+    "computer_user_support_specialist": 2,
+    "computer_network_support_specialist": 1,
+    "web_developer": 5,
+    "web_and_digital_interface_designer": 6,
+    "computer_systems_analyst": 1,
+    "data_warehousing_specialist": 1,
+    "database_architect": 1,
+    "penetration_tester": 3,
+    "information_security_analyst": 1,
+    "network_and_systems_administrator": 1,
+    "software_qa_analyst_tester": 1,
+    "telecommunications_engineering_specialist": 1,
+    "video_game_designer": 1,
+    "web_administrator": 1
+  },
+  "most_common_first_choice": {
+    "id": "software_developer",
+    "label": "Software Developer",
+    "count": 3
+  },
+  "most_common_role_across_top_two": {
+    "id": "computer_systems_engineer_architect",
+    "label": "Computer Systems Engineer / Architect",
+    "count": 10
+  },
+  "per_role_results": [
+    {
+      "target_role": {
+        "id": "blockchain_engineer",
+        "label": "Blockchain Engineer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "solidity",
+          "label": "Solidity"
+        },
+        {
+          "id": "grafana_labs_grafana_cloud",
+          "label": "Grafana Labs Grafana Cloud"
+        },
+        {
+          "id": "rust_programming_language",
+          "label": "Rust programming language"
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "kubernetes",
+          "label": "Kubernetes"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "enterprise_integration_eai",
+          "label": "Enterprise integration (EAI)"
+        },
+        {
+          "id": "spring_boot",
+          "label": "Spring Boot"
+        },
+        {
+          "id": "restful_api",
+          "label": "RESTful API"
+        },
+        {
+          "id": "angular",
+          "label": "Angular"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "business_intelligence_analyst",
+        "label": "Business Intelligence Analyst"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "informatica",
+          "label": "Informatica"
+        },
+        {
+          "id": "snowflake",
+          "label": "Snowflake"
+        },
+        {
+          "id": "microsoft_power_automate",
+          "label": "Microsoft Power Automate"
+        },
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "alteryx",
+          "label": "Alteryx"
+        },
+        {
+          "id": "google_looker_analytics",
+          "label": "Google Looker Analytics"
+        },
+        {
+          "id": "microsoft_power_platform",
+          "label": "Microsoft Power Platform"
+        },
+        {
+          "id": "facebook",
+          "label": "Facebook"
+        },
+        {
+          "id": "meditech",
+          "label": "MEDITECH"
+        },
+        {
+          "id": "oracle_cloud",
+          "label": "Oracle Cloud"
+        },
+        {
+          "id": "sap_erp",
+          "label": "SAP ERP"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_and_information_research_scientist",
+        "label": "Computer and Information Research Scientist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "prometheus",
+          "label": "Prometheus"
+        },
+        {
+          "id": "pytorch",
+          "label": "PyTorch"
+        },
+        {
+          "id": "tensorflow",
+          "label": "TensorFlow"
+        },
+        {
+          "id": "hugging_face",
+          "label": "Hugging Face"
+        },
+        {
+          "id": "langchain",
+          "label": "LangChain"
+        },
+        {
+          "id": "vector_database",
+          "label": "Vector database"
+        },
+        {
+          "id": "grafana_labs_grafana_cloud",
+          "label": "Grafana Labs Grafana Cloud"
+        },
+        {
+          "id": "aws_sagemaker",
+          "label": "AWS SageMaker"
+        },
+        {
+          "id": "scikit_learn",
+          "label": "Scikit-learn"
+        },
+        {
+          "id": "pandas",
+          "label": "pandas"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        },
+        {
+          "id": "snowflake",
+          "label": "Snowflake"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "data_scientist",
+          "label": "Data Scientist"
+        },
+        {
+          "id": "computer_and_information_research_scientist",
+          "label": "Computer and Information Research Scientist"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_and_information_systems_manager",
+        "label": "Computer and Information Systems Manager"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "enterprise_integration_eai",
+          "label": "Enterprise integration (EAI)"
+        },
+        {
+          "id": "google_analytics",
+          "label": "Google Analytics"
+        },
+        {
+          "id": "act_premium",
+          "label": "ACT! Premium"
+        },
+        {
+          "id": "alpha_four",
+          "label": "Alpha Four"
+        },
+        {
+          "id": "apple_imovie",
+          "label": "Apple iMovie"
+        },
+        {
+          "id": "apple_iwork_keynote",
+          "label": "Apple iWork Keynote"
+        },
+        {
+          "id": "apple_iwork_numbers",
+          "label": "Apple iWork Numbers"
+        },
+        {
+          "id": "apple_iwork_pages",
+          "label": "Apple iWork Pages"
+        },
+        {
+          "id": "billing",
+          "label": "Billing"
+        },
+        {
+          "id": "borland_paradox",
+          "label": "Borland Paradox"
+        },
+        {
+          "id": "cisco_systems_wan_manager",
+          "label": "Cisco Systems WAN Manager"
+        },
+        {
+          "id": "corel_wordperfect_office_suite",
+          "label": "Corel WordPerfect Office Suite"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_and_information_systems_manager",
+          "label": "Computer and Information Systems Manager"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_network_architect",
+        "label": "Computer Network Architect"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "dassault_systemes_solidworks",
+          "label": "Dassault Systemes SolidWorks"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        },
+        {
+          "id": "ibm_websphere_mq",
+          "label": "IBM WebSphere MQ"
+        },
+        {
+          "id": "css",
+          "label": "CSS"
+        },
+        {
+          "id": "spring_boot",
+          "label": "Spring Boot"
+        },
+        {
+          "id": "angular",
+          "label": "Angular"
+        },
+        {
+          "id": "airmagnet_enterprise",
+          "label": "AirMagnet Enterprise"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        },
+        {
+          "id": "computer_network_architect",
+          "label": "Computer Network Architect"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_network_support_specialist",
+        "label": "Computer Network Support Specialist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "iis",
+          "label": "IIS"
+        },
+        {
+          "id": "arping",
+          "label": "Arping"
+        },
+        {
+          "id": "bandw_port_scanner",
+          "label": "B&W Port Scanner"
+        },
+        {
+          "id": "bmc_software_remedy_it_service_management_suite",
+          "label": "BMC Software Remedy IT Service Management Suite"
+        },
+        {
+          "id": "bentley_systems_projectwise",
+          "label": "Bentley Systems ProjectWise"
+        },
+        {
+          "id": "bitwizard_b_v_mtr",
+          "label": "BitWizard B.V. mtr"
+        },
+        {
+          "id": "blackberry_enterprise_server",
+          "label": "BlackBerry Enterprise Server"
+        },
+        {
+          "id": "clarified_networks_clarified_analyzer",
+          "label": "Clarified Networks Clarified Analyzer"
+        },
+        {
+          "id": "colasoft_capsa_enterprise",
+          "label": "Colasoft Capsa Enterprise"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist"
+        },
+        {
+          "id": "computer_network_support_specialist",
+          "label": "Computer Network Support Specialist"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_programmer",
+        "label": "Computer Programmer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "bentley_microstation",
+          "label": "Bentley MicroStation"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        },
+        {
+          "id": "css",
+          "label": "CSS"
+        },
+        {
+          "id": "spring_boot",
+          "label": "Spring Boot"
+        },
+        {
+          "id": "angular",
+          "label": "Angular"
+        },
+        {
+          "id": "google_analytics",
+          "label": "Google Analytics"
+        },
+        {
+          "id": "adobe_postscript",
+          "label": "Adobe PostScript"
+        },
+        {
+          "id": "basis_bbx_visualpro_5",
+          "label": "Basis BBx VisualPRO/5"
+        },
+        {
+          "id": "bourne_shell",
+          "label": "Bourne Shell"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "web_developer",
+          "label": "Web Developer"
+        },
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_systems_analyst",
+        "label": "Computer Systems Analyst"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "web_server",
+          "label": "Web server"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "meditech",
+          "label": "MEDITECH"
+        },
+        {
+          "id": "oracle_cloud",
+          "label": "Oracle Cloud"
+        },
+        {
+          "id": "sap_erp",
+          "label": "SAP ERP"
+        },
+        {
+          "id": "team_foundation_server",
+          "label": "Team Foundation Server"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_systems_analyst",
+          "label": "Computer Systems Analyst"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_systems_engineer_architect",
+        "label": "Computer Systems Engineer / Architect"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "graphql",
+          "label": "GraphQL"
+        },
+        {
+          "id": "prometheus",
+          "label": "Prometheus"
+        },
+        {
+          "id": "grafana_labs_grafana_cloud",
+          "label": "Grafana Labs Grafana Cloud"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        },
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "dassault_systemes_solidworks",
+          "label": "Dassault Systemes SolidWorks"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "computer_user_support_specialist",
+        "label": "Computer User Support Specialist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "yardi",
+          "label": "Yardi"
+        },
+        {
+          "id": "apple_ios",
+          "label": "Apple iOS"
+        },
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "dassault_systemes_solidworks",
+          "label": "Dassault Systemes SolidWorks"
+        },
+        {
+          "id": "zoom",
+          "label": "Zoom"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "bentley_microstation",
+          "label": "Bentley MicroStation"
+        },
+        {
+          "id": "facebook",
+          "label": "Facebook"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist"
+        },
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "data_scientist",
+        "label": "Data Scientist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "pytorch",
+          "label": "PyTorch"
+        },
+        {
+          "id": "tensorflow",
+          "label": "TensorFlow"
+        },
+        {
+          "id": "numpy",
+          "label": "NumPy"
+        },
+        {
+          "id": "aws_sagemaker",
+          "label": "AWS SageMaker"
+        },
+        {
+          "id": "pyspark",
+          "label": "PySpark"
+        },
+        {
+          "id": "scikit_learn",
+          "label": "Scikit-learn"
+        },
+        {
+          "id": "pandas",
+          "label": "pandas"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        },
+        {
+          "id": "snowflake",
+          "label": "Snowflake"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        },
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "alteryx",
+          "label": "Alteryx"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "data_scientist",
+          "label": "Data Scientist"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "data_warehousing_specialist",
+        "label": "Data Warehousing Specialist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "operational_data_store_ods",
+          "label": "Operational Data Store ODS"
+        },
+        {
+          "id": "informatica",
+          "label": "Informatica"
+        },
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "adaptive_metadata_manager",
+          "label": "Adaptive Metadata Manager"
+        },
+        {
+          "id": "aster_data_ncluster",
+          "label": "Aster Data nCluster"
+        },
+        {
+          "id": "codefutures_dbshards",
+          "label": "CodeFutures dbShards"
+        },
+        {
+          "id": "embarcadero_er_studio_xe",
+          "label": "Embarcadero ER/Studio XE"
+        },
+        {
+          "id": "ibm_clarity_systems_clarity",
+          "label": "IBM Clarity Systems Clarity"
+        },
+        {
+          "id": "ibm_netezza_twinfin",
+          "label": "IBM Netezza TwinFin"
+        },
+        {
+          "id": "intermine",
+          "label": "InterMine"
+        },
+        {
+          "id": "kalido_information_engine",
+          "label": "Kalido Information Engine"
+        },
+        {
+          "id": "oracle_warehouse_builder",
+          "label": "Oracle Warehouse Builder"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "data_warehousing_specialist",
+          "label": "Data Warehousing Specialist"
+        },
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "database_administrator",
+        "label": "Database Administrator"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "azure_data_factory",
+          "label": "Azure Data Factory"
+        },
+        {
+          "id": "informatica",
+          "label": "Informatica"
+        },
+        {
+          "id": "pyspark",
+          "label": "PySpark"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        },
+        {
+          "id": "snowflake",
+          "label": "Snowflake"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "relational_databases_rdbms",
+          "label": "Relational databases (RDBMS)"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "kubernetes",
+          "label": "Kubernetes"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        },
+        {
+          "id": "database_architect",
+          "label": "Database Architect"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "database_architect",
+        "label": "Database Architect"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "informatica",
+          "label": "Informatica"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        },
+        {
+          "id": "snowflake",
+          "label": "Snowflake"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "microsoft_power_bi",
+          "label": "Microsoft Power BI"
+        },
+        {
+          "id": "relational_databases_rdbms",
+          "label": "Relational databases (RDBMS)"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        },
+        {
+          "id": "oracle_sql_developer",
+          "label": "Oracle SQL Developer"
+        },
+        {
+          "id": "css",
+          "label": "CSS"
+        },
+        {
+          "id": "spring_boot",
+          "label": "Spring Boot"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "digital_forensics_analyst",
+        "label": "Digital Forensics Analyst"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "google_workspace",
+          "label": "Google Workspace"
+        },
+        {
+          "id": "apple_ios",
+          "label": "Apple iOS"
+        },
+        {
+          "id": "kali_linux",
+          "label": "Kali Linux"
+        },
+        {
+          "id": "mitre_attandck",
+          "label": "MITRE ATT&CK"
+        },
+        {
+          "id": "metasploit",
+          "label": "Metasploit"
+        },
+        {
+          "id": "portswigger_burp_suite",
+          "label": "Portswigger BurP Suite"
+        },
+        {
+          "id": "single_sign_on_sso",
+          "label": "Single sign-on SSO"
+        },
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "nessus",
+          "label": "Nessus"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "kubernetes",
+          "label": "Kubernetes"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "penetration_tester",
+          "label": "Penetration Tester"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "information_security_analyst",
+        "label": "Information Security Analyst"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "emass",
+          "label": "eMASS"
+        },
+        {
+          "id": "qualys_cloud_platform",
+          "label": "Qualys Cloud Platform"
+        },
+        {
+          "id": "kali_linux",
+          "label": "Kali Linux"
+        },
+        {
+          "id": "mitre_attandck",
+          "label": "MITRE ATT&CK"
+        },
+        {
+          "id": "metasploit",
+          "label": "Metasploit"
+        },
+        {
+          "id": "portswigger_burp_suite",
+          "label": "Portswigger BurP Suite"
+        },
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "nessus",
+          "label": "Nessus"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        },
+        {
+          "id": "angular",
+          "label": "Angular"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "penetration_tester",
+          "label": "Penetration Tester"
+        },
+        {
+          "id": "information_security_analyst",
+          "label": "Information Security Analyst"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "information_security_engineer",
+        "label": "Information Security Engineer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "apple_ios",
+          "label": "Apple iOS"
+        },
+        {
+          "id": "single_sign_on_sso",
+          "label": "Single sign-on SSO"
+        },
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        },
+        {
+          "id": "nessus",
+          "label": "Nessus"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        },
+        {
+          "id": "kubernetes",
+          "label": "Kubernetes"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "web_application_frameworks",
+          "label": "Web application frameworks"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "enterprise_integration_eai",
+          "label": "Enterprise integration (EAI)"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "it_project_manager",
+        "label": "IT Project Manager"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "facebook",
+          "label": "Facebook"
+        },
+        {
+          "id": "sap_erp",
+          "label": "SAP ERP"
+        },
+        {
+          "id": "team_foundation_server",
+          "label": "Team Foundation Server"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        },
+        {
+          "id": "selenium",
+          "label": "Selenium"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        },
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": false,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "network_and_systems_administrator",
+        "label": "Network and Systems Administrator"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "border_gateway_protocol_bgp",
+          "label": "Border Gateway Protocol BGP"
+        },
+        {
+          "id": "servicenow",
+          "label": "ServiceNow"
+        },
+        {
+          "id": "active_directory",
+          "label": "Active directory"
+        },
+        {
+          "id": "enterprise_integration_eai",
+          "label": "Enterprise integration (EAI)"
+        },
+        {
+          "id": "adexa_egps_suite",
+          "label": "Adexa eGPS Suite"
+        },
+        {
+          "id": "computer_system_diagnostics",
+          "label": "Computer system diagnostics"
+        },
+        {
+          "id": "dynamic_host_configuration_protocol_dhcp",
+          "label": "Dynamic host configuration protocol DHCP"
+        },
+        {
+          "id": "ibm_director",
+          "label": "IBM Director"
+        },
+        {
+          "id": "ibm_netview",
+          "label": "IBM NetView"
+        },
+        {
+          "id": "lavalys_everest",
+          "label": "Lavalys Everest"
+        },
+        {
+          "id": "management_information_base_mib",
+          "label": "Management information base MIB"
+        },
+        {
+          "id": "micromuse_netcool",
+          "label": "Micromuse NetCool"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "network_and_systems_administrator",
+          "label": "Network and Systems Administrator"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "penetration_tester",
+        "label": "Penetration Tester"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "nmap",
+          "label": "Nmap"
+        },
+        {
+          "id": "qualys_cloud_platform",
+          "label": "Qualys Cloud Platform"
+        },
+        {
+          "id": "rust_programming_language",
+          "label": "Rust programming language"
+        },
+        {
+          "id": "apple_ios",
+          "label": "Apple iOS"
+        },
+        {
+          "id": "azure_devops",
+          "label": "Azure DevOps"
+        },
+        {
+          "id": "kali_linux",
+          "label": "Kali Linux"
+        },
+        {
+          "id": "mitre_attandck",
+          "label": "MITRE ATT&CK"
+        },
+        {
+          "id": "metasploit",
+          "label": "Metasploit"
+        },
+        {
+          "id": "portswigger_burp_suite",
+          "label": "Portswigger BurP Suite"
+        },
+        {
+          "id": "software_development",
+          "label": "Software development"
+        },
+        {
+          "id": "nessus",
+          "label": "Nessus"
+        },
+        {
+          "id": "terraform",
+          "label": "Terraform"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "penetration_tester",
+          "label": "Penetration Tester"
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "software_developer",
+        "label": "Software Developer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "figma",
+          "label": "Figma"
+        },
+        {
+          "id": "graphql",
+          "label": "GraphQL"
+        },
+        {
+          "id": "prometheus",
+          "label": "Prometheus"
+        },
+        {
+          "id": "pytorch",
+          "label": "PyTorch"
+        },
+        {
+          "id": "tensorflow",
+          "label": "TensorFlow"
+        },
+        {
+          "id": "vue_js",
+          "label": "Vue.js"
+        },
+        {
+          "id": "wordpress",
+          "label": "WordPress"
+        },
+        {
+          "id": "grafana_labs_grafana_cloud",
+          "label": "Grafana Labs Grafana Cloud"
+        },
+        {
+          "id": "informatica",
+          "label": "Informatica"
+        },
+        {
+          "id": "javascript_frameworks",
+          "label": "JavaScript frameworks"
+        },
+        {
+          "id": "workday",
+          "label": "Workday"
+        },
+        {
+          "id": "airflow",
+          "label": "Airflow"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        {
+          "id": "web_developer",
+          "label": "Web Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "software_qa_analyst_tester",
+        "label": "Software QA Analyst / Tester"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "appium",
+          "label": "Appium"
+        },
+        {
+          "id": "jmeter",
+          "label": "JMeter"
+        },
+        {
+          "id": "playwright",
+          "label": "Playwright"
+        },
+        {
+          "id": "postman",
+          "label": "Postman"
+        },
+        {
+          "id": "rest_assured",
+          "label": "REST Assured"
+        },
+        {
+          "id": "testng",
+          "label": "TestNG"
+        },
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "azure_devops",
+          "label": "Azure DevOps"
+        },
+        {
+          "id": "apple_safari",
+          "label": "Apple Safari"
+        },
+        {
+          "id": "google_sheets",
+          "label": "Google Sheets"
+        },
+        {
+          "id": "mozilla_firefox",
+          "label": "Mozilla Firefox"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "software_qa_analyst_tester",
+          "label": "Software QA Analyst / Tester"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "telecommunications_engineering_specialist",
+        "label": "Telecommunications Engineering Specialist"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "autodesk_navisworks",
+          "label": "Autodesk Navisworks"
+        },
+        {
+          "id": "navisworks_jetstream",
+          "label": "NavisWorks Jetstream"
+        },
+        {
+          "id": "autodesk_autocad",
+          "label": "Autodesk AutoCAD"
+        },
+        {
+          "id": "autodesk_revit",
+          "label": "Autodesk Revit"
+        },
+        {
+          "id": "2ab_ilock_security_services",
+          "label": "2AB iLock Security Services"
+        },
+        {
+          "id": "avaya_identity_engines",
+          "label": "Avaya Identity Engines"
+        },
+        {
+          "id": "call_accounting",
+          "label": "Call accounting"
+        },
+        {
+          "id": "ibm_lotus_1_2_3",
+          "label": "IBM Lotus 1-2-3"
+        },
+        {
+          "id": "ibm_rational_requirements_composer",
+          "label": "IBM Rational Requirements Composer"
+        },
+        {
+          "id": "project_scheduling",
+          "label": "Project scheduling"
+        },
+        {
+          "id": "requirements_analysis",
+          "label": "Requirements analysis"
+        },
+        {
+          "id": "sitemaster_sitesmart",
+          "label": "SiteMaster SiteSmart"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "telecommunications_engineering_specialist",
+          "label": "Telecommunications Engineering Specialist"
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "video_game_designer",
+        "label": "Video Game Designer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "autodesk_maya",
+          "label": "Autodesk Maya"
+        },
+        {
+          "id": "unity_technologies_unity",
+          "label": "Unity Technologies Unity"
+        },
+        {
+          "id": "unreal_engine",
+          "label": "Unreal Engine"
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "3d_graphic_design",
+          "label": "3D graphic design"
+        },
+        {
+          "id": "autodesk_3ds_max",
+          "label": "Autodesk 3ds Max"
+        },
+        {
+          "id": "autodesk_scaleform",
+          "label": "Autodesk Scaleform"
+        },
+        {
+          "id": "balsamiq_studios_balsamiq_mockups",
+          "label": "Balsamiq Studios Balsamiq Mockups"
+        },
+        {
+          "id": "c_for_graphics_cg",
+          "label": "C for Graphics cg"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        },
+        {
+          "id": "video_game_designer",
+          "label": "Video Game Designer"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "web_administrator",
+        "label": "Web Administrator"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "wordpress",
+          "label": "WordPress"
+        },
+        {
+          "id": "content_management_cms",
+          "label": "Content management (CMS)"
+        },
+        {
+          "id": "iis_manager",
+          "label": "IIS Manager"
+        },
+        {
+          "id": "web_application_framework",
+          "label": "Web application framework"
+        },
+        {
+          "id": "software_development",
+          "label": "Software development"
+        },
+        {
+          "id": "apple_safari",
+          "label": "Apple Safari"
+        },
+        {
+          "id": "mozilla_firefox",
+          "label": "Mozilla Firefox"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "web_application_frameworks",
+          "label": "Web application frameworks"
+        },
+        {
+          "id": "web_server",
+          "label": "Web server"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "web_developer",
+          "label": "Web Developer"
+        },
+        {
+          "id": "web_administrator",
+          "label": "Web Administrator"
+        }
+      ],
+      "target_is_first_choice": false,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "web_and_digital_interface_designer",
+        "label": "Web and Digital Interface Designer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "figma",
+          "label": "Figma"
+        },
+        {
+          "id": "vue_js",
+          "label": "Vue.js"
+        },
+        {
+          "id": "adobe_xd",
+          "label": "Adobe XD"
+        },
+        {
+          "id": "apple_ios",
+          "label": "Apple iOS"
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript"
+        },
+        {
+          "id": "hubspot",
+          "label": "HubSpot"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "bootstrap",
+          "label": "Bootstrap"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        },
+        {
+          "id": "adobe_photoshop",
+          "label": "Adobe Photoshop"
+        },
+        {
+          "id": "react",
+          "label": "React"
+        },
+        {
+          "id": "salesforce",
+          "label": "Salesforce"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        },
+        {
+          "id": "web_developer",
+          "label": "Web Developer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    },
+    {
+      "target_role": {
+        "id": "web_developer",
+        "label": "Web Developer"
+      },
+      "input_skill_count": 12,
+      "input_skills": [
+        {
+          "id": "figma",
+          "label": "Figma"
+        },
+        {
+          "id": "graphql",
+          "label": "GraphQL"
+        },
+        {
+          "id": "vue_js",
+          "label": "Vue.js"
+        },
+        {
+          "id": "wordpress",
+          "label": "WordPress"
+        },
+        {
+          "id": "javascript_frameworks",
+          "label": "JavaScript frameworks"
+        },
+        {
+          "id": "typescript",
+          "label": "TypeScript"
+        },
+        {
+          "id": "hubspot",
+          "label": "HubSpot"
+        },
+        {
+          "id": "jenkins",
+          "label": "Jenkins"
+        },
+        {
+          "id": "relational_databases_rdbms",
+          "label": "Relational databases (RDBMS)"
+        },
+        {
+          "id": "adobe_creative_cloud",
+          "label": "Adobe Creative Cloud"
+        },
+        {
+          "id": "bootstrap",
+          "label": "Bootstrap"
+        },
+        {
+          "id": "adobe_illustrator",
+          "label": "Adobe Illustrator"
+        }
+      ],
+      "predicted_roles": [
+        {
+          "id": "web_developer",
+          "label": "Web Developer"
+        },
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer"
+        }
+      ],
+      "target_is_first_choice": true,
+      "target_is_in_top_two": true,
+      "recognised_catalogue_skill_count": 12,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      }
+    }
+  ]
+}

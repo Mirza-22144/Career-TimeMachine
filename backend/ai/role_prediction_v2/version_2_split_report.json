@@ -1,0 +1,213 @@
+{
+  "created_at_utc": "2026-10-01T12:37:34.657851+00:00",
+  "random_seed": 5120,
+  "source_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/data/ai_training_data_27_roles.csv",
+  "source_file_sha256": "ebce593a5e8ae2339d1bc3faa5792a04044d755753d2b288b7950f66cf82f3bd",
+  "rows_before_skill_cleaning": 19519,
+  "ambiguous_skill_profiles_removed": 2,
+  "ambiguous_rows_removed": 4,
+  "exact_duplicate_rows_removed": 5,
+  "records_after_leakage_prevention": 19510,
+  "real_training_records": 13656,
+  "real_validation_records": 2927,
+  "real_test_records": 2927,
+  "validation_roles_with_support": 26,
+  "test_roles_with_support": 26,
+  "split_evidence": {
+    "blockchain_engineer": {
+      "role_label": "Blockchain Engineer",
+      "available_real_records": 6,
+      "real_training_records": 4,
+      "real_validation_records": 1,
+      "real_test_records": 1
+    },
+    "business_intelligence_analyst": {
+      "role_label": "Business Intelligence Analyst",
+      "available_real_records": 597,
+      "real_training_records": 417,
+      "real_validation_records": 90,
+      "real_test_records": 90
+    },
+    "computer_and_information_research_scientist": {
+      "role_label": "Computer and Information Research Scientist",
+      "available_real_records": 1,
+      "real_training_records": 1,
+      "real_validation_records": 0,
+      "real_test_records": 0
+    },
+    "computer_and_information_systems_manager": {
+      "role_label": "Computer and Information Systems Manager",
+      "available_real_records": 202,
+      "real_training_records": 142,
+      "real_validation_records": 30,
+      "real_test_records": 30
+    },
+    "computer_network_architect": {
+      "role_label": "Computer Network Architect",
+      "available_real_records": 135,
+      "real_training_records": 95,
+      "real_validation_records": 20,
+      "real_test_records": 20
+    },
+    "computer_network_support_specialist": {
+      "role_label": "Computer Network Support Specialist",
+      "available_real_records": 30,
+      "real_training_records": 22,
+      "real_validation_records": 4,
+      "real_test_records": 4
+    },
+    "computer_programmer": {
+      "role_label": "Computer Programmer",
+      "available_real_records": 59,
+      "real_training_records": 41,
+      "real_validation_records": 9,
+      "real_test_records": 9
+    },
+    "computer_systems_analyst": {
+      "role_label": "Computer Systems Analyst",
+      "available_real_records": 1277,
+      "real_training_records": 893,
+      "real_validation_records": 192,
+      "real_test_records": 192
+    },
+    "computer_systems_engineer_architect": {
+      "role_label": "Computer Systems Engineer / Architect",
+      "available_real_records": 4391,
+      "real_training_records": 3073,
+      "real_validation_records": 659,
+      "real_test_records": 659
+    },
+    "computer_user_support_specialist": {
+      "role_label": "Computer User Support Specialist",
+      "available_real_records": 688,
+      "real_training_records": 482,
+      "real_validation_records": 103,
+      "real_test_records": 103
+    },
+    "data_scientist": {
+      "role_label": "Data Scientist",
+      "available_real_records": 525,
+      "real_training_records": 367,
+      "real_validation_records": 79,
+      "real_test_records": 79
+    },
+    "data_warehousing_specialist": {
+      "role_label": "Data Warehousing Specialist",
+      "available_real_records": 84,
+      "real_training_records": 58,
+      "real_validation_records": 13,
+      "real_test_records": 13
+    },
+    "database_administrator": {
+      "role_label": "Database Administrator",
+      "available_real_records": 457,
+      "real_training_records": 319,
+      "real_validation_records": 69,
+      "real_test_records": 69
+    },
+    "database_architect": {
+      "role_label": "Database Architect",
+      "available_real_records": 255,
+      "real_training_records": 179,
+      "real_validation_records": 38,
+      "real_test_records": 38
+    },
+    "digital_forensics_analyst": {
+      "role_label": "Digital Forensics Analyst",
+      "available_real_records": 15,
+      "real_training_records": 11,
+      "real_validation_records": 2,
+      "real_test_records": 2
+    },
+    "information_security_analyst": {
+      "role_label": "Information Security Analyst",
+      "available_real_records": 319,
+      "real_training_records": 223,
+      "real_validation_records": 48,
+      "real_test_records": 48
+    },
+    "information_security_engineer": {
+      "role_label": "Information Security Engineer",
+      "available_real_records": 227,
+      "real_training_records": 159,
+      "real_validation_records": 34,
+      "real_test_records": 34
+    },
+    "it_project_manager": {
+      "role_label": "IT Project Manager",
+      "available_real_records": 721,
+      "real_training_records": 505,
+      "real_validation_records": 108,
+      "real_test_records": 108
+    },
+    "network_and_systems_administrator": {
+      "role_label": "Network and Systems Administrator",
+      "available_real_records": 778,
+      "real_training_records": 544,
+      "real_validation_records": 117,
+      "real_test_records": 117
+    },
+    "penetration_tester": {
+      "role_label": "Penetration Tester",
+      "available_real_records": 22,
+      "real_training_records": 16,
+      "real_validation_records": 3,
+      "real_test_records": 3
+    },
+    "software_developer": {
+      "role_label": "Software Developer",
+      "available_real_records": 7446,
+      "real_training_records": 5212,
+      "real_validation_records": 1117,
+      "real_test_records": 1117
+    },
+    "software_qa_analyst_tester": {
+      "role_label": "Software QA Analyst / Tester",
+      "available_real_records": 468,
+      "real_training_records": 328,
+      "real_validation_records": 70,
+      "real_test_records": 70
+    },
+    "telecommunications_engineering_specialist": {
+      "role_label": "Telecommunications Engineering Specialist",
+      "available_real_records": 23,
+      "real_training_records": 17,
+      "real_validation_records": 3,
+      "real_test_records": 3
+    },
+    "video_game_designer": {
+      "role_label": "Video Game Designer",
+      "available_real_records": 25,
+      "real_training_records": 17,
+      "real_validation_records": 4,
+      "real_test_records": 4
+    },
+    "web_administrator": {
+      "role_label": "Web Administrator",
+      "available_real_records": 10,
+      "real_training_records": 6,
+      "real_validation_records": 2,
+      "real_test_records": 2
+    },
+    "web_and_digital_interface_designer": {
+      "role_label": "Web and Digital Interface Designer",
+      "available_real_records": 381,
+      "real_training_records": 267,
+      "real_validation_records": 57,
+      "real_test_records": 57
+    },
+    "web_developer": {
+      "role_label": "Web Developer",
+      "available_real_records": 368,
+      "real_training_records": 258,
+      "real_validation_records": 55,
+      "real_test_records": 55
+    }
+  },
+  "leakage_checks": {
+    "training_validation_overlap": 0,
+    "training_test_overlap": 0,
+    "validation_test_overlap": 0
+  },
+  "evaluation_rule": "I will use validation data for model selection and open the test data only after choosing the final configuration."
+}

@@ -1,0 +1,26 @@
+{
+  "created_at_utc": "2026-10-01T13:44:43.029608+00:00",
+  "original_audit_available": true,
+  "correction_applied": {
+    "distinctiveness_aware_skills": true,
+    "trained_model_weight": 0.5,
+    "selected_skill_fit_weight": 0.4,
+    "previous_role_similarity_weight": 0.1,
+    "classifier_retrained": false,
+    "test_set_reopened": false
+  },
+  "corrected_results": {
+    "target_as_first_choice_count": 14,
+    "target_in_top_two_count": 20,
+    "unique_first_choice_roles": 14,
+    "unique_roles_across_top_two": 21,
+    "most_common_first_choice_count": 3
+  },
+  "original_results": {
+    "target_as_first_choice_count": 3,
+    "target_in_top_two_count": 5,
+    "unique_first_choice_roles": 6,
+    "unique_roles_across_top_two": 8,
+    "most_common_first_choice_count": 12
+  }
+}

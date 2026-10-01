@@ -1,0 +1,86 @@
+{
+  "created_at_utc": "2026-10-01T12:35:43.798043+00:00",
+  "source_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/data/ai_training_data_27_roles.csv",
+  "backend_database": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/data/career_role_training.sqlite",
+  "predictive_role_count": 27,
+  "database_skill_count": 1299,
+  "database_role_skill_mapping_count": 5629,
+  "rows_before_cleaning": 19523,
+  "rows_after_cleaning": 19519,
+  "removed_incomplete_or_duplicate_rows": 4,
+  "class_counts": {
+    "computer_and_information_research_scientist": 1,
+    "blockchain_engineer": 6,
+    "web_administrator": 10,
+    "digital_forensics_analyst": 15,
+    "penetration_tester": 22,
+    "telecommunications_engineering_specialist": 23,
+    "video_game_designer": 25,
+    "computer_network_support_specialist": 30,
+    "computer_programmer": 59,
+    "data_warehousing_specialist": 84,
+    "computer_network_architect": 135,
+    "computer_and_information_systems_manager": 202,
+    "information_security_engineer": 227,
+    "database_architect": 255,
+    "information_security_analyst": 319,
+    "web_developer": 370,
+    "web_and_digital_interface_designer": 381,
+    "database_administrator": 457,
+    "software_qa_analyst_tester": 468,
+    "data_scientist": 525,
+    "business_intelligence_analyst": 597,
+    "computer_user_support_specialist": 689,
+    "it_project_manager": 721,
+    "network_and_systems_administrator": 778,
+    "computer_systems_analyst": 1277,
+    "computer_systems_engineer_architect": 4392,
+    "software_developer": 7451
+  },
+  "smallest_class": {
+    "role_id": "computer_and_information_research_scientist",
+    "role_label": "Computer and Information Research Scientist",
+    "record_count": 1
+  },
+  "largest_class": {
+    "role_id": "software_developer",
+    "role_label": "Software Developer",
+    "record_count": 7451
+  },
+  "roles_below_100_records": [
+    "computer_and_information_research_scientist",
+    "blockchain_engineer",
+    "web_administrator",
+    "digital_forensics_analyst",
+    "penetration_tester",
+    "telecommunications_engineering_specialist",
+    "video_game_designer",
+    "computer_network_support_specialist",
+    "computer_programmer",
+    "data_warehousing_specialist"
+  ],
+  "roles_below_20_records": [
+    "computer_and_information_research_scientist",
+    "blockchain_engineer",
+    "web_administrator",
+    "digital_forensics_analyst"
+  ],
+  "roles_without_reliable_test_support": [
+    "computer_and_information_research_scientist"
+  ],
+  "version_1_reported_metrics": {
+    "accuracy": 0.8007103393843725,
+    "balanced_accuracy": 0.731272193061798,
+    "macro_f1_all_27_roles": 0.6876869926520868,
+    "weighted_f1": 0.8059084577138389,
+    "top_3_accuracy": 0.94672454617206
+  },
+  "version_2_evaluation_policy": {
+    "training_support_may_use_catalogue_data": true,
+    "validation_uses_real_postings_only": true,
+    "test_uses_real_postings_only": true,
+    "final_test_remains_untouched_during_selection": true,
+    "primary_selection_metric": "macro F1 on validation data",
+    "additional_product_metric": "top-2 accuracy"
+  }
+}

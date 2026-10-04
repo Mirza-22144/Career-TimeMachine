@@ -147,10 +147,10 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 ### BE 3.1 - Stop passing years_experience/responsibilities to plain MCQ generation
 
-- **Status:** [TODO] **Owner:** TBD **Date:** 2026-10-04
-- **What:** `ScenarioRequest` (`app/providers/scenario_provider.py`) currently sends `years_experience` and `responsibilities` to every scenario provider uniformly. Needs to become conditional: omitted for `multiple_choice`, included for `drag_and_drop`/`code_review` (BE 3.6/3.7). Small, but worth doing first since it's a breaking change to an interface three other cards build on.
-- **Why:** enforces Iteration 3 goal 4's data-usage rule at the one place it could otherwise be silently ignored.
-- **Blocks / Blocked by:** blocks BE 3.6/BE 3.7 conceptually (they rely on this field actually being there), though not a hard sequencing dependency - can be done in parallel if coordinated.
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-04
+- **What:** removed `years_experience`/`responsibilities` from `ScenarioRequest` (`app/providers/scenario_provider.py`) and from `PracticeContext`/`build_practice_context()` (`app/services/practice_role_service.py`) entirely - confirmed first that no provider ever actually read either field, so this was dead plumbing, not a behaviour change to anything working today. Removed the now-unused `_label()` helper (its only caller). Updated the `ScenarioRequest(...)` construction site in `practice_session_service.py` and three tests that referenced the removed fields; `test_provider_receives_only_the_career_context_it_needs` now positively asserts both attributes are gone (`not hasattr(...)`) rather than just dropping coverage. All 358 tests pass.
+- **Why:** enforces Iteration 3 goal 4's data-usage rule at the one place it could otherwise be silently ignored. `profile.years_experience`/`responsibility_ids` are untouched - this only removes them from the scenario-generation path, not from the profile or from BE 3.3's job comparison.
+- **Blocks / Blocked by:** none now. When BE 3.6/BE 3.7 (drag-and-drop, code review) are built, they add their own `years_experience`/`responsibilities` fields to their own request shapes rather than reusing `ScenarioRequest` - see the spec doc Sections 7-8, which already show this.
 
 ### BE 3.2 - Job description extraction endpoint
 

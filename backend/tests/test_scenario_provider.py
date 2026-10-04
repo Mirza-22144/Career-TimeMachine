@@ -36,9 +36,7 @@ def _request(role_id="software_developer", difficulty="standard", **overrides) -
     values = {
         "role_id": role_id,
         "role_label": "Software Developer",
-        "years_experience": "5 years",
         "skills": ("Python", "Git"),
-        "responsibilities": ("API design",),
         "duration": "standard",
         "difficulty": difficulty,
         "activity_type": "written_response",

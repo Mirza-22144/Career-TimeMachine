@@ -346,7 +346,8 @@ def test_provider_receives_only_the_career_context_it_needs(use_provider):
 
     [request] = recording.requests
     assert request.role_id == "software_engineer"
-    assert request.years_experience == "5 years"
+    assert not hasattr(request, "years_experience")
+    assert not hasattr(request, "responsibilities")
     assert request.skills == ("Python", "Git")
     assert (request.duration, request.difficulty) == ("standard", "guided")
     assert request.activity_type == "multiple_choice"

@@ -31,7 +31,9 @@ class ScenarioProviderError(Exception):
 class ScenarioRequest:
     """Input for one scenario.
 
-    Career context only: no token, profile or session identifiers, break
+    Skills and roles only (Iteration 3 rule, BE 3.1): years of experience and
+    responsibilities are used for job-description comparison, never for
+    scenario/MCQ generation. No token, profile or session identifiers, break
     details, or custom skills/responsibilities the user typed. The one
     exception is role_label for the "other" previous role, which is the job
     title the user entered.
@@ -39,9 +41,7 @@ class ScenarioRequest:
 
     role_id: str
     role_label: str
-    years_experience: str | None
     skills: tuple[str, ...]
-    responsibilities: tuple[str, ...]
     duration: str
     difficulty: str
     activity_type: str  # an ActivityType; the provider must return this type

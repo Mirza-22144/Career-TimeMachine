@@ -26,17 +26,18 @@ class PracticeRoleSelection:
 class PracticeContext:
     """Career context handed to workplace practice.
 
-    Holds only what a scenario needs. The token, break dates, break reason
-    and custom free-text skills/responsibilities are deliberately left out so
-    they never reach a scenario provider.
+    Holds only what a scenario needs: skills and role (Iteration 3 rule,
+    BE 3.1). The token, break dates, break reason, years of experience,
+    responsibilities and custom free-text skills/responsibilities are
+    deliberately left out so they never reach a scenario provider - years of
+    experience and responsibilities are used for job-description comparison
+    only, not scenario generation.
     """
 
     role_id: str
     role_label: str
     role_source: str
-    years_experience: str | None
     skills: list[str]
-    responsibilities: list[str]
 
 
 class PracticeRoleService:
@@ -113,9 +114,7 @@ class PracticeRoleService:
             role_id=selection.role_id,
             role_label=selection.role_label,
             role_source=selection.source,
-            years_experience=self._label("experience-options", profile.years_experience),
             skills=self._labels("skills", profile.skill_ids),
-            responsibilities=self._labels("responsibilities", profile.responsibility_ids),
         )
 
     def _selection(
@@ -151,11 +150,6 @@ class PracticeRoleService:
 
     def _role_labels(self) -> dict[str, str]:
         return {item.id: item.label for item in self.catalogue.get_items("roles")}
-
-    def _label(self, catalogue_kind: str, item_id: str | None) -> str | None:
-        """Resolve one optional catalogue ID to its label."""
-        labels = self._labels(catalogue_kind, [item_id]) if item_id else []
-        return labels[0] if labels else None
 
     def _labels(self, catalogue_kind: str, item_ids: list[str]) -> list[str]:
         """Resolve catalogue IDs to labels, skipping any that no longer exist."""

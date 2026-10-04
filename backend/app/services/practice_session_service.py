@@ -90,9 +90,7 @@ class PracticeSessionService:
             ScenarioRequest(
                 role_id=context.role_id,
                 role_label=context.role_label,
-                years_experience=context.years_experience,
                 skills=tuple(context.skills),
-                responsibilities=tuple(context.responsibilities),
                 duration=settings.duration,
                 difficulty=settings.difficulty,
                 activity_type=self.activity_type,

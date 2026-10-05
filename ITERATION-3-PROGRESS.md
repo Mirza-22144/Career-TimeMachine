@@ -223,4 +223,25 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Iteration 2 baseline** `[DONE]`: trained role-prediction classifier (one role) and the 81-scenario reflective MCQ dataset, both running in-process, no external API.
 
-*No Iteration 3 entries yet. New AI responsibilities this iteration - see the spec doc for exact request/response contracts: job-description extraction (BE 3.2), profile comparison (BE 3.3), role prediction expanded to 2 roles (BE 3.4), live MCQ generation for custom skills only (BE 3.5), code-review question generation (BE 3.6), drag-and-drop question generation (BE 3.7).*
+### AI 3.1 - Local job-description requirement extraction
+
+- **Status:** [DONE] **Owner:** Orkhan **Date:** 2026-10-05
+- **What:** I developed and evaluated a local job-description extraction component using `gliner-community/gliner_small-v2.5`, catalogue matching and deterministic Python validation. It accepts untrusted job-advert text and returns exactly five fields: skills, responsibilities, minimum years of experience, keywords and a role-title estimate. The handover includes the standalone Python module, the 1,299-skill catalogue, request and response examples, the integration contract, evaluation evidence, robustness evidence and deployment instructions.
+- **Evidence:** On an independent ten-advert holdout set, technical-skill F1 was 0.7723, soft-skill F1 was 0.8980 and responsibility F1 was 0.7917. Minimum-experience and role-title exact-match accuracy were both 100%, and the schema pass rate was 100%. The corrected extractor passed 13/13 robustness tests and the standalone deployment version achieved functional equivalence on 11/11 tested outputs.
+- **Why:** supports Iteration 3 goal 1 by converting an unstructured job advertisement into structured requirements that the backend can compare with the user’s profile.
+- **Blocks / Blocked by:** the AI extraction component is complete and unblocks BE 3.2. Backend integration still requires the endpoint and database work. The 1.28 GB model weights are deliberately excluded from Git and must be supplied during container deployment or retrieved from approved cloud storage, as documented in `MODEL_DEPLOYMENT.md`.
+
+### AI 3.2 - Two-role career recommender Version 2
+
+- **Status:** [DONE] **Owner:** Orkhan **Date:** 2026-10-05
+- **What:** I upgraded the career-role recommender to return two distinct future IT roles instead of one. The Version 2 pipeline uses TF-IDF text features, a tuned LinearSVC classifier and hybrid ranking based on the trained model, selected-skill fit and current-role similarity. It excludes the user’s current role and the internal `Other` class from both recommendations.
+- **Evidence:** The locked model achieved 85.28% accuracy, 68.46% balanced accuracy, 67.48% macro F1 across all 27 roles, 93.85% top-two accuracy and 96.52% top-three accuracy on the protected real test partition. The corrected recommender passed 8/8 backend integration tests. Its catalogue-profile audit improved intended-role top-two coverage from 5/27 to 20/27.
+- **Why:** delivers the AI portion of Iteration 3 goal 2 and gives users two credible directions instead of presenting one recommendation as the only possible path.
+- **Blocks / Blocked by:** the standalone model and two-role response contract are complete. BE 3.4 must connect the provider to `GET /predicted-roles`. Market-demand and shortage information remains a separate database lookup and is blocked by the role-to-ANZSCO mapping and historical snapshot decisions.
+
+### AI 3.3 - Iteration 3 workplace-activity content
+
+- **Status:** [TODO] **Owner:** Orkhan **Date:** 2026-10-05
+- **What:** the validated Iteration 2 dataset of 81 reflective scenarios remains available as the current baseline. Iteration 3 generation and revision work has not started because job-description extraction was prioritised first. New MCQ, code-review and drag-and-drop content will be produced only after the final backend contracts and required record counts are confirmed.
+- **Why:** records the current boundary clearly and avoids generating content against an outdated or assumed backend schema.
+- **Blocks / Blocked by:** awaiting confirmation of the final BE 3.5, BE 3.6 and BE 3.7 content contracts, generation quantities and live-AI fallback requirements.

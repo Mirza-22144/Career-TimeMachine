@@ -1,0 +1,814 @@
+{
+  "evaluation_type": "frozen_independent_controlled_holdout",
+  "created_at_utc": "2026-10-04T13:29:31.189539+00:00",
+  "holdout_sha256": "af8b88791fb1783599acf7c0e173fe0f4c97f59017e666b0d0e222e3ee1b7891",
+  "example_count": 10,
+  "metrics": {
+    "technical_skills": {
+      "true_positive": 38,
+      "false_positive": 19,
+      "false_negative": 5,
+      "precision": 0.6667,
+      "recall": 0.8837,
+      "f1": 0.76
+    },
+    "soft_skills": {
+      "true_positive": 22,
+      "false_positive": 4,
+      "false_negative": 1,
+      "precision": 0.8462,
+      "recall": 0.9565,
+      "f1": 0.898
+    },
+    "responsibilities": {
+      "true_positive": 38,
+      "false_positive": 8,
+      "false_negative": 12,
+      "precision": 0.8261,
+      "recall": 0.76,
+      "f1": 0.7917
+    },
+    "experience_exact_match_accuracy": 1.0,
+    "role_title_exact_match_accuracy": 1.0,
+    "schema_pass_rate": 1.0,
+    "mean_cpu_latency_seconds": 1.5221,
+    "p95_cpu_latency_seconds": 3.1488
+  },
+  "results": [
+    {
+      "example_id": "devops_engineer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "GitHub",
+            "category": "technical"
+          },
+          {
+            "label": "Terraform",
+            "category": "technical"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Build cloud infrastructure",
+          "Maintain CI/CD pipelines",
+          "Deploy containerised services",
+          "Monitor production systems",
+          "Collaborate with software engineering teams"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "AWS",
+          "Docker",
+          "Kubernetes",
+          "CI/CD",
+          "GitHub",
+          "Terraform",
+          "Collaboration",
+          "Communication"
+        ],
+        "role_title_guess": "DevOps Engineer"
+      },
+      "technical_false_positives": [
+        "github"
+      ],
+      "technical_false_negatives": [
+        "github actions"
+      ],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.2584
+    },
+    {
+      "example_id": "security_engineer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "SIEM platforms",
+            "category": "technical"
+          },
+          {
+            "label": "written communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Analyse suspicious network activity",
+          "Document incident findings",
+          "Configure security controls",
+          "Communicate risks to system owners"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Linux",
+          "SIEM platforms",
+          "written communication skills",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Information Security Engineer"
+      },
+      "technical_false_positives": [
+        "siem platforms",
+        "written communication skills"
+      ],
+      "technical_false_negatives": [
+        "network security",
+        "siem"
+      ],
+      "soft_false_positives": [
+        "communication"
+      ],
+      "soft_false_negatives": [
+        "written communication"
+      ],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [
+        "investigate security alerts"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.2292
+    },
+    {
+      "example_id": "bi_developer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "Snowflake",
+            "category": "technical"
+          },
+          {
+            "label": "Power BI",
+            "category": "technical"
+          },
+          {
+            "label": "Business intelligence",
+            "category": "technical"
+          },
+          {
+            "label": "Microsoft Excel",
+            "category": "technical"
+          },
+          {
+            "label": "Reporting",
+            "category": "technical"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop business dashboards",
+          "Maintain reporting datasets",
+          "Analyse operational trends",
+          "Work with stakeholders to define reporting needs"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "SQL",
+          "Snowflake",
+          "Power BI",
+          "Business intelligence",
+          "Microsoft Excel",
+          "Reporting",
+          "Presentation",
+          "Communication",
+          "Stakeholder communication"
+        ],
+        "role_title_guess": "Business Intelligence Developer"
+      },
+      "technical_false_positives": [
+        "business intelligence",
+        "reporting"
+      ],
+      "technical_false_negatives": [],
+      "soft_false_positives": [
+        "communication"
+      ],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [
+        "present insights to department managers"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.2537
+    },
+    {
+      "example_id": "ux_designer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "CSS",
+            "category": "technical"
+          },
+          {
+            "label": "Figma",
+            "category": "technical"
+          },
+          {
+            "label": "usability research",
+            "category": "technical"
+          },
+          {
+            "label": "frontend developers",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Design experience",
+          "Design accessible user interfaces",
+          "Create interactive prototypes",
+          "Maintain interface",
+          "Design documentation",
+          "Collaborate with frontend developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "HTML",
+          "CSS",
+          "Figma",
+          "usability research",
+          "frontend developers",
+          "Attention to detail",
+          "Collaboration"
+        ],
+        "role_title_guess": "User Experience Designer"
+      },
+      "technical_false_positives": [
+        "frontend developers",
+        "usability research"
+      ],
+      "technical_false_negatives": [
+        "accessibility"
+      ],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [
+        "design documentation",
+        "design experience",
+        "maintain interface"
+      ],
+      "responsibility_false_negatives": [
+        "conduct usability research",
+        "maintain interface design documentation"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.2346
+    },
+    {
+      "example_id": "database_architect_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "PostgreSQL",
+            "category": "technical"
+          },
+          {
+            "label": "Database",
+            "category": "technical"
+          },
+          {
+            "label": "Database design",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "data models",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect A minimum of 5 years of experience is required",
+          "Design",
+          "Design database architectures",
+          "Review data models",
+          "Communicate technical decisions to engineering teams"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "SQL",
+          "AWS",
+          "PostgreSQL",
+          "Database",
+          "Database design",
+          "communication skills",
+          "data models",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Database Architect"
+      },
+      "technical_false_positives": [
+        "communication skills",
+        "data models",
+        "database"
+      ],
+      "technical_false_negatives": [],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [
+        "architect a minimum of 5 years of experience is required",
+        "design"
+      ],
+      "responsibility_false_negatives": [
+        "establish data security controls",
+        "improve query performance"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.2788
+    },
+    {
+      "example_id": "qa_engineer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "REST APIs",
+            "category": "technical"
+          },
+          {
+            "label": "Postman",
+            "category": "technical"
+          },
+          {
+            "label": "Selenium",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Critical thinking",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop automated tests",
+          "Test REST APIs",
+          "Review",
+          "Test results",
+          "Document software defects",
+          "Collaborate with software developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "CI/CD",
+          "REST APIs",
+          "Postman",
+          "Selenium",
+          "Attention to detail",
+          "Critical thinking",
+          "Collaboration"
+        ],
+        "role_title_guess": "QA Automation Engineer"
+      },
+      "technical_false_positives": [
+        "rest apis"
+      ],
+      "technical_false_negatives": [
+        "rest api"
+      ],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [
+        "review",
+        "test results"
+      ],
+      "responsibility_false_negatives": [
+        "review test results"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.1923
+    },
+    {
+      "example_id": "network_architect_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "Microsoft Azure",
+            "category": "technical"
+          },
+          {
+            "label": "Connectivity",
+            "category": "technical"
+          },
+          {
+            "label": "Firewalls",
+            "category": "technical"
+          },
+          {
+            "label": "Cisco",
+            "category": "technical"
+          },
+          {
+            "label": "TCP/IP",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect The position requires at least 5 years of experience with Cisco technologies, TCP/IP, firewalls and Microsoft Azure",
+          "Design enterprise networks",
+          "Configure network security controls",
+          "Analyse network performance"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "Microsoft Azure",
+          "Connectivity",
+          "Firewalls",
+          "Cisco",
+          "TCP/IP",
+          "Problem solving",
+          "Communication",
+          "Presentation"
+        ],
+        "role_title_guess": "Computer Network Architect"
+      },
+      "technical_false_positives": [
+        "connectivity"
+      ],
+      "technical_false_negatives": [],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [
+        "architect the position requires at least 5 years of experience with cisco technologies tcp/ip firewalls and microsoft azure"
+      ],
+      "responsibility_false_negatives": [
+        "present architecture recommendations",
+        "resolve connectivity problems"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.236
+    },
+    {
+      "example_id": "it_project_manager_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "Jira",
+            "category": "technical"
+          },
+          {
+            "label": "Agile",
+            "category": "technical"
+          },
+          {
+            "label": "Scrum",
+            "category": "technical"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Leadership",
+            "category": "soft"
+          },
+          {
+            "label": "Negotiation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Plan technology projects",
+          "Coordinate delivery teams",
+          "Manage project risks",
+          "Communicate progress to stakeholders"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "Jira",
+          "Agile",
+          "Scrum",
+          "Stakeholder communication",
+          "Communication",
+          "Leadership",
+          "Negotiation"
+        ],
+        "role_title_guess": "IT Project Manager"
+      },
+      "technical_false_positives": [],
+      "technical_false_negatives": [],
+      "soft_false_positives": [
+        "communication"
+      ],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [
+        "negotiate delivery priorities"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 1.3387
+    },
+    {
+      "example_id": "machine_learning_engineer_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "PyTorch",
+            "category": "technical"
+          },
+          {
+            "label": "Machine learning",
+            "category": "technical"
+          },
+          {
+            "label": "machine-learning services",
+            "category": "technical"
+          },
+          {
+            "label": "predictive models",
+            "category": "technical"
+          },
+          {
+            "label": "containers",
+            "category": "technical"
+          },
+          {
+            "label": "data scientists",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Verbal communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop machine-learning services",
+          "Train predictive models",
+          "Deploy models in containers",
+          "Monitor model performance",
+          "Collaborate with data scientists"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Docker",
+          "Kubernetes",
+          "PyTorch",
+          "Machine learning",
+          "machine-learning services",
+          "predictive models",
+          "containers",
+          "data scientists",
+          "Communication",
+          "Collaboration",
+          "Verbal communication"
+        ],
+        "role_title_guess": "Machine Learning Engineer"
+      },
+      "technical_false_positives": [
+        "containers",
+        "data scientists",
+        "machine learning services",
+        "predictive models"
+      ],
+      "technical_false_negatives": [],
+      "soft_false_positives": [
+        "communication"
+      ],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 2.0504
+    },
+    {
+      "example_id": "web_administrator_holdout_01",
+      "prediction": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "Deployment",
+            "category": "technical"
+          },
+          {
+            "label": "Nginx",
+            "category": "technical"
+          },
+          {
+            "label": "Apache",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "web servers",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Prioritisation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Monitor website availability",
+          "Configure access controls",
+          "Communicate service updates to users"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "HTML",
+          "Linux",
+          "Deployment",
+          "Nginx",
+          "Apache",
+          "communication skills",
+          "web servers",
+          "Communication",
+          "Prioritisation"
+        ],
+        "role_title_guess": "Web Administrator"
+      },
+      "technical_false_positives": [
+        "communication skills",
+        "deployment",
+        "web servers"
+      ],
+      "technical_false_negatives": [],
+      "soft_false_positives": [],
+      "soft_false_negatives": [],
+      "responsibility_false_positives": [],
+      "responsibility_false_negatives": [
+        "administer web servers",
+        "resolve deployment problems"
+      ],
+      "experience_match": true,
+      "title_match": true,
+      "schema_match": true,
+      "latency_seconds": 3.1488
+    }
+  ],
+  "limitations": [
+    "I created a controlled labelled holdout set rather than using a large external benchmark.",
+    "Exact phrase matching may count semantically similar extractions as errors.",
+    "I did not use these results for further extractor tuning."
+  ]
+}

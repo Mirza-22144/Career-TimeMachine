@@ -1,0 +1,83 @@
+{
+  "model_name": "gliner-community/gliner_small-v2.5",
+  "local_model_directory": "/content/drive/MyDrive/CareerTimeMachine/job_description_extractor_v1/models/gliner_small_v2_5",
+  "device": "cpu",
+  "model_file_count": 39,
+  "model_size_mb": 1277.52,
+  "model_load_seconds": 11.8214,
+  "estimated_memory_increase_mb": 780.66,
+  "smoke_test_inference_seconds": 1.352,
+  "smoke_test_input": "Cloud Software Engineer\n\nWe are seeking a Cloud Software Engineer with at\nleast three years of software development experience.\n\nThe successful candidate will develop Python services,\nwork with AWS, Docker and CI/CD pipelines, review code,\nmentor junior engineers and communicate technical\ndecisions to product stakeholders.",
+  "requested_entity_labels": [
+    "technical skill",
+    "soft skill",
+    "job responsibility",
+    "job title"
+  ],
+  "extracted_entities": [
+    {
+      "text": "Cloud Software Engineer",
+      "label": "job title",
+      "score": 0.8676,
+      "start": 0,
+      "end": 23
+    },
+    {
+      "text": "Cloud Software Engineer",
+      "label": "job title",
+      "score": 0.9519,
+      "start": 42,
+      "end": 65
+    },
+    {
+      "text": "software development",
+      "label": "technical skill",
+      "score": 0.6661,
+      "start": 95,
+      "end": 115
+    },
+    {
+      "text": "Python",
+      "label": "soft skill",
+      "score": 0.6561,
+      "start": 167,
+      "end": 173
+    },
+    {
+      "text": "CI/CD pipelines",
+      "label": "soft skill",
+      "score": 0.5623,
+      "start": 210,
+      "end": 225
+    },
+    {
+      "text": "code",
+      "label": "soft skill",
+      "score": 0.4919,
+      "start": 234,
+      "end": 238
+    },
+    {
+      "text": "mentor",
+      "label": "job responsibility",
+      "score": 0.5202,
+      "start": 240,
+      "end": 246
+    },
+    {
+      "text": "communicate technical\ndecisions",
+      "label": "job responsibility",
+      "score": 0.5947,
+      "start": 268,
+      "end": 299
+    },
+    {
+      "text": "product stakeholders",
+      "label": "job responsibility",
+      "score": 0.411,
+      "start": 303,
+      "end": 323
+    }
+  ],
+  "verified_at_utc": "2026-10-04T12:53:18.868277+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "skills": [
+    {
+      "label": "Python",
+      "category": "technical"
+    },
+    {
+      "label": "SQL",
+      "category": "technical"
+    },
+    {
+      "label": "AWS",
+      "category": "technical"
+    },
+    {
+      "label": "data quality",
+      "category": "technical"
+    },
+    {
+      "label": "Collaboration",
+      "category": "soft"
+    },
+    {
+      "label": "Communication",
+      "category": "soft"
+    }
+  ],
+  "responsibilities": [
+    "Develop data pipelines",
+    "Maintain cloud data services",
+    "Review data quality",
+    "Document technical decisions",
+    "Collaborate with software engineering teams"
+  ],
+  "min_years_experience": 3,
+  "keywords": [
+    "Python",
+    "SQL",
+    "AWS",
+    "data quality",
+    "Collaboration",
+    "Communication"
+  ],
+  "role_title_guess": "Data Engineer"
+}

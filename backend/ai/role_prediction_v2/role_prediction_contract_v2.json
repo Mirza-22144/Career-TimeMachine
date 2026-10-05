@@ -1,0 +1,56 @@
+{
+  "operation": "two_future_role_predictions",
+  "request": {
+    "role": {
+      "id": "software_developer",
+      "label": "Software Developer"
+    },
+    "skills": {
+      "catalogue": [
+        {
+          "id": "python",
+          "label": "Python"
+        },
+        {
+          "id": "sql",
+          "label": "SQL"
+        }
+      ],
+      "custom": [
+        "Machine learning",
+        "Statistical modelling",
+        "Data visualisation",
+        "Predictive analytics"
+      ]
+    }
+  },
+  "response": {
+    "predicted_roles": [
+      {
+        "id": "data_scientist",
+        "label": "Data Scientist"
+      },
+      {
+        "id": "business_intelligence_analyst",
+        "label": "Business Intelligence Analyst"
+      }
+    ]
+  },
+  "constraints": {
+    "returned_role_count": 2,
+    "roles_are_distinct": true,
+    "current_role_excluded": true,
+    "other_excluded": true,
+    "supported_predictive_roles": 27,
+    "public_scores_returned": false
+  },
+  "backend_change_required": "The response schema must accept a predicted_roles array containing exactly two role objects.",
+  "hybrid_ranking": {
+    "trained_model_weight": 0.5,
+    "selected_skill_fit_weight": 0.4,
+    "previous_role_similarity_weight": 0.1,
+    "distinctiveness_aware_skills": true,
+    "dynamic_component_weighting": true
+  },
+  "standalone_predictor_verified": true
+}

@@ -1,0 +1,59 @@
+{
+  "project": "CareerTimeMachine",
+  "feature": "Job Description Extractor",
+  "version": "1.0",
+  "created_at_utc": "2026-10-04T13:57:45.986929+00:00",
+  "delivery": {
+    "python_module": "job_description_extractor.py",
+    "skill_catalogue": "skill_catalogue.json",
+    "requirements": "requirements.txt",
+    "model_weights_included": false,
+    "model_delivery_document": "MODEL_DEPLOYMENT.md"
+  },
+  "model": {
+    "name": "gliner-community/gliner_small-v2.5",
+    "approximate_size_mb": 1277.52,
+    "runtime": "local CPU inference",
+    "external_runtime_api_required": false
+  },
+  "contract": {
+    "method": "extract(raw_text: str) -> dict",
+    "maximum_input_characters": 20000,
+    "output_fields": [
+      "skills",
+      "responsibilities",
+      "min_years_experience",
+      "keywords",
+      "role_title_guess"
+    ]
+  },
+  "standalone_holdout_metrics": {
+    "technical_skill_precision": 0.6724,
+    "technical_skill_recall": 0.907,
+    "technical_skill_f1": 0.7723,
+    "soft_skill_precision": 0.8462,
+    "soft_skill_recall": 0.9565,
+    "soft_skill_f1": 0.898,
+    "responsibility_precision": 0.8261,
+    "responsibility_recall": 0.76,
+    "responsibility_f1": 0.7917,
+    "experience_exact_match_accuracy": 1.0,
+    "role_title_exact_match_accuracy": 1.0,
+    "schema_pass_rate": 1.0
+  },
+  "verification": {
+    "functional_equivalence": "11/11",
+    "robustness_tests": "13/13",
+    "security_test_passed": true
+  },
+  "checksums": {
+    "job_description_extractor_sha256": "e4607f78b9d767c7854b526c40b3d7b2422355ecd0681ef87709838719be8510",
+    "skill_catalogue_sha256": "e69f565a2e6408261f9128c609298efdf9924334b646d6618d744ea160903942"
+  },
+  "limitations": [
+    "The holdout set contains ten controlled labelled job descriptions.",
+    "Technical-skill precision is lower than technical-skill recall.",
+    "Extracted results are guidance and must not be treated as a hiring decision.",
+    "Model weights must be delivered separately because they exceed GitHub's file-size limit."
+  ]
+}

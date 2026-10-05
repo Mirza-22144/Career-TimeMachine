@@ -1,0 +1,220 @@
+{
+  "created_at_utc": "2026-10-01T12:39:22.296589+00:00",
+  "method": "Deterministic sampling from verified role-skill catalogue mappings",
+  "random_seed": 5120,
+  "minimum_training_profiles_per_role": 120,
+  "real_training_record_count": 13656,
+  "catalogue_derived_record_count": 1032,
+  "combined_training_record_count": 14688,
+  "augmented_role_count": 11,
+  "augmented_role_ids": [
+    "blockchain_engineer",
+    "computer_and_information_research_scientist",
+    "computer_network_architect",
+    "computer_network_support_specialist",
+    "computer_programmer",
+    "data_warehousing_specialist",
+    "digital_forensics_analyst",
+    "penetration_tester",
+    "telecommunications_engineering_specialist",
+    "video_game_designer",
+    "web_administrator"
+  ],
+  "per_role_evidence": {
+    "blockchain_engineer": {
+      "role_label": "Blockchain Engineer",
+      "real_training_records": 4,
+      "available_catalogue_skills": 50,
+      "catalogue_profiles_added": 116,
+      "combined_training_records": 120
+    },
+    "business_intelligence_analyst": {
+      "role_label": "Business Intelligence Analyst",
+      "real_training_records": 417,
+      "available_catalogue_skills": 203,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 417
+    },
+    "computer_and_information_research_scientist": {
+      "role_label": "Computer and Information Research Scientist",
+      "real_training_records": 1,
+      "available_catalogue_skills": 164,
+      "catalogue_profiles_added": 119,
+      "combined_training_records": 120
+    },
+    "computer_and_information_systems_manager": {
+      "role_label": "Computer and Information Systems Manager",
+      "real_training_records": 142,
+      "available_catalogue_skills": 177,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 142
+    },
+    "computer_network_architect": {
+      "role_label": "Computer Network Architect",
+      "real_training_records": 95,
+      "available_catalogue_skills": 278,
+      "catalogue_profiles_added": 25,
+      "combined_training_records": 120
+    },
+    "computer_network_support_specialist": {
+      "role_label": "Computer Network Support Specialist",
+      "real_training_records": 22,
+      "available_catalogue_skills": 142,
+      "catalogue_profiles_added": 98,
+      "combined_training_records": 120
+    },
+    "computer_programmer": {
+      "role_label": "Computer Programmer",
+      "real_training_records": 41,
+      "available_catalogue_skills": 293,
+      "catalogue_profiles_added": 79,
+      "combined_training_records": 120
+    },
+    "computer_systems_analyst": {
+      "role_label": "Computer Systems Analyst",
+      "real_training_records": 893,
+      "available_catalogue_skills": 311,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 893
+    },
+    "computer_systems_engineer_architect": {
+      "role_label": "Computer Systems Engineer / Architect",
+      "real_training_records": 3073,
+      "available_catalogue_skills": 267,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 3073
+    },
+    "computer_user_support_specialist": {
+      "role_label": "Computer User Support Specialist",
+      "real_training_records": 482,
+      "available_catalogue_skills": 257,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 482
+    },
+    "data_scientist": {
+      "role_label": "Data Scientist",
+      "real_training_records": 367,
+      "available_catalogue_skills": 87,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 367
+    },
+    "data_warehousing_specialist": {
+      "role_label": "Data Warehousing Specialist",
+      "real_training_records": 58,
+      "available_catalogue_skills": 159,
+      "catalogue_profiles_added": 62,
+      "combined_training_records": 120
+    },
+    "database_administrator": {
+      "role_label": "Database Administrator",
+      "real_training_records": 319,
+      "available_catalogue_skills": 288,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 319
+    },
+    "database_architect": {
+      "role_label": "Database Architect",
+      "real_training_records": 179,
+      "available_catalogue_skills": 322,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 179
+    },
+    "digital_forensics_analyst": {
+      "role_label": "Digital Forensics Analyst",
+      "real_training_records": 11,
+      "available_catalogue_skills": 64,
+      "catalogue_profiles_added": 109,
+      "combined_training_records": 120
+    },
+    "information_security_analyst": {
+      "role_label": "Information Security Analyst",
+      "real_training_records": 223,
+      "available_catalogue_skills": 244,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 223
+    },
+    "information_security_engineer": {
+      "role_label": "Information Security Engineer",
+      "real_training_records": 159,
+      "available_catalogue_skills": 89,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 159
+    },
+    "it_project_manager": {
+      "role_label": "IT Project Manager",
+      "real_training_records": 505,
+      "available_catalogue_skills": 334,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 505
+    },
+    "network_and_systems_administrator": {
+      "role_label": "Network and Systems Administrator",
+      "real_training_records": 544,
+      "available_catalogue_skills": 260,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 544
+    },
+    "penetration_tester": {
+      "role_label": "Penetration Tester",
+      "real_training_records": 16,
+      "available_catalogue_skills": 67,
+      "catalogue_profiles_added": 104,
+      "combined_training_records": 120
+    },
+    "software_developer": {
+      "role_label": "Software Developer",
+      "real_training_records": 5212,
+      "available_catalogue_skills": 430,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 5212
+    },
+    "software_qa_analyst_tester": {
+      "role_label": "Software QA Analyst / Tester",
+      "real_training_records": 328,
+      "available_catalogue_skills": 429,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 328
+    },
+    "telecommunications_engineering_specialist": {
+      "role_label": "Telecommunications Engineering Specialist",
+      "real_training_records": 17,
+      "available_catalogue_skills": 53,
+      "catalogue_profiles_added": 103,
+      "combined_training_records": 120
+    },
+    "video_game_designer": {
+      "role_label": "Video Game Designer",
+      "real_training_records": 17,
+      "available_catalogue_skills": 57,
+      "catalogue_profiles_added": 103,
+      "combined_training_records": 120
+    },
+    "web_administrator": {
+      "role_label": "Web Administrator",
+      "real_training_records": 6,
+      "available_catalogue_skills": 117,
+      "catalogue_profiles_added": 114,
+      "combined_training_records": 120
+    },
+    "web_and_digital_interface_designer": {
+      "role_label": "Web and Digital Interface Designer",
+      "real_training_records": 267,
+      "available_catalogue_skills": 236,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 267
+    },
+    "web_developer": {
+      "role_label": "Web Developer",
+      "real_training_records": 258,
+      "available_catalogue_skills": 251,
+      "catalogue_profiles_added": 0,
+      "combined_training_records": 258
+    }
+  },
+  "data_boundary": {
+    "catalogue_support_used_for_training": true,
+    "catalogue_support_used_for_validation": false,
+    "catalogue_support_used_for_testing": false
+  },
+  "important_limitation": "Catalogue-derived profiles represent known role-skill relationships. They are not real job postings or observed career transitions."
+}

@@ -1,0 +1,1296 @@
+{
+  "created_at_utc": "2026-10-04T13:53:52.495496+00:00",
+  "standalone_file": "/content/drive/MyDrive/CareerTimeMachine/job_description_extractor_v1/backend_handover/job_description_extractor.py",
+  "catalogue_file": "/content/drive/MyDrive/CareerTimeMachine/job_description_extractor_v1/backend_handover/skill_catalogue.json",
+  "comparison_count": 11,
+  "exact_match_count": 7,
+  "all_outputs_match": false,
+  "security_test_passed": true,
+  "detected_security_phrases": [],
+  "complete_verification_passed": false,
+  "comparisons": [
+    {
+      "example_id": "backend_handover_example",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "data quality",
+            "category": "technical"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop data pipelines",
+          "Maintain cloud data services",
+          "Review data quality",
+          "Document technical decisions",
+          "Collaborate with software engineering teams"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "SQL",
+          "AWS",
+          "data quality",
+          "Collaboration",
+          "Communication"
+        ],
+        "role_title_guess": "Data Engineer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "data quality",
+            "category": "technical"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop data pipelines",
+          "Maintain cloud data services",
+          "Review data quality",
+          "Document technical decisions",
+          "Collaborate with software engineering teams"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "SQL",
+          "AWS",
+          "data quality",
+          "Collaboration",
+          "Communication"
+        ],
+        "role_title_guess": "Data Engineer"
+      }
+    },
+    {
+      "example_id": "devops_engineer_holdout_01",
+      "passed": false,
+      "outputs_match_exactly": false,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "GitHub",
+            "category": "technical"
+          },
+          {
+            "label": "Terraform",
+            "category": "technical"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Build cloud infrastructure",
+          "Maintain CI/CD pipelines",
+          "Deploy containerised services",
+          "Monitor production systems",
+          "Collaborate with software engineering teams"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "AWS",
+          "Docker",
+          "Kubernetes",
+          "CI/CD",
+          "GitHub",
+          "Terraform",
+          "Collaboration",
+          "Communication"
+        ],
+        "role_title_guess": "DevOps Engineer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "GitHub",
+            "category": "technical"
+          },
+          {
+            "label": "GitHub Actions",
+            "category": "technical"
+          },
+          {
+            "label": "Terraform",
+            "category": "technical"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Build cloud infrastructure",
+          "Maintain CI/CD pipelines",
+          "Deploy containerised services",
+          "Monitor production systems",
+          "Collaborate with software engineering teams"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "AWS",
+          "Docker",
+          "Kubernetes",
+          "CI/CD",
+          "GitHub",
+          "GitHub Actions",
+          "Terraform",
+          "Collaboration",
+          "Communication"
+        ],
+        "role_title_guess": "DevOps Engineer"
+      }
+    },
+    {
+      "example_id": "security_engineer_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "SIEM platforms",
+            "category": "technical"
+          },
+          {
+            "label": "written communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Analyse suspicious network activity",
+          "Document incident findings",
+          "Configure security controls",
+          "Communicate risks to system owners"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Linux",
+          "SIEM platforms",
+          "written communication skills",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Information Security Engineer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "SIEM platforms",
+            "category": "technical"
+          },
+          {
+            "label": "written communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Analyse suspicious network activity",
+          "Document incident findings",
+          "Configure security controls",
+          "Communicate risks to system owners"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Linux",
+          "SIEM platforms",
+          "written communication skills",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Information Security Engineer"
+      }
+    },
+    {
+      "example_id": "bi_developer_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "Snowflake",
+            "category": "technical"
+          },
+          {
+            "label": "Power BI",
+            "category": "technical"
+          },
+          {
+            "label": "Business intelligence",
+            "category": "technical"
+          },
+          {
+            "label": "Microsoft Excel",
+            "category": "technical"
+          },
+          {
+            "label": "Reporting",
+            "category": "technical"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop business dashboards",
+          "Maintain reporting datasets",
+          "Analyse operational trends",
+          "Work with stakeholders to define reporting needs"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "SQL",
+          "Snowflake",
+          "Power BI",
+          "Business intelligence",
+          "Microsoft Excel",
+          "Reporting",
+          "Presentation",
+          "Communication",
+          "Stakeholder communication"
+        ],
+        "role_title_guess": "Business Intelligence Developer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "Snowflake",
+            "category": "technical"
+          },
+          {
+            "label": "Power BI",
+            "category": "technical"
+          },
+          {
+            "label": "Business intelligence",
+            "category": "technical"
+          },
+          {
+            "label": "Microsoft Excel",
+            "category": "technical"
+          },
+          {
+            "label": "Reporting",
+            "category": "technical"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop business dashboards",
+          "Maintain reporting datasets",
+          "Analyse operational trends",
+          "Work with stakeholders to define reporting needs"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "SQL",
+          "Snowflake",
+          "Power BI",
+          "Business intelligence",
+          "Microsoft Excel",
+          "Reporting",
+          "Presentation",
+          "Communication",
+          "Stakeholder communication"
+        ],
+        "role_title_guess": "Business Intelligence Developer"
+      }
+    },
+    {
+      "example_id": "ux_designer_holdout_01",
+      "passed": false,
+      "outputs_match_exactly": false,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "CSS",
+            "category": "technical"
+          },
+          {
+            "label": "Figma",
+            "category": "technical"
+          },
+          {
+            "label": "usability research",
+            "category": "technical"
+          },
+          {
+            "label": "frontend developers",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Design experience",
+          "Design accessible user interfaces",
+          "Create interactive prototypes",
+          "Maintain interface",
+          "Design documentation",
+          "Collaborate with frontend developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "HTML",
+          "CSS",
+          "Figma",
+          "usability research",
+          "frontend developers",
+          "Attention to detail",
+          "Collaboration"
+        ],
+        "role_title_guess": "User Experience Designer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "CSS",
+            "category": "technical"
+          },
+          {
+            "label": "Figma",
+            "category": "technical"
+          },
+          {
+            "label": "usability research",
+            "category": "technical"
+          },
+          {
+            "label": "frontend developers",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Design",
+          "Design accessible user interfaces",
+          "Create interactive prototypes",
+          "Maintain interface",
+          "Design documentation",
+          "Collaborate with frontend developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "HTML",
+          "CSS",
+          "Figma",
+          "usability research",
+          "frontend developers",
+          "Attention to detail",
+          "Collaboration"
+        ],
+        "role_title_guess": "User Experience Designer"
+      }
+    },
+    {
+      "example_id": "database_architect_holdout_01",
+      "passed": false,
+      "outputs_match_exactly": false,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "PostgreSQL",
+            "category": "technical"
+          },
+          {
+            "label": "Database",
+            "category": "technical"
+          },
+          {
+            "label": "Database design",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "data models",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect A minimum of 5 years of experience is required",
+          "Design",
+          "Design database architectures",
+          "Review data models",
+          "Communicate technical decisions to engineering teams"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "SQL",
+          "AWS",
+          "PostgreSQL",
+          "Database",
+          "Database design",
+          "communication skills",
+          "data models",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Database Architect"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "SQL",
+            "category": "technical"
+          },
+          {
+            "label": "AWS",
+            "category": "technical"
+          },
+          {
+            "label": "PostgreSQL",
+            "category": "technical"
+          },
+          {
+            "label": "Database",
+            "category": "technical"
+          },
+          {
+            "label": "Database design",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "data models",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect",
+          "Design",
+          "Design database architectures",
+          "Review data models",
+          "Communicate technical decisions to engineering teams"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "SQL",
+          "AWS",
+          "PostgreSQL",
+          "Database",
+          "Database design",
+          "communication skills",
+          "data models",
+          "Problem solving",
+          "Communication"
+        ],
+        "role_title_guess": "Database Architect"
+      }
+    },
+    {
+      "example_id": "qa_engineer_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "REST APIs",
+            "category": "technical"
+          },
+          {
+            "label": "Postman",
+            "category": "technical"
+          },
+          {
+            "label": "Selenium",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Critical thinking",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop automated tests",
+          "Test REST APIs",
+          "Review",
+          "Test results",
+          "Document software defects",
+          "Collaborate with software developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "CI/CD",
+          "REST APIs",
+          "Postman",
+          "Selenium",
+          "Attention to detail",
+          "Critical thinking",
+          "Collaboration"
+        ],
+        "role_title_guess": "QA Automation Engineer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "CI/CD",
+            "category": "technical"
+          },
+          {
+            "label": "REST APIs",
+            "category": "technical"
+          },
+          {
+            "label": "Postman",
+            "category": "technical"
+          },
+          {
+            "label": "Selenium",
+            "category": "technical"
+          },
+          {
+            "label": "Attention to detail",
+            "category": "soft"
+          },
+          {
+            "label": "Critical thinking",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop automated tests",
+          "Test REST APIs",
+          "Review",
+          "Test results",
+          "Document software defects",
+          "Collaborate with software developers"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "CI/CD",
+          "REST APIs",
+          "Postman",
+          "Selenium",
+          "Attention to detail",
+          "Critical thinking",
+          "Collaboration"
+        ],
+        "role_title_guess": "QA Automation Engineer"
+      }
+    },
+    {
+      "example_id": "network_architect_holdout_01",
+      "passed": false,
+      "outputs_match_exactly": false,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Microsoft Azure",
+            "category": "technical"
+          },
+          {
+            "label": "Connectivity",
+            "category": "technical"
+          },
+          {
+            "label": "Firewalls",
+            "category": "technical"
+          },
+          {
+            "label": "Cisco",
+            "category": "technical"
+          },
+          {
+            "label": "TCP/IP",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect The position requires at least 5 years of experience with Cisco technologies, TCP/IP, firewalls and Microsoft Azure",
+          "Design enterprise networks",
+          "Configure network security controls",
+          "Analyse network performance"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "Microsoft Azure",
+          "Connectivity",
+          "Firewalls",
+          "Cisco",
+          "TCP/IP",
+          "Problem solving",
+          "Communication",
+          "Presentation"
+        ],
+        "role_title_guess": "Computer Network Architect"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Microsoft Azure",
+            "category": "technical"
+          },
+          {
+            "label": "Connectivity",
+            "category": "technical"
+          },
+          {
+            "label": "Firewalls",
+            "category": "technical"
+          },
+          {
+            "label": "Cisco",
+            "category": "technical"
+          },
+          {
+            "label": "TCP/IP",
+            "category": "technical"
+          },
+          {
+            "label": "Problem solving",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Presentation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Architect",
+          "Design enterprise networks",
+          "Configure network security controls",
+          "Analyse network performance"
+        ],
+        "min_years_experience": 5,
+        "keywords": [
+          "Microsoft Azure",
+          "Connectivity",
+          "Firewalls",
+          "Cisco",
+          "TCP/IP",
+          "Problem solving",
+          "Communication",
+          "Presentation"
+        ],
+        "role_title_guess": "Computer Network Architect"
+      }
+    },
+    {
+      "example_id": "it_project_manager_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Jira",
+            "category": "technical"
+          },
+          {
+            "label": "Agile",
+            "category": "technical"
+          },
+          {
+            "label": "Scrum",
+            "category": "technical"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Leadership",
+            "category": "soft"
+          },
+          {
+            "label": "Negotiation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Plan technology projects",
+          "Coordinate delivery teams",
+          "Manage project risks",
+          "Communicate progress to stakeholders"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "Jira",
+          "Agile",
+          "Scrum",
+          "Stakeholder communication",
+          "Communication",
+          "Leadership",
+          "Negotiation"
+        ],
+        "role_title_guess": "IT Project Manager"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Jira",
+            "category": "technical"
+          },
+          {
+            "label": "Agile",
+            "category": "technical"
+          },
+          {
+            "label": "Scrum",
+            "category": "technical"
+          },
+          {
+            "label": "Stakeholder communication",
+            "category": "soft"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Leadership",
+            "category": "soft"
+          },
+          {
+            "label": "Negotiation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Plan technology projects",
+          "Coordinate delivery teams",
+          "Manage project risks",
+          "Communicate progress to stakeholders"
+        ],
+        "min_years_experience": 4,
+        "keywords": [
+          "Jira",
+          "Agile",
+          "Scrum",
+          "Stakeholder communication",
+          "Communication",
+          "Leadership",
+          "Negotiation"
+        ],
+        "role_title_guess": "IT Project Manager"
+      }
+    },
+    {
+      "example_id": "machine_learning_engineer_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "PyTorch",
+            "category": "technical"
+          },
+          {
+            "label": "Machine learning",
+            "category": "technical"
+          },
+          {
+            "label": "machine-learning services",
+            "category": "technical"
+          },
+          {
+            "label": "predictive models",
+            "category": "technical"
+          },
+          {
+            "label": "containers",
+            "category": "technical"
+          },
+          {
+            "label": "data scientists",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Verbal communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop machine-learning services",
+          "Train predictive models",
+          "Deploy models in containers",
+          "Monitor model performance",
+          "Collaborate with data scientists"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Docker",
+          "Kubernetes",
+          "PyTorch",
+          "Machine learning",
+          "machine-learning services",
+          "predictive models",
+          "containers",
+          "data scientists",
+          "Communication",
+          "Collaboration",
+          "Verbal communication"
+        ],
+        "role_title_guess": "Machine Learning Engineer"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "Python",
+            "category": "technical"
+          },
+          {
+            "label": "Docker",
+            "category": "technical"
+          },
+          {
+            "label": "Kubernetes",
+            "category": "technical"
+          },
+          {
+            "label": "PyTorch",
+            "category": "technical"
+          },
+          {
+            "label": "Machine learning",
+            "category": "technical"
+          },
+          {
+            "label": "machine-learning services",
+            "category": "technical"
+          },
+          {
+            "label": "predictive models",
+            "category": "technical"
+          },
+          {
+            "label": "containers",
+            "category": "technical"
+          },
+          {
+            "label": "data scientists",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Collaboration",
+            "category": "soft"
+          },
+          {
+            "label": "Verbal communication",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Develop machine-learning services",
+          "Train predictive models",
+          "Deploy models in containers",
+          "Monitor model performance",
+          "Collaborate with data scientists"
+        ],
+        "min_years_experience": 3,
+        "keywords": [
+          "Python",
+          "Docker",
+          "Kubernetes",
+          "PyTorch",
+          "Machine learning",
+          "machine-learning services",
+          "predictive models",
+          "containers",
+          "data scientists",
+          "Communication",
+          "Collaboration",
+          "Verbal communication"
+        ],
+        "role_title_guess": "Machine Learning Engineer"
+      }
+    },
+    {
+      "example_id": "web_administrator_holdout_01",
+      "passed": true,
+      "outputs_match_exactly": true,
+      "contract_errors": [],
+      "notebook_output": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "Deployment",
+            "category": "technical"
+          },
+          {
+            "label": "Nginx",
+            "category": "technical"
+          },
+          {
+            "label": "Apache",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "web servers",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Prioritisation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Monitor website availability",
+          "Configure access controls",
+          "Communicate service updates to users"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "HTML",
+          "Linux",
+          "Deployment",
+          "Nginx",
+          "Apache",
+          "communication skills",
+          "web servers",
+          "Communication",
+          "Prioritisation"
+        ],
+        "role_title_guess": "Web Administrator"
+      },
+      "standalone_output": {
+        "skills": [
+          {
+            "label": "HTML",
+            "category": "technical"
+          },
+          {
+            "label": "Linux",
+            "category": "technical"
+          },
+          {
+            "label": "Deployment",
+            "category": "technical"
+          },
+          {
+            "label": "Nginx",
+            "category": "technical"
+          },
+          {
+            "label": "Apache",
+            "category": "technical"
+          },
+          {
+            "label": "communication skills",
+            "category": "technical"
+          },
+          {
+            "label": "web servers",
+            "category": "technical"
+          },
+          {
+            "label": "Communication",
+            "category": "soft"
+          },
+          {
+            "label": "Prioritisation",
+            "category": "soft"
+          }
+        ],
+        "responsibilities": [
+          "Monitor website availability",
+          "Configure access controls",
+          "Communicate service updates to users"
+        ],
+        "min_years_experience": 2,
+        "keywords": [
+          "HTML",
+          "Linux",
+          "Deployment",
+          "Nginx",
+          "Apache",
+          "communication skills",
+          "web servers",
+          "Communication",
+          "Prioritisation"
+        ],
+        "role_title_guess": "Web Administrator"
+      }
+    }
+  ]
+}

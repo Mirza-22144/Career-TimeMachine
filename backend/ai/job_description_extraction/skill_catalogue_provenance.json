@@ -1,0 +1,11 @@
+{
+  "repository_url": "https://github.com/Mirza-22144/Career-TimeMachine.git",
+  "repository_branch": "iteration-3-backend",
+  "repository_commit": "940cd6d9445504c1f3ca8b9c453dc469918204e2",
+  "repository_commit_message": "removed years exp and responsibility field from mcq scenarios",
+  "repository_commit_date": "2026-10-04T20:45:35+11:00",
+  "source_file": "data/processed/skills_clean.csv",
+  "saved_source_file": "/content/drive/MyDrive/CareerTimeMachine/job_description_extractor_v1/data/skills_clean_source.csv",
+  "source_sha256": "a150c7d2616322f0cbfd2048043f64eca362e2365523270332c8abf1de93bb49",
+  "technical_skill_count": 1299
+}

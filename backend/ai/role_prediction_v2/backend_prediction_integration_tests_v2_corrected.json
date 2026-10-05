@@ -1,0 +1,391 @@
+{
+  "created_at_utc": "2026-10-01T13:45:59.138221+00:00",
+  "model_version": "2.0",
+  "hybrid_ranking_version": "distinctiveness_corrected",
+  "hybrid_weights": {
+    "trained_model": 0.5,
+    "selected_skill_fit": 0.4,
+    "current_role_similarity": 0.1
+  },
+  "skill_weighting": "Industry importance multiplied by inverse role frequency",
+  "valid_test_count": 8,
+  "valid_tests_passed": 8,
+  "unknown_role_rejected": true,
+  "unknown_role_error": "I received an unknown role ID: unknown_role",
+  "prediction_distribution": {
+    "data_scientist": 2,
+    "software_qa_analyst_tester": 3,
+    "information_security_analyst": 1,
+    "computer_network_architect": 1,
+    "web_and_digital_interface_designer": 1,
+    "software_developer": 3,
+    "computer_systems_engineer_architect": 2,
+    "information_security_engineer": 1,
+    "database_architect": 1,
+    "database_administrator": 1
+  },
+  "tests": [
+    {
+      "test_name": "data_skills_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": [
+            "Machine learning",
+            "Statistical modelling",
+            "Data visualisation"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "data_scientist",
+            "label": "Data Scientist"
+          },
+          {
+            "id": "software_qa_analyst_tester",
+            "label": "Software QA Analyst / Tester"
+          }
+        ]
+      },
+      "supplied_skill_count": 5,
+      "recognised_catalogue_skill_count": 2,
+      "active_component_weights": {
+        "trained_model": 0.5,
+        "selected_skill_fit": 0.4,
+        "current_role_similarity": 0.1
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "security_skills_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "network_and_systems_administrator",
+          "label": "Network and Systems Administrator"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "linux",
+              "label": "Linux"
+            }
+          ],
+          "custom": [
+            "Network security",
+            "Threat detection",
+            "Incident response",
+            "Penetration testing"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "information_security_analyst",
+            "label": "Information Security Analyst"
+          },
+          {
+            "id": "computer_network_architect",
+            "label": "Computer Network Architect"
+          }
+        ]
+      },
+      "supplied_skill_count": 5,
+      "recognised_catalogue_skill_count": 2,
+      "active_component_weights": {
+        "trained_model": 0.5,
+        "selected_skill_fit": 0.4,
+        "current_role_similarity": 0.1
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "interface_design_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "web_developer",
+          "label": "Web Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "html",
+              "label": "HTML"
+            },
+            {
+              "id": "css",
+              "label": "CSS"
+            },
+            {
+              "id": "javascript",
+              "label": "JavaScript"
+            }
+          ],
+          "custom": [
+            "User experience design",
+            "Figma",
+            "Accessibility",
+            "Interaction design"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "web_and_digital_interface_designer",
+            "label": "Web and Digital Interface Designer"
+          },
+          {
+            "id": "software_developer",
+            "label": "Software Developer"
+          }
+        ]
+      },
+      "supplied_skill_count": 7,
+      "recognised_catalogue_skill_count": 4,
+      "active_component_weights": {
+        "trained_model": 0.5,
+        "selected_skill_fit": 0.4,
+        "current_role_similarity": 0.1
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "catalogue_only_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "computer_programmer",
+          "label": "Computer Programmer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "java",
+              "label": "Java"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": []
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "software_developer",
+            "label": "Software Developer"
+          },
+          {
+            "id": "software_qa_analyst_tester",
+            "label": "Software QA Analyst / Tester"
+          }
+        ]
+      },
+      "supplied_skill_count": 3,
+      "recognised_catalogue_skill_count": 3,
+      "active_component_weights": {
+        "trained_model": 0.5,
+        "selected_skill_fit": 0.4,
+        "current_role_similarity": 0.1
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "custom_only_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst"
+        },
+        "skills": {
+          "catalogue": [],
+          "custom": [
+            "Cloud security",
+            "Threat modelling",
+            "Security architecture",
+            "Identity and access management"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "computer_systems_engineer_architect",
+            "label": "Computer Systems Engineer / Architect"
+          },
+          {
+            "id": "information_security_engineer",
+            "label": "Information Security Engineer"
+          }
+        ]
+      },
+      "supplied_skill_count": 4,
+      "recognised_catalogue_skill_count": 0,
+      "active_component_weights": {
+        "trained_model": 0.8333333333333334,
+        "current_role_similarity": 0.16666666666666669
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "duplicate_skill_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": [
+            "Python",
+            "python",
+            "SQL",
+            "Machine learning"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "data_scientist",
+            "label": "Data Scientist"
+          },
+          {
+            "id": "software_qa_analyst_tester",
+            "label": "Software QA Analyst / Tester"
+          }
+        ]
+      },
+      "supplied_skill_count": 3,
+      "recognised_catalogue_skill_count": 2,
+      "active_component_weights": {
+        "trained_model": 0.5,
+        "selected_skill_fit": 0.4,
+        "current_role_similarity": 0.1
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "missing_skills_robustness_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "computer_systems_analyst",
+          "label": "Computer Systems Analyst"
+        },
+        "skills": {
+          "catalogue": [],
+          "custom": []
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "computer_systems_engineer_architect",
+            "label": "Computer Systems Engineer / Architect"
+          },
+          {
+            "id": "software_developer",
+            "label": "Software Developer"
+          }
+        ]
+      },
+      "supplied_skill_count": 0,
+      "recognised_catalogue_skill_count": 0,
+      "active_component_weights": {
+        "trained_model": 0.8333333333333334,
+        "current_role_similarity": 0.16666666666666669
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    },
+    {
+      "test_name": "other_previous_role_test",
+      "passed": true,
+      "request": {
+        "role": {
+          "id": "other",
+          "label": "Other"
+        },
+        "skills": {
+          "catalogue": [],
+          "custom": [
+            "Database design",
+            "SQL",
+            "Data modelling",
+            "Data governance"
+          ]
+        }
+      },
+      "response": {
+        "predicted_roles": [
+          {
+            "id": "database_architect",
+            "label": "Database Architect"
+          },
+          {
+            "id": "database_administrator",
+            "label": "Database Administrator"
+          }
+        ]
+      },
+      "supplied_skill_count": 4,
+      "recognised_catalogue_skill_count": 2,
+      "active_component_weights": {
+        "trained_model": 0.5555555555555556,
+        "selected_skill_fit": 0.4444444444444445
+      },
+      "current_role_excluded": true,
+      "other_excluded": true
+    }
+  ],
+  "constraints_verified": {
+    "two_roles_returned": true,
+    "roles_are_distinct": true,
+    "current_role_excluded": true,
+    "other_excluded": true,
+    "unknown_role_rejected": true
+  }
+}

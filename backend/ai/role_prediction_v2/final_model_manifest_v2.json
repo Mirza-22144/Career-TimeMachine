@@ -1,0 +1,50 @@
+{
+  "created_at_utc": "2026-10-01T13:49:18.277347+00:00",
+  "project": "CareerTimeMachine",
+  "model_version": "2.0",
+  "purpose": "Recommend two distinct future IT roles from a previous role and supplied skills",
+  "predictor_module": "career_role_predictor_v2.py",
+  "deployment_bundle": "career_role_recommender_v2_bundle.joblib",
+  "predictor_sha256": "67ae9e37a70821d35ca563b09f183f8a30382693d580506f92df9d3e882fcf2b",
+  "deployment_bundle_sha256": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "response_contract": "role_prediction_contract_v2.json",
+  "prediction_count": 2,
+  "model_architecture": {
+    "text_features": "Word-level TF-IDF",
+    "classifier": "LinearSVC",
+    "hybrid_components": {
+      "trained_model": 0.5,
+      "selected_skill_fit": 0.4,
+      "previous_role_similarity": 0.1
+    },
+    "distinctiveness_aware_skills": true,
+    "dynamic_component_weighting": true
+  },
+  "test_metrics": {
+    "accuracy": 0.852750256235053,
+    "balanced_accuracy": 0.6845579713333897,
+    "macro_f1_evaluable_roles": 0.7007140722355204,
+    "macro_f1_all_27_roles": 0.6747616991897604,
+    "weighted_f1": 0.8513289134711911,
+    "top_2_accuracy": 0.9385035872907413,
+    "top_3_accuracy": 0.9651520327980868
+  },
+  "corrected_distribution_audit": {
+    "target_in_top_two_count": 20,
+    "supported_role_count": 27,
+    "unique_first_choice_roles": 14,
+    "unique_roles_across_top_two": 21
+  },
+  "integration_tests": {
+    "passed": 8,
+    "total": 8,
+    "unknown_role_rejected": true
+  },
+  "backend_constraints": {
+    "two_roles_returned": true,
+    "roles_are_distinct": true,
+    "current_role_excluded": true,
+    "other_excluded": true,
+    "standalone_module_verified": true
+  }
+}

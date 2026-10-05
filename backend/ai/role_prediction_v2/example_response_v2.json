@@ -1,0 +1,12 @@
+{
+  "predicted_roles": [
+    {
+      "id": "data_scientist",
+      "label": "Data Scientist"
+    },
+    {
+      "id": "business_intelligence_analyst",
+      "label": "Business Intelligence Analyst"
+    }
+  ]
+}

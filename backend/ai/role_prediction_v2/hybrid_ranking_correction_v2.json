@@ -1,0 +1,20 @@
+{
+  "created_at_utc": "2026-10-01T13:42:04.226191+00:00",
+  "trigger": "The first catalogue coverage audit returned the intended role within the top two for only 5 of 27 profiles.",
+  "diagnosed_issue": "Common catalogue skills received similar weight to profession-distinctive skills, causing concentration on common roles.",
+  "correction": {
+    "skill_weighting": "Industry importance multiplied by inverse role frequency",
+    "base_component_weights": {
+      "trained_model": 0.5,
+      "selected_skill_fit": 0.4,
+      "current_role_similarity": 0.1
+    },
+    "dynamic_component_weighting": true,
+    "classifier_retrained": false,
+    "protected_test_data_reopened": false
+  },
+  "required_follow_up": [
+    "Rerun the catalogue role-distribution audit.",
+    "Rerun backend integration tests after the hybrid change."
+  ]
+}

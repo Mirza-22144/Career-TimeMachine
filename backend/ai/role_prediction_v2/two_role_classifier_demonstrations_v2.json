@@ -1,0 +1,174 @@
+{
+  "created_at_utc": "2026-10-01T13:26:09.507883+00:00",
+  "model_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/models/career_role_classifier_v2_27_roles.joblib",
+  "demonstration_type": "LinearSVC classifier ranking before hybrid reranking",
+  "ranking_score_note": "LinearSVC decision scores support ranking but are not probabilities.",
+  "example_count": 3,
+  "examples": [
+    {
+      "example_name": "software_development_to_data",
+      "request": {
+        "role": {
+          "id": "software_developer",
+          "label": "Software Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "python",
+              "label": "Python"
+            },
+            {
+              "id": "sql",
+              "label": "SQL"
+            }
+          ],
+          "custom": [
+            "Machine learning",
+            "Statistical modelling",
+            "Data visualisation"
+          ]
+        }
+      },
+      "result": {
+        "model_input": "Python, SQL, Machine learning, Statistical modelling, Data visualisation",
+        "response": {
+          "predicted_roles": [
+            {
+              "id": "data_scientist",
+              "label": "Data Scientist"
+            },
+            {
+              "id": "business_intelligence_analyst",
+              "label": "Business Intelligence Analyst"
+            }
+          ]
+        },
+        "ranking_scores": [
+          {
+            "id": "data_scientist",
+            "score": 0.7771
+          },
+          {
+            "id": "business_intelligence_analyst",
+            "score": -0.865
+          }
+        ],
+        "current_role_excluded": true,
+        "other_excluded": true
+      }
+    },
+    {
+      "example_name": "systems_administration_to_security",
+      "request": {
+        "role": {
+          "id": "network_and_systems_administrator",
+          "label": "Network and Systems Administrator"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "network_security",
+              "label": "Network security"
+            },
+            {
+              "id": "linux",
+              "label": "Linux"
+            }
+          ],
+          "custom": [
+            "Threat detection",
+            "Incident response",
+            "Firewall configuration",
+            "Penetration testing"
+          ]
+        }
+      },
+      "result": {
+        "model_input": "Network security, Linux, Threat detection, Incident response, Firewall configuration, Penetration testing",
+        "response": {
+          "predicted_roles": [
+            {
+              "id": "information_security_analyst",
+              "label": "Information Security Analyst"
+            },
+            {
+              "id": "penetration_tester",
+              "label": "Penetration Tester"
+            }
+          ]
+        },
+        "ranking_scores": [
+          {
+            "id": "information_security_analyst",
+            "score": -0.2304
+          },
+          {
+            "id": "penetration_tester",
+            "score": -0.5348
+          }
+        ],
+        "current_role_excluded": true,
+        "other_excluded": true
+      }
+    },
+    {
+      "example_name": "web_development_to_interface_design",
+      "request": {
+        "role": {
+          "id": "web_developer",
+          "label": "Web Developer"
+        },
+        "skills": {
+          "catalogue": [
+            {
+              "id": "html",
+              "label": "HTML"
+            },
+            {
+              "id": "css",
+              "label": "CSS"
+            },
+            {
+              "id": "javascript",
+              "label": "JavaScript"
+            }
+          ],
+          "custom": [
+            "User experience design",
+            "Figma",
+            "Accessibility",
+            "Interaction design"
+          ]
+        }
+      },
+      "result": {
+        "model_input": "HTML, CSS, JavaScript, User experience design, Figma, Accessibility, Interaction design",
+        "response": {
+          "predicted_roles": [
+            {
+              "id": "web_and_digital_interface_designer",
+              "label": "Web and Digital Interface Designer"
+            },
+            {
+              "id": "software_developer",
+              "label": "Software Developer"
+            }
+          ]
+        },
+        "ranking_scores": [
+          {
+            "id": "web_and_digital_interface_designer",
+            "score": 1.2219
+          },
+          {
+            "id": "software_developer",
+            "score": -1.0219
+          }
+        ],
+        "current_role_excluded": true,
+        "other_excluded": true
+      }
+    }
+  ]
+}

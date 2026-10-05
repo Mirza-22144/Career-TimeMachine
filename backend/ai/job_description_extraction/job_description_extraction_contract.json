@@ -1,0 +1,29 @@
+{
+  "operation": "job_description_extraction",
+  "input": {
+    "raw_text": "string"
+  },
+  "output": {
+    "skills": [
+      {
+        "label": "string",
+        "category": "technical or soft"
+      }
+    ],
+    "responsibilities": [
+      "string"
+    ],
+    "min_years_experience": "integer or null",
+    "keywords": [
+      "string"
+    ],
+    "role_title_guess": "string or null"
+  },
+  "constraints": {
+    "maximum_raw_text_characters": 20000,
+    "exact_top_level_field_count": 5,
+    "external_runtime_api_required": false,
+    "generative_prompt_used": false,
+    "deterministic_inference": true
+  }
+}

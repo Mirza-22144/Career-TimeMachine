@@ -13,6 +13,9 @@ from app.core.rate_limit import limiter
 from app.main import app
 from app.repositories.interfaces.catalogue_repository import CatalogueItem
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
+from app.repositories.memory.memory_job_description_repository import (
+    MemoryJobDescriptionRepository,
+)
 from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
@@ -91,6 +94,7 @@ def fake_session_and_profile_stores(monkeypatch):
     monkeypatch.setattr(dependencies, "_session_repository", MemorySessionRepository())
     monkeypatch.setattr(dependencies, "_profile_repository", MemoryProfileRepository())
     monkeypatch.setattr(dependencies, "_practice_session_repository", MemoryPracticeSessionRepository())
+    monkeypatch.setattr(dependencies, "_job_description_repository", MemoryJobDescriptionRepository())
 
 
 @pytest.fixture
@@ -102,6 +106,17 @@ def use_provider():
 
     yield _use
     app.dependency_overrides.pop(dependencies.get_scenario_provider, None)
+
+
+@pytest.fixture
+def use_job_description_provider():
+    """Swap the job-description extraction provider for one test."""
+
+    def _use(provider) -> None:
+        app.dependency_overrides[dependencies.get_job_description_extraction_provider] = lambda: provider
+
+    yield _use
+    app.dependency_overrides.pop(dependencies.get_job_description_extraction_provider, None)
 
 
 @pytest.fixture

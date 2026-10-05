@@ -1,15 +1,29 @@
 from fastapi import Depends, Header, HTTPException, Request, status
 
-from app.core.config import HAS_DATABASE, SCENARIO_PROVIDER_TIMEOUT_SECONDS
+from app.core.config import (
+    HAS_DATABASE,
+    HAS_JOB_DESCRIPTION_MODEL,
+    JOB_DESCRIPTION_MODEL_DIR,
+    JOB_DESCRIPTION_PROVIDER_TIMEOUT_SECONDS,
+    SCENARIO_PROVIDER_TIMEOUT_SECONDS,
+)
 from app.core.security_events import log_security_event
 from app.core.tokens import is_well_formed_token
 from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
+from app.providers.job_description_extraction_provider import JobDescriptionExtractionProvider
 from app.providers.ml_role_prediction_provider import MLRolePredictionProvider
 from app.providers.role_prediction_provider import RolePredictionProvider
 from app.providers.scenario_provider import ScenarioProvider
+from app.providers.unavailable_job_description_extraction_provider import (
+    UnavailableJobDescriptionExtractionProvider,
+)
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
+from app.repositories.interfaces.job_description_repository import JobDescriptionRepository
 from app.repositories.interfaces.session_repository import AnonSession
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
+from app.repositories.memory.memory_job_description_repository import (
+    MemoryJobDescriptionRepository,
+)
 from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
@@ -19,6 +33,7 @@ from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
 from app.services.catalogue_service import CatalogueService
+from app.services.job_description_service import JobDescriptionService
 from app.services.practice_role_service import PracticeRoleService
 from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
@@ -51,6 +66,36 @@ else:
     _session_repository = MemorySessionRepository()
     _profile_repository = MemoryProfileRepository()
     _practice_session_repository = MemoryPracticeSessionRepository()
+
+# Job descriptions use the real database once the DB_* env vars are set,
+# same as everything else above - independent of whether the extraction
+# model itself is available.
+_job_description_repository: JobDescriptionRepository
+if HAS_DATABASE:
+    from app.repositories.postgres.postgres_job_description_repository import (
+        PostgresJobDescriptionRepository,
+    )
+
+    _job_description_repository = PostgresJobDescriptionRepository()
+else:
+    _job_description_repository = MemoryJobDescriptionRepository()
+
+# The real GLiNER-based extractor (app/ml/job_description_extraction/,
+# handed over by the AI team - see AI 3.1) is only constructed when its
+# ~1.3GB model directory is actually present (HAS_JOB_DESCRIPTION_MODEL,
+# see core/config.py) - a fresh checkout or a test run should never require
+# gliner/torch/transformers to be installed just to start the app. Falls
+# back to a provider that cleanly fails every request otherwise, same
+# "unavailable, not faked" principle as a down external service.
+_job_description_extraction_provider: JobDescriptionExtractionProvider
+if HAS_JOB_DESCRIPTION_MODEL:
+    from app.providers.gliner_job_description_extraction_provider import (
+        GlinerJobDescriptionExtractionProvider,
+    )
+
+    _job_description_extraction_provider = GlinerJobDescriptionExtractionProvider(JOB_DESCRIPTION_MODEL_DIR)
+else:
+    _job_description_extraction_provider = UnavailableJobDescriptionExtractionProvider()
 
 # Real AI-generated scenarios (27 roles x 3 difficulties, Version 2 -
 # app/data/reflective_mcq_scenario_pool_v2.json) until the AI team exposes
@@ -173,3 +218,20 @@ def get_scenario_response_service(
 ) -> ScenarioResponseService:
     """Build response service on top of the practice-session service."""
     return ScenarioResponseService(practice_sessions)
+
+
+def get_job_description_extraction_provider() -> JobDescriptionExtractionProvider:
+    """Return the job-description extraction provider. Real GLiNER model if
+    present, otherwise a provider that cleanly fails; tests override this to
+    simulate both a working extractor and provider failures."""
+    return _job_description_extraction_provider
+
+
+def get_job_description_service(
+    provider: JobDescriptionExtractionProvider = Depends(get_job_description_extraction_provider),
+) -> JobDescriptionService:
+    """Build job-description service with the shared repository and the
+    extraction provider."""
+    return JobDescriptionService(
+        _job_description_repository, provider, JOB_DESCRIPTION_PROVIDER_TIMEOUT_SECONDS
+    )

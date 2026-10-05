@@ -7,6 +7,7 @@ from app.api.routes import (
     career_translation,
     catalogue,
     health,
+    job_descriptions,
     practice_role,
     practice_sessions,
     predicted_role,
@@ -28,3 +29,4 @@ api_router.include_router(practice_role.router)
 api_router.include_router(predicted_role.router)
 api_router.include_router(practice_sessions.router)
 api_router.include_router(scenario_responses.router)
+api_router.include_router(job_descriptions.router)

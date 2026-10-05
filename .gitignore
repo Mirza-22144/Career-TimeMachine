@@ -5,6 +5,10 @@ backend/**/__pycache__/
 backend/.env
 *.pyc
 
+# AI model weights - too large for Git, pulled in separately at build/deploy
+# time (see backend/ai/job_description_extraction/MODEL_DEPLOYMENT.md)
+backend/models/
+
 # Node
 frontend/node_modules/
 frontend/dist/

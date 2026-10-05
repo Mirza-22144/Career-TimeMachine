@@ -13,5 +13,9 @@ SESSION_CREATION_LIMIT = "10/minute"
 # generation; 30 a minute is far beyond what a person answering scenarios
 # can submit, even several on one address.
 RESPONSE_SUBMISSION_LIMIT = "30/minute"
+# Job-description extraction runs a local NLP model, real work per call
+# unlike a catalogue lookup; 10 a minute leaves room for pasting a few
+# different adverts while stopping scripted extraction floods.
+JOB_DESCRIPTION_SUBMISSION_LIMIT = "10/minute"
 
 limiter = Limiter(key_func=get_remote_address)

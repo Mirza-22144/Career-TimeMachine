@@ -4,7 +4,11 @@ FROM python:3.13-slim
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# --extra-index-url is required for torch==...+cpu (Iteration 3, job
+# description extraction) - the +cpu build isn't published to regular
+# PyPI, only to PyTorch's own index. Everything else still resolves from
+# PyPI as normal; this just adds a second source, it doesn't replace PyPI.
+RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
 COPY app ./app
 

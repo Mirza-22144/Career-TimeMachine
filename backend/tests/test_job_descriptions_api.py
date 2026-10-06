@@ -1,11 +1,16 @@
 """Job-description extraction (Iteration 3, BE 3.2; AI Task 1 / AI 3.1)."""
 
+import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import HAS_JOB_DESCRIPTION_MODEL
 from app.main import app
 from app.providers.job_description_extraction_provider import (
     JobDescriptionExtractionProvider,
     JobDescriptionExtractionProviderError,
+)
+from app.providers.unavailable_job_description_extraction_provider import (
+    UnavailableJobDescriptionExtractionProvider,
 )
 
 client = TestClient(app)
@@ -122,14 +127,37 @@ def test_create_job_description_handles_provider_failure(use_job_description_pro
     }
 
 
-def test_create_job_description_fails_without_a_real_model_configured():
-    """No override - exercises the real default wiring (dependencies.py),
-    which falls back to UnavailableJobDescriptionExtractionProvider when
-    HAS_JOB_DESCRIPTION_MODEL is false, as it is in this test environment."""
+def test_create_job_description_fails_without_a_real_model_configured(use_job_description_provider):
+    """Explicitly simulates the model being unavailable, rather than relying
+    on dependencies.py's default wiring - whether the real ~1.3GB model
+    happens to be present on the machine running this suite is local
+    environment state, not something a test should depend on (same
+    principle as fake_catalogue/fake_session_and_profile_stores)."""
+    use_job_description_provider(UnavailableJobDescriptionExtractionProvider())
     headers = _headers()
     response = client.post("/api/v1/job-descriptions", headers=headers, json={"raw_text": RAW_TEXT})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "JOB_DESCRIPTION_EXTRACTION_UNAVAILABLE"
+
+
+@pytest.mark.skipif(
+    not HAS_JOB_DESCRIPTION_MODEL,
+    reason="real GLiNER model not present locally - see MODEL_DEPLOYMENT.md",
+)
+def test_create_job_description_with_the_real_model():
+    """Runs only where the real ~1.3GB model is actually present (this
+    machine, and eventually CI/Cloud Run once it's part of the deployed
+    environment) - everywhere else it's skipped rather than failed, so the
+    regular offline suite never depends on it. Not exact-match (the model's
+    output isn't pinned to a fixed string), just a shape/sanity check that
+    the real pipeline still produces valid, non-empty output end to end."""
+    headers = _headers()
+    response = client.post("/api/v1/job-descriptions", headers=headers, json={"raw_text": RAW_TEXT})
+    assert response.status_code == 201
+    body = response.json()
+    assert body["extracted_skills"]
+    assert any(skill["label"].lower() == "python" for skill in body["extracted_skills"])
+    assert body["min_years_experience"] == 3
 
 
 def test_create_job_description_rejects_invalid_provider_output(use_job_description_provider):

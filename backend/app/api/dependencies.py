@@ -1,3 +1,6 @@
+import logging
+import threading
+
 from fastapi import Depends, Header, HTTPException, Request, status
 
 from app.core.config import (
@@ -81,21 +84,39 @@ else:
     _job_description_repository = MemoryJobDescriptionRepository()
 
 # The real GLiNER-based extractor (app/ml/job_description_extraction/,
-# handed over by the AI team - see AI 3.1) is only constructed when its
-# ~1.3GB model directory is actually present (HAS_JOB_DESCRIPTION_MODEL,
-# see core/config.py) - a fresh checkout or a test run should never require
-# gliner/torch/transformers to be installed just to start the app. Falls
-# back to a provider that cleanly fails every request otherwise, same
-# "unavailable, not faked" principle as a down external service.
-_job_description_extraction_provider: JobDescriptionExtractionProvider
-if HAS_JOB_DESCRIPTION_MODEL:
-    from app.providers.gliner_job_description_extraction_provider import (
-        GlinerJobDescriptionExtractionProvider,
-    )
+# handed over by the AI team - see AI 3.1) loads a ~1.3GB model and, on a
+# machine that has never loaded it before, needs one-time network access
+# to resolve its base encoder's config (microsoft/deberta-v3-small) into
+# the local Hugging Face cache - confirmed directly while wiring this up.
+# Built lazily, on first actual use, not at import time: a fresh checkout,
+# a test run, or any transient load failure must never take down the whole
+# app just because this one feature's model had a problem. Falls back to a
+# provider that cleanly fails every request if construction fails for any
+# reason, same "unavailable, not faked" principle as a down external
+# service - logged loudly, since an unexpected fallback here is worth
+# knowing about.
+_job_description_extraction_provider: JobDescriptionExtractionProvider | None = None
+# Guards building the provider above - model loading takes several seconds,
+# a real window for concurrent first requests to race on FastAPI's thread
+# pool. Matches the care already taken with the Postgres connection pools
+# elsewhere in this backend, after a genuine thread-safety bug there.
+_job_description_extraction_provider_lock = threading.Lock()
 
-    _job_description_extraction_provider = GlinerJobDescriptionExtractionProvider(JOB_DESCRIPTION_MODEL_DIR)
-else:
-    _job_description_extraction_provider = UnavailableJobDescriptionExtractionProvider()
+
+def _build_job_description_extraction_provider() -> JobDescriptionExtractionProvider:
+    if not HAS_JOB_DESCRIPTION_MODEL:
+        return UnavailableJobDescriptionExtractionProvider()
+    try:
+        from app.providers.gliner_job_description_extraction_provider import (
+            GlinerJobDescriptionExtractionProvider,
+        )
+
+        return GlinerJobDescriptionExtractionProvider(JOB_DESCRIPTION_MODEL_DIR)
+    except Exception:
+        logging.getLogger(__name__).exception(
+            "Job-description extraction model failed to load - falling back to unavailable"
+        )
+        return UnavailableJobDescriptionExtractionProvider()
 
 # Real AI-generated scenarios (27 roles x 3 difficulties, Version 2 -
 # app/data/reflective_mcq_scenario_pool_v2.json) until the AI team exposes
@@ -221,9 +242,16 @@ def get_scenario_response_service(
 
 
 def get_job_description_extraction_provider() -> JobDescriptionExtractionProvider:
-    """Return the job-description extraction provider. Real GLiNER model if
-    present, otherwise a provider that cleanly fails; tests override this to
+    """Return the job-description extraction provider, building it on first
+    use and caching it after (not at import time - see the module-level
+    comment above). Real GLiNER model if present and loads successfully,
+    otherwise a provider that cleanly fails; tests override this to
     simulate both a working extractor and provider failures."""
+    global _job_description_extraction_provider
+    if _job_description_extraction_provider is None:
+        with _job_description_extraction_provider_lock:
+            if _job_description_extraction_provider is None:
+                _job_description_extraction_provider = _build_job_description_extraction_provider()
     return _job_description_extraction_provider
 
 

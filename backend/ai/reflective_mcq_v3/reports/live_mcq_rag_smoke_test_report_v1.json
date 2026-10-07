@@ -1,0 +1,38 @@
+{
+  "step": "17",
+  "tested_at_utc": "2026-10-07T05:32:15.287243+00:00",
+  "gemini_model": "gemini-3.5-flash-lite",
+  "retriever_version": "2.2",
+  "activity_type": "reflective_multiple_choice",
+  "graded": false,
+  "request": {
+    "role_id": "data_scientist",
+    "difficulty": "challenge",
+    "custom_skills": [
+      "Time-series forecasting"
+    ]
+  },
+  "generation_attempts": [
+    {
+      "attempt": 1,
+      "status": "accepted",
+      "validation_errors": []
+    }
+  ],
+  "live_generation_succeeded": true,
+  "fallback_available": true,
+  "fallback_question_id": "data_scientist_challenge_v2_01",
+  "fallback_used": false,
+  "served_source": "live_gemini_rag",
+  "served_question_id": "data_scientist_challenge_live_v3_5e8e72770091",
+  "security_controls": [
+    "custom skill character limit",
+    "instruction-pattern rejection",
+    "prompt data isolation",
+    "Gemini structured output schema",
+    "strict local field validation",
+    "no answer or score fields",
+    "Version 2 static fallback"
+  ],
+  "output_file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/live_rag/output/live_mcq_rag_smoke_test_v1.json"
+}

@@ -1,0 +1,110 @@
+{
+  "source": "live_gemini_rag",
+  "fallback_used": false,
+  "question": {
+    "role_id": "data_scientist",
+    "role_label": "Data Scientist",
+    "difficulty": "challenge",
+    "target_skills": [
+      "Time-series forecasting"
+    ],
+    "question": {
+      "situation": "You are leading a data science initiative for a national energy supplier to predict peak electricity demand for the upcoming winter. Your latest time-series forecasting model yields highly accurate predictions, but its complex architecture makes it difficult to explain to operations managers who rely on intuitive, seasonal heuristics.",
+      "task": "How do you approach bridging the gap between your advanced time-series forecasting model and the operational team's need for transparent, interpretable insights?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Develop a supplementary feature attribution dashboard that breaks down the time-series predictions into familiar seasonal and weather components for the operations team."
+        },
+        {
+          "id": "b",
+          "text": "Maintain the complex forecasting model as your primary tool while manually translating its weekly outputs into simplified reports that align with traditional heuristics."
+        },
+        {
+          "id": "c",
+          "text": "Simplify the time-series forecasting model by removing advanced layers so that its internal logic directly matches the operations managers' existing mental models."
+        },
+        {
+          "id": "d",
+          "text": "Run training sessions for the operations team focusing on advanced time-series mathematics to build their confidence in interpreting the model's native outputs."
+        }
+      ],
+      "hints": []
+    },
+    "option_feedback": {
+      "a": {
+        "what_worked_well": [
+          "Maintains the predictive power of the advanced time-series model.",
+          "Translates complex outputs into a format familiar to operations managers."
+        ],
+        "trade_offs": [
+          "Requires additional development time to build and maintain the interpretation dashboard.",
+          "Could introduce potential abstraction if the feature attribution does not capture every nuance."
+        ],
+        "areas_to_consider": [
+          "How frequently the operations team will actually engage with the dashboard.",
+          "Whether the attribution metrics truly reflect the operational drivers they care about."
+        ],
+        "skill_to_explore": {
+          "skill": "Model Interpretability",
+          "why_relevant": "Useful for translating complex time-series algorithms into accessible insights for non-technical stakeholders."
+        }
+      },
+      "b": {
+        "what_worked_well": [
+          "Preserves technical accuracy without needing immediate changes to existing workflows.",
+          "Provides tailored communication directly addressing operational concerns."
+        ],
+        "trade_offs": [
+          "Creates a manual bottleneck that depends heavily on your ongoing translation effort.",
+          "Risks delays in getting insights to the team during fast-moving winter weather events."
+        ],
+        "areas_to_consider": [
+          "The long-term scalability of manually bridging the gap between model and team.",
+          "How to eventually automate the translation of the time-series forecasts."
+        ],
+        "skill_to_explore": {
+          "skill": "Stakeholder Communication",
+          "why_relevant": "Helps in structuring regular reporting updates that resonate with operational priorities."
+        }
+      },
+      "c": {
+        "what_worked_well": [
+          "Aligns the methodology directly with the team's existing heuristics and comfort levels.",
+          "Eliminates the barrier of a 'black-box' forecasting architecture."
+        ],
+        "trade_offs": [
+          "May sacrifice predictive accuracy by stripping out complex non-linear temporal patterns.",
+          "Undercuts the advanced capabilities of the time-series forecasting approach."
+        ],
+        "areas_to_consider": [
+          "Whether the trade-off in forecasting accuracy is acceptable for winter planning.",
+          "How to balance scientific rigor with operational simplicity."
+        ],
+        "skill_to_explore": {
+          "skill": "Baseline Modelling",
+          "why_relevant": "Useful for understanding how simpler heuristic models perform compared to advanced time-series algorithms."
+        }
+      },
+      "d": {
+        "what_worked_well": [
+          "Empowers the operations team with a deeper technical understanding of time-series analysis.",
+          "Promotes a culture of continuous learning and data literacy across departments."
+        ],
+        "trade_offs": [
+          "Places a heavy training burden on operations staff whose primary focus is grid management.",
+          "Does not immediately solve the challenge of integrating the current model outputs."
+        ],
+        "areas_to_consider": [
+          "The availability and bandwidth of operations managers to absorb complex statistical concepts.",
+          "Whether deeper mathematical training is truly required for effective decision-making."
+        ],
+        "skill_to_explore": {
+          "skill": "Data Literacy Training",
+          "why_relevant": "Supports designing educational programmes tailored to operational professionals."
+        }
+      }
+    },
+    "question_id": "data_scientist_challenge_live_v3_5e8e72770091"
+  }
+}

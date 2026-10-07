@@ -1,0 +1,6 @@
+google-genai
+sentence-transformers
+scikit-learn
+numpy
+scipy
+joblib

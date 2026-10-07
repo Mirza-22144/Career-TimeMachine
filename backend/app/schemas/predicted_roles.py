@@ -1,0 +1,44 @@
+from datetime import date
+
+from pydantic import BaseModel, ConfigDict
+
+
+class MarketDataResponse(BaseModel):
+    """Real Australian hiring-demand data for the ANZSCO group a predicted
+    role maps to (DB 3.1). Several roles can share one ANZSCO group, so
+    anzsco_title and confidence are included deliberately - the frontend
+    must label this figure by the group, not present it as ads for the
+    user's exact role (see ITERATION-3-PROGRESS.md, DB 3.1's note)."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    anzsco_code: str
+    anzsco_title: str
+    confidence: str
+    state: str
+    latest_month: date
+    ads_latest: int
+    ads_12m_avg: int
+    yoy_change_pct: float | None
+    source: str = "Jobs and Skills Australia - Internet Vacancy Index"
+
+
+class PredictedRoleWithMarketResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    role_id: str
+    role_label: str
+    # None when the role has no ANZSCO mapping yet (e.g. "other") or no
+    # vacancy data loaded for it - never a fabricated figure.
+    market_data: MarketDataResponse | None
+
+
+class PredictedRolesResponse(BaseModel):
+    """BE 3.4: two AI-predicted future roles (AI 3.2), each with real
+    market data where available. An empty list means no prediction is
+    available yet (no previous role saved, or the model could not produce
+    one) - this endpoint never returns exactly one role."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    predicted_roles: list[PredictedRoleWithMarketResponse]

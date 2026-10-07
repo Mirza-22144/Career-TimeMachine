@@ -15,14 +15,17 @@ from app.core.tokens import is_well_formed_token
 from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
 from app.providers.job_description_extraction_provider import JobDescriptionExtractionProvider
 from app.providers.ml_role_prediction_provider import MLRolePredictionProvider
+from app.providers.ml_two_role_prediction_provider import MLTwoRolePredictionProvider
 from app.providers.role_prediction_provider import RolePredictionProvider
 from app.providers.scenario_provider import ScenarioProvider
+from app.providers.two_role_prediction_provider import TwoRolePredictionProvider
 from app.providers.unavailable_job_description_extraction_provider import (
     UnavailableJobDescriptionExtractionProvider,
 )
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.job_description_repository import JobDescriptionRepository
 from app.repositories.interfaces.session_repository import AnonSession
+from app.repositories.interfaces.vacancy_repository import VacancyRepository
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_job_description_repository import (
     MemoryJobDescriptionRepository,
@@ -32,6 +35,7 @@ from app.repositories.memory.memory_practice_session_repository import (
 )
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
+from app.repositories.memory.memory_vacancy_repository import MemoryVacancyRepository
 from app.services.career_direction_service import CareerDirectionService
 from app.services.career_journey_service import CareerJourneyService
 from app.services.career_translation_service import CareerTranslationService
@@ -130,6 +134,13 @@ _scenario_provider: ScenarioProvider = AiPoolScenarioProvider()
 # handover, app/../ai/role_prediction/README.md).
 _role_prediction_provider: RolePredictionProvider = MLRolePredictionProvider()
 
+# BE 3.4: the AI team's Version 2 two-role classifier (AI 3.2, see
+# app/ml/career_role_predictor_v2.py) - a small joblib bundle like V1, no
+# heavy deps, so loaded eagerly at import time same as the V1 provider
+# above (unlike the job-description model, which is a different scale
+# entirely and is loaded lazily - see get_job_description_extraction_provider).
+_two_role_prediction_provider: TwoRolePredictionProvider = MLTwoRolePredictionProvider()
+
 # Roles and skills use the real database once the DB_* env vars are set;
 # falls back to the placeholder list otherwise.
 _catalogue_repository: CatalogueRepository
@@ -141,6 +152,20 @@ if HAS_DATABASE:
     _catalogue_repository = PostgresCatalogueRepository()
 else:
     _catalogue_repository = MemoryCatalogueRepository()
+
+# Real Australian hiring-demand data (DB 3.1 - role_anzsco_map +
+# vacancy_monthly, read-only reference data maintained by the data team's
+# pipeline) once the DB_* env vars are set; empty otherwise, same pattern
+# as every other repository here.
+_vacancy_repository: VacancyRepository
+if HAS_DATABASE:
+    from app.repositories.postgres.postgres_vacancy_repository import (
+        PostgresVacancyRepository,
+    )
+
+    _vacancy_repository = PostgresVacancyRepository()
+else:
+    _vacancy_repository = MemoryVacancyRepository()
 
 
 def get_session_service() -> SessionService:
@@ -203,9 +228,16 @@ def get_practice_role_service() -> PracticeRoleService:
 
 
 def get_role_prediction_service() -> RolePredictionService:
-    """Build role-prediction service with shared repositories and the
-    trained-model provider; tests override this to fake predictions."""
-    return RolePredictionService(_profile_repository, _catalogue_repository, _role_prediction_provider)
+    """Build role-prediction service with shared repositories and both the
+    V1 (single-role) and V2 (two-role, BE 3.4) trained-model providers;
+    tests override this to fake predictions."""
+    return RolePredictionService(
+        _profile_repository,
+        _catalogue_repository,
+        _role_prediction_provider,
+        _two_role_prediction_provider,
+        _vacancy_repository,
+    )
 
 
 def get_scenario_provider() -> ScenarioProvider:

@@ -1,8 +1,10 @@
 import logging
 from dataclasses import dataclass, field
+from datetime import date
 
 from pydantic import ValidationError
 
+from app.core.vacancy_rounding import round_to_range
 from app.providers.role_prediction_provider import (
     PredictedRoleContent,
     RolePredictionProvider,
@@ -35,13 +37,44 @@ _UNAVAILABLE = PredictedRole(role_id=None, role_label=None)
 
 
 @dataclass
+class RoleMarketDisplay:
+    """Display-ready market data - the raw RoleMarketData (repository,
+    exact figures) rounded into a range at this layer, never exposed exact
+    (industry mentor's guidance). Built from ads_12m_avg, not ads_latest -
+    see MarketDataResponse's docstring for why."""
+
+    anzsco_code: str
+    anzsco_title: str
+    confidence: str
+    state: str
+    latest_month: date
+    ads_range_low: int
+    ads_range_high: int
+    yoy_change_pct: float | None
+
+
+def _to_display(market: RoleMarketData) -> RoleMarketDisplay:
+    vacancy_range = round_to_range(market.ads_12m_avg)
+    return RoleMarketDisplay(
+        anzsco_code=market.anzsco_code,
+        anzsco_title=market.anzsco_title,
+        confidence=market.confidence,
+        state=market.state,
+        latest_month=market.latest_month,
+        ads_range_low=vacancy_range.low,
+        ads_range_high=vacancy_range.high,
+        yoy_change_pct=market.yoy_change_pct,
+    )
+
+
+@dataclass
 class PredictedRoleWithMarketData:
     """One of the two Iteration 3 predicted roles (BE 3.4), with real
     Australian hiring-demand data where a role->ANZSCO mapping exists."""
 
     role_id: str
     role_label: str
-    market_data: RoleMarketData | None
+    market_data: RoleMarketDisplay | None
 
 
 @dataclass
@@ -136,11 +169,17 @@ class RolePredictionService:
                 PredictedRoleWithMarketData(
                     role_id=role.role_id,
                     role_label=role.role_label,
-                    market_data=self.vacancy.get_for_role(role.role_id) if self.vacancy else None,
+                    market_data=self._market_data_for(role.role_id),
                 )
                 for role in content.predicted_roles
             ]
         )
+
+    def _market_data_for(self, role_id: str) -> RoleMarketDisplay | None:
+        if self.vacancy is None:
+            return None
+        market = self.vacancy.get_for_role(role_id)
+        return _to_display(market) if market is not None else None
 
     def _role_label(self, role_id: str, role_other_text: str | None) -> str | None:
         if role_id == OTHER_ROLE_ID:

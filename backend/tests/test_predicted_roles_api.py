@@ -103,14 +103,17 @@ def test_predictions_include_real_market_data_when_a_mapping_exists(monkeypatch)
 
     assert response.status_code == 200
     roles = {r["role_id"]: r for r in response.json()["predicted_roles"]}
+    # The range is computed from ads_12m_avg (1400), not ads_latest (1500) -
+    # round_to_range(1400) -> nearest-100 bucket -> [1400, 1500]. ads_latest
+    # itself is deliberately not exposed in the response at all.
     assert roles[first_role_id]["market_data"] == {
         "anzsco_code": "2612",
         "anzsco_title": "Multimedia Specialists and Web Developers",
         "confidence": "high",
         "state": "AUST",
         "latest_month": "2026-08-01",
-        "ads_latest": 1500,
-        "ads_12m_avg": 1400,
+        "ads_range_low": 1400,
+        "ads_range_high": 1500,
         "yoy_change_pct": 12.5,
         "source": "Jobs and Skills Australia - Internet Vacancy Index",
     }

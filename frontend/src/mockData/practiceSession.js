@@ -19,7 +19,7 @@ const ACTIVITIES = [
       cta: "Take a look",
     },
     title: "Arjun’s change to checkout totals",
-    file: { name: "checkout/total.py", language: "Python", note: "Written with an AI assistant" },
+    file: { name: "checkout/total.py", language: "Python" },
     firstLine: 12,
     code: [
       "def order_total(items, discount):",
@@ -119,34 +119,9 @@ const ACTIVITIES = [
   },
 ];
 
-// AC 4.4.4 / 4.7.1: Code Review is only for roles that work with code.
-// Decided here by role until the backend serves this activity; a role
-// typed in by hand ("other") is treated as not working with code.
-const ROLES_WORKING_WITH_CODE = new Set([
-  "blockchain_engineer",
-  "business_intelligence_analyst",
-  "computer_and_information_research_scientist",
-  "computer_programmer",
-  "computer_systems_engineer_architect",
-  "data_scientist",
-  "data_warehousing_specialist",
-  "database_administrator",
-  "database_architect",
-  "information_security_engineer",
-  "penetration_tester",
-  "software_developer",
-  "software_qa_analyst_tester",
-  "video_game_designer",
-  "web_administrator",
-  "web_developer",
-]);
-
-// The mock activities this role can be given.
-export async function loadMockActivities(roleId) {
-  return ACTIVITIES.filter((item) => item.type !== "code_review" || ROLES_WORKING_WITH_CODE.has(roleId));
-}
-
-// Every mock activity, for re-reading feedback whatever her role is now.
-export async function loadAllMockActivities() {
+// Code Review is offered to every role: the skills our database lists for
+// each of the 27 roles include Python, Java or SQL, so no role can be
+// ruled out as "not working with code" (team rule: if unsure, show it).
+export async function loadMockActivities() {
   return ACTIVITIES;
 }

@@ -174,7 +174,7 @@ export default function WorkplaceScenario() {
       setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
       fetchEarly('roadmap', api.getRoadmap)
       fetchEarly('remaining', api.getRemainingQuestions)
-      let mocks = await loadMockActivities(practiceRole.role_id)
+      const mocks = await loadMockActivities()
       if (isStale()) return
       setMockActivities(mocks)
 
@@ -187,10 +187,7 @@ export default function WorkplaceScenario() {
       }
       if (isStale()) return
       if (current && current.progress.current_scenario_id) {
-        mocks = await loadMockActivities(current.role.id)
-        if (isStale()) return
         setRole({ id: current.role.id, label: current.role.label })
-        setMockActivities(mocks)
         setDifficulty(current.difficulty)
         setKind(MCQ)
         applySession(current)

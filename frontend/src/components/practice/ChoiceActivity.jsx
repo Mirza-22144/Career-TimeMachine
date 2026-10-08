@@ -45,7 +45,7 @@ export default function ChoiceActivity({ activity, areaLabel, isSubmitting = fal
               <div className="pa-code-header">
                 <FileTextIcon size={15} color="#6D28D9" />
                 <code>{activity.file.name}</code>
-                <span>{activity.file.language} · {activity.file.note} · Read only</span>
+                <span>{activity.file.language} · Read only</span>
               </div>
               <pre className="pa-code" aria-label={`${activity.file.name}, read only`}>
                 {activity.code.map((line, index) => (

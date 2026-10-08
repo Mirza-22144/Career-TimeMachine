@@ -3,7 +3,7 @@ import "../styles/PracticeActivity.css";
 import TopNav from "../components/TopNav";
 import PracticeFeedback from "../components/practice/PracticeFeedback";
 import { WORKPLACE_AREAS, getPrimaryAreaId } from "../mockData/workplaceAreas.js";
-import { loadAllMockActivities } from "../mockData/practiceSession.js";
+import { loadMockActivities } from "../mockData/practiceSession.js";
 import { getLocalFeedback, getViewingFeedbackId } from "../practiceHistory.js";
 import { parseApiFeedbackId, toChoiceActivity } from "../practiceAdapters.js";
 import { api } from "../api.js";
@@ -28,7 +28,7 @@ async function loadStored({ sessionId, scenarioId }) {
 async function loadLocal(id) {
   const entry = getLocalFeedback(id);
   if (!entry) return null;
-  const activity = (await loadAllMockActivities()).find((item) => item.id === entry.activityId);
+  const activity = (await loadMockActivities()).find((item) => item.id === entry.activityId);
   if (!activity) return null;
   return { activity, answer: entry.answer, roleLabel: entry.roleLabel, areaLabel: areaLabel(activity.areaId) };
 }

@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 from app.repositories.interfaces.practice_session_repository import (
+    PracticeScenario,
     PracticeSession,
     PracticeSessionRepository,
 )
@@ -46,3 +47,12 @@ class MemoryPracticeSessionRepository(PracticeSessionRepository):
             for session in self._sessions.values()
             if session.owner_token_hash == owner_token_hash
         ]
+
+    def add_scenario(self, owner_token_hash: str, session_id: str, scenario: PracticeScenario) -> bool:
+        session = self._sessions.get(session_id)
+        if session is None or session.owner_token_hash != owner_token_hash or session.status != "active":
+            return False
+        if not any(existing.status == "current" for existing in session.scenarios):
+            return False
+        session.scenarios.append(deepcopy(scenario))
+        return True

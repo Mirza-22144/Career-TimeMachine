@@ -204,23 +204,19 @@ _INSERT_OPTIONS_SQL = """
 """
 
 
-def _scenario_statements(cur, session: PracticeSession) -> list[bytes]:
-    if not session.scenarios:
+def _scenario_statements(cur, session_id: str, scenarios: list[PracticeScenario]) -> list[bytes]:
+    if not scenarios:
         return []
     statements = [
-        _values_statement(
-            cur,
-            _UPSERT_SCENARIO_SQL,
-            [_scenario_row(session.session_id, scenario) for scenario in session.scenarios],
-        )
+        _values_statement(cur, _UPSERT_SCENARIO_SQL, [_scenario_row(session_id, scenario) for scenario in scenarios])
     ]
     # Options are set once when a scenario is created and never change, so a
     # later save() re-inserting the same rows is a harmless no-op. Keyed by
     # (session_id, scenario_id, option_id) - see fix_practice_scenario_
     # session_scoping.sql for why scenario_id alone is not unique.
     options = [
-        (session.session_id, scenario.scenario_id, option.option_id, option.text)
-        for scenario in session.scenarios
+        (session_id, scenario.scenario_id, option.option_id, option.text)
+        for scenario in scenarios
         for option in scenario.options
     ]
     if options:
@@ -321,7 +317,12 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
     session."""
 
     def _persist(self, session: PracticeSession) -> PracticeSession:
-        _execute_together(lambda cur: [_session_statement(cur, session), *_scenario_statements(cur, session)])
+        _execute_together(
+            lambda cur: [
+                _session_statement(cur, session),
+                *_scenario_statements(cur, session.session_id, session.scenarios),
+            ]
+        )
         return session
 
     def add(self, session: PracticeSession) -> PracticeSession:
@@ -341,3 +342,21 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
 
     def list_for_owner(self, owner_token_hash: str) -> list[PracticeSession]:
         return _load_sessions(_query(_SELECT_OWNER_SESSIONS_SQL, (owner_token_hash,)))
+
+    def add_scenario(self, owner_token_hash: str, session_id: str, scenario: PracticeScenario) -> bool:
+        open_rows = _query(
+            """
+            SELECT 1 FROM practice_session s
+            JOIN practice_scenario c ON c.session_id = s.session_id
+            WHERE s.session_id = %s AND s.owner_token_hash = %s
+              AND s.status = 'active' AND c.status = 'current'
+            LIMIT 1
+            """,
+            (session_id, owner_token_hash),
+        )
+        if not open_rows:
+            return False
+        # Only this question's own rows are written, so an answer being
+        # saved at the same moment is never overwritten.
+        _execute_together(lambda cur: _scenario_statements(cur, session_id, [scenario]))
+        return True

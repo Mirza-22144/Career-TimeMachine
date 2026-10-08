@@ -165,3 +165,10 @@ class PracticeSessionRepository(ABC):
         order (callers that care about ordering, like the dashboard's
         recent-activity list, sort by whatever they need)."""
         raise NotImplementedError
+
+    def add_scenario(self, owner_token_hash: str, session_id: str, scenario: PracticeScenario) -> bool:
+        """Add one more upcoming question to a session that is still active
+        and still has a question open, without touching the others (they may
+        be being answered at the same moment). Return False if the session
+        is no longer in that state, in which case nothing is added."""
+        raise NotImplementedError

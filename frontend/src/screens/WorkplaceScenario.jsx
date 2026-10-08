@@ -5,8 +5,8 @@ import TopNav from '../components/TopNav'
 import ChoiceActivity from '../components/practice/ChoiceActivity'
 import DragDropActivity from '../components/practice/DragDropActivity'
 import PracticeFeedback, { ActivitySkeleton } from '../components/practice/PracticeFeedback'
-import workplaceImg from '../assets/workplace.png'
-import introImg from '../assets/practice-intro.png'
+import workplaceImg from '../assets/workplace.webp'
+import introImg from '../assets/practice-intro.webp'
 import { WORKPLACE_AREAS, getPrimaryAreaId } from '../mockData/workplaceAreas.js'
 import { loadMockActivities } from '../mockData/practiceSession.js'
 import {
@@ -54,11 +54,12 @@ const MAY_REPEAT = 'We couldn’t check your earlier activities, so some may rep
 
 // What the floor says about the multiple-choice activity before she opens
 // it. It never describes the situations themselves.
-const mcqFloor = (roleLabel, areaLabel, total, completed) => ({
+const mcqFloor = (roleLabel, areaLabel, completed) => ({
   announcement: `Something needs you in the ${areaLabel}.`,
   panel: {
     title: 'A few situations need your judgement',
-    text: `${total} ${total === 1 ? 'situation' : 'situations'} a ${roleLabel} meets at work, one at a time. You will see each one when you get there.`,
+    // No count here: a question about her own skill can still be on its way.
+    text: `Situations a ${roleLabel} meets at work, one at a time. You will see each one when you get there.`,
     cta: completed > 0 ? 'Carry on' : 'See the first one',
   },
 })
@@ -125,6 +126,19 @@ export default function WorkplaceScenario() {
   // now open (AC 4.3.5 exception): she continues, and is told some may repeat.
   const [mayRepeat, setMayRepeat] = useState(false)
   const unchecked = useRef(false)
+  // Requested as soon as the page opens, so they are usually ready by the
+  // time she has chosen a level. Each is used once, then fetched fresh.
+  const early = useRef({ roadmap: null, remaining: null })
+  const fetchEarly = (key, fetcher) => {
+    const request = fetcher()
+    request.catch(() => {}) // a failure is handled where it is awaited
+    early.current[key] = request
+  }
+  const takeEarly = (key, fetcher) => {
+    const request = early.current[key] || fetcher()
+    early.current[key] = null
+    return request
+  }
   // Areas of the floor finished in this visit.
   const [doneAreaIds, setDoneAreaIds] = useState([])
   const [isPreparingActivity, setIsPreparingActivity] = useState(false)
@@ -141,16 +155,27 @@ export default function WorkplaceScenario() {
     setFinished(apiSession.scenarios.filter((item) => item.status === 'completed').map((item) => item.title))
   }
 
+  // Only the latest call may change the screen. React runs the first load
+  // twice in development, and a slow earlier call must not undo what she
+  // has done since.
+  const loadTurn = useRef(0)
+
   const load = async () => {
+    const turn = ++loadTurn.current
+    const isStale = () => turn !== loadTurn.current
     try {
       const practiceRole = await api.getPracticeRole()
+      if (isStale()) return
       if (!practiceRole.role_id) {
         setLoadError('no-role')
         setLoading(false)
         return
       }
       setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
+      fetchEarly('roadmap', api.getRoadmap)
+      fetchEarly('remaining', api.getRemainingQuestions)
       let mocks = await loadMockActivities(practiceRole.role_id)
+      if (isStale()) return
       setMockActivities(mocks)
 
       // An activity she left part-way through has to be finished first.
@@ -160,9 +185,11 @@ export default function WorkplaceScenario() {
       } catch (err) {
         if (err.code !== 'PRACTICE_SESSION_NOT_FOUND') throw err
       }
+      if (isStale()) return
       if (current && current.progress.current_scenario_id) {
-        setRole({ id: current.role.id, label: current.role.label })
         mocks = await loadMockActivities(current.role.id)
+        if (isStale()) return
+        setRole({ id: current.role.id, label: current.role.label })
         setMockActivities(mocks)
         setDifficulty(current.difficulty)
         setKind(MCQ)
@@ -172,6 +199,7 @@ export default function WorkplaceScenario() {
         // Every question was answered but the tab closed before it was
         // marked finished.
         if (current) await api.completePracticeSession(current.session_id).catch(() => {})
+        if (isStale()) return
         // The activity unlocked at her last soft stop is still waiting.
         const pending = getPending(practiceRole.role_id)
         if (pending) {
@@ -183,6 +211,7 @@ export default function WorkplaceScenario() {
       setLoadError(null)
       setLoading(false)
     } catch {
+      if (isStale()) return
       setLoadError('intro-failed')
       setLoading(false)
     }
@@ -219,7 +248,7 @@ export default function WorkplaceScenario() {
   const pickNext = async (level, { withoutMcq = false } = {}) => {
     let counts = null
     try {
-      counts = await api.getRemainingQuestions()
+      counts = await takeEarly('remaining', api.getRemainingQuestions)
     } catch {
       // AC 4.3.5 exception: she still practises; Multiple Choice is assumed
       // to have something left and the backend has the final say.
@@ -280,7 +309,10 @@ export default function WorkplaceScenario() {
     setIsStarting(true)
     setStartError(false)
     try {
-      const [roadmap, unlocked] = await Promise.all([api.getRoadmap(), pickAndEnter(difficulty, null)])
+      const [roadmap, unlocked] = await Promise.all([
+        takeEarly('roadmap', api.getRoadmap),
+        pickAndEnter(difficulty, null),
+      ])
       if (!unlocked) {
         setStep('exhausted')
         return
@@ -330,6 +362,8 @@ export default function WorkplaceScenario() {
     setStep('stop')
     try {
       const picked = await pickNext(difficulty)
+      // Her practice focus may have moved on with what she just finished.
+      fetchEarly('roadmap', api.getRoadmap)
       setNextKind(picked)
       if (picked) setPending({ roleId: role.id, difficulty, kind: picked })
       else clearPending()
@@ -384,7 +418,13 @@ export default function WorkplaceScenario() {
       // Finishing the activity frees her to start another one later. If
       // this call is lost, the next visit finishes it instead.
       if (!hasNext) api.completePracticeSession(session.id).catch(() => {})
-      setSession((value) => ({ ...value, completed: saved.progress.completed_activities }))
+      // The total can grow by one: the question about her own skill is
+      // written after the activity starts and joins it when ready.
+      setSession((value) => ({
+        ...value,
+        completed: saved.progress.completed_activities,
+        total: saved.progress.total_activities,
+      }))
       setFinished((titles) => [...titles, question.title])
       setResult({ activity: toChoiceActivity(question), feedback: saved.scenario.feedback, hasNext })
       setStep('feedback')
@@ -409,7 +449,7 @@ export default function WorkplaceScenario() {
   const total = kind === MCQ ? session?.total || 0 : 1
   const completedCount = kind === MCQ ? session?.completed || 0 : 0
   const activity = kind === MCQ ? (question ? toChoiceActivity(question) : null) : mock
-  const floor = kind === MCQ && area ? mcqFloor(role.label, area.label, total, completedCount) : mock
+  const floor = kind === MCQ && area ? mcqFloor(role.label, area.label, completedCount) : mock
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
 
   if (loading) return (

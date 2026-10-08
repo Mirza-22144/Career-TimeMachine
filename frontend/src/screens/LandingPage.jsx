@@ -43,7 +43,7 @@ export default function LandingPage() {
   const handleContinueJourney = async () => {
     try {
       const profile = await api.getProfile();
-      navigate(profile.confirmed ? "/career-journey" : getResumeStep(profile));
+      navigate(profile.confirmed ? "/dashboard" : getResumeStep(profile));
     } catch {
       navigate("/your-story");
     }

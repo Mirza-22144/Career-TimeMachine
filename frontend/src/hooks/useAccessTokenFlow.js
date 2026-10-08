@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { navigate } from "../navigate.js";
 import { api } from "../api.js";
-import { getActiveToken, hasActiveToken, setJustReturned } from "../accessToken.js";
+import { getActiveToken, hasActiveToken } from "../accessToken.js";
 import { getResumeStep } from "../resumeStep.js";
 
 /**
@@ -64,7 +64,7 @@ export function useAccessTokenFlow() {
   };
 
   // AC 3.2.1: validates an entered token against the real backend, restores
-  // its session, then takes her to Career Journey ("welcome back") if her
+  // its session, then takes her to the dashboard (AC 3.3.3) if her
   // profile is already confirmed, or back into the wizard at Your Story if
   // she never finished it. `silent: true` (used by AccessTokenModal) skips
   // the sessionRestoreError toast so the modal can show its own inline
@@ -90,9 +90,10 @@ export function useAccessTokenFlow() {
       const profile = await api.getProfile();
       setSessionRestoreError(false);
       setActiveTokenState(token);
+      // AC 3.3.3: a returning visitor with a completed profile lands on
+      // the dashboard.
       if (profile.confirmed) {
-        setJustReturned();
-        navigate("/career-journey");
+        navigate("/dashboard");
       } else {
         navigate(getResumeStep(profile));
       }

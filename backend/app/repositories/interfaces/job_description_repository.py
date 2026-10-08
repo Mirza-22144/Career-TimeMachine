@@ -50,3 +50,11 @@ class JobDescriptionRepository(ABC):
     def list_for_owner(self, owner_token_hash: str) -> list[JobDescription]:
         """Return all of the owner's job descriptions, newest first."""
         raise NotImplementedError
+
+    @abstractmethod
+    def delete_for_owner(self, owner_token_hash: str, job_description_id: str) -> bool:
+        """Delete one of the owner's job descriptions (AC 3.5.1). Return
+        True if a matching record existed and was deleted - another
+        owner's record, or an unknown id, must never be deleted or even
+        reveal whether it exists."""
+        raise NotImplementedError

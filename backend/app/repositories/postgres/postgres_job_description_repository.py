@@ -48,13 +48,17 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         raise database_unavailable(exc) from exc
 
 
-def _execute(sql: str, params: tuple = ()) -> None:
+def _execute(sql: str, params: tuple = ()) -> int:
+    """Runs one write statement, commits it, and returns the affected row
+    count (callers that don't need it, like add(), just ignore it)."""
     try:
         conn = _pool.getconn()
         try:
             with conn.cursor() as cur:
                 cur.execute(sql, params)
+                rowcount = cur.rowcount
             conn.commit()
+            return rowcount
         except Exception:
             conn.rollback()
             raise
@@ -125,3 +129,10 @@ class PostgresJobDescriptionRepository(JobDescriptionRepository):
             (owner_token_hash,),
         )
         return [_row_to_job_description(row) for row in rows]
+
+    def delete_for_owner(self, owner_token_hash: str, job_description_id: str) -> bool:
+        rowcount = _execute(
+            "DELETE FROM job_description WHERE job_description_id = %s AND owner_token_hash = %s",
+            (job_description_id, owner_token_hash),
+        )
+        return rowcount > 0

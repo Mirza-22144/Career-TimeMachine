@@ -33,6 +33,14 @@ class RoadmapRoleResponse(BaseModel):
     market_data: MarketDataResponse | None
 
 
+class ChosenRoleResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    role_id: str
+    role_label: str
+    chosen_at: datetime
+
+
 class RoadmapResponse(BaseModel):
     """Your Roadmap (AC 2.2.3/2.2.4). No scores or percentages by design."""
 
@@ -42,3 +50,4 @@ class RoadmapResponse(BaseModel):
     years_experience_label: str | None
     suggested_roles: list[RoadmapRoleResponse]
     selected_role_id: str | None
+    chosen_roles: list[ChosenRoleResponse]

@@ -25,6 +25,7 @@ from app.providers.unavailable_job_description_extraction_provider import (
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.job_description_repository import JobDescriptionRepository
 from app.repositories.interfaces.session_repository import AnonSession
+from app.repositories.interfaces.role_choice_repository import RoleChoiceRepository
 from app.repositories.interfaces.vacancy_repository import VacancyRepository
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_job_description_repository import (
@@ -34,6 +35,7 @@ from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
+from app.repositories.memory.memory_role_choice_repository import MemoryRoleChoiceRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
 from app.repositories.memory.memory_vacancy_repository import MemoryVacancyRepository
 from app.services.career_direction_service import CareerDirectionService
@@ -159,6 +161,16 @@ else:
 # vacancy_monthly, read-only reference data maintained by the data team's
 # pipeline) once the DB_* env vars are set; empty otherwise, same pattern
 # as every other repository here.
+_role_choice_repository: RoleChoiceRepository
+if HAS_DATABASE:
+    from app.repositories.postgres.postgres_role_choice_repository import (
+        PostgresRoleChoiceRepository,
+    )
+
+    _role_choice_repository = PostgresRoleChoiceRepository()
+else:
+    _role_choice_repository = MemoryRoleChoiceRepository()
+
 _vacancy_repository: VacancyRepository
 if HAS_DATABASE:
     from app.repositories.postgres.postgres_vacancy_repository import (
@@ -226,7 +238,7 @@ def get_career_direction_service() -> CareerDirectionService:
 
 def get_practice_role_service() -> PracticeRoleService:
     """Build practice-role service with shared profile and catalogue repositories."""
-    return PracticeRoleService(_profile_repository, _catalogue_repository)
+    return PracticeRoleService(_profile_repository, _catalogue_repository, _role_choice_repository)
 
 
 def get_role_prediction_service() -> RolePredictionService:
@@ -291,6 +303,7 @@ def get_roadmap_service(
         predictions,
         get_practice_role_service(),
         _practice_session_repository,
+        _role_choice_repository,
     )
 
 

@@ -20,6 +20,7 @@ from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
+from app.repositories.memory.memory_role_choice_repository import MemoryRoleChoiceRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
 from app.repositories.memory.memory_vacancy_repository import MemoryVacancyRepository
 
@@ -97,6 +98,7 @@ def fake_session_and_profile_stores(monkeypatch):
     monkeypatch.setattr(dependencies, "_practice_session_repository", MemoryPracticeSessionRepository())
     monkeypatch.setattr(dependencies, "_job_description_repository", MemoryJobDescriptionRepository())
     monkeypatch.setattr(dependencies, "_vacancy_repository", MemoryVacancyRepository())
+    monkeypatch.setattr(dependencies, "_role_choice_repository", MemoryRoleChoiceRepository())
 
 
 @pytest.fixture

@@ -39,3 +39,11 @@ class SessionRepository(ABC):
         """Record that the session was used. Does nothing for an unknown
         hash."""
         raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, token_hash: str) -> bool:
+        """Delete this session (AC 3.5.2, Clear My Journey). The token
+        stops working immediately after - every later request with it
+        fails get_current_session's lookup. Return True if a session
+        existed and was deleted."""
+        raise NotImplementedError

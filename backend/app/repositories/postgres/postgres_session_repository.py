@@ -43,14 +43,17 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         raise database_unavailable(exc) from exc
 
 
-def _execute(sql: str, params: tuple = ()) -> None:
-    """Runs one write statement and commits it."""
+def _execute(sql: str, params: tuple = ()) -> int:
+    """Runs one write statement, commits it, and returns the affected row
+    count (most callers ignore it - delete() is the one that needs it)."""
     try:
         conn = _pool.getconn()
         try:
             with conn.cursor() as cur:
                 cur.execute(sql, params)
+                rowcount = cur.rowcount
             conn.commit()
+            return rowcount
         except Exception:
             conn.rollback()
             raise
@@ -88,3 +91,10 @@ class PostgresSessionRepository(SessionRepository):
             "UPDATE anon_session SET last_seen_at = %s WHERE token_hash = %s",
             (seen_at, token_hash),
         )
+
+    def delete(self, token_hash: str) -> bool:
+        # Cascades to profile, job_description and practice_session (and
+        # its own child tables) via their ON DELETE CASCADE foreign keys -
+        # one row delete clears the entire journey.
+        rowcount = _execute("DELETE FROM anon_session WHERE token_hash = %s", (token_hash,))
+        return rowcount > 0

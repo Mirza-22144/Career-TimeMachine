@@ -27,3 +27,10 @@ class MemorySessionRepository(SessionRepository):
         session = self._sessions.get(token_hash)
         if session is not None:
             session.last_seen_at = seen_at
+
+    def delete(self, token_hash: str) -> bool:
+        """Delete a session, if one exists under this hash."""
+        if token_hash not in self._sessions:
+            return False
+        del self._sessions[token_hash]
+        return True

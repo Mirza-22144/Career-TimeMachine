@@ -11,6 +11,7 @@ from fastapi import HTTPException, status
 from pydantic import ValidationError
 
 from app.providers.live_question_provider import LiveQuestion, LiveQuestionProvider
+from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.providers.scenario_provider import (
     ScenarioContent,
     ScenarioProvider,
@@ -98,6 +99,8 @@ class PracticeSessionService:
         questions_per_activity: int = 1,
         live_questions: LiveQuestionProvider | None = None,
         live_timeout_seconds: float = 8.0,
+        catalogue: CatalogueRepository | None = None,
+        run_in_background: Callable[[Callable[[], None]], None] | None = None,
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.
@@ -113,6 +116,12 @@ class PracticeSessionService:
         self.questions_per_activity = questions_per_activity
         self.live_questions = live_questions
         self.live_timeout_seconds = live_timeout_seconds
+        # Used to put questions about her practice focus first (AC 4.4.5).
+        self.catalogue = catalogue
+        # When set, the live question is written after the activity has
+        # started instead of making her wait for it: it is added to the
+        # session as soon as it is ready, well before she reaches it.
+        self.run_in_background = run_in_background
 
     def start_session(self, owner: str, settings: PracticeSessionCreate) -> PracticeSession:
         """Start one activity with the saved role, saved career context and
@@ -156,17 +165,21 @@ class PracticeSessionService:
                 "You have completed all the activities for this role at this level",
             )
         exclude = answered | {scenario.scenario_id for scenario in scenarios}
+        self._put_focus_first(scenarios, context, earlier)
 
-        live = self._live_question(context.role_id, settings.difficulty, context.custom_skills, exclude)
-        if live is not None:
-            scenarios.append(live)
+        wants_live = self.live_questions is not None and bool(context.custom_skills)
+        if wants_live and self.run_in_background is None:
+            live = self._live_question(context.role_id, settings.difficulty, context.custom_skills, exclude)
+            if live is not None:
+                scenarios.append(live)
 
         for index, scenario in enumerate(scenarios):
             scenario.status = "current" if index == 0 else "upcoming"
 
-        return self.sessions.add(
+        session_id = uuid.uuid4().hex
+        started = self.sessions.add(
             PracticeSession(
-                session_id=uuid.uuid4().hex,
+                session_id=session_id,
                 owner_token_hash=owner,
                 role=PracticeRoleRef(
                     id=context.role_id,
@@ -182,6 +195,59 @@ class PracticeSessionService:
                 history_checked=history_checked,
             )
         )
+        if wants_live and self.run_in_background is not None:
+            role_id, difficulty, skills = context.role_id, settings.difficulty, list(context.custom_skills)
+            self.run_in_background(
+                lambda: self._add_live_question(owner, session_id, role_id, difficulty, skills, exclude)
+            )
+        return started
+
+    def _add_live_question(
+        self, owner: str, session_id: str, role_id: str, difficulty: str, custom_skills: list[str], exclude: set[str]
+    ) -> None:
+        """Write the live question and add it as the last question of an
+        activity that has already started. Runs off the request; any failure
+        just means the activity keeps its pre-written questions."""
+        try:
+            live = self._live_question(role_id, difficulty, custom_skills, exclude)
+            if live is None:
+                return
+            live.status = "upcoming"
+            if not self.sessions.add_scenario(owner, session_id, live):
+                logger.info("Live question arrived after the activity had finished; not added")
+        except Exception as exc:  # noqa: BLE001 - a background task must never raise
+            logger.warning("Live question could not be added (%s)", type(exc).__name__)
+
+    def _put_focus_first(
+        self, scenarios: list[PracticeScenario], context: PracticeContext, earlier: list[PracticeSession]
+    ) -> None:
+        """AC 4.4.5: questions that use her practice focus come first. The
+        focus is the next skill to explore on her roadmap for this role - an
+        in-demand skill of the role that she doesn't have and hasn't
+        practised (the same rule as RoadmapService) - followed by the ones
+        after it. Questions that use none of them keep their order."""
+        if self.catalogue is None or len(scenarios) < 2:
+            return
+        owned = {label.casefold() for label in context.skills}
+        practised = {
+            label.casefold()
+            for session in earlier
+            if session.role.id == context.role_id
+            for scenario in session.scenarios
+            if scenario.status == "completed"
+            for label in scenario.skills_used
+        }
+        focus = [
+            skill.label.casefold()
+            for skill in self.catalogue.get_skills_for_role(context.role_id)
+            if skill.in_demand and skill.label.casefold() not in owned and skill.label.casefold() not in practised
+        ]
+        rank = {label: index for index, label in reversed(list(enumerate(focus)))}
+
+        def position(scenario: PracticeScenario) -> int:
+            return min((rank[s.casefold()] for s in scenario.skills_used if s.casefold() in rank), default=len(focus))
+
+        scenarios.sort(key=position)  # stable: ties keep the pool's order
 
     def get_session(self, owner: str, session_id: str) -> PracticeSession:
         """Return one of the owner's sessions. Another user's session gets

@@ -112,8 +112,12 @@ def no_live_questions():
     """Tests never call Gemini or load the embedding model. A test that
     wants a live question overrides this with use_live_questions."""
     app.dependency_overrides[dependencies.get_live_question_provider] = lambda: NoLiveQuestions()
+    # No background threads in tests: the live question is written inline
+    # unless a test supplies its own runner.
+    app.dependency_overrides[dependencies.get_background_runner] = lambda: None
     yield
     app.dependency_overrides.pop(dependencies.get_live_question_provider, None)
+    app.dependency_overrides.pop(dependencies.get_background_runner, None)
 
 
 @pytest.fixture

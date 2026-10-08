@@ -1,5 +1,6 @@
 import logging
 import threading
+from collections.abc import Callable
 
 from fastapi import Depends, Header, HTTPException, Request, status
 
@@ -286,10 +287,22 @@ def get_practice_activity_type() -> str:
     return PRACTICE_ACTIVITY_TYPE
 
 
+def _run_on_thread(task: Callable[[], None]) -> None:
+    threading.Thread(target=task, daemon=True).start()
+
+
+def get_background_runner() -> Callable[[Callable[[], None]], None] | None:
+    """How work that shouldn't hold up a response is run (the live practice
+    question). Tests override this with None so it runs inline, or with a
+    collector so they decide when it runs."""
+    return _run_on_thread
+
+
 def get_practice_session_service(
     provider: ScenarioProvider = Depends(get_scenario_provider),
     activity_type: str = Depends(get_practice_activity_type),
     live_questions: LiveQuestionProvider = Depends(get_live_question_provider),
+    background: Callable[[Callable[[], None]], None] | None = Depends(get_background_runner),
 ) -> PracticeSessionService:
     """Build practice-session service with shared repositories and the provider."""
     return PracticeSessionService(
@@ -301,6 +314,8 @@ def get_practice_session_service(
         QUESTIONS_PER_ACTIVITY,
         live_questions,
         LIVE_QUESTION_TIMEOUT_SECONDS,
+        _catalogue_repository,
+        background,
     )
 
 

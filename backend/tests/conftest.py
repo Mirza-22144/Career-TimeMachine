@@ -20,6 +20,7 @@ from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
+from app.providers.live_question_provider import LiveQuestionProvider
 from app.repositories.memory.memory_role_choice_repository import MemoryRoleChoiceRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
 from app.repositories.memory.memory_vacancy_repository import MemoryVacancyRepository
@@ -99,6 +100,30 @@ def fake_session_and_profile_stores(monkeypatch):
     monkeypatch.setattr(dependencies, "_job_description_repository", MemoryJobDescriptionRepository())
     monkeypatch.setattr(dependencies, "_vacancy_repository", MemoryVacancyRepository())
     monkeypatch.setattr(dependencies, "_role_choice_repository", MemoryRoleChoiceRepository())
+
+
+class NoLiveQuestions(LiveQuestionProvider):
+    def generate(self, role_id, difficulty, custom_skills):
+        return None
+
+
+@pytest.fixture(autouse=True)
+def no_live_questions():
+    """Tests never call Gemini or load the embedding model. A test that
+    wants a live question overrides this with use_live_questions."""
+    app.dependency_overrides[dependencies.get_live_question_provider] = lambda: NoLiveQuestions()
+    yield
+    app.dependency_overrides.pop(dependencies.get_live_question_provider, None)
+
+
+@pytest.fixture
+def use_live_questions():
+    """Swap the live-question provider for one test."""
+
+    def _use(provider) -> None:
+        app.dependency_overrides[dependencies.get_live_question_provider] = lambda: provider
+
+    return _use
 
 
 @pytest.fixture

@@ -10,6 +10,12 @@ COPY requirements.txt .
 # PyPI as normal; this just adds a second source, it doesn't replace PyPI.
 RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
+# The live practice question (Iteration 3, AC 4.4.6) retrieves context with
+# a small local embedding model. Baked into the image so a cold start never
+# downloads it; see ai/reflective_mcq_v3/MODEL_DEPLOYMENT.md.
+ENV LIVE_MCQ_EMBEDDING_MODEL_PATH=/app/models/all_minilm_l6_v2
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2').save('/app/models/all_minilm_l6_v2')"
+
 COPY app ./app
 
 # Cloud Run sets $PORT and expects the app to listen on it (defaults to

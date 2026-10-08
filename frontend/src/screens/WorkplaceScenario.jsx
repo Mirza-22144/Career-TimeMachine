@@ -6,6 +6,7 @@ import ChoiceActivity from '../components/practice/ChoiceActivity'
 import DragDropActivity from '../components/practice/DragDropActivity'
 import PracticeFeedback, { ActivitySkeleton } from '../components/practice/PracticeFeedback'
 import workplaceImg from '../assets/workplace.png'
+import introImg from '../assets/practice-intro.png'
 import { WORKPLACE_AREAS } from '../mockData/workplaceAreas.js'
 import { loadPracticeSession } from '../mockData/practiceSession.js'
 import {
@@ -14,6 +15,7 @@ import {
 } from '../components/icons'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
+import { addCompleted, clearProgress, isExhausted, loadProgress, saveProgress } from '../practiceHistory.js'
 
 const AREA_ICONS = {
   user: UserIcon,
@@ -30,8 +32,8 @@ const AREA_ICONS = {
 }
 
 const HOW_IT_WORKS = [
-  { number: 1, text: 'Explore your workplace. One area at a time will need you.' },
-  { number: 2, text: 'Complete a realistic workplace activity when you get there.' },
+  { number: 1, text: 'Explore your workplace and choose an area.' },
+  { number: 2, text: 'Complete a realistic workplace activity or practical task.' },
   { number: 3, text: 'Get feedback on what you did well and what you could explore further.' },
 ]
 
@@ -55,7 +57,7 @@ export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null) // null | 'no-role' | 'intro-failed'
   const [role, setRole] = useState(null)
-  // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'stop'
+  // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'stop' | 'exhausted'
   const [step, setStep] = useState('intro')
   const [difficulty, setDifficulty] = useState(null)
   const [prepLoading, setPrepLoading] = useState(false)
@@ -80,6 +82,16 @@ export default function WorkplaceScenario() {
         return
       }
       setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
+      const practice = await loadPracticeSession()
+      setActivities(practice.activities)
+      // Pick up a session she left part-way through.
+      const saved = loadProgress(practiceRole.role_id)
+      if (saved && saved.currentIndex < practice.activities.length) {
+        setDifficulty(saved.difficulty)
+        setCurrentIndex(saved.currentIndex)
+        setAnswers(saved.answers)
+        setStep('workplace')
+      }
       setLoadError(null)
       setLoading(false)
     } catch {
@@ -121,6 +133,7 @@ export default function WorkplaceScenario() {
       setActivities(practice.activities)
       setCurrentIndex(0)
       setAnswers({})
+      saveProgress({ roleId: role.id, difficulty, currentIndex: 0, answers: {} })
       setPrepLoading(false)
     } catch {
       setPrepError(true)
@@ -128,7 +141,16 @@ export default function WorkplaceScenario() {
     }
   }
 
+  const allActivityIds = activities.map((item) => item.id)
+  const isLevelDone = (level) => isExhausted(role.id, level, allActivityIds)
+
+  // AC 4.3.5: nothing new left for this role at this level - offer the
+  // other ways forward instead of repeating activities.
   const handleSetupContinue = () => {
+    if (isLevelDone(difficulty)) {
+      setStep('exhausted')
+      return
+    }
     setStep('prep')
     loadPrep()
   }
@@ -148,7 +170,24 @@ export default function WorkplaceScenario() {
   }
 
   const handleSubmit = (answer) => {
-    setAnswers((prev) => ({ ...prev, [activity.id]: answer }))
+    const nextAnswers = { ...answers, [activity.id]: answer }
+    setAnswers(nextAnswers)
+    addCompleted({
+      activityId: activity.id,
+      title: activity.title,
+      type: activity.type,
+      answer,
+      roleId: role.id,
+      roleLabel: role.label,
+      difficulty,
+    })
+    // Her place is the next activity from here on, even if she leaves
+    // before closing the feedback.
+    if (currentIndex + 1 < activities.length) {
+      saveProgress({ roleId: role.id, difficulty, currentIndex: currentIndex + 1, answers: nextAnswers })
+    } else {
+      clearProgress()
+    }
     setStep('feedback')
   }
 
@@ -166,7 +205,13 @@ export default function WorkplaceScenario() {
     setStep('workplace')
   }
 
+  // AC 4.5.4: Keep Going starts a new session for the same role and
+  // difficulty - or, when nothing new remains, shows the other choices.
   const handleKeepGoing = () => {
+    if (isLevelDone(difficulty)) {
+      setStep('exhausted')
+      return
+    }
     setStep('prep')
     loadPrep()
   }
@@ -254,7 +299,7 @@ export default function WorkplaceScenario() {
           </div>
         </main>
         <div className="pa-footer">
-          <span className="pa-footer-note">You&rsquo;ve finished all {activities.length} activities in this session.</span>
+          <span className="pa-footer-note">Your {activities.length} activities are saved to your dashboard.</span>
           <div className="pa-footer-actions">
             <button type="button" className="pa-btn-outline" onClick={handleKeepGoing}>Keep Going</button>
             <button type="button" className="pa-btn-primary" onClick={() => navigate('/dashboard')}>
@@ -266,43 +311,79 @@ export default function WorkplaceScenario() {
     </>
   )
 
+  // AC 4.3.5 exception: every activity for this role and level is done.
+  if (step === 'exhausted') {
+    const otherLevelLeft = DIFFICULTIES.some((d) => !isLevelDone(d.value))
+    return (
+      <>
+        <TopNav />
+        <div className="pa-page">
+          <main className="pa-body pa-body--stop">
+            <span className="pa-eyebrow">{role.label.toUpperCase()} · {difficultyLabel?.toUpperCase()}</span>
+            <h1 className="pa-stop-heading pa-stop-heading--small">
+              You&rsquo;ve completed all the activities for this role at this level.
+            </h1>
+            <p className="pa-stop-subheading">Everything you did is on your dashboard. Here is where you could go next.</p>
+            <div className="pa-choice-row">
+              {otherLevelLeft && (
+                <button type="button" className="pa-btn-primary" onClick={() => { setDifficulty(null); setStep('setup') }}>
+                  Try Another Difficulty
+                </button>
+              )}
+              <button type="button" className="pa-btn-outline" onClick={() => navigate('/your-roadmap')}>
+                Explore Another Role
+              </button>
+              <button type="button" className="pa-btn-outline" onClick={() => navigate('/analyse-job-description')}>
+                Analyse a Job Description
+              </button>
+            </div>
+          </main>
+        </div>
+      </>
+    )
+  }
+
   if (step === 'setup') return (
     <>
       <TopNav />
-      <div className="ws-page">
-        <main className="ws-intro-content">
-          <h1 className="ws-intro-heading">Set up your practice</h1>
-          <p className="ws-intro-subheading">
-            Choose how challenging you&rsquo;d like this practice to be.
-          </p>
+      <div className="pa-page">
+        <main className="pa-body pa-body--setup">
+          <h1 className="pa-stop-heading pa-stop-heading--small">Set up your practice</h1>
+          <p className="pa-stop-subheading">Choose how challenging you&rsquo;d like this practice to be.</p>
 
-          <h2 className="ws-setup-label">How challenging would you like it to be?</h2>
-          <div className="ws-setup-grid">
+          <h2 className="pa-setup-label">How challenging would you like it to be?</h2>
+          <div className="pa-setup-grid" role="radiogroup" aria-label="Difficulty">
             {DIFFICULTIES.map((option) => {
               const isActive = difficulty === option.value
               return (
                 <button
                   type="button"
                   key={option.value}
-                  className={`ws-setup-card ${isActive ? 'ws-setup-card--active' : ''}`}
+                  role="radio"
+                  aria-checked={isActive}
+                  className={`pa-setup-card ${isActive ? 'pa-setup-card--active' : ''}`}
                   onClick={() => setDifficulty(option.value)}
                 >
-                  <div className="ws-setup-card-header">
+                  <span className="pa-setup-card-top">
                     <strong>{option.label}</strong>
-                    <span className={`ws-setup-radio ${isActive ? 'ws-setup-radio--active' : ''}`}>
-                      {isActive && <span aria-hidden="true">✓</span>}
+                    <span className={`pa-radio ${isActive ? 'pa-radio--on' : ''}`}>
+                      {isActive && <CheckIcon size={11} />}
                     </span>
-                  </div>
-                  <span className="ws-setup-caption">{option.caption}</span>
+                  </span>
+                  <span className="pa-setup-caption">{option.caption}</span>
                 </button>
               )
             })}
           </div>
-
-          <button type="button" className="ws-intro-continue" disabled={!difficulty} onClick={handleSetupContinue}>
-            Continue <span aria-hidden="true">→</span>
-          </button>
         </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">
+            {difficulty ? `${difficultyLabel} selected. You can change this next time.` : 'Choose a difficulty to continue.'}
+          </span>
+          <button type="button" className="pa-btn-primary" disabled={!difficulty} onClick={handleSetupContinue}>
+            Continue <ArrowRightIcon size={16} />
+          </button>
+        </div>
       </div>
     </>
   )
@@ -331,42 +412,60 @@ export default function WorkplaceScenario() {
   if (step === 'prep') return (
     <>
       <TopNav />
-      <div className="ws-page">
-        <main className="ws-prep-content">
-          <h1 className="ws-intro-heading">Your practice</h1>
-          <p className="ws-prep-subtitle">{role.label}</p>
+      <div className="pa-page">
+        <main className="pa-body">
+          <h1 className="pa-stop-heading pa-stop-heading--small">Your practice</h1>
+          <p className="pa-prep-subtitle">{role.label} · {difficultyLabel}</p>
 
-          <div className="ws-prep-layout">
-            <div className="ws-prep-main">
-              <span className="ws-prep-eyebrow">YOUR PRACTICE FOCUS</span>
-              <h2 className="ws-prep-title">{focusSkill || `Working as a ${role.label}`}</h2>
-              <p className="ws-prep-task">
-                A few short workplace situations, one at a time. You&rsquo;ll see what each one involves when you
-                get there.
-              </p>
-            </div>
-            <aside className="ws-prep-side">
-              <div>
-                <span className="ws-prep-eyebrow">DIFFICULTY</span>
-                <strong className="ws-prep-footer-value">{difficultyLabel}</strong>
+          <div className="pa-columns pa-columns--prep">
+            <div className="pa-card">
+              <div className="pa-prep-section">
+                <span className="pa-prep-label">TODAY&rsquo;S FOCUS</span>
+                <h2 className="pa-prep-focus">{focusSkill || `Working as a ${role.label}`}</h2>
               </div>
               {skillsUsed.length > 0 && (
-                <div>
-                  <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
-                  <div className="ws-prep-pills">
-                    {skillsUsed.map((skill) => (
-                      <span key={skill} className="ws-prep-pill">{skill}</span>
-                    ))}
+                <div className="pa-prep-section">
+                  <span className="pa-prep-label">YOU&rsquo;LL USE</span>
+                  <div className="pa-prep-pills">
+                    {skillsUsed.map((skill) => <span key={skill} className="pa-prep-pill">{skill}</span>)}
                   </div>
                 </div>
               )}
-            </aside>
-          </div>
+              <div className="pa-prep-section">
+                <span className="pa-prep-label">YOU&rsquo;LL PRACTISE</span>
+                <p className="pa-prep-text">
+                  Handling the everyday situations a {role.label} meets with colleagues and stakeholders.
+                </p>
+              </div>
+              <div className="pa-prep-section">
+                <span className="pa-prep-label">DIFFICULTY</span>
+                <strong className="pa-prep-value">{difficultyLabel}</strong>
+              </div>
+            </div>
 
-          <button type="button" className="ws-intro-continue" onClick={() => setStep('workplace')}>
-            Enter Workplace <span aria-hidden="true">→</span>
-          </button>
+            <div className="pa-card">
+              <span className="pa-prep-label">BEFORE YOU GO IN</span>
+              <div className="pa-before-item">
+                <strong>Work arrives one thing at a time</strong>
+                <p>You will see what each task involves when you get there.</p>
+              </div>
+              <div className="pa-before-item">
+                <strong>Nothing is graded</strong>
+                <p>You get feedback on what worked and what to consider, never a score.</p>
+              </div>
+              <div className="pa-before-item">
+                <strong>Stop whenever you need to</strong>
+                <p>Your place is saved, so you can pick it up again later.</p>
+              </div>
+            </div>
+          </div>
         </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">You can leave at any point. Your place is saved in this browser.</span>
+          <button type="button" className="pa-btn-primary" onClick={() => setStep('workplace')}>
+            Enter Workplace <ArrowRightIcon size={16} />
+          </button>
+        </div>
       </div>
     </>
   )
@@ -472,35 +571,32 @@ export default function WorkplaceScenario() {
   return (
     <>
       <TopNav />
-      <div className="ws-page">
-        <main className="ws-intro-content">
-          <h1 className="ws-intro-heading">Welcome to your practice area</h1>
-          <p className="ws-intro-subheading">
-            You&rsquo;ll work through a few realistic workplace situations as a {role.label}, with a hint whenever
-            you want one.
-          </p>
-
-          <h2 className="ws-intro-label">How it works</h2>
-          <div className="ws-intro-steps">
+      <div className="pa-page">
+        <div className="pa-intro-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(13, 22, 40, 0.92) 0%, rgba(13, 22, 40, 0.55) 55%, rgba(13, 22, 40, 0.2) 100%), url(${introImg})` }}>
+          <h1>Welcome to your practice area</h1>
+          <p>You&rsquo;ll work through a realistic workplace situation based on your selected role and experience.</p>
+        </div>
+        <main className="pa-body">
+          <h2 className="pa-setup-label">How it works</h2>
+          <div className="pa-setup-grid">
             {HOW_IT_WORKS.map((item) => (
-              <div key={item.number} className="ws-intro-step">
-                <span className="ws-intro-step-number">{item.number}</span>
+              <div key={item.number} className="pa-how-card">
+                <span className="pa-how-number">{item.number}</span>
                 <p>{item.text}</p>
               </div>
             ))}
           </div>
-
-          <hr className="ws-intro-divider" />
-
-          <p className="ws-intro-disclaimer">
+          <p className="pa-intro-note">
             Nothing here is graded. Your practice is designed to help you reconnect with your existing experience
             while exploring what has changed.
           </p>
-
-          <button type="button" className="ws-intro-continue" onClick={() => setStep('setup')}>
-            Continue <span aria-hidden="true">→</span>
-          </button>
         </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">Next: choose your challenge level.</span>
+          <button type="button" className="pa-btn-primary" onClick={() => setStep('setup')}>
+            Continue <ArrowRightIcon size={16} />
+          </button>
+        </div>
       </div>
     </>
   )

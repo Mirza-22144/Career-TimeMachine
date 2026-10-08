@@ -10,6 +10,7 @@ import Dashboard from './screens/Dashboard.jsx'
 import AnalyseJobDescription from './screens/AnalyseJobDescription.jsx'
 import JobDescriptionComparison from './screens/JobDescriptionComparison.jsx'
 import YourRoadmap from './screens/YourRoadmap.jsx'
+import PracticeFeedbackView from './screens/PracticeFeedbackView.jsx'
 import CareerJourney from './screens/CareerJourney.jsx'
 import WorkplaceScenario from './screens/WorkplaceScenario.jsx'
 import { getCurrentPath } from './navigate.js'
@@ -27,6 +28,7 @@ const routes = {
   '/analyse-job-description': AnalyseJobDescription,
   '/job-description-comparison': JobDescriptionComparison,
   '/your-roadmap': YourRoadmap,
+  '/practice-feedback': PracticeFeedbackView,
   '/career-journey': CareerJourney,
   '/workplace-scenario': WorkplaceScenario,
 }

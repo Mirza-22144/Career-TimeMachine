@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import "../styles/RoleInfoModal.css";
-import { MOCK_OUTLOOK_SOURCE, mockOutlook, mockRelation } from "../mockData/roadmapData.js";
+import { mockRelation } from "../mockData/roadmapData.js";
 
 const monthYear = (iso) => new Date(iso).toLocaleDateString("en-AU", { month: "long", year: "numeric" });
 
 /**
  * Role information panel (AC 2.4.1), opened from the "i" on a roadmap
  * card. The vacancy range, source and date are real (GET /roadmap); the
- * outlook and relationship text are mock for now - see
- * mockData/roadmapData.js. Closes on the Close button, an outside click
+ * relationship text is mock for now - see mockData/roadmapData.js. Closes on the Close button, an outside click
  * or Escape.
  */
 export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onClose }) {
@@ -58,13 +57,9 @@ export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onC
           )}
         </div>
 
-        <span className="rim-label">OUTLOOK TO 2035</span>
-        <p className="rim-text">{mockOutlook(role.role_label)}</p>
-        <span className="rim-source">{MOCK_OUTLOOK_SOURCE}</span>
-
         {!isPrevious && (
           <>
-            <span className="rim-label rim-label--spaced">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
+            <span className="rim-label">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
             <p className="rim-text">{mockRelation(role.role_label, previousRoleLabel)}</p>
           </>
         )}

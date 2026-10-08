@@ -79,10 +79,6 @@
   color: #6b6685;
 }
 
-.rim-label--spaced {
-  margin-top: 24px;
-}
-
 .rim-range {
   font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
   font-weight: 700;

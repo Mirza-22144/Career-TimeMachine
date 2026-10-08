@@ -1,0 +1,1106 @@
+{
+  "step": "18",
+  "status": "complete",
+  "model": "gemini-3.5-flash-lite",
+  "retriever_version": "2.2",
+  "test_count": 6,
+  "completed_test_count": 6,
+  "live_generation_success_count": 6,
+  "first_attempt_success_count": 6,
+  "fallback_count_during_live_tests": 0,
+  "live_generation_success_rate": 1.0,
+  "first_attempt_success_rate": 1.0,
+  "mean_live_latency_seconds": 3.7724,
+  "p95_live_latency_seconds": 3.9249,
+  "difficulty_counts": {
+    "guided": 2,
+    "standard": 2,
+    "challenge": 2
+  },
+  "difficulty_coverage_passed": true,
+  "exact_duplicate_count": 0,
+  "near_duplicate_pairs": [],
+  "uniqueness_passed": true,
+  "security_tests_passed": 4,
+  "security_tests_total": 4,
+  "security_suite_passed": true,
+  "forced_fallback_passed": true,
+  "forced_fallback_question_id": "data_scientist_challenge_v2_01",
+  "overall_passed": true,
+  "security_results": [
+    {
+      "test_name": "ordinary_skill",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "error_type": null,
+      "passed": true
+    },
+    {
+      "test_name": "prompt_injection",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "test_name": "empty_skill",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "test_name": "oversized_skill",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    }
+  ],
+  "results": [
+    {
+      "test_id": "guided_software_automation",
+      "request": {
+        "test_id": "guided_software_automation",
+        "role_id": "software_developer",
+        "difficulty": "guided",
+        "custom_skills": [
+          "Terraform infrastructure automation"
+        ]
+      },
+      "grounding": {
+        "role_id": "software_developer",
+        "role_label": "Software Developer",
+        "difficulty": "guided",
+        "custom_skill_evidence": [
+          "Terraform infrastructure automation"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Terraform",
+            "semantic_score": 0.5434,
+            "lexical_score": 0.351,
+            "hybrid_score": 0.5453,
+            "source": "role_catalogue",
+            "direct_custom_match": true,
+            "meaningful_overlap": [
+              "terraform"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "software_developer_guided_v3_03",
+            "role_id": "software_developer",
+            "role_label": "Software Developer",
+            "difficulty": "guided",
+            "target_skills": [
+              "Jenkins",
+              "Jira"
+            ],
+            "semantic_score": 0.1869
+          },
+          {
+            "question_id": "software_developer_guided_v3_04",
+            "role_id": "software_developer",
+            "role_label": "Software Developer",
+            "difficulty": "guided",
+            "target_skills": [
+              "Regression testing",
+              "Azure DevOps"
+            ],
+            "semantic_score": 0.1759
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.13792
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.7504,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.7504,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "software_developer_guided_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "software_developer",
+        "role_label": "Software Developer",
+        "difficulty": "guided",
+        "target_skills": [
+          "Terraform infrastructure automation"
+        ],
+        "question": {
+          "situation": "Your team needs to provision a new cloud environment for staging services. Currently, infrastructure changes are done manually in the console, leading to inconsistencies between development and production setups.",
+          "task": "How do you approach introducing Terraform infrastructure automation to standardise the environment provisioning process?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Write a comprehensive Terraform configuration covering all network, compute, and database resources, then apply it directly to production during the next deployment window."
+            },
+            {
+              "id": "b",
+              "text": "Develop modular Terraform scripts for a single non-production microservice first, establishing peer review practices before scaling the approach to wider infrastructure."
+            },
+            {
+              "id": "c",
+              "text": "Organise a team-wide workshop to write the Terraform code collaboratively, ensuring everyone contributes to defining the initial infrastructure state."
+            },
+            {
+              "id": "d",
+              "text": "Provide existing team members with self-study documentation and online tutorials on Terraform so they can experiment independently at their own pace."
+            }
+          ],
+          "hints": [
+            "Consider how the scope of your initial automation effort might impact team confidence.",
+            "Think about balancing rapid standardisation with collaborative learning and risk management."
+          ]
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Addresses the core inconsistency issue thoroughly by defining complete infrastructure."
+            ],
+            "trade_offs": [
+              "Applying a large, untested configuration directly to production carries higher operational risk."
+            ],
+            "areas_to_consider": [
+              "How you might validate the configuration safely in a staging environment first."
+            ],
+            "skill_to_explore": {
+              "skill": "Risk mitigation in deployments",
+              "why_relevant": "Helps balance comprehensive automation goals with careful rollout strategies."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Limits initial blast radius by focusing on a single non-production service.",
+              "Encourages peer review habits early."
+            ],
+            "trade_offs": [
+              "Delays standardisation for the rest of the broader system while focusing on one component."
+            ],
+            "areas_to_consider": [
+              "How you plan to scale these modular scripts across other parts of the infrastructure."
+            ],
+            "skill_to_explore": {
+              "skill": "Incremental delivery",
+              "why_relevant": "Supports introducing technical change in manageable, low-risk stages."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Builds immediate team engagement and shared understanding of the new tooling."
+            ],
+            "trade_offs": [
+              "Collaborative coding sessions can be slow and challenging to coordinate with competing priorities."
+            ],
+            "areas_to_consider": [
+              "Whether everyone has sufficient foundational knowledge to contribute effectively during a live session."
+            ],
+            "skill_to_explore": {
+              "skill": "Collaborative technical workshops",
+              "why_relevant": "Facilitates team alignment and upskilling during significant tooling transitions."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Empowers colleagues to learn at their own convenience without disrupting current delivery schedules."
+            ],
+            "trade_offs": [
+              "Self-directed learning may lead to inconsistent adoption rates and varied proficiency across the team."
+            ],
+            "areas_to_consider": [
+              "How to track progress and ensure the team eventually applies these skills to project work."
+            ],
+            "skill_to_explore": {
+              "skill": "Technical mentorship",
+              "why_relevant": "Provides guidance alongside independent learning to ensure steady team capability growth."
+            }
+          }
+        },
+        "question_id": "software_developer_guided_live_v3_846df6062e11"
+      }
+    },
+    {
+      "test_id": "guided_security_response",
+      "request": {
+        "test_id": "guided_security_response",
+        "role_id": "information_security_analyst",
+        "difficulty": "guided",
+        "custom_skills": [
+          "Cloud incident response"
+        ]
+      },
+      "grounding": {
+        "role_id": "information_security_analyst",
+        "role_label": "Information Security Analyst",
+        "difficulty": "guided",
+        "custom_skill_evidence": [
+          "Cloud incident response"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Security incident management",
+            "semantic_score": 0.3828,
+            "lexical_score": 0.2984,
+            "hybrid_score": 0.4117,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "incident",
+              "security"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "information_security_analyst_guided_v3_04",
+            "role_id": "information_security_analyst",
+            "role_label": "Information Security Analyst",
+            "difficulty": "guided",
+            "target_skills": [
+              "Security risk assessment",
+              "Jira"
+            ],
+            "semantic_score": 0.4054
+          },
+          {
+            "question_id": "information_security_analyst_guided_v3_03",
+            "role_id": "information_security_analyst",
+            "role_label": "Information Security Analyst",
+            "difficulty": "guided",
+            "target_skills": [
+              "Virtual private networking VPN",
+              "Symantec Endpoint Protection"
+            ],
+            "semantic_score": 0.3842
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.042269
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.6423,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.6423,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "information_security_analyst_guided_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "information_security_analyst",
+        "role_label": "Information Security Analyst",
+        "difficulty": "guided",
+        "target_skills": [
+          "Cloud incident response"
+        ],
+        "question": {
+          "situation": "An automated alert has flagged suspicious lateral movement within our primary cloud tenant. As the on-call analyst, you need to initiate the containment and investigation process.",
+          "task": "How would you approach the initial stages of this cloud incident response?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Immediately isolate the affected cloud instances from the network while preserving the existing snapshots for forensic analysis."
+            },
+            {
+              "id": "b",
+              "text": "Engage the cloud provider support team right away to gather comprehensive infrastructure logs before taking any local containment steps."
+            },
+            {
+              "id": "c",
+              "text": "Monitor the threat activity in real time via SIEM dashboards to map out the full attack path before applying any isolation."
+            },
+            {
+              "id": "d",
+              "text": "Notify all internal stakeholders immediately and suspend access to the entire cloud environment to prevent potential data loss."
+            }
+          ],
+          "hints": [
+            "Consider the balance between thorough evidence collection and swift containment.",
+            "Think about how different approaches impact business continuity."
+          ]
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Prioritises immediate threat containment to stop lateral movement.",
+              "Ensures critical forensic data is preserved via snapshots."
+            ],
+            "trade_offs": [
+              "Isolation may disrupt active user sessions or dependent cloud services."
+            ],
+            "areas_to_consider": [
+              "Whether automated failovers might trigger before snapshot preservation is complete."
+            ],
+            "skill_to_explore": {
+              "skill": "Cloud incident response",
+              "why_relevant": "Refining isolation playbooks ensures minimal downtime while securing evidence."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Leverages external expertise from the cloud provider for deep log analysis."
+            ],
+            "trade_offs": [
+              "Relies on third-party response times, which may delay active containment."
+            ],
+            "areas_to_consider": [
+              "Establishing direct communication channels with cloud support ahead of time."
+            ],
+            "skill_to_explore": {
+              "skill": "Cloud incident response",
+              "why_relevant": "Understanding SLA limits helps determine when internal containment is necessary."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Provides a comprehensive understanding of the threat actor's methodology."
+            ],
+            "trade_offs": [
+              "Allows the adversary more time to persist or exfiltrate data within the cloud tenant."
+            ],
+            "areas_to_consider": [
+              "Setting strict time limits for observation before shifting to containment."
+            ],
+            "skill_to_explore": {
+              "skill": "Cloud incident response",
+              "why_relevant": "Balancing intelligence gathering with risk reduction is key in cloud environments."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Ensures absolute protection against further data exfiltration across the board."
+            ],
+            "trade_offs": [
+              "Causes a total outage for all business operations, impacting unaffected teams."
+            ],
+            "areas_to_consider": [
+              "Developing more granular segmentation strategies to avoid enterprise-wide halts."
+            ],
+            "skill_to_explore": {
+              "skill": "Cloud incident response",
+              "why_relevant": "Targeted containment minimises collateral damage to business services."
+            }
+          }
+        },
+        "question_id": "information_security_analyst_guided_live_v3_27536aad4112"
+      }
+    },
+    {
+      "test_id": "standard_accessibility",
+      "request": {
+        "test_id": "standard_accessibility",
+        "role_id": "web_and_digital_interface_designer",
+        "difficulty": "standard",
+        "custom_skills": [
+          "WCAG accessibility auditing"
+        ]
+      },
+      "grounding": {
+        "role_id": "web_and_digital_interface_designer",
+        "role_label": "Web and Digital Interface Designer",
+        "difficulty": "standard",
+        "custom_skill_evidence": [
+          "WCAG accessibility auditing"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Usability testing",
+            "semantic_score": 0.353,
+            "lexical_score": 0.2292,
+            "hybrid_score": 0.3221,
+            "source": "global_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "usability"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "web_and_digital_interface_designer_standard_v3_01",
+            "role_id": "web_and_digital_interface_designer",
+            "role_label": "Web and Digital Interface Designer",
+            "difficulty": "standard",
+            "target_skills": [
+              "Axure RP",
+              "Integrated development environment IDE"
+            ],
+            "semantic_score": 0.4485
+          },
+          {
+            "question_id": "web_and_digital_interface_designer_standard_v3_02",
+            "role_id": "web_and_digital_interface_designer",
+            "role_label": "Web and Digital Interface Designer",
+            "difficulty": "standard",
+            "target_skills": [
+              "3M Post-it App",
+              "Python"
+            ],
+            "semantic_score": 0.4295
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.06275
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.6666,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.6666,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "web_and_digital_interface_designer_standard_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "web_and_digital_interface_designer",
+        "role_label": "Web and Digital Interface Designer",
+        "difficulty": "standard",
+        "target_skills": [
+          "WCAG accessibility auditing"
+        ],
+        "question": {
+          "situation": "You are auditing a newly designed public services portal as a Web and Digital Interface Designer to ensure it meets public sector standards. The upcoming release needs to comply fully with WCAG guidelines, but time is tight before the external compliance check.",
+          "task": "How do you approach conducting the WCAG accessibility audit to address potential issues efficiently?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Conduct an automated scan of all templates using a trusted browser extension, quickly highlighting structural and contrast issues across the main user journeys."
+            },
+            {
+              "id": "b",
+              "text": "Perform a manual keyboard navigation and screen reader walkthrough of core workflows, focusing on experiential barriers that automated tools might miss."
+            },
+            {
+              "id": "c",
+              "text": "Delegate individual component checks to the front-end developers, asking them to self-audit their assigned pages against specific success criteria."
+            },
+            {
+              "id": "d",
+              "text": "Review the design system specifications directly against the guidelines, verifying colour tokens and component states before code implementation begins."
+            }
+          ],
+          "hints": [
+            "Consider how automated tools and manual checks complement each other when balancing thoroughness with available time."
+          ]
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Rapidly surfaces common technical compliance errors",
+              "Provides a baseline report across all templates"
+            ],
+            "trade_offs": [
+              "Automated tools typically miss nuanced contextual or experiential accessibility barriers"
+            ],
+            "areas_to_consider": [
+              "How you plan to validate findings that require human judgement regarding semantic meaning"
+            ],
+            "skill_to_explore": {
+              "skill": "WCAG accessibility auditing",
+              "why_relevant": "Combining automated scans with manual inspection ensures comprehensive coverage of both technical and experiential standards."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Uncovers real-world interaction barriers for assistive technology users",
+              "Validates logical tab orders and focus states effectively"
+            ],
+            "trade_offs": [
+              "Manual assistive technology testing can be time-consuming across extensive page libraries"
+            ],
+            "areas_to_consider": [
+              "Prioritising critical user journeys for manual review to manage tight timelines"
+            ],
+            "skill_to_explore": {
+              "skill": "WCAG accessibility auditing",
+              "why_relevant": "Manual audits are essential for meeting stringent criteria that automated software cannot reliably evaluate."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Encourages shared responsibility for accessibility across the development team",
+              "Identifies and resolves code-level issues close to the source"
+            ],
+            "trade_offs": [
+              "Varying levels of accessibility expertise among developers may lead to inconsistent audit quality"
+            ],
+            "areas_to_consider": [
+              "Providing clear criteria or checklists to guide developer self-assessments effectively"
+            ],
+            "skill_to_explore": {
+              "skill": "WCAG accessibility auditing",
+              "why_relevant": "Embedding accessibility knowledge within development teams fosters sustainable, inclusive design practices."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Catches accessibility issues early in the design phase before code is written",
+              "Ensures design tokens inherently support sufficient contrast and sizing"
+            ],
+            "trade_offs": [
+              "Cannot verify how components behave dynamically in the final rendered browser environment"
+            ],
+            "areas_to_consider": [
+              "Following up with verification of the implemented code to ensure design intent was maintained"
+            ],
+            "skill_to_explore": {
+              "skill": "WCAG accessibility auditing",
+              "why_relevant": "Proactive auditing at the design system level prevents widespread remediation later in the project lifecycle."
+            }
+          }
+        },
+        "question_id": "web_and_digital_interface_designer_standard_live_v3_a0e51960da06"
+      }
+    },
+    {
+      "test_id": "standard_network_security",
+      "request": {
+        "test_id": "standard_network_security",
+        "role_id": "network_and_systems_administrator",
+        "difficulty": "standard",
+        "custom_skills": [
+          "Zero-trust network segmentation"
+        ]
+      },
+      "grounding": {
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "standard",
+        "custom_skill_evidence": [
+          "Zero-trust network segmentation"
+        ],
+        "retrieved_catalogue_skills": [],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "network_and_systems_administrator_standard_v3_04",
+            "role_id": "network_and_systems_administrator",
+            "role_label": "Network and Systems Administrator",
+            "difficulty": "standard",
+            "target_skills": [
+              "Virtual local area network management",
+              "Simple network management protocol SNMP"
+            ],
+            "semantic_score": 0.3765
+          },
+          {
+            "question_id": "network_and_systems_administrator_standard_v3_02",
+            "role_id": "network_and_systems_administrator",
+            "role_label": "Network and Systems Administrator",
+            "difficulty": "standard",
+            "target_skills": [
+              "Access management",
+              "Root cause analysis"
+            ],
+            "semantic_score": 0.3356
+          }
+        ],
+        "catalogue_abstained": true,
+        "retrieval_latency_seconds": 0.052984
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.8564,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.8564,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "network_and_systems_administrator_standard_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "standard",
+        "target_skills": [
+          "Zero-trust network segmentation"
+        ],
+        "question": {
+          "situation": "You are reviewing the network architecture for a growing remote workforce. You need to implement zero-trust network segmentation to restrict lateral movement across corporate zones while ensuring daily business operations continue smoothly.",
+          "task": "How do you approach designing and rolling out this new segmentation strategy?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Implement strict micro-segmentation across all internal zones immediately, blocking all default traffic and requiring explicit approval for every connection."
+            },
+            {
+              "id": "b",
+              "text": "Deploy segmentation policies in audit mode first to observe normal traffic patterns before enforcing any restrictive rules."
+            },
+            {
+              "id": "c",
+              "text": "Segment the network primarily by department, applying broad policies to each functional group to minimise disruption to collaborative workflows."
+            },
+            {
+              "id": "d",
+              "text": "Focus segmentation efforts exclusively on critical financial and customer databases, leaving standard office networks operating under existing structures."
+            }
+          ],
+          "hints": [
+            "Consider how balancing strict security controls with operational visibility influences user adoption and system stability."
+          ]
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Establishes maximum security posture immediately",
+              "Minimises potential attack surface without delay"
+            ],
+            "trade_offs": [
+              "May disrupt active business processes due to unmapped dependencies",
+              "Likely to generate a high volume of support requests from users"
+            ],
+            "areas_to_consider": [
+              "Have you fully mapped all legitimate inter-service communications before enforcing blocks?",
+              "Is the helpdesk prepared for sudden access restriction queries?"
+            ],
+            "skill_to_explore": {
+              "skill": "Impact analysis",
+              "why_relevant": "Useful for understanding how abrupt security interventions affect everyday operational workflows."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Provides clear visibility into legitimate traffic patterns",
+              "Reduces the risk of unexpected service outages during rollout"
+            ],
+            "trade_offs": [
+              "Leaves the network vulnerable while observation data is being gathered",
+              "Delays the enforcement phase of the zero-trust journey"
+            ],
+            "areas_to_consider": [
+              "How long do you plan to run the audit phase before switching to enforcement?",
+              "Are stakeholders aligned with a phased implementation timeline?"
+            ],
+            "skill_to_explore": {
+              "skill": "Risk management",
+              "why_relevant": "Helps weigh the security risks of temporary visibility modes against the risk of service disruption."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Aligns security boundaries logically with existing organisational structures",
+              "Maintains familiar collaboration pathways for departmental teams"
+            ],
+            "trade_offs": [
+              "Department-level boundaries are often too broad for true zero-trust models",
+              "Fails to prevent lateral movement if a single departmental account is compromised"
+            ],
+            "areas_to_consider": [
+              "Does departmental segmentation meet your compliance and security requirements?",
+              "How will you handle cross-departmental project teams requiring shared access?"
+            ],
+            "skill_to_explore": {
+              "skill": "Enterprise architecture",
+              "why_relevant": "Aids in designing security zones that reflect both organisational needs and technical constraints."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Focuses scarce resources and time on the highest-value assets",
+              "Reduces complexity by limiting the scope of the initial project"
+            ],
+            "trade_offs": [
+              "Leaves secondary systems unprotected as potential entry points",
+              "Incomplete implementation does not achieve full zero-trust architecture"
+            ],
+            "areas_to_consider": [
+              "Are secondary systems securely isolated from your critical databases?",
+              "What is the plan for extending segmentation beyond high-value assets later?"
+            ],
+            "skill_to_explore": {
+              "skill": "Prioritisation",
+              "why_relevant": "Supports decisions on where to apply defensive measures when resources are constrained."
+            }
+          }
+        },
+        "question_id": "network_and_systems_administrator_standard_live_v3_74f51cd23551"
+      }
+    },
+    {
+      "test_id": "challenge_forecasting",
+      "request": {
+        "test_id": "challenge_forecasting",
+        "role_id": "data_scientist",
+        "difficulty": "challenge",
+        "custom_skills": [
+          "Time-series forecasting"
+        ]
+      },
+      "grounding": {
+        "role_id": "data_scientist",
+        "role_label": "Data Scientist",
+        "difficulty": "challenge",
+        "custom_skill_evidence": [
+          "Time-series forecasting"
+        ],
+        "retrieved_catalogue_skills": [],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "data_scientist_challenge_v3_04",
+            "role_id": "data_scientist",
+            "role_label": "Data Scientist",
+            "difficulty": "challenge",
+            "target_skills": [
+              "Jira",
+              "Kubeflow",
+              "Microsoft PowerPoint"
+            ],
+            "semantic_score": 0.3019
+          },
+          {
+            "question_id": "data_scientist_challenge_v3_03",
+            "role_id": "data_scientist",
+            "role_label": "Data Scientist",
+            "difficulty": "challenge",
+            "target_skills": [
+              "AWS SageMaker",
+              "SQL",
+              "Statistical"
+            ],
+            "semantic_score": 0.2494
+          }
+        ],
+        "catalogue_abstained": true,
+        "retrieval_latency_seconds": 0.05258
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.7712,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.7712,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "data_scientist_challenge_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "data_scientist",
+        "role_label": "Data Scientist",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Time-series forecasting"
+        ],
+        "question": {
+          "situation": "You are developing a time-series forecasting model to predict retail demand for the upcoming financial year. Stakeholders are keen to see immediate predictions, but historical data shows high volatility and seasonal anomalies that complicate standard forecasting approaches.",
+          "task": "How do you approach building and presenting the time-series forecasting model to address stakeholder expectations and data volatility?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Apply a complex recurrent neural network to capture intricate patterns, presenting the final output directly to stakeholders with minimal baseline comparison."
+            },
+            {
+              "id": "b",
+              "text": "Deliver a simple moving average baseline quickly to satisfy immediate curiosity, deferring advanced forecasting techniques until later phases."
+            },
+            {
+              "id": "c",
+              "text": "Develop both a classical statistical model and a machine learning approach, sharing the comparative performance and volatility risks openly with stakeholders."
+            },
+            {
+              "id": "d",
+              "text": "Pause the forecasting timeline entirely to conduct an extensive data cleaning exercise, delaying all updates until the volatility is fully resolved."
+            }
+          ],
+          "hints": []
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Leveraged advanced modelling techniques to capture complex data patterns.",
+              "Met the immediate desire of stakeholders for sophisticated forecasting outputs."
+            ],
+            "trade_offs": [
+              "Relying on a complex model without a simple baseline makes it difficult to justify performance gains.",
+              "Black-box neural networks may obscure the underlying drivers of seasonal anomalies from non-technical stakeholders."
+            ],
+            "areas_to_consider": [
+              "How model interpretability impacts stakeholder trust.",
+              "Whether simpler models could achieve comparable accuracy with lower maintenance overhead."
+            ],
+            "skill_to_explore": {
+              "skill": "Model Interpretability",
+              "why_relevant": "Useful for explaining complex neural network predictions to non-technical stakeholders."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Provided immediate outputs to satisfy stakeholder curiosity.",
+              "Established a quick initial benchmark for future comparison."
+            ],
+            "trade_offs": [
+              "A simple moving average may fail to capture nuanced seasonal anomalies and volatility.",
+              "Delaying advanced techniques might lead to missed opportunities for higher accuracy."
+            ],
+            "areas_to_consider": [
+              "Managing stakeholder expectations regarding the limitations of baseline models.",
+              "Planning the transition timeline from the baseline to more robust methods."
+            ],
+            "skill_to_explore": {
+              "skill": "Stakeholder Management",
+              "why_relevant": "Helps in setting realistic expectations when delivering phased analytical outputs."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Provided transparency by comparing classical and machine learning approaches.",
+              "Engaged stakeholders directly in understanding data volatility and trade-offs."
+            ],
+            "trade_offs": [
+              "Maintaining multiple models concurrently increases development and evaluation effort.",
+              "Presenting comparative metrics might overwhelm stakeholders who prefer a single definitive forecast."
+            ],
+            "areas_to_consider": [
+              "Simplifying technical comparisons for a broader audience.",
+              "Resource allocation for maintaining parallel forecasting pipelines."
+            ],
+            "skill_to_explore": {
+              "skill": "Communicating Technical Concepts",
+              "why_relevant": "Essential for translating model performance comparisons into actionable business insights."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Prioritised data quality and addressed volatility at the root source.",
+              "Ensured that subsequent forecasts are built upon a reliable data foundation."
+            ],
+            "trade_offs": [
+              "Halting the timeline completely may frustrate stakeholders waiting for immediate insights.",
+              "Extended data cleaning can sometimes yield diminishing returns if not balanced with modelling."
+            ],
+            "areas_to_consider": [
+              "Finding a balance between iterative model development and thorough data preparation.",
+              "Communicating the value of data hygiene to maintain stakeholder patience."
+            ],
+            "skill_to_explore": {
+              "skill": "Data Governance",
+              "why_relevant": "Aids in establishing structured processes for managing data quality and cleaning initiatives."
+            }
+          }
+        },
+        "question_id": "data_scientist_challenge_live_v3_18a1f39338b9"
+      }
+    },
+    {
+      "test_id": "challenge_project_delivery",
+      "request": {
+        "test_id": "challenge_project_delivery",
+        "role_id": "it_project_manager",
+        "difficulty": "challenge",
+        "custom_skills": [
+          "Agile delivery risk facilitation"
+        ]
+      },
+      "grounding": {
+        "role_id": "it_project_manager",
+        "role_label": "IT Project Manager",
+        "difficulty": "challenge",
+        "custom_skill_evidence": [
+          "Agile delivery risk facilitation"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Digital Crew Teamwork Project Manager",
+            "semantic_score": 0.4275,
+            "lexical_score": 0.207,
+            "hybrid_score": 0.4224,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "manager",
+              "project"
+            ]
+          },
+          {
+            "label": "Endeavour Agile ALM",
+            "semantic_score": 0.4159,
+            "lexical_score": 0.149,
+            "hybrid_score": 0.3991,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "agile"
+            ]
+          },
+          {
+            "label": "Experience in Software Project KickStart",
+            "semantic_score": 0.3984,
+            "lexical_score": 0.1675,
+            "hybrid_score": 0.3907,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "project"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "it_project_manager_challenge_v3_01",
+            "role_id": "it_project_manager",
+            "role_label": "IT Project Manager",
+            "difficulty": "challenge",
+            "target_skills": [
+              "Resource management",
+              "Feng Office Collaboration Platform"
+            ],
+            "semantic_score": 0.4178
+          },
+          {
+            "question_id": "it_project_manager_challenge_v3_04",
+            "role_id": "it_project_manager",
+            "role_label": "IT Project Manager",
+            "difficulty": "challenge",
+            "target_skills": [
+              "Resource management",
+              "LiquidPlanner"
+            ],
+            "semantic_score": 0.3805
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.034544
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "latency_seconds": 3.9477,
+          "status": "accepted",
+          "validation_errors": []
+        }
+      ],
+      "total_latency_seconds": 3.9477,
+      "live_generation_succeeded": true,
+      "fallback_available": true,
+      "fallback_used": false,
+      "fallback_question_id": "it_project_manager_challenge_v2_01",
+      "served_source": "live_gemini_rag",
+      "served_question": {
+        "role_id": "it_project_manager",
+        "role_label": "IT Project Manager",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Agile delivery risk facilitation"
+        ],
+        "question": {
+          "situation": "Your cross-functional delivery team has identified a critical architectural dependency early in an agile sprint, threatening to stall progress on the primary value stream. Stakeholders are keen to maintain momentum, yet rushing the implementation could introduce significant technical debt and stability risks.",
+          "task": "How do you facilitate discussions around this delivery risk to balance speed with quality?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Facilitate a dedicated risk-storming session with key technical and product stakeholders to map out mitigation strategies, temporarily pausing the affected user stories until a safer path is agreed upon."
+            },
+            {
+              "id": "b",
+              "text": "Encourage the team to implement an experimental proof-of-concept directly within the current sprint to test the risk exposure empirically while keeping delivery moving."
+            },
+            {
+              "id": "c",
+              "text": "Escalate the dependency to senior management immediately to secure formal sign-off on a revised delivery timeline that accommodates comprehensive risk remediation."
+            },
+            {
+              "id": "d",
+              "text": "De-scope the high-risk elements from the immediate release train entirely, shifting focus toward lower-risk backlog items to protect current sprint commitments."
+            }
+          ],
+          "hints": []
+        },
+        "option_feedback": {
+          "a": {
+            "what_worked_well": [
+              "Involves both technical and product voices in collaborative problem-solving",
+              "Puts safety and sustainability ahead of blind velocity"
+            ],
+            "trade_offs": [
+              "Pausing user stories may cause short-term friction with stakeholders expecting immediate output"
+            ],
+            "areas_to_consider": [
+              "How you might frame the pause as an investment rather than a delay"
+            ],
+            "skill_to_explore": {
+              "skill": "Agile delivery risk facilitation",
+              "why_relevant": "Engaging stakeholders in collaborative pause-and-reflect moments helps align expectations around risk tolerance."
+            }
+          },
+          "b": {
+            "what_worked_well": [
+              "Employs an empirical approach to gather real data rather than speculating on risk",
+              "Maintains team motivation and agile cadence"
+            ],
+            "trade_offs": [
+              "Running a proof-of-concept during a tight sprint can stretch developer focus further"
+            ],
+            "areas_to_consider": [
+              "Whether the team has the necessary spare capacity to experiment safely"
+            ],
+            "skill_to_explore": {
+              "skill": "Agile delivery risk facilitation",
+              "why_relevant": "Using short feedback loops to test risk hypotheses is a core tenet of effective facilitation."
+            }
+          },
+          "c": {
+            "what_worked_well": [
+              "Ensures executive visibility and shares accountability for major delivery hurdles",
+              "Protects the team from bearing the full burden of timeline pressures"
+            ],
+            "trade_offs": [
+              "External escalation can sometimes reduce team autonomy and slow down local decision-making"
+            ],
+            "areas_to_consider": [
+              "Whether internal facilitation options were fully exhausted prior to escalation"
+            ],
+            "skill_to_explore": {
+              "skill": "Agile delivery risk facilitation",
+              "why_relevant": "Balancing self-organisation with appropriate stakeholder governance is key to sustainable delivery."
+            }
+          },
+          "d": {
+            "what_worked_well": [
+              "Quickly removes immediate pressure and shields the team from technical debt",
+              "Ensures predictable delivery of the remaining lower-risk items"
+            ],
+            "trade_offs": [
+              "Postponing core value items may disappoint users or miss strategic windows of opportunity"
+            ],
+            "areas_to_consider": [
+              "How you will manage stakeholder disappointment regarding the deferred scope"
+            ],
+            "skill_to_explore": {
+              "skill": "Agile delivery risk facilitation",
+              "why_relevant": "Facilitating transparent trade-off conversations helps teams make informed de-scoping choices."
+            }
+          }
+        },
+        "question_id": "it_project_manager_challenge_live_v3_8ea279397a4f"
+      }
+    }
+  ],
+  "combined_output_file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/live_rag/output/balanced_live_evaluation/live_mcq_balanced_outputs_v1.json",
+  "checkpoint_file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/live_rag/reports/live_mcq_balanced_evaluation_checkpoint_v1.json"
+}

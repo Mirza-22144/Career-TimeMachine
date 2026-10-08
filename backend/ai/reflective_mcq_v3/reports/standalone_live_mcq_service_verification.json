@@ -1,0 +1,322 @@
+{
+  "step": "20",
+  "verified_at_utc": "2026-10-07T05:52:59.514133+00:00",
+  "module": "live_mcq_rag_service.py",
+  "retrieval_tests_passed": 4,
+  "retrieval_tests_total": 4,
+  "security_tests_passed": 4,
+  "security_tests_total": 4,
+  "standalone_live_generation_passed": true,
+  "standalone_live_response": {
+    "source": "live_gemini_rag",
+    "fallback_used": false,
+    "question": {
+      "role_id": "web_developer",
+      "role_label": "Web Developer",
+      "difficulty": "standard",
+      "target_skills": [
+        "Progressive web app performance"
+      ],
+      "question": {
+        "situation": "You are optimising a web application for mobile users who frequently experience intermittent network connectivity. You are focusing specifically on Progressive Web App (PWA) performance, including service worker caching strategies and load times, to ensure a reliable offline experience.",
+        "task": "How do you choose to approach improving the progressive web app performance for your users?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Implement a cache-first strategy for static assets and runtime caching for dynamic data using a service worker, testing offline behaviour immediately."
+          },
+          {
+            "id": "b",
+            "text": "Conduct a comprehensive audit of all current network requests and bundle sizes before writing any new caching logic to identify primary bottlenecks."
+          },
+          {
+            "id": "c",
+            "text": "Consult recent case studies and performance guidelines from web standards organisations to adopt industry-recommended PWA caching patterns."
+          },
+          {
+            "id": "d",
+            "text": "Develop a prototype feature using background sync and local storage to explore how data is handled when the network connection drops unexpectedly."
+          }
+        ],
+        "hints": [
+          "Consider balancing immediate offline reliability with long-term measurement of load metrics."
+        ]
+      },
+      "option_feedback": {
+        "a": {
+          "what_worked_well": [
+            "Directly addresses offline reliability through practical service worker implementation",
+            "Provides immediate tangible improvements for intermittent connectivity"
+          ],
+          "trade_offs": [
+            "May introduce caching bugs if edge cases in dynamic data updates are missed"
+          ],
+          "areas_to_consider": [
+            "Ensuring cache invalidation strategies are clearly defined for future updates"
+          ],
+          "skill_to_explore": {
+            "skill": "Service worker lifecycle management",
+            "why_relevant": "Helps control how updates are fetched and applied without disrupting user experience."
+          }
+        },
+        "b": {
+          "what_worked_well": [
+            "Bases performance improvements on solid metrics and identified bottlenecks",
+            "Prevents premature optimization by analyzing real network usage first"
+          ],
+          "trade_offs": [
+            "Delays the implementation of immediate relief for offline users"
+          ],
+          "areas_to_consider": [
+            "Balancing thorough data gathering with the need for timely user-facing enhancements"
+          ],
+          "skill_to_explore": {
+            "skill": "Web performance auditing",
+            "why_relevant": "Aids in accurately measuring metrics like First Contentful Paint and Time to Interactive."
+          }
+        },
+        "c": {
+          "what_worked_well": [
+            "Aligns the implementation with established industry best practices and standards",
+            "Reduces the likelihood of architectural oversight by leveraging proven patterns"
+          ],
+          "trade_offs": [
+            "Generic guidelines may need careful adaptation to fit your specific application architecture"
+          ],
+          "areas_to_consider": [
+            "Validating whether standard patterns meet your unique user engagement requirements"
+          ],
+          "skill_to_explore": {
+            "skill": "Web standards and guidelines analysis",
+            "why_relevant": "Ensures maintainable and future-proof architectural decisions."
+          }
+        },
+        "d": {
+          "what_worked_well": [
+            "Explores advanced PWA capabilities like background synchronisation practically",
+            "Allows deep experimentation with edge cases in data persistence"
+          ],
+          "trade_offs": [
+            "Focusing on experimental features might distract from core caching performance wins"
+          ],
+          "areas_to_consider": [
+            "Browser support compatibility for advanced background sync APIs"
+          ],
+          "skill_to_explore": {
+            "skill": "Background synchronisation APIs",
+            "why_relevant": "Crucial for handling deferred actions reliably when connectivity returns."
+          }
+        }
+      },
+      "question_id": "web_developer_standard_live_v3_3198f25a7cb1"
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "accepted": true,
+        "validation_errors": []
+      }
+    ],
+    "latency_seconds": 3.8191
+  },
+  "standalone_forced_fallback_passed": true,
+  "forced_fallback_response": {
+    "source": "version_2_static_fallback",
+    "fallback_used": true,
+    "question": {
+      "role_id": "data_scientist",
+      "role_label": "Data Scientist",
+      "difficulty": "challenge",
+      "target_skills": [
+        "data quality assessment",
+        "ethical considerations in data science"
+      ],
+      "question": {
+        "situation": "You are working on a project to improve the accuracy of a predictive model. The model is crucial for informing business decisions, but the data quality is subpar. Additionally, there is a tight deadline for the project.",
+        "task": "Which approach would you take, and what factors would influence your decision?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Prioritize data cleaning and quality improvement to ensure the model's reliability, even if it means delaying the project slightly."
+          },
+          {
+            "id": "b",
+            "text": "Focus on completing the model as quickly as possible to meet the deadline, assuming that the initial results will be refined later."
+          },
+          {
+            "id": "c",
+            "text": "Investigate the potential sources of data bias and explore ways to mitigate it, potentially at the cost of slightly reduced accuracy but ensuring the model's fairness."
+          },
+          {
+            "id": "d",
+            "text": "Ensure the model meets the minimum acceptable performance threshold, and then conduct a thorough post-project review to address any issues that arise."
+          }
+        ],
+        "hints": []
+      },
+      "option_feedback": {
+        "a": {
+          "what_worked_well": [
+            "Addressing data quality issues ensures the model's reliability, which is crucial for business decisions."
+          ],
+          "trade_offs": [
+            "Slightly delaying the project might cause inconvenience, but the long-term benefits outweigh the short-term delays."
+          ],
+          "areas_to_consider": [
+            "The impact of the delay on other stakeholders and the project timeline."
+          ],
+          "skill_to_explore": {
+            "skill": "Project management and time estimation",
+            "why_relevant": "Understanding project timelines and resource allocation to make informed decisions."
+          }
+        },
+        "b": {
+          "what_worked_well": [
+            "Completing the model quickly allows for timely business insights, which can drive immediate value."
+          ],
+          "trade_offs": [
+            "The initial results might not be fully reliable, leading to potential errors in business decisions."
+          ],
+          "areas_to_consider": [
+            "The quality of the initial results and their impact on business decisions."
+          ],
+          "skill_to_explore": {
+            "skill": "Risk assessment and prioritization",
+            "why_relevant": "Identifying and mitigating risks to ensure project success."
+          }
+        },
+        "c": {
+          "what_worked_well": [
+            "Mitigating data bias ensures the model's fairness and compliance with ethical standards."
+          ],
+          "trade_offs": [
+            "Reduced accuracy might lead to less precise predictions, but the model's fairness is a critical ethical consideration."
+          ],
+          "areas_to_consider": [
+            "The potential impact of the model's fairness on stakeholders and regulatory compliance."
+          ],
+          "skill_to_explore": {
+            "skill": "Bias analysis and mitigation",
+            "why_relevant": "Understanding and addressing data biases to ensure model fairness."
+          }
+        },
+        "d": {
+          "what_worked_well": [
+            "Ensuring minimum performance thresholds ensures the model meets basic requirements, providing a baseline for improvement."
+          ],
+          "trade_offs": [
+            "The model might not be optimal, but it provides a clear starting point for further refinement."
+          ],
+          "areas_to_consider": [
+            "The performance thresholds and how they can be improved post-project."
+          ],
+          "skill_to_explore": {
+            "skill": "Performance measurement and improvement",
+            "why_relevant": "Evaluating and enhancing model performance to meet business needs."
+          }
+        }
+      },
+      "question_id": "data_scientist_challenge_v2_01"
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "accepted": false,
+        "error_type": "RuntimeError"
+      },
+      {
+        "attempt": 2,
+        "accepted": false,
+        "error_type": "RuntimeError"
+      }
+    ],
+    "latency_seconds": 0.1581
+  },
+  "package_security_passed": true,
+  "secret_findings": [],
+  "oversized_files": [],
+  "embedding_weight_files": [],
+  "retrieval_results": [
+    {
+      "test_name": "software_cloud_automation",
+      "retrieved_labels": [
+        "Kubernetes",
+        "Deployment",
+        "Systems and application deployment and migration"
+      ],
+      "catalogue_abstained": false,
+      "forbidden_labels_found": [],
+      "custom_skill_preserved": true,
+      "example_count_correct": true,
+      "example_scope_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "data_forecasting",
+      "retrieved_labels": [],
+      "catalogue_abstained": true,
+      "forbidden_labels_found": [],
+      "custom_skill_preserved": true,
+      "example_count_correct": true,
+      "example_scope_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "security_monitoring",
+      "retrieved_labels": [
+        "Security incident management",
+        "Security risk assessment",
+        "Intrusion detection system IDS"
+      ],
+      "catalogue_abstained": false,
+      "forbidden_labels_found": [],
+      "custom_skill_preserved": true,
+      "example_count_correct": true,
+      "example_scope_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "interface_accessibility",
+      "retrieved_labels": [
+        "Usability testing"
+      ],
+      "catalogue_abstained": false,
+      "forbidden_labels_found": [],
+      "custom_skill_preserved": true,
+      "example_count_correct": true,
+      "example_scope_correct": true,
+      "passed": true
+    }
+  ],
+  "security_results": [
+    {
+      "test_name": "ordinary_skill",
+      "expected_acceptance": true,
+      "actual_acceptance": true,
+      "error_type": null,
+      "passed": true
+    },
+    {
+      "test_name": "prompt_injection",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "test_name": "empty_skill",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "test_name": "oversized_skill",
+      "expected_acceptance": false,
+      "actual_acceptance": false,
+      "error_type": "ValueError",
+      "passed": true
+    }
+  ],
+  "overall_passed": true
+}

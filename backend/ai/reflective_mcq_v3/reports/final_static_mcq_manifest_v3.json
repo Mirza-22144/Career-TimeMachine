@@ -1,0 +1,30 @@
+{
+  "component": "Iteration 3 reflective multiple-choice static content",
+  "activity_type": "multiple_choice",
+  "graded": false,
+  "primary_static_question_count": 324,
+  "existing_fallback_question_count": 81,
+  "generator": "gemini-3.5-flash",
+  "secondary_judge": "Qwen2.5-3B-Instruct four-bit",
+  "primary_static_pool": {
+    "file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/output/reflective_mcq_scenario_pool_v3_final.json",
+    "sha256": "e7ee7b0ff270fe1f79630021baa8487ceb5e13fcb38b59793aa5c30e6705c3f2"
+  },
+  "fallback_mapping": {
+    "file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/output/reflective_mcq_v2_fallback_map_v3.json",
+    "sha256": "0db5406550a5fd370237be6ead15e3acea7bccbc313cb24eaed8146c14563fef"
+  },
+  "quality_evidence": {
+    "corrected_deterministic_audit": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/reports/deterministic_quality_audit_v3_324_corrected.json",
+    "qwen_secondary_screening": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/reports/qwen_independent_judgement_report_v3_324.json",
+    "balanced_review_sample": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/reports/balanced_quality_review_sample_v3_27.json",
+    "wording_correction": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/reports/mcq_wording_correction_v3.json",
+    "final_validation": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/reports/final_static_mcq_validation_v3.json"
+  },
+  "backend_routing": {
+    "catalogue_skill_path": "Serve static Version 3 questions.",
+    "custom_skill_path": "Serve four static Version 3 questions and one live Gemini question.",
+    "live_generation_failure": "Serve the matching Version 2 fallback question."
+  },
+  "created_at_utc": "2026-10-07T03:36:00.233377+00:00"
+}

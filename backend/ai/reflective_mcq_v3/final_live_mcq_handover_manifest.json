@@ -1,0 +1,100 @@
+{
+  "handover_name": "CareerTimeMachine Iteration 3 Live Reflective MCQ RAG",
+  "handover_version": "1.0",
+  "created_at_utc": "2026-10-07T05:52:59.588192+00:00",
+  "generator_model": "gemini-3.5-flash-lite",
+  "retrieval_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "retriever_version": "2.2",
+  "static_question_count": 324,
+  "fallback_question_count": 81,
+  "standalone_verification_passed": true,
+  "contains_api_key": false,
+  "contains_embedding_model_weights": false,
+  "files": [
+    {
+      "path": "MODEL_DEPLOYMENT.md",
+      "size_bytes": 1048,
+      "sha256": "02000e6e0538ff7b905d4a8f60e73e18e38e590d356f6163ff90c6c4ef59fe59"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2068,
+      "sha256": "79001b7ba5779ced27027f28a6534419969285dd0226eafaf006c09a3d663f99"
+    },
+    {
+      "path": "__pycache__/live_mcq_rag_service.cpython-313.pyc",
+      "size_bytes": 27723,
+      "sha256": "e41124efd7f780e3e901b542822185b8cec03fb541ce7bb1ac1fe0576f257264"
+    },
+    {
+      "path": "data/reflective_mcq_scenario_pool_v2_fallback.json",
+      "size_bytes": 375963,
+      "sha256": "c0ed0c3e1720ec42921d70998ffba41e3421d0da2f1c88dd294464c8a2dc29e4"
+    },
+    {
+      "path": "data/reflective_mcq_scenario_pool_v3_final.json",
+      "size_bytes": 1588218,
+      "sha256": "e7ee7b0ff270fe1f79630021baa8487ceb5e13fcb38b59793aa5c30e6705c3f2"
+    },
+    {
+      "path": "examples/example_live_mcq_request.json",
+      "size_bytes": 118,
+      "sha256": "42f3a736224aa890361681ecb0362ef25c296c667c8cc03f4af18c74d14b129d"
+    },
+    {
+      "path": "examples/example_live_mcq_response.json",
+      "size_bytes": 5521,
+      "sha256": "01126ef89fae440c7e1ed000944c1260b2a970735d771a1ef71949330fca9aa1"
+    },
+    {
+      "path": "live_mcq_generation_contract.json",
+      "size_bytes": 1553,
+      "sha256": "d27cded17379f1ef08b1bdfeb5e31f340dca24d084b2bc750066b499cb8a191e"
+    },
+    {
+      "path": "live_mcq_rag_service.py",
+      "size_bytes": 28991,
+      "sha256": "edc5ec8b31754bd15e8ce99a7ad729558e68edc9a153758f138cb3483ef7c969"
+    },
+    {
+      "path": "models/live_mcq_hybrid_semantic_retriever_v2_2.joblib",
+      "size_bytes": 2445488,
+      "sha256": "676d7191786a58456f98e73c0b615b10d7e6f98afaeef14c938d82be19ab71de"
+    },
+    {
+      "path": "reports/final_static_mcq_manifest_v3.json",
+      "size_bytes": 1889,
+      "sha256": "d04671794bf93e97f5dfc599a54bade9f6c40a75f537b6068442b00b9eba020d"
+    },
+    {
+      "path": "reports/final_static_mcq_validation_v3.json",
+      "size_bytes": 824,
+      "sha256": "a34488514f7407276341fa0427b94f2b5abd8faeced58f1ec30e392b1ee166aa"
+    },
+    {
+      "path": "reports/live_mcq_balanced_evaluation_v1.json",
+      "size_bytes": 46412,
+      "sha256": "09bf1b6dc5a6e8b6da5baa9b8a58e14289041ba90096f518acaefc6291e08c1b"
+    },
+    {
+      "path": "reports/live_mcq_rag_smoke_test_report_v1.json",
+      "size_bytes": 1154,
+      "sha256": "7324df7adfe6a506a00b672fc59a3e153ade17b5279a9e50e89466e4a6919055"
+    },
+    {
+      "path": "reports/live_mcq_semantic_retriever_evaluation_v2_2.json",
+      "size_bytes": 9738,
+      "sha256": "af82c9c8316af4b7e4a435acbb6912d65dd1dee2ca516bcf864abefa62280ae2"
+    },
+    {
+      "path": "reports/standalone_live_mcq_service_verification.json",
+      "size_bytes": 12354,
+      "sha256": "80de7891f0e5960f3f94052d48ec7b6704a3fd7b8b2773b298e702e477b9bf24"
+    },
+    {
+      "path": "requirements.txt",
+      "size_bytes": 67,
+      "sha256": "e3a8c29d0a933b709556bde25f0e53c144e2999d0902ef3744da1c52a35f21b1"
+    }
+  ]
+}

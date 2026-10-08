@@ -1,0 +1,67 @@
+{
+  "contract_version": "1.0",
+  "activity_type": "multiple_choice",
+  "graded": false,
+  "request": {
+    "role_id": "string",
+    "difficulty": "guided | standard | challenge",
+    "custom_skills": [
+      "one or more strings, maximum 120 characters each"
+    ]
+  },
+  "response": {
+    "source": "live_gemini_rag | version_2_static_fallback",
+    "fallback_used": "boolean",
+    "question": {
+      "role_id": "string",
+      "role_label": "string",
+      "difficulty": "string",
+      "target_skills": [
+        "string"
+      ],
+      "question": {
+        "situation": "string",
+        "task": "string",
+        "options": [
+          {
+            "id": "a | b | c | d",
+            "text": "string"
+          }
+        ],
+        "hints": [
+          "string"
+        ]
+      },
+      "option_feedback": {
+        "a": {
+          "what_worked_well": [
+            "string"
+          ],
+          "trade_offs": [
+            "string"
+          ],
+          "areas_to_consider": [
+            "string"
+          ],
+          "skill_to_explore": {
+            "skill": "string",
+            "why_relevant": "string"
+          }
+        }
+      },
+      "question_id": "string"
+    },
+    "attempts": [
+      "internal evidence"
+    ],
+    "latency_seconds": "number"
+  },
+  "forbidden_output_fields": [
+    "correct_option_id",
+    "correct_answer",
+    "answer",
+    "score",
+    "is_correct"
+  ],
+  "fallback_policy": "After two unsuccessful live-generation attempts, return the matching Version 2 question for the same role and difficulty."
+}

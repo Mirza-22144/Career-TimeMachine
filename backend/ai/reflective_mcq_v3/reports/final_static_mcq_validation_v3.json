@@ -1,0 +1,24 @@
+{
+  "question_count": 324,
+  "strict_local_schema_pass_count": 324,
+  "role_count": 27,
+  "difficulty_counts": {
+    "challenge": 108,
+    "guided": 108,
+    "standard": 108
+  },
+  "role_difficulty_combination_count": 81,
+  "questions_per_combination": 4,
+  "duplicate_identifier_count": 0,
+  "deterministic_critical_issue_count": 0,
+  "exact_duplicate_scenario_count": 0,
+  "near_duplicate_scenario_count": 0,
+  "fallback_similarity_flag_count": 0,
+  "wording_correction_count": 1,
+  "qwen_screened_question_count": 324,
+  "qwen_screening_uniform_scores": true,
+  "qwen_screening_treatment": "Secondary screening only. Uniform numeric scores are not treated as calibrated quality estimates.",
+  "balanced_review_sample_size": 27,
+  "final_validation_passed": true,
+  "completed_at_utc": "2026-10-07T03:36:00.216093+00:00"
+}

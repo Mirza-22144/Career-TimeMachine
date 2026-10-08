@@ -1,0 +1,304 @@
+{
+  "step": "16D",
+  "status": "complete",
+  "tests_passed": 4,
+  "tests_total": 4,
+  "corrections": [
+    "Replaced character-substring matching with whole-token matching.",
+    "Rejected one-character skills unless the user supplied the exact skill.",
+    "Removed broad words such as design and automation from meaningful evidence.",
+    "Retained safe catalogue abstention."
+  ],
+  "retriever_file": "/content/drive/MyDrive/CareerTimeMachine/reflective_mcq_pipeline_v3/live_rag/models/live_mcq_hybrid_semantic_retriever_v2_2.joblib",
+  "retriever_sha256": "676d7191786a58456f98e73c0b615b10d7e6f98afaeef14c938d82be19ab71de",
+  "test_results": [
+    {
+      "test_name": "software_cloud_automation",
+      "request": {
+        "role_id": "software_developer",
+        "difficulty": "standard",
+        "custom_skills": [
+          "Kubernetes deployment automation"
+        ]
+      },
+      "result": {
+        "role_id": "software_developer",
+        "role_label": "Software Developer",
+        "difficulty": "standard",
+        "custom_skill_evidence": [
+          "Kubernetes deployment automation"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Kubernetes",
+            "semantic_score": 0.5253,
+            "lexical_score": 0.2873,
+            "hybrid_score": 0.5158,
+            "source": "role_catalogue",
+            "direct_custom_match": true,
+            "meaningful_overlap": [
+              "kubernetes"
+            ]
+          },
+          {
+            "label": "Deployment",
+            "semantic_score": 0.3939,
+            "lexical_score": 0.46,
+            "hybrid_score": 0.4604,
+            "source": "role_catalogue",
+            "direct_custom_match": true,
+            "meaningful_overlap": [
+              "deployment"
+            ]
+          },
+          {
+            "label": "Systems and application deployment and migration",
+            "semantic_score": 0.3749,
+            "lexical_score": 0.1483,
+            "hybrid_score": 0.3183,
+            "source": "global_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "deployment"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "software_developer_standard_v3_03",
+            "role_id": "software_developer",
+            "role_label": "Software Developer",
+            "difficulty": "standard",
+            "target_skills": [
+              "Terraform",
+              "Functional testing"
+            ],
+            "semantic_score": 0.2523
+          },
+          {
+            "question_id": "software_developer_standard_v3_04",
+            "role_id": "software_developer",
+            "role_label": "Software Developer",
+            "difficulty": "standard",
+            "target_skills": [
+              "TypeScript",
+              "Regression testing"
+            ],
+            "semantic_score": 0.1347
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.043127
+      },
+      "relevant_catalogue_evidence": true,
+      "catalogue_abstained": false,
+      "forbidden_false_positives": [],
+      "custom_skill_preserved": true,
+      "scenarios_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "data_forecasting",
+      "request": {
+        "role_id": "data_scientist",
+        "difficulty": "challenge",
+        "custom_skills": [
+          "Time-series forecasting"
+        ]
+      },
+      "result": {
+        "role_id": "data_scientist",
+        "role_label": "Data Scientist",
+        "difficulty": "challenge",
+        "custom_skill_evidence": [
+          "Time-series forecasting"
+        ],
+        "retrieved_catalogue_skills": [],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "data_scientist_challenge_v3_04",
+            "role_id": "data_scientist",
+            "role_label": "Data Scientist",
+            "difficulty": "challenge",
+            "target_skills": [
+              "Jira",
+              "Kubeflow",
+              "Microsoft PowerPoint"
+            ],
+            "semantic_score": 0.3019
+          },
+          {
+            "question_id": "data_scientist_challenge_v3_03",
+            "role_id": "data_scientist",
+            "role_label": "Data Scientist",
+            "difficulty": "challenge",
+            "target_skills": [
+              "AWS SageMaker",
+              "SQL",
+              "Statistical"
+            ],
+            "semantic_score": 0.2494
+          }
+        ],
+        "catalogue_abstained": true,
+        "retrieval_latency_seconds": 0.152127
+      },
+      "relevant_catalogue_evidence": false,
+      "catalogue_abstained": true,
+      "forbidden_false_positives": [],
+      "custom_skill_preserved": true,
+      "scenarios_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "security_monitoring",
+      "request": {
+        "role_id": "information_security_analyst",
+        "difficulty": "guided",
+        "custom_skills": [
+          "SIEM threat detection"
+        ]
+      },
+      "result": {
+        "role_id": "information_security_analyst",
+        "role_label": "Information Security Analyst",
+        "difficulty": "guided",
+        "custom_skill_evidence": [
+          "SIEM threat detection"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Security incident management",
+            "semantic_score": 0.4762,
+            "lexical_score": 0.2716,
+            "hybrid_score": 0.4751,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "incident",
+              "security"
+            ]
+          },
+          {
+            "label": "Security risk assessment",
+            "semantic_score": 0.4409,
+            "lexical_score": 0.1217,
+            "hybrid_score": 0.4111,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "security"
+            ]
+          },
+          {
+            "label": "Intrusion detection system IDS",
+            "semantic_score": 0.3639,
+            "lexical_score": 0.288,
+            "hybrid_score": 0.3949,
+            "source": "role_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "detection",
+              "intrusion"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "information_security_analyst_guided_v3_04",
+            "role_id": "information_security_analyst",
+            "role_label": "Information Security Analyst",
+            "difficulty": "guided",
+            "target_skills": [
+              "Security risk assessment",
+              "Jira"
+            ],
+            "semantic_score": 0.5166
+          },
+          {
+            "question_id": "information_security_analyst_guided_v3_03",
+            "role_id": "information_security_analyst",
+            "role_label": "Information Security Analyst",
+            "difficulty": "guided",
+            "target_skills": [
+              "Virtual private networking VPN",
+              "Symantec Endpoint Protection"
+            ],
+            "semantic_score": 0.4205
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.082304
+      },
+      "relevant_catalogue_evidence": true,
+      "catalogue_abstained": false,
+      "forbidden_false_positives": [],
+      "custom_skill_preserved": true,
+      "scenarios_correct": true,
+      "passed": true
+    },
+    {
+      "test_name": "interface_accessibility",
+      "request": {
+        "role_id": "web_and_digital_interface_designer",
+        "difficulty": "standard",
+        "custom_skills": [
+          "WCAG accessibility auditing"
+        ]
+      },
+      "result": {
+        "role_id": "web_and_digital_interface_designer",
+        "role_label": "Web and Digital Interface Designer",
+        "difficulty": "standard",
+        "custom_skill_evidence": [
+          "WCAG accessibility auditing"
+        ],
+        "retrieved_catalogue_skills": [
+          {
+            "label": "Usability testing",
+            "semantic_score": 0.353,
+            "lexical_score": 0.2292,
+            "hybrid_score": 0.3221,
+            "source": "global_catalogue",
+            "direct_custom_match": false,
+            "meaningful_overlap": [
+              "usability"
+            ]
+          }
+        ],
+        "retrieved_scenario_examples": [
+          {
+            "question_id": "web_and_digital_interface_designer_standard_v3_01",
+            "role_id": "web_and_digital_interface_designer",
+            "role_label": "Web and Digital Interface Designer",
+            "difficulty": "standard",
+            "target_skills": [
+              "Axure RP",
+              "Integrated development environment IDE"
+            ],
+            "semantic_score": 0.4485
+          },
+          {
+            "question_id": "web_and_digital_interface_designer_standard_v3_02",
+            "role_id": "web_and_digital_interface_designer",
+            "role_label": "Web and Digital Interface Designer",
+            "difficulty": "standard",
+            "target_skills": [
+              "3M Post-it App",
+              "Python"
+            ],
+            "semantic_score": 0.4295
+          }
+        ],
+        "catalogue_abstained": false,
+        "retrieval_latency_seconds": 0.121666
+      },
+      "relevant_catalogue_evidence": true,
+      "catalogue_abstained": false,
+      "forbidden_false_positives": [],
+      "custom_skill_preserved": true,
+      "scenarios_correct": true,
+      "passed": true
+    }
+  ]
+}

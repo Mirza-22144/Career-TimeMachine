@@ -29,6 +29,14 @@ HAS_DATABASE = all([DB_HOST, DB_NAME, DB_USER, DB_PASSWORD])
 # controlled "scenario unavailable" error instead.
 SCENARIO_PROVIDER_TIMEOUT_SECONDS = float(os.environ.get("SCENARIO_PROVIDER_TIMEOUT_SECONDS", "10"))
 
+# Iteration 3 practice activity: four pre-written questions, plus one live
+# question about a skill she typed in herself. The live one is generated
+# with Gemini (AI team's reflective_mcq_v3); without a key the static
+# fallback question is used instead. 8 seconds is AC 4.4.6's limit.
+QUESTIONS_PER_ACTIVITY = int(os.environ.get("QUESTIONS_PER_ACTIVITY", "4"))
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+LIVE_QUESTION_TIMEOUT_SECONDS = float(os.environ.get("LIVE_QUESTION_TIMEOUT_SECONDS", "8"))
+
 # Local GLiNER model directory for job-description extraction (see
 # backend/ai/job_description_extraction/MODEL_DEPLOYMENT.md) - too large for
 # Git, never committed. Defaults to backend/models/gliner_small_v2_5, a

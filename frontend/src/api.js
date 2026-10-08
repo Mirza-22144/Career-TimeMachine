@@ -155,9 +155,14 @@ export const api = {
   createJobDescription: (rawText) =>
     request('/job-descriptions', { method: 'POST', body: { raw_text: rawText }, timeoutMs: 30000 }),
   listJobDescriptions: () => request('/job-descriptions'),
+  getJobComparison: (jobDescriptionId) => request(`/job-descriptions/${jobDescriptionId}/comparison`),
+  getClosestRoles: (jobDescriptionId) => request(`/job-descriptions/${jobDescriptionId}/closest-roles`),
+  setClosestRole: (jobDescriptionId, roleId) =>
+    request(`/job-descriptions/${jobDescriptionId}/closest-role`, { method: 'PUT', body: { role_id: roleId } }),
   deleteJobDescription: (jobDescriptionId) =>
     request(`/job-descriptions/${jobDescriptionId}`, { method: 'DELETE' }),
   getPredictedRoles: () => request('/predicted-roles'),
+  getRoadmap: () => request('/roadmap'),
   getRecentActivities: () => request('/practice-sessions/recent-activities'),
   // AC 3.5.2 - permanently deletes the profile, every job description and
   // the session itself; the token stops working immediately after, so the

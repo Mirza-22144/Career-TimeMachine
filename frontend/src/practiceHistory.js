@@ -1,27 +1,28 @@
-// Practice progress and history, kept in this browser.
+// Completed Code Review and Drag and Drop activities, and which activity is
+// unlocked next, kept in this browser.
 //
-// TEMPORARY (2026-10-08): workplace practice is frontend-only until the
-// backend can serve and store the new activity types. Until then this is
-// what makes "your place is saved", the dashboard's Recent practice, View
-// feedback and "you've completed all the activities" work. It is keyed by
-// access token, so it survives a refresh but NOT another browser or
-// device, and Clear My Journey does not reach it on other devices.
-// Replace every function here with API calls when the backend is ready.
+// TEMPORARY: these two activity types are still mock content (see
+// mockData/practiceSession.js) because the AI team has not delivered them,
+// so the backend has nowhere to store them yet. Multiple-choice practice
+// is real and lives in the backend - nothing about it is kept here.
+// This is keyed by access token, so it survives a refresh but NOT another
+// browser or device. Remove this file when the backend serves both types.
 import { api } from "./api.js";
 
 const VIEWING_KEY = "ctm_viewing_feedback";
 
 const storageKey = () => `ctm_practice_${api.getToken() || "none"}`;
 
-function read() {
+function readAll() {
   try {
-    return JSON.parse(localStorage.getItem(storageKey())) || { completed: [], progress: null };
+    const data = JSON.parse(localStorage.getItem(storageKey())) || {};
+    return { completed: data.completed || [], pending: data.pending || null };
   } catch {
-    return { completed: [], progress: null };
+    return { completed: [], pending: null };
   }
 }
 
-function write(data) {
+function writeAll(data) {
   try {
     localStorage.setItem(storageKey(), JSON.stringify(data));
   } catch {
@@ -29,48 +30,39 @@ function write(data) {
   }
 }
 
-// The session she is part-way through: { roleId, difficulty, currentIndex, answers }.
-export function loadProgress(roleId) {
-  const { progress } = read();
-  return progress && progress.roleId === roleId ? progress : null;
+const read = () => readAll().completed;
+
+// The activity unlocked after the last soft stop and not started yet:
+// { roleId, difficulty, kind }. It waits for her next visit. A started
+// multiple-choice activity is not kept here - the backend holds it.
+export function getPending(roleId) {
+  const { pending } = readAll();
+  return pending && pending.roleId === roleId ? pending : null;
 }
 
-export function saveProgress(progress) {
-  write({ ...read(), progress });
+export function setPending(pending) {
+  writeAll({ ...readAll(), pending });
 }
 
-export function clearProgress() {
-  write({ ...read(), progress: null });
+export function clearPending() {
+  writeAll({ ...readAll(), pending: null });
 }
 
 // One finished activity with her answer, so its feedback can be re-read.
 export function addCompleted(entry) {
-  const data = read();
   const id = `${entry.roleId}:${entry.difficulty}:${entry.activityId}`;
-  const completed = data.completed.filter((item) => item.id !== id);
+  const completed = read().filter((item) => item.id !== id);
   completed.unshift({ ...entry, id, completedAt: new Date().toISOString() });
-  write({ ...data, completed });
+  writeAll({ ...readAll(), completed });
 }
 
 // Newest first.
 export function listCompleted() {
-  return read().completed;
+  return read();
 }
 
-// True once every activity available for this role and difficulty is done.
-export function isExhausted(roleId, difficulty, activityIds) {
-  const done = new Set(
-    read().completed.filter((c) => c.roleId === roleId && c.difficulty === difficulty).map((c) => c.activityId),
-  );
-  return activityIds.length > 0 && activityIds.every((id) => done.has(id));
-}
-
-export function clearPracticeHistory() {
-  try {
-    localStorage.removeItem(storageKey());
-  } catch {
-    // Nothing to clear.
-  }
+export function hasCompleted(roleId, difficulty, activityId) {
+  return read().some((c) => c.roleId === roleId && c.difficulty === difficulty && c.activityId === activityId);
 }
 
 // Which completed activity the feedback screen should show - handed over
@@ -83,11 +75,14 @@ export function setViewingFeedback(id) {
   }
 }
 
-export function getViewingFeedback() {
+export function getViewingFeedbackId() {
   try {
-    const id = sessionStorage.getItem(VIEWING_KEY);
-    return read().completed.find((item) => item.id === id) || null;
+    return sessionStorage.getItem(VIEWING_KEY);
   } catch {
     return null;
   }
+}
+
+export function getLocalFeedback(id) {
+  return read().find((item) => item.id === id) || null;
 }

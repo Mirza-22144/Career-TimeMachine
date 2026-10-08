@@ -155,6 +155,8 @@ export const api = {
   putPracticeRole: (roleId, source) => request('/practice-role', { method: 'PUT', body: { role_id: roleId, source } }),
   startPracticeSession: (duration, difficulty) => request('/practice-sessions', { method: 'POST', body: { duration, difficulty } }),
   getCurrentPracticeSession: () => request('/practice-sessions/current'),
+  // Multiple-choice questions still new to her, per difficulty: { guided, standard, challenge }.
+  getRemainingQuestions: () => request('/practice-sessions/remaining'),
   getPracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}`),
   completePracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}/complete`, { method: 'POST' }),
   submitScenarioResponse: (sessionId, scenarioId, answer) =>

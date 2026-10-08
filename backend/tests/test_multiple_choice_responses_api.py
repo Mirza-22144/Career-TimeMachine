@@ -289,14 +289,13 @@ def test_one_token_cannot_submit_an_option_for_another_tokens_session():
 
 
 def test_options_are_only_accepted_for_an_active_session():
-    headers, first = _started_practice()
-    client.post("/api/v1/practice-sessions", headers=headers, json=SETTINGS)  # abandons first
     headers_completed, completed = _started_practice()
     client.post(f"/api/v1/practice-sessions/{completed['session_id']}/complete", headers=headers_completed)
 
-    for response in (_choose(headers, first), _choose(headers_completed, completed)):
-        assert response.status_code == 409
-        assert response.json()["error"]["code"] == "PRACTICE_SESSION_NOT_ACTIVE"
+    response = _choose(headers_completed, completed)
+
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "PRACTICE_SESSION_NOT_ACTIVE"
 
 
 def test_multiple_choice_submission_requires_a_valid_token():

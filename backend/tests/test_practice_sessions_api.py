@@ -220,19 +220,18 @@ def test_missing_profile_or_role_gives_a_clear_error():
     assert current.json()["error"]["code"] == "PRACTICE_SESSION_NOT_FOUND"
 
 
-def test_starting_again_replaces_the_active_session():
+def test_an_unfinished_activity_is_never_replaced():
     headers = _headers()
     _ready_for_practice(headers)
     first = _start(headers).json()
 
-    second = _start(headers).json()
+    second = _start(headers)
 
-    old = client.get(f"/api/v1/practice-sessions/{first['session_id']}", headers=headers).json()
-    assert second["session_id"] != first["session_id"]
-    assert old["status"] == "abandoned"
-    assert old["progress"]["current_scenario_id"] is None
+    assert second.status_code == 409
+    assert second.json()["error"]["code"] == "ACTIVITY_IN_PROGRESS"
     current = client.get("/api/v1/practice-sessions/current", headers=headers).json()
-    assert current["session_id"] == second["session_id"]
+    assert current["session_id"] == first["session_id"]
+    assert current["status"] == "active"
 
 
 def test_completing_a_session_is_recorded_and_repeatable():
@@ -272,6 +271,9 @@ def test_recent_activities_lists_completed_scenarios_newest_first():
     assert body[0]["title"] == scenario["title"]
     assert body[0]["activity_type"] == "multiple_choice"
     assert body[0]["completed_at"]
+    # Enough to open its feedback again.
+    assert body[0]["session_id"] == session["session_id"]
+    assert body[0]["scenario_id"] == scenario["scenario_id"]
 
 
 def test_recent_activities_excludes_sessions_with_no_submitted_response():
@@ -299,18 +301,6 @@ def test_recent_activities_does_not_cross_owners():
 
     assert response.status_code == 200
     assert response.json() == []
-
-
-def test_abandoned_session_cannot_be_completed():
-    headers = _headers()
-    _ready_for_practice(headers)
-    first = _start(headers).json()
-    _start(headers)
-
-    response = client.post(f"/api/v1/practice-sessions/{first['session_id']}/complete", headers=headers)
-
-    assert response.status_code == 409
-    assert response.json()["error"]["code"] == "PRACTICE_SESSION_NOT_ACTIVE"
 
 
 def test_one_token_cannot_see_or_change_another_tokens_session():
@@ -394,14 +384,16 @@ def test_provider_receives_only_the_career_context_it_needs(use_provider):
 
     assert _start(headers).status_code == 201
 
-    [request] = recording.requests
+    # One request per question in the activity; every one is equally bare.
+    assert recording.requests
+    request = recording.requests[0]
     assert request.role_id == "software_engineer"
     assert not hasattr(request, "years_experience")
     assert not hasattr(request, "responsibilities")
     assert request.skills == ("Python", "Git")
     assert (request.duration, request.difficulty) == ("standard", "guided")
     assert request.activity_type == "multiple_choice"
-    sent = repr(request)
+    sent = repr(recording.requests)
     for private in (token, hash_token(token), "Secret hobby project", "caregiving", "2024-01-01"):
         assert private not in sent
 

@@ -136,12 +136,12 @@ def test_full_token_to_feedback_journey():
     assert scenario["feedback"]["areas_to_consider"]
     assert scenario["feedback"]["skill_to_explore"]["skill"] == scenario["new_skill_focus"]
     assert scenario["feedback"]["skill_to_explore"]["why_relevant"]
-    assert body["progress"] == {
-        "status": "active",
-        "total_activities": 1,
-        "completed_activities": 1,
-        "current_scenario_id": None,
-    }
+    # An activity now holds several questions: answering one moves on to the next.
+    progress = body["progress"]
+    assert progress["status"] == "active"
+    assert progress["completed_activities"] == 1
+    assert progress["total_activities"] >= 1
+    assert progress["current_scenario_id"] != scenario["scenario_id"]
     assert not _all_keys(body) & JUDGEMENT_KEYS
 
 
@@ -242,17 +242,13 @@ def test_unknown_scenario_or_session_is_not_found():
 
 
 def test_responses_are_only_accepted_for_an_active_session():
-    headers, first = _started_practice()
-    client.post("/api/v1/practice-sessions", headers=headers, json=SETTINGS)  # abandons first
     headers_completed, completed = _started_practice()
     client.post(f"/api/v1/practice-sessions/{completed['session_id']}/complete", headers=headers_completed)
 
-    abandoned_response = _submit(headers, first)
-    completed_response = _submit(headers_completed, completed)
+    response = _submit(headers_completed, completed)
 
-    for response in (abandoned_response, completed_response):
-        assert response.status_code == 409
-        assert response.json()["error"]["code"] == "PRACTICE_SESSION_NOT_ACTIVE"
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "PRACTICE_SESSION_NOT_ACTIVE"
 
 
 def test_one_token_cannot_answer_or_read_another_tokens_practice():

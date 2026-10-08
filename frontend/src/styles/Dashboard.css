@@ -85,6 +85,135 @@
   padding: 36px;
 }
 
+.dash-next-card {
+  margin-bottom: 24px;
+  padding: 36px;
+}
+
+.dash-next-card .dash-next {
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.dash-next-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.dash-btn-outline {
+  padding: 14px 24px;
+  background: #ffffff;
+  border: 1.5px solid rgba(107, 102, 133, 0.55);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f1728;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Practised / Next / Later steps (AC 3.4.2) - no bar or percentage. */
+.dash-steps {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  margin-top: 28px;
+}
+
+.dash-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 44px;
+}
+
+.dash-step::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  border-top: 2px solid rgba(107, 102, 133, 0.3);
+}
+
+.dash-step:last-child::before {
+  display: none;
+}
+
+.dash-step--practised::before {
+  border-top-color: #3730a3;
+}
+
+.dash-step-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 2px solid rgba(107, 102, 133, 0.55);
+  border-radius: 999px;
+}
+
+.dash-step--practised .dash-step-dot {
+  background: #3730a3;
+  border-color: #3730a3;
+}
+
+.dash-step--next .dash-step-dot {
+  border: 3px solid #6d28d9;
+  box-shadow: inset 0 0 0 6px #ffffff, inset 0 0 0 16px #6d28d9;
+}
+
+.dash-step-label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.dash-step-status {
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.dash-step--next .dash-step-status {
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.dash-row--link {
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dash-row-open {
+  flex: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dash-chevron {
+  font-size: 20px;
+  color: #6d28d9;
+}
+
 .dash-eyebrow {
   display: block;
   margin-bottom: 8px;

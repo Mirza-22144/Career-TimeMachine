@@ -7,6 +7,7 @@ import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 import { getResumeStep } from "../resumeStep.js";
 import { getCurrentJobDescriptionId } from "../currentJob.js";
+import { recallResult, rememberResult } from "../lastGood.js";
 
 /**
  * "Your map for this job" (AC 5.2.1) and the closest-role step (AC 5.2.2).
@@ -21,6 +22,7 @@ export default function JobDescriptionComparison() {
   const [roleStep, setRoleStep] = useState(null); // { closest, allRoles } while the picker is open
   const [isOpening, setIsOpening] = useState(false);
   const [openError, setOpenError] = useState("");
+  const [isStale, setIsStale] = useState(false); // AC 3.2.5 exception
 
   const load = async () => {
     try {
@@ -37,7 +39,17 @@ export default function JobDescriptionComparison() {
         return;
       }
       setProfile(profileData);
-      setComparison(await api.getJobComparison(id));
+      try {
+        const fresh = await api.getJobComparison(id);
+        rememberResult(`job_map_${id}`, fresh);
+        setComparison(fresh);
+        setIsStale(false);
+      } catch {
+        const earlier = recallResult(`job_map_${id}`);
+        if (!earlier) throw new Error("no earlier map");
+        setComparison(earlier);
+        setIsStale(true);
+      }
       setStatus("ready");
     } catch {
       setStatus("error");
@@ -103,6 +115,7 @@ export default function JobDescriptionComparison() {
       <>
         <TopNav />
         <div className="jdc-page">
+          {status === "loading" && <p className="jdc-loading" role="status">Comparing with your profile…</p>}
           {status === "error" && (
             <div className="jdc-message">
               <p>We couldn&rsquo;t complete the comparison. Please try again.</p>
@@ -132,6 +145,13 @@ export default function JobDescriptionComparison() {
         <span className="jdc-eyebrow">YOUR MAP FOR THIS JOB · FROM THE JOB DESCRIPTION YOU PASTED</span>
         <h1 className="jdc-heading">{comparison.job_title || "This role"}</h1>
         {comparison.experience_sentence && <p className="jdc-subheading">{comparison.experience_sentence}</p>}
+
+        {isStale && (
+          <div className="jdc-stale" role="status">
+            <span>This was based on your earlier profile.</span>
+            <button type="button" onClick={retry}>Try Again</button>
+          </div>
+        )}
 
         <div className="jdc-layout">
           <div className="jdc-venn">

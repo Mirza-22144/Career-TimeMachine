@@ -317,3 +317,33 @@
     display: none;
   }
 }
+
+.jdc-loading {
+  margin: 0;
+  font-weight: 500;
+  font-size: 16px;
+  color: #514b66;
+}
+
+.jdc-stale {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.jdc-stale button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  color: #6d28d9;
+  cursor: pointer;
+}

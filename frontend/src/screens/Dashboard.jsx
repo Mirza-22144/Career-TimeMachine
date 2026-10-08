@@ -8,6 +8,7 @@ import { navigate } from "../navigate.js";
 import { getResumeStep } from "../resumeStep.js";
 import { setCurrentJobDescriptionId } from "../currentJob.js";
 import { listCompleted, setViewingFeedback } from "../practiceHistory.js";
+import { apiFeedbackId } from "../practiceAdapters.js";
 
 const ACTIVITY_TYPE_LABELS = {
   multiple_choice: "Multiple Choice",
@@ -40,8 +41,8 @@ export default function Dashboard() {
   const [chosenRoles, setChosenRoles] = useState([]);
   // The next-step card depends on the roadmap, so the page waits for it.
   const [isRoadmapSettled, setIsRoadmapSettled] = useState(false);
-  // Activities finished in this browser (see practiceHistory.js) - these
-  // are the ones whose feedback can be re-read.
+  // Code Review and Drag and Drop are still mock and only remembered in
+  // this browser (see practiceHistory.js); everything else is the backend's.
   const [localActivities] = useState(() => listCompleted());
   const [removeTarget, setRemoveTarget] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -112,14 +113,15 @@ export default function Dashboard() {
   const isLoading = isChecking || !isRoadmapSettled || activities === null || jobDescriptions === null;
   const steps = selectedRole?.skills_could_explore || [];
   const nextSkill = steps.find((skill) => skill.status === "next");
-  // Newest first across both sources. Only local ones have feedback to re-read.
+  // Newest first across both sources.
   const recent = Array.isArray(activities)
     ? [
         ...localActivities.map((a) => ({
           key: a.id, title: a.title, type: a.type, when: a.completedAt, feedbackId: a.id,
         })),
         ...activities.map((a) => ({
-          key: `${a.title}-${a.completed_at}`, title: a.title, type: a.activity_type, when: a.completed_at,
+          key: `${a.session_id}-${a.scenario_id}`, title: a.title, type: a.activity_type, when: a.completed_at,
+          feedbackId: apiFeedbackId(a.session_id, a.scenario_id),
         })),
       ].sort((a, b) => new Date(b.when) - new Date(a.when))
     : [];

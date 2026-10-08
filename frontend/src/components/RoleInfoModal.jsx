@@ -1,14 +1,32 @@
 import { useEffect } from "react";
 import "../styles/RoleInfoModal.css";
-import { mockRelation } from "../mockData/roadmapData.js";
+
+// "A", "A and B", "A, B and C" - at most three, so the sentence stays short.
+function listLabels(skills) {
+  const labels = skills.slice(0, 3).map((skill) => skill.label);
+  if (labels.length <= 1) return labels[0] || "";
+  return `${labels.slice(0, -1).join(", ")} and ${labels.at(-1)}`;
+}
+
+// How a suggested role relates to her previous one, said only from what
+// the roadmap already knows: the skills on her profile that this role
+// lists, and the ones it would add. No scores or percentages.
+function relationText(role, previousRoleLabel) {
+  const has = role.skills_bring_back;
+  const next = role.skills_could_explore.filter((skill) => skill.status !== "practised");
+  const first = has.length > 0
+    ? `From your time as a ${previousRoleLabel} you already have ${listLabels(has)}, which ${has.length === 1 ? "is" : "are"} listed for ${role.role_label} roles.`
+    : `None of the skills on your profile are listed for ${role.role_label} roles yet, so more of this role would be new to you.`;
+  const second = next.length > 0 ? ` From there you could explore ${listLabels(next)}.` : "";
+  return first + second;
+}
 
 const monthYear = (iso) => new Date(iso).toLocaleDateString("en-AU", { month: "long", year: "numeric" });
 
 /**
  * Role information panel (AC 2.4.1), opened from the "i" on a roadmap
- * card. The vacancy range, source and date are real (GET /roadmap); the
- * relationship text is mock for now - see mockData/roadmapData.js. Closes on the Close button, an outside click
- * or Escape.
+ * card. Everything shown comes from GET /roadmap. Closes on the Close
+ * button, an outside click or Escape.
  */
 export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onClose }) {
   useEffect(() => {
@@ -57,10 +75,10 @@ export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onC
           )}
         </div>
 
-        {!isPrevious && (
+        {!isPrevious && role.skill_data_available && (
           <>
             <span className="rim-label">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
-            <p className="rim-text">{mockRelation(role.role_label, previousRoleLabel)}</p>
+            <p className="rim-text">{relationText(role, previousRoleLabel)}</p>
           </>
         )}
       </div>

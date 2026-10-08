@@ -6,6 +6,7 @@ import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 import { getResumeStep } from "../resumeStep.js";
+import { setCurrentJobDescriptionId } from "../currentJob.js";
 
 const ACTIVITY_TYPE_LABELS = {
   multiple_choice: "Multiple Choice",
@@ -20,10 +21,9 @@ const shortDate = (iso) =>
  * activities from GET /practice-sessions/recent-activities and saved job
  * descriptions from GET /job-descriptions (removable, AC 3.5.1).
  *
- * Not shown yet: chosen roles and the "next skill" card (AC 3.4.2). Both
- * come from choosing a role on Your Roadmap, which isn't built yet, so the
- * top card shows AC 3.4.2's own "no roadmap yet" state instead - which is
- * simply true today.
+ * The "next step" card (AC 3.4.2) follows the role she selected to practise
+ * on Your Roadmap (GET /roadmap). Only that one selected role is known -
+ * there is no history of earlier role choices or their dates yet.
  */
 export default function Dashboard() {
   const [isChecking, setIsChecking] = useState(true);
@@ -31,6 +31,8 @@ export default function Dashboard() {
   // page available"). null = loading, "error" = failed, array = loaded.
   const [activities, setActivities] = useState(null);
   const [jobDescriptions, setJobDescriptions] = useState(null);
+  // The role selected on Your Roadmap, or null if none (or it couldn't load).
+  const [selectedRole, setSelectedRole] = useState(null);
   const [removeTarget, setRemoveTarget] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeError, setRemoveError] = useState("");
@@ -58,6 +60,13 @@ export default function Dashboard() {
         setIsChecking(false);
         api.getRecentActivities().then(setActivities).catch(() => setActivities("error"));
         api.listJobDescriptions().then(setJobDescriptions).catch(() => setJobDescriptions("error"));
+        api
+          .getRoadmap()
+          .then((roadmap) => {
+            const roles = [roadmap.previous_role, ...roadmap.suggested_roles];
+            setSelectedRole(roles.find((r) => r && r.role_id === roadmap.selected_role_id) || null);
+          })
+          .catch(() => setSelectedRole(null));
       })
       .catch(() => {
         if (!cancelled) navigate("/your-story");
@@ -89,7 +98,10 @@ export default function Dashboard() {
   };
 
   const isLoading = isChecking || activities === null || jobDescriptions === null;
+  const steps = selectedRole?.skills_could_explore || [];
+  const nextSkill = steps.find((skill) => skill.status === "next");
   const nothingYet =
+    !selectedRole &&
     Array.isArray(activities) && activities.length === 0 &&
     Array.isArray(jobDescriptions) && jobDescriptions.length === 0;
 
@@ -121,15 +133,61 @@ export default function Dashboard() {
           <>
             <p className="dash-subheading">Here is where you are. One step is enough for today.</p>
 
-            <div className="dash-card dash-next">
-              <div>
-                <span className="dash-eyebrow">YOUR NEXT STEP</span>
-                <h2 className="dash-next-title">Choose a path to build your roadmap.</h2>
+            {!selectedRole ? (
+              <div className="dash-card dash-next">
+                <div>
+                  <span className="dash-eyebrow">YOUR NEXT STEP</span>
+                  <h2 className="dash-next-title">Choose a path to build your roadmap.</h2>
+                </div>
+                <button type="button" className="dash-btn-primary" onClick={() => navigate("/choose-your-path")}>
+                  Choose Your Path <ArrowRightIcon size={16} />
+                </button>
               </div>
-              <button type="button" className="dash-btn-primary" onClick={() => navigate("/choose-your-path")}>
-                Choose Your Path <ArrowRightIcon size={16} />
-              </button>
-            </div>
+            ) : (
+              <div className="dash-card dash-next-card">
+                <div className="dash-next">
+                  <div>
+                    <span className="dash-eyebrow">
+                      YOUR NEXT STEP · {selectedRole.role_label.toUpperCase()} ROADMAP
+                    </span>
+                    <h2 className="dash-next-title">
+                      {nextSkill
+                        ? `Practise a situation that uses ${nextSkill.label}`
+                        : steps.length > 0
+                          ? "You’ve practised every skill to explore for this roadmap."
+                          : `Practise as a ${selectedRole.role_label}`}
+                    </h2>
+                  </div>
+                  <div className="dash-next-actions">
+                    <button type="button" className="dash-btn-outline" onClick={() => navigate("/your-roadmap")}>
+                      View Roadmap
+                    </button>
+                    {(nextSkill || steps.length === 0) && (
+                      <button type="button" className="dash-btn-primary" onClick={() => navigate("/workplace-scenario")}>
+                        Continue <ArrowRightIcon size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {steps.length > 0 && (
+                  <div className="dash-steps">
+                    {steps.map((skill) => (
+                      <div key={skill.id} className={`dash-step dash-step--${skill.status}`}>
+                        <span className="dash-step-dot">
+                          {skill.status === "practised" && <CheckIcon size={12} />}
+                        </span>
+                        <span className="dash-step-label">{skill.label}</span>
+                        <span className="dash-step-status">
+                          {skill.status === "practised" && `Practised ${shortDate(skill.practised_on)}`}
+                          {skill.status === "next" && "Next"}
+                          {skill.status === "later" && "Later"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="dash-columns">
               <div className="dash-card">
@@ -160,22 +218,38 @@ export default function Dashboard() {
 
               <div className="dash-card">
                 <h2 className="dash-card-title">Your roadmaps</h2>
+                {selectedRole && (
+                  <button type="button" className="dash-row dash-row--link" onClick={() => navigate("/your-roadmap")}>
+                    <div>
+                      <span className="dash-row-title">{selectedRole.role_label}</span>
+                      <span className="dash-row-meta">Role · selected to practise</span>
+                    </div>
+                    <span aria-hidden="true" className="dash-chevron">›</span>
+                  </button>
+                )}
                 {jobDescriptions === "error" ? (
                   <div className="dash-row dash-row--message">
                     <span>We couldn&rsquo;t load this. Please try again.</span>
                     <button type="button" className="dash-link" onClick={loadJobDescriptions}>Try Again</button>
                   </div>
-                ) : jobDescriptions.length === 0 ? (
+                ) : jobDescriptions.length === 0 && !selectedRole ? (
                   <div className="dash-row dash-row--message">
-                    <span>No saved job descriptions yet.</span>
+                    <span>No roadmaps yet.</span>
                   </div>
                 ) : (
                   jobDescriptions.map((jd) => (
                     <div className="dash-row" key={jd.job_description_id}>
-                      <div>
+                      <button
+                        type="button"
+                        className="dash-row-open"
+                        onClick={() => {
+                          setCurrentJobDescriptionId(jd.job_description_id);
+                          navigate("/job-description-comparison");
+                        }}
+                      >
                         <span className="dash-row-title">{jd.role_title_guess || "Job description"}</span>
                         <span className="dash-row-meta">Job ad you analysed · {shortDate(jd.created_at)}</span>
-                      </div>
+                      </button>
                       <button
                         type="button"
                         className="dash-remove"

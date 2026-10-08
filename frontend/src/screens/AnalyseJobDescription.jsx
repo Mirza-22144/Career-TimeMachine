@@ -3,6 +3,7 @@ import "../styles/AnalyseJobDescription.css";
 import TopNav from "../components/TopNav";
 import { api, ApiError } from "../api.js";
 import { navigate } from "../navigate.js";
+import { setCurrentJobDescriptionId } from "../currentJob.js";
 
 const MIN_CHARACTERS = 150;
 const MAX_CHARACTERS = 20000;
@@ -130,7 +131,10 @@ export default function AnalyseJobDescription() {
               <button
                 type="button"
                 className="ajd-btn-primary"
-                onClick={() => navigate("/job-description-comparison")}
+                onClick={() => {
+                  setCurrentJobDescriptionId(result.job_description_id);
+                  navigate("/job-description-comparison");
+                }}
               >
                 Compare With My Profile <span aria-hidden="true">›</span>
               </button>

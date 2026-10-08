@@ -998,3 +998,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Real questions: a described situation, and multi-line feedback ---- */
+
+.pa-situation {
+  margin: 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 29px;
+  color: #2e1065;
+}
+
+.pa-feedback-text + .pa-feedback-text {
+  margin-top: 12px;
+}
+
+.pa-hint p + p {
+  margin-top: 8px;
+}
+
+.pa-footer-note--error {
+  color: #b42318;
+}
+
+.pa-option:disabled {
+  cursor: default;
+}
+
+/* ---- Soft stop when nothing new is left ---- */
+
+.pa-run-out {
+  margin-top: 32px;
+}
+
+.pa-run-out-text {
+  margin: 0 0 16px;
+  font-weight: 600;
+  font-size: 18px;
+  color: #0f1728;
+}

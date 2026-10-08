@@ -2,34 +2,58 @@ import { useEffect, useState } from "react";
 import "../styles/PracticeActivity.css";
 import TopNav from "../components/TopNav";
 import PracticeFeedback from "../components/practice/PracticeFeedback";
-import { WORKPLACE_AREAS } from "../mockData/workplaceAreas.js";
-import { loadPracticeSession } from "../mockData/practiceSession.js";
-import { getViewingFeedback } from "../practiceHistory.js";
+import { WORKPLACE_AREAS, getPrimaryAreaId } from "../mockData/workplaceAreas.js";
+import { loadAllMockActivities } from "../mockData/practiceSession.js";
+import { getLocalFeedback, getViewingFeedbackId } from "../practiceHistory.js";
+import { parseApiFeedbackId, toChoiceActivity } from "../practiceAdapters.js";
+import { api } from "../api.js";
 import { navigate } from "../navigate.js";
+
+const areaLabel = (areaId) => WORKPLACE_AREAS.find((area) => area.id === areaId)?.label || "";
+
+// A multiple-choice question: her stored feedback from the backend.
+async function loadStored({ sessionId, scenarioId }) {
+  const session = await api.getPracticeSession(sessionId);
+  const scenario = session.scenarios.find((item) => item.scenario_id === scenarioId);
+  if (!scenario || scenario.status !== "completed") return null;
+  return {
+    activity: toChoiceActivity(scenario),
+    feedback: scenario.feedback,
+    roleLabel: session.role.label,
+    areaLabel: areaLabel(getPrimaryAreaId(session.role.id)),
+  };
+}
+
+// Code Review or Drag and Drop: still mock, kept in this browser.
+async function loadLocal(id) {
+  const entry = getLocalFeedback(id);
+  if (!entry) return null;
+  const activity = (await loadAllMockActivities()).find((item) => item.id === entry.activityId);
+  if (!activity) return null;
+  return { activity, answer: entry.answer, roleLabel: entry.roleLabel, areaLabel: areaLabel(activity.areaId) };
+}
 
 /**
  * "View feedback" from the dashboard (AC 3.4.1): re-reads the feedback for
  * an activity she has already completed. It reuses the same feedback
- * component as the practice flow, fed with her stored answer, so there is
- * one feedback layout to maintain and no extra state in the practice screen.
+ * component as the practice flow, so there is one feedback layout to
+ * maintain and no extra state in the practice screen.
  */
 export default function PracticeFeedbackView() {
-  const [entry] = useState(() => getViewingFeedback());
-  const [activity, setActivity] = useState(null);
-  const [status, setStatus] = useState(entry ? "loading" : "none"); // loading | ready | none
+  const [id] = useState(() => getViewingFeedbackId());
+  const [view, setView] = useState(null);
+  const [status, setStatus] = useState(id ? "loading" : "none"); // loading | ready | none
 
   useEffect(() => {
-    if (!entry) return;
-    loadPracticeSession()
-      .then((session) => {
-        const found = session.activities.find((item) => item.id === entry.activityId);
-        setActivity(found || null);
+    if (!id) return;
+    const stored = parseApiFeedbackId(id);
+    (stored ? loadStored(stored) : loadLocal(id))
+      .then((found) => {
+        setView(found);
         setStatus(found ? "ready" : "none");
       })
       .catch(() => setStatus("none"));
-  }, [entry]);
-
-  const areaLabel = activity ? WORKPLACE_AREAS.find((a) => a.id === activity.areaId).label : "";
+  }, [id]);
 
   return (
     <>
@@ -39,13 +63,14 @@ export default function PracticeFeedbackView() {
           <button type="button" className="pa-back" onClick={() => navigate("/dashboard")}>
             <span aria-hidden="true">&larr;</span> Back to dashboard
           </button>
-          {entry && <span className="pa-breadcrumb">{entry.roleLabel} · {areaLabel}</span>}
+          {view && <span className="pa-breadcrumb">{view.roleLabel} · {view.areaLabel}</span>}
         </div>
         {status === "ready" && (
           <PracticeFeedback
-            activity={activity}
-            answer={entry.answer}
-            areaLabel={areaLabel}
+            activity={view.activity}
+            answer={view.answer}
+            feedback={view.feedback}
+            areaLabel={view.areaLabel}
             continueLabel="Back to dashboard"
             onContinue={() => navigate("/dashboard")}
           />

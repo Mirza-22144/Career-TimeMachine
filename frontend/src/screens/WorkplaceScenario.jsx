@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '../styles/WorkplaceScenario.css'
 import '../styles/PracticeActivity.css'
 import TopNav from '../components/TopNav'
@@ -7,15 +7,16 @@ import DragDropActivity from '../components/practice/DragDropActivity'
 import PracticeFeedback, { ActivitySkeleton } from '../components/practice/PracticeFeedback'
 import workplaceImg from '../assets/workplace.png'
 import introImg from '../assets/practice-intro.png'
-import { WORKPLACE_AREAS } from '../mockData/workplaceAreas.js'
-import { loadPracticeSession } from '../mockData/practiceSession.js'
+import { WORKPLACE_AREAS, getPrimaryAreaId } from '../mockData/workplaceAreas.js'
+import { loadMockActivities } from '../mockData/practiceSession.js'
 import {
   UserIcon, BarChartIcon, HeadsetIcon, FileTextIcon, LightbulbIcon, UsersIcon,
   FlaskIcon, CodeIcon, ShieldIcon, GlobeIcon, BellIcon, LayoutIcon, CheckIcon, ArrowRightIcon,
 } from '../components/icons'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
-import { addCompleted, clearProgress, isExhausted, loadProgress, saveProgress } from '../practiceHistory.js'
+import { addCompleted, clearPending, getPending, hasCompleted, setPending } from '../practiceHistory.js'
+import { toChoiceActivity } from '../practiceAdapters.js'
 
 const AREA_ICONS = {
   user: UserIcon,
@@ -46,32 +47,99 @@ const DIFFICULTIES = [
 
 const areaById = (id) => WORKPLACE_AREAS.find((area) => area.id === id)
 
+const MCQ = 'multiple_choice'
+
+// AC 4.3.5 exception.
+const MAY_REPEAT = 'We couldn’t check your earlier activities, so some may repeat.'
+
+// What the floor says about the multiple-choice activity before she opens
+// it. It never describes the situations themselves.
+const mcqFloor = (roleLabel, areaLabel, total, completed) => ({
+  announcement: `Something needs you in the ${areaLabel}.`,
+  panel: {
+    title: 'A few situations need your judgement',
+    text: `${total} ${total === 1 ? 'situation' : 'situations'} a ${roleLabel} meets at work, one at a time. You will see each one when you get there.`,
+    cta: completed > 0 ? 'Carry on' : 'See the first one',
+  },
+})
+
+function SettingUp({ text }) {
+  return (
+    <>
+      <TopNav />
+      <div className="pa-page">
+        <main className="pa-body pa-body--stop" aria-busy="true">
+          <h1 className="pa-question pa-setting-up"><span className="pa-setting-dot" /> {text}</h1>
+          <p className="pa-question-caption">This takes a few seconds.</p>
+        </main>
+      </div>
+    </>
+  )
+}
+
 // Workplace practice: intro -> difficulty -> preparation -> the workplace
-// floor, where activities unlock one at a time (she never sees what is
-// coming next) -> each activity and its feedback -> the soft stop.
+// floor -> one activity -> the soft stop.
 //
-// The role and practice focus are real (GET /practice-role, GET /roadmap).
-// The activities themselves are frontend-only mock content for now - see
-// mockData/practiceSession.js - so nothing she does here is saved yet.
+// There are three kinds of activity: Multiple Choice, Code Review and Drag
+// and Drop. Only one is unlocked at a time, picked at random from the ones
+// she has not done for this role and level, so she never sees what is
+// coming. An activity has to be finished before another one opens. When it
+// is, the soft stop appears and the next one is unlocked: Keep Going opens
+// it now, Finish Practice leaves it waiting for her next visit.
+//
+// Multiple Choice is real: POST /practice-sessions builds an activity of
+// four questions (plus a live one about a skill she typed in herself), the
+// backend hands them over one at a time and stores her answers and
+// feedback, so leaving part-way and coming back resumes at the same
+// question. Code Review and Drag and Drop are still mock content - see
+// mockData/practiceSession.js.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null) // null | 'no-role' | 'intro-failed'
   const [role, setRole] = useState(null)
-  // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'stop' | 'exhausted'
+  // 'intro' | 'resume' | 'ready' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'stop' | 'exhausted'
   const [step, setStep] = useState('intro')
   const [difficulty, setDifficulty] = useState(null)
-  const [prepLoading, setPrepLoading] = useState(false)
-  const [prepError, setPrepError] = useState(false)
+  const [isStarting, setIsStarting] = useState(false)
+  const [startError, setStartError] = useState(false)
   const [focusSkill, setFocusSkill] = useState(null)
   const [skillsUsed, setSkillsUsed] = useState([])
-  const [activities, setActivities] = useState([])
-  // Index of the one activity currently unlocked; everything before it is done.
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState({}) // activity id -> her answer
+  const [mockActivities, setMockActivities] = useState([])
+  // The one kind of activity currently unlocked.
+  const [kind, setKind] = useState(null)
+  // The multiple-choice activity in progress: { id, total, completed }.
+  const [session, setSession] = useState(null)
+  // Its current question, as the API returns it.
+  const [question, setQuestion] = useState(null)
+  const [questionError, setQuestionError] = useState(false)
+  // Titles finished in the current activity, for the soft stop.
+  const [finished, setFinished] = useState([])
+  // What the feedback step shows: { activity, answer } or { activity, feedback, hasNext }.
+  const [result, setResult] = useState(null)
+  // The activity unlocked after this one: 'checking' while it is being
+  // worked out, null when nothing new is left, 'retry' if that check failed.
+  const [nextKind, setNextKind] = useState(null)
+  // New multiple-choice questions left per difficulty (GET /practice-sessions/remaining).
+  const [remaining, setRemaining] = useState(null)
+  // True when her earlier activities could not be checked for the activity
+  // now open (AC 4.3.5 exception): she continues, and is told some may repeat.
+  const [mayRepeat, setMayRepeat] = useState(false)
+  const unchecked = useRef(false)
+  // Areas of the floor finished in this visit.
+  const [doneAreaIds, setDoneAreaIds] = useState([])
   const [isPreparingActivity, setIsPreparingActivity] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [scenarioVisible, setScenarioVisible] = useState(true)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [toast, setToast] = useState('')
+
+  const applySession = (apiSession) => {
+    const { progress } = apiSession
+    setSession({ id: apiSession.session_id, total: progress.total_activities, completed: progress.completed_activities })
+    setQuestion(apiSession.scenarios.find((item) => item.scenario_id === progress.current_scenario_id) || null)
+    setFinished(apiSession.scenarios.filter((item) => item.status === 'completed').map((item) => item.title))
+  }
 
   const load = async () => {
     try {
@@ -82,15 +150,35 @@ export default function WorkplaceScenario() {
         return
       }
       setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
-      const practice = await loadPracticeSession()
-      setActivities(practice.activities)
-      // Pick up a session she left part-way through.
-      const saved = loadProgress(practiceRole.role_id)
-      if (saved && saved.currentIndex < practice.activities.length) {
-        setDifficulty(saved.difficulty)
-        setCurrentIndex(saved.currentIndex)
-        setAnswers(saved.answers)
-        setStep('workplace')
+      let mocks = await loadMockActivities(practiceRole.role_id)
+      setMockActivities(mocks)
+
+      // An activity she left part-way through has to be finished first.
+      let current = null
+      try {
+        current = await api.getCurrentPracticeSession()
+      } catch (err) {
+        if (err.code !== 'PRACTICE_SESSION_NOT_FOUND') throw err
+      }
+      if (current && current.progress.current_scenario_id) {
+        setRole({ id: current.role.id, label: current.role.label })
+        mocks = await loadMockActivities(current.role.id)
+        setMockActivities(mocks)
+        setDifficulty(current.difficulty)
+        setKind(MCQ)
+        applySession(current)
+        setStep('resume')
+      } else {
+        // Every question was answered but the tab closed before it was
+        // marked finished.
+        if (current) await api.completePracticeSession(current.session_id).catch(() => {})
+        // The activity unlocked at her last soft stop is still waiting.
+        const pending = getPending(practiceRole.role_id)
+        if (pending) {
+          setDifficulty(pending.difficulty)
+          setNextKind(pending.kind)
+          setStep('ready')
+        }
       }
       setLoadError(null)
       setLoading(false)
@@ -105,6 +193,7 @@ export default function WorkplaceScenario() {
       load()
     }
     run()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -118,107 +207,209 @@ export default function WorkplaceScenario() {
     load()
   }
 
-  // Preparation page data: her practice focus and the skills she'll use,
-  // from the roadmap of the role she chose, plus the session's activities.
-  const loadPrep = async () => {
-    setPrepLoading(true)
-    setPrepError(false)
+  const areaIdFor = (activityKind) =>
+    activityKind === MCQ ? getPrimaryAreaId(role.id) : mockActivities.find((item) => item.type === activityKind)?.areaId
+
+  const mockLeft = (level) => mockActivities.filter((item) => !hasCompleted(role.id, level, item.id))
+  // Unknown counts (the check failed) are treated as "there may be more".
+  const levelHasWork = (level, counts) => !counts || counts[level] > 0 || mockLeft(level).length > 0
+
+  // Picks, at random, a kind of activity she has not done for this role and
+  // level - or null when nothing new is left (AC 4.3.5).
+  const pickNext = async (level, { withoutMcq = false } = {}) => {
+    let counts = null
     try {
-      const [roadmap, practice] = await Promise.all([api.getRoadmap(), loadPracticeSession()])
+      counts = await api.getRemainingQuestions()
+    } catch {
+      // AC 4.3.5 exception: she still practises; Multiple Choice is assumed
+      // to have something left and the backend has the final say.
+      unchecked.current = true
+    }
+    setRemaining(counts)
+    const mcqLeft = !withoutMcq && (!counts || counts[level] > 0)
+    const kinds = [...(mcqLeft ? [MCQ] : []), ...mockLeft(level).map((item) => item.type)]
+    return kinds.length > 0 ? kinds[Math.floor(Math.random() * kinds.length)] : null
+  }
+
+  // Opens the picked activity. Multiple Choice is prepared by the backend
+  // (a few seconds when a live question is being written). Returns false if
+  // it turned out there was nothing new after all.
+  const enter = async (activityKind, level) => {
+    if (activityKind === MCQ) {
+      try {
+        const started = await api.startPracticeSession('standard', level)
+        if (started.history_checked === false) unchecked.current = true
+        applySession(started)
+      } catch (err) {
+        if (err.code !== 'NO_NEW_ACTIVITIES') throw err
+        return false
+      }
+      // From here the backend holds her place.
+      clearPending()
+    } else {
+      setSession(null)
+      setQuestion(null)
+      setFinished([])
+      setPending({ roleId: role.id, difficulty: level, kind: activityKind })
+    }
+    setKind(activityKind)
+    return true
+  }
+
+  const pickAndEnter = async (level, preferred) => {
+    unchecked.current = false
+    const opened = await (async () => {
+      // A waiting activity she has since completed elsewhere is not reopened.
+      const stillNew = preferred === MCQ || mockLeft(level).some((item) => item.type === preferred)
+      if (preferred && stillNew && (await enter(preferred, level))) return preferred
+      let picked = await pickNext(level, { withoutMcq: preferred === MCQ })
+      if (picked === MCQ && !(await enter(MCQ, level))) picked = await pickNext(level, { withoutMcq: true })
+      if (picked === MCQ) return MCQ
+      if (picked && (await enter(picked, level))) return picked
+      clearPending()
+      return null
+    })()
+    setMayRepeat(Boolean(opened) && unchecked.current)
+    return opened
+  }
+
+  // Preparation page: her practice focus and the skills she'll use come
+  // from the roadmap of the role she chose. Both run together behind the
+  // "Setting up" screen.
+  const startPractice = async () => {
+    setIsStarting(true)
+    setStartError(false)
+    try {
+      const [roadmap, unlocked] = await Promise.all([api.getRoadmap(), pickAndEnter(difficulty, null)])
+      if (!unlocked) {
+        setStep('exhausted')
+        return
+      }
       const practised = [roadmap.previous_role, ...roadmap.suggested_roles].find(
         (r) => r && r.role_id === roadmap.selected_role_id,
       )
-      setFocusSkill(practised?.skills_could_explore.find((s) => s.status === 'next')?.label || null)
-      setSkillsUsed((practised?.skills_bring_back || []).map((s) => s.label))
-      setActivities(practice.activities)
-      setCurrentIndex(0)
-      setAnswers({})
-      saveProgress({ roleId: role.id, difficulty, currentIndex: 0, answers: {} })
-      setPrepLoading(false)
+      setFocusSkill(practised?.skills_could_explore.find((item) => item.status === 'next')?.label || null)
+      setSkillsUsed((practised?.skills_bring_back || []).map((item) => item.label))
+      setStep('prep')
+    } catch (err) {
+      // Another tab started an activity: it has to be finished first.
+      if (err.code === 'ACTIVITY_IN_PROGRESS') retryLoad()
+      else setStartError(true)
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
+  // AC 4.5.4: Keep Going (or coming back another day) opens the activity
+  // that was unlocked at the soft stop.
+  const handleKeepGoing = async () => {
+    setIsStarting(true)
+    setStartError(false)
+    try {
+      const preferred = nextKind && nextKind !== 'checking' && nextKind !== 'retry' ? nextKind : null
+      const unlocked = await pickAndEnter(difficulty, preferred)
+      if (!unlocked) {
+        setStep('exhausted')
+        return
+      }
+      setToast(unchecked.current ? MAY_REPEAT : `Something new has come in at the ${areaById(areaIdFor(unlocked)).label}.`)
+      setStep('workplace')
+    } catch (err) {
+      if (err.code === 'ACTIVITY_IN_PROGRESS') retryLoad()
+      else setStartError(true)
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
+  // The activity is finished: show the soft stop and unlock the next one,
+  // which waits for her if she stops here.
+  const finishActivity = async () => {
+    setDoneAreaIds((ids) => [...ids, areaIdFor(kind)])
+    setNextKind('checking')
+    setStep('stop')
+    try {
+      const picked = await pickNext(difficulty)
+      setNextKind(picked)
+      if (picked) setPending({ roleId: role.id, difficulty, kind: picked })
+      else clearPending()
     } catch {
-      setPrepError(true)
-      setPrepLoading(false)
+      setNextKind('retry')
     }
   }
 
-  const allActivityIds = activities.map((item) => item.id)
-  const isLevelDone = (level) => isExhausted(role.id, level, allActivityIds)
-
-  // AC 4.3.5: nothing new left for this role at this level - offer the
-  // other ways forward instead of repeating activities.
-  const handleSetupContinue = () => {
-    if (isLevelDone(difficulty)) {
-      setStep('exhausted')
-      return
-    }
-    setStep('prep')
-    loadPrep()
-  }
-
-  // Shows the "Setting up this situation…" layout for as long as the
-  // activity takes to be ready. Instant with today's local content; this
-  // is where a slow backend or live-generated activity will be waited on.
-  const openActivity = async () => {
+  const openActivity = () => {
     setIsPanelOpen(false)
+    setSubmitError('')
+    setStep('activity')
+  }
+
+  // The backend only hands over a question once the one before it is
+  // answered, so the next one is fetched here.
+  const loadNextQuestion = async () => {
+    setQuestionError(false)
     setIsPreparingActivity(true)
     setStep('activity')
     try {
-      await loadPracticeSession()
+      applySession(await api.getPracticeSession(session.id))
+    } catch {
+      setQuestionError(true)
     } finally {
       setIsPreparingActivity(false)
     }
   }
 
-  const handleSubmit = (answer) => {
-    const nextAnswers = { ...answers, [activity.id]: answer }
-    setAnswers(nextAnswers)
-    addCompleted({
-      activityId: activity.id,
-      title: activity.title,
-      type: activity.type,
-      answer,
-      roleId: role.id,
-      roleLabel: role.label,
-      difficulty,
-    })
-    // Her place is the next activity from here on, even if she leaves
-    // before closing the feedback.
-    if (currentIndex + 1 < activities.length) {
-      saveProgress({ roleId: role.id, difficulty, currentIndex: currentIndex + 1, answers: nextAnswers })
-    } else {
-      clearProgress()
+  const handleSubmit = async (answer) => {
+    if (kind !== MCQ) {
+      addCompleted({
+        activityId: mock.id,
+        title: mock.title,
+        type: mock.type,
+        answer,
+        roleId: role.id,
+        roleLabel: role.label,
+        difficulty,
+      })
+      clearPending()
+      setFinished([mock.title])
+      setResult({ activity: mock, answer })
+      setStep('feedback')
+      return
     }
-    setStep('feedback')
+    setIsSubmitting(true)
+    setSubmitError('')
+    try {
+      const saved = await api.submitScenarioResponse(session.id, question.scenario_id, { selected_option_id: answer })
+      const hasNext = Boolean(saved.progress.current_scenario_id)
+      // Finishing the activity frees her to start another one later. If
+      // this call is lost, the next visit finishes it instead.
+      if (!hasNext) api.completePracticeSession(session.id).catch(() => {})
+      setSession((value) => ({ ...value, completed: saved.progress.completed_activities }))
+      setFinished((titles) => [...titles, question.title])
+      setResult({ activity: toChoiceActivity(question), feedback: saved.scenario.feedback, hasNext })
+      setStep('feedback')
+    } catch {
+      setSubmitError("We couldn't save your answer. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  // After feedback: the next activity unlocks on the floor, or - after the
-  // last one - the soft stop.
+  // After feedback: the next question in the activity, or the soft stop.
   const handleFeedbackContinue = () => {
-    const nextIndex = currentIndex + 1
-    if (nextIndex >= activities.length) {
-      setCurrentIndex(nextIndex)
-      setStep('stop')
+    if (result.hasNext) {
+      loadNextQuestion()
       return
     }
-    setCurrentIndex(nextIndex)
-    setToast(`Something new has come in at the ${areaById(activities[nextIndex].areaId).label}.`)
-    setStep('workplace')
+    finishActivity()
   }
 
-  // AC 4.5.4: Keep Going starts a new session for the same role and
-  // difficulty - or, when nothing new remains, shows the other choices.
-  const handleKeepGoing = () => {
-    if (isLevelDone(difficulty)) {
-      setStep('exhausted')
-      return
-    }
-    setStep('prep')
-    loadPrep()
-  }
-
-  const activity = activities[currentIndex] || null
-  const area = activity ? areaById(activity.areaId) : null
-  const completedCount = Math.min(currentIndex, activities.length)
+  const mock = kind && kind !== MCQ ? mockActivities.find((item) => item.type === kind) : null
+  const area = kind ? areaById(areaIdFor(kind)) : null
+  const total = kind === MCQ ? session?.total || 0 : 1
+  const completedCount = kind === MCQ ? session?.completed || 0 : 0
+  const activity = kind === MCQ ? (question ? toChoiceActivity(question) : null) : mock
+  const floor = kind === MCQ && area ? mcqFloor(role.label, area.label, total, completedCount) : mock
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
 
   if (loading) return (
@@ -246,32 +437,107 @@ export default function WorkplaceScenario() {
     </>
   )
 
-  if ((step === 'activity' || step === 'feedback') && activity) return (
+  if (isStarting) return <SettingUp text="Setting up your practice…" />
+
+  if (startError) return (
+    <>
+      <TopNav />
+      <div className="ws-page">
+        <div className="ws-load-error">
+          <p>We couldn&rsquo;t start your workplace practice. Please try again.</p>
+          <button type="button" onClick={step === 'setup' ? startPractice : handleKeepGoing}>Try Again</button>
+        </div>
+      </div>
+    </>
+  )
+
+  // She left an activity part-way through: it has to be finished before
+  // anything else opens.
+  if (step === 'resume') return (
+    <>
+      <TopNav />
+      <div className="pa-page">
+        <main className="pa-body pa-body--stop">
+          <span className="pa-eyebrow">{role.label.toUpperCase()} · {difficultyLabel?.toUpperCase()}</span>
+          <h1 className="pa-stop-heading pa-stop-heading--small">You have an activity to finish.</h1>
+          <p className="pa-stop-subheading">
+            You left at situation {completedCount + 1} of {total}. Finish this activity before starting something new.
+          </p>
+        </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">Your earlier answers are saved.</span>
+          <button type="button" className="pa-btn-primary" onClick={() => setStep('workplace')}>
+            Continue Activity <ArrowRightIcon size={16} />
+          </button>
+        </div>
+      </div>
+    </>
+  )
+
+  // The activity unlocked at her last soft stop, waiting since then.
+  if (step === 'ready') return (
+    <>
+      <TopNav />
+      <div className="pa-page">
+        <main className="pa-body pa-body--stop">
+          <span className="pa-eyebrow">{role.label.toUpperCase()} · {difficultyLabel?.toUpperCase()}</span>
+          <h1 className="pa-stop-heading pa-stop-heading--small">Your next activity is ready.</h1>
+          <p className="pa-stop-subheading">It was unlocked when you finished last time. You will see what it involves when you get there.</p>
+        </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">Nothing here is graded.</span>
+          <button type="button" className="pa-btn-primary" onClick={handleKeepGoing}>
+            Enter Workplace <ArrowRightIcon size={16} />
+          </button>
+        </div>
+      </div>
+    </>
+  )
+
+  if (step === 'activity' || step === 'feedback') return (
     <>
       <TopNav />
       <div className="pa-page">
         <div className="pa-topbar">
-          <button type="button" className="pa-back" onClick={() => setStep('workplace')}>
-            <span aria-hidden="true">&larr;</span> Back to workplace
-          </button>
+          {step === 'activity' ? (
+            <button type="button" className="pa-back" onClick={() => setStep('workplace')}>
+              <span aria-hidden="true">&larr;</span> Back to workplace
+            </button>
+          ) : <span />}
           <span className="pa-breadcrumb">
             {role.label} · {area.label}
-            <span className="pa-count">{currentIndex + 1} of {activities.length}</span>
+            <span className="pa-count">
+              {step === 'feedback' ? Math.max(completedCount, 1) : Math.min(completedCount + 1, total)} of {total}
+            </span>
           </span>
         </div>
         {step === 'activity' && isPreparingActivity && <ActivitySkeleton areaLabel={area.label} />}
-        {step === 'activity' && !isPreparingActivity && activity.type === 'drag_and_drop' && (
+        {step === 'activity' && !isPreparingActivity && questionError && (
+          <main className="pa-body">
+            <p className="pa-loading">We couldn&rsquo;t open the next situation. Please try again.</p>
+            <button type="button" className="pa-btn-outline" onClick={loadNextQuestion}>Try Again</button>
+          </main>
+        )}
+        {step === 'activity' && !isPreparingActivity && !questionError && activity?.type === 'drag_and_drop' && (
           <DragDropActivity key={activity.id} activity={activity} areaLabel={area.label} onSubmit={handleSubmit} />
         )}
-        {step === 'activity' && !isPreparingActivity && activity.type !== 'drag_and_drop' && (
-          <ChoiceActivity key={activity.id} activity={activity} areaLabel={area.label} onSubmit={handleSubmit} />
+        {step === 'activity' && !isPreparingActivity && !questionError && activity && activity.type !== 'drag_and_drop' && (
+          <ChoiceActivity
+            key={activity.id}
+            activity={activity}
+            areaLabel={area.label}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            onSubmit={handleSubmit}
+          />
         )}
         {step === 'feedback' && (
           <PracticeFeedback
-            activity={activity}
-            answer={answers[activity.id]}
+            activity={result.activity}
+            answer={result.answer}
+            feedback={result.feedback}
             areaLabel={area.label}
-            isLast={currentIndex === activities.length - 1}
+            continueLabel={result.hasNext ? 'Next Situation' : 'Continue'}
             onContinue={handleFeedbackContinue}
           />
         )}
@@ -279,29 +545,64 @@ export default function WorkplaceScenario() {
     </>
   )
 
-  // AC 4.5.4: the soft stop.
+  const runOutChoices = (
+    <div className="pa-choice-row">
+      {DIFFICULTIES.some((d) => d.value !== difficulty && levelHasWork(d.value, remaining)) && (
+        <button type="button" className="pa-btn-primary" onClick={() => { setDifficulty(null); setStep('setup') }}>
+          Try Another Difficulty
+        </button>
+      )}
+      <button type="button" className="pa-btn-outline" onClick={() => navigate('/your-roadmap')}>
+        Explore Another Role
+      </button>
+      <button type="button" className="pa-btn-outline" onClick={() => navigate('/analyse-job-description')}>
+        Analyse a Job Description
+      </button>
+    </div>
+  )
+
+  // AC 4.5.4: the soft stop, after each activity. When nothing new is left
+  // the "activities run out" choices take the place of Keep Going.
   if (step === 'stop') return (
     <>
       <TopNav />
       <div className="pa-page">
         <main className="pa-body pa-body--stop">
-          <span className="pa-eyebrow">SESSION COMPLETE</span>
+          <span className="pa-eyebrow">ACTIVITY COMPLETE</span>
           <h1 className="pa-stop-heading">That&rsquo;s today&rsquo;s practice.</h1>
-          <p className="pa-stop-subheading">Come back anytime, or keep going if you have time.</p>
+          <p className="pa-stop-subheading">
+            {nextKind === null
+              ? 'Come back anytime.'
+              : 'Come back anytime, or keep going if you have time.'}
+          </p>
           <div className="pa-card pa-stop-list">
-            {activities.map((item) => (
-              <div className="pa-stop-row" key={item.id}>
+            {finished.map((title, index) => (
+              <div className="pa-stop-row" key={`${title}-${index}`}>
                 <span className="pa-stop-check"><CheckIcon size={13} color="#3730A3" /></span>
-                {item.title}
-                <span className="pa-stop-area">{areaById(item.areaId).label}</span>
+                {title}
+                <span className="pa-stop-area">{area.label}</span>
               </div>
             ))}
           </div>
+          {nextKind === null && (
+            <div className="pa-run-out">
+              <p className="pa-run-out-text">You&rsquo;ve completed all the activities for this role at this level.</p>
+              {runOutChoices}
+            </div>
+          )}
         </main>
         <div className="pa-footer">
-          <span className="pa-footer-note">Your {activities.length} activities are saved to your dashboard.</span>
+          <span className="pa-footer-note">
+            {nextKind && nextKind !== 'checking' && nextKind !== 'retry'
+              ? 'Your next activity is unlocked. It will wait for you if you stop here.'
+              : 'Everything you did is saved to your dashboard.'}
+          </span>
           <div className="pa-footer-actions">
-            <button type="button" className="pa-btn-outline" onClick={handleKeepGoing}>Keep Going</button>
+            {nextKind !== null && (
+              <button type="button" className="pa-btn-outline" disabled={nextKind === 'checking'} onClick={handleKeepGoing}>
+                Keep Going
+              </button>
+            )}
             <button type="button" className="pa-btn-primary" onClick={() => navigate('/dashboard')}>
               Finish Practice <ArrowRightIcon size={16} />
             </button>
@@ -312,36 +613,21 @@ export default function WorkplaceScenario() {
   )
 
   // AC 4.3.5 exception: every activity for this role and level is done.
-  if (step === 'exhausted') {
-    const otherLevelLeft = DIFFICULTIES.some((d) => !isLevelDone(d.value))
-    return (
-      <>
-        <TopNav />
-        <div className="pa-page">
-          <main className="pa-body pa-body--stop">
-            <span className="pa-eyebrow">{role.label.toUpperCase()} · {difficultyLabel?.toUpperCase()}</span>
-            <h1 className="pa-stop-heading pa-stop-heading--small">
-              You&rsquo;ve completed all the activities for this role at this level.
-            </h1>
-            <p className="pa-stop-subheading">Everything you did is on your dashboard. Here is where you could go next.</p>
-            <div className="pa-choice-row">
-              {otherLevelLeft && (
-                <button type="button" className="pa-btn-primary" onClick={() => { setDifficulty(null); setStep('setup') }}>
-                  Try Another Difficulty
-                </button>
-              )}
-              <button type="button" className="pa-btn-outline" onClick={() => navigate('/your-roadmap')}>
-                Explore Another Role
-              </button>
-              <button type="button" className="pa-btn-outline" onClick={() => navigate('/analyse-job-description')}>
-                Analyse a Job Description
-              </button>
-            </div>
-          </main>
-        </div>
-      </>
-    )
-  }
+  if (step === 'exhausted') return (
+    <>
+      <TopNav />
+      <div className="pa-page">
+        <main className="pa-body pa-body--stop">
+          <span className="pa-eyebrow">{role.label.toUpperCase()} · {difficultyLabel?.toUpperCase()}</span>
+          <h1 className="pa-stop-heading pa-stop-heading--small">
+            You&rsquo;ve completed all the activities for this role at this level.
+          </h1>
+          <p className="pa-stop-subheading">Everything you did is on your dashboard. Here is where you could go next.</p>
+          {runOutChoices}
+        </main>
+      </div>
+    </>
+  )
 
   if (step === 'setup') return (
     <>
@@ -380,28 +666,9 @@ export default function WorkplaceScenario() {
           <span className="pa-footer-note">
             {difficulty ? `${difficultyLabel} selected. You can change this next time.` : 'Choose a difficulty to continue.'}
           </span>
-          <button type="button" className="pa-btn-primary" disabled={!difficulty} onClick={handleSetupContinue}>
+          <button type="button" className="pa-btn-primary" disabled={!difficulty} onClick={startPractice}>
             Continue <ArrowRightIcon size={16} />
           </button>
-        </div>
-      </div>
-    </>
-  )
-
-  if (step === 'prep' && prepLoading) return (
-    <>
-      <TopNav />
-      <div className="ws-page" />
-    </>
-  )
-
-  if (step === 'prep' && prepError) return (
-    <>
-      <TopNav />
-      <div className="ws-page">
-        <div className="ws-load-error">
-          <p>We couldn&rsquo;t start your workplace practice. Please try again.</p>
-          <button type="button" onClick={loadPrep}>Try Again</button>
         </div>
       </div>
     </>
@@ -454,14 +721,16 @@ export default function WorkplaceScenario() {
                 <p>You get feedback on what worked and what to consider, never a score.</p>
               </div>
               <div className="pa-before-item">
-                <strong>Stop whenever you need to</strong>
-                <p>Your place is saved, so you can pick it up again later.</p>
+                <strong>One activity at a time</strong>
+                <p>Finish the one you start. If you leave part-way, you pick it up where you left off.</p>
               </div>
             </div>
           </div>
         </main>
         <div className="pa-footer">
-          <span className="pa-footer-note">You can leave at any point. Your place is saved in this browser.</span>
+          <span className="pa-footer-note">
+            {mayRepeat ? MAY_REPEAT : 'Once you start an activity, finish it before starting another.'}
+          </span>
           <button type="button" className="pa-btn-primary" onClick={() => setStep('workplace')}>
             Enter Workplace <ArrowRightIcon size={16} />
           </button>
@@ -470,8 +739,7 @@ export default function WorkplaceScenario() {
     </>
   )
 
-  if (step === 'workplace' && activity) {
-    const doneAreaIds = new Set(activities.slice(0, currentIndex).map((item) => item.areaId))
+  if (step === 'workplace' && floor) {
     const PanelIcon = AREA_ICONS[area.icon]
     return (
       <>
@@ -496,10 +764,10 @@ export default function WorkplaceScenario() {
                   <div className="ws-progress-track">
                     <div
                       className="ws-progress-fill"
-                      style={{ width: `${(completedCount / activities.length) * 100}%` }}
+                      style={{ width: `${(completedCount / total) * 100}%` }}
                     />
                   </div>
-                  <span className="ws-progress-label">{completedCount} of {activities.length}</span>
+                  <span className="ws-progress-label">{completedCount} of {total}</span>
                 </div>
               </div>
               <button type="button" className="ws-scenario-toggle" onClick={() => setScenarioVisible((v) => !v)}>
@@ -513,7 +781,7 @@ export default function WorkplaceScenario() {
               <span className="ws-scenario-banner-label">
                 <FileTextIcon size={14} color="#7C3AED" /> TODAY
               </span>
-              <p className="ws-scenario-banner-text">{activity.announcement}</p>
+              <p className="ws-scenario-banner-text">{floor.announcement}</p>
               <span className="ws-scenario-banner-hint">You will see what it involves when you get there.</span>
             </div>
           )}
@@ -522,7 +790,7 @@ export default function WorkplaceScenario() {
             <img src={workplaceImg} alt="Your workplace" className="ws-workplace-image" />
             {WORKPLACE_AREAS.map((item) => {
               const isCurrent = item.id === area.id
-              const isDone = doneAreaIds.has(item.id)
+              const isDone = !isCurrent && doneAreaIds.includes(item.id)
               const Icon = AREA_ICONS[item.icon]
               return (
                 <button
@@ -548,11 +816,11 @@ export default function WorkplaceScenario() {
                   <PanelIcon size={14} color="#7C3AED" />
                   {area.label.toUpperCase()}
                 </span>
-                <h2 className="ws-area-panel-title">{activity.panel.title}</h2>
-                <p className="ws-area-panel-text">{activity.panel.text}</p>
+                <h2 className="ws-area-panel-title">{floor.panel.title}</h2>
+                <p className="ws-area-panel-text">{floor.panel.text}</p>
                 <div className="ws-area-panel-actions">
                   <button type="button" className="ws-intro-continue" onClick={openActivity}>
-                    {activity.panel.cta} <span aria-hidden="true">→</span>
+                    {floor.panel.cta} <span aria-hidden="true">→</span>
                   </button>
                   <button type="button" className="ws-back-link" onClick={() => setIsPanelOpen(false)}>
                     Not now

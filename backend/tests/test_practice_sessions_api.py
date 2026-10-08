@@ -252,6 +252,55 @@ def test_completing_a_session_is_recorded_and_repeatable():
     assert client.get("/api/v1/practice-sessions/current", headers=headers).status_code == 404
 
 
+def test_recent_activities_lists_completed_scenarios_newest_first():
+    """AC 3.4.1."""
+    headers = _headers()
+    _ready_for_practice(headers)
+    session = _start(headers).json()
+    scenario = session["scenarios"][0]
+    option_id = scenario["options"][0]["option_id"]
+
+    response_path = f"/api/v1/practice-sessions/{session['session_id']}/scenarios/{scenario['scenario_id']}/response"
+    submitted = client.post(response_path, headers=headers, json={"selected_option_id": option_id})
+    assert submitted.status_code == 201
+
+    recent = client.get("/api/v1/practice-sessions/recent-activities", headers=headers)
+
+    assert recent.status_code == 200
+    body = recent.json()
+    assert len(body) == 1
+    assert body[0]["title"] == scenario["title"]
+    assert body[0]["activity_type"] == "multiple_choice"
+    assert body[0]["completed_at"]
+
+
+def test_recent_activities_excludes_sessions_with_no_submitted_response():
+    headers = _headers()
+    _ready_for_practice(headers)
+    _start(headers)
+
+    response = client.get("/api/v1/practice-sessions/recent-activities", headers=headers)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_recent_activities_does_not_cross_owners():
+    headers_a = _headers()
+    headers_b = _headers()
+    _ready_for_practice(headers_a)
+    session = _start(headers_a).json()
+    scenario = session["scenarios"][0]
+    option_id = scenario["options"][0]["option_id"]
+    response_path = f"/api/v1/practice-sessions/{session['session_id']}/scenarios/{scenario['scenario_id']}/response"
+    client.post(response_path, headers=headers_a, json={"selected_option_id": option_id})
+
+    response = client.get("/api/v1/practice-sessions/recent-activities", headers=headers_b)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_abandoned_session_cannot_be_completed():
     headers = _headers()
     _ready_for_practice(headers)
@@ -296,6 +345,7 @@ def test_overlong_session_id_fails_validation():
     [
         ("POST", "/api/v1/practice-sessions"),
         ("GET", "/api/v1/practice-sessions/current"),
+        ("GET", "/api/v1/practice-sessions/recent-activities"),
         ("GET", f"/api/v1/practice-sessions/{UNKNOWN_ID}"),
         ("POST", f"/api/v1/practice-sessions/{UNKNOWN_ID}/complete"),
     ],

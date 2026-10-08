@@ -55,6 +55,15 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### AC 3.5.1 / 3.5.2 / 3.4.1 (partial) / 3.1.7 - Remove job description, Clear My Journey, dashboard, profile dropdown
+
+- **Status:** [WIP] **Owner:** Thiri **Date:** 2026-10-08
+- **What (backend):** three new endpoints. `DELETE /job-descriptions/{id}` (AC 3.5.1, owner-scoped, 404 for another owner's id). `DELETE /anonymous-sessions/current` (AC 3.5.2) - `SessionService.clear_journey` deletes the profile, every job description and the session; in Postgres the single `anon_session` delete cascades to profile, job_description and practice_session through their existing `ON DELETE CASCADE` keys. `GET /practice-sessions/recent-activities` (AC 3.4.1) - completed scenarios flattened across all of the owner's sessions, newest first, capped at 10. New repository methods: `JobDescriptionRepository.delete_for_owner`, `SessionRepository.delete`, `PracticeSessionRepository.list_for_owner` (memory + Postgres each).
+- **What (frontend):** `ProfileMenu.jsx` now shows icon, title and description per item. `CareerJourney.jsx` trimmed to the three profile steps (Skill Relevance Map and Practice Role rows removed), Continue your journey now opens Choose Your Path, and Clear My Journey + `ClearJourneyDialog.jsx` added - on success the local token is forgotten and she lands on Home with Generate / Access Token showing. `Dashboard.jsx` rebuilt as "Your progress": the real empty state ("You haven't started yet."), Recent practice, and saved job descriptions with Remove + confirmation + "Job description removed." toast. Each list loads and fails independently.
+- **Not built yet (deliberately, no placeholder data):** chosen roles in "Your roadmaps" and the AC 3.4.2 next-skill card (Practised / Next / Later) - both come from choosing a role on Your Roadmap, which doesn't exist yet, so the top card shows AC 3.4.2's own "Choose a path to build your roadmap." state. View Feedback links and opening a job description's map from the dashboard are also not wired (no feedback-review screen; AC 5.2.1 map not built). Drag and Drop / Code Review never appear in Recent practice because those activity types don't exist in the backend yet.
+- **Verification:** 408 backend tests pass (11 new). All three endpoints exercised against the real Postgres: delete took the list from 1 to 0, clear journey returned 204 and the same token then returned 401. Frontend `npm run build` and `npm run lint` clean. **Not clicked through in a browser.**
+- **Blocks / Blocked by:** the rest of US 3.4 is blocked by Your Roadmap (AC 2.2.3 / 2.2.4).
+
 ### AC 5.1.1 / 5.1.2 - Analyse a Job Description + requirements found
 
 - **Status:** [WIP] **Owner:** Thiri **Date:** 2026-10-08

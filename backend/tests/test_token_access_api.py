@@ -12,11 +12,26 @@ from app.main import app
 from app.repositories.memory.memory_catalogue_repository import MemoryCatalogueRepository
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
+from app.providers.job_description_extraction_provider import JobDescriptionExtractionProvider
 from app.schemas.profile import ProfileUpdate
 from app.services.profile_service import ProfileService
 from app.services.session_service import SessionService
 
 client = TestClient(app)
+
+
+class FakeJobDescriptionProvider(JobDescriptionExtractionProvider):
+    """A fixed, valid extraction result - avoids this file's clear-journey
+    test depending on whether a real model happens to be installed."""
+
+    def extract(self, request):
+        return {
+            "skills": [{"label": "Python", "category": "technical"}],
+            "responsibilities": ["Write code"],
+            "min_years_experience": 2,
+            "keywords": ["Python"],
+            "role_title_guess": "Engineer",
+        }
 
 SAVED_PROFILE = {
     "role_id": "software_engineer",
@@ -29,6 +44,7 @@ SAVED_PROFILE = {
 
 PROTECTED_ENDPOINTS = [
     ("GET", "/api/v1/anonymous-sessions/current"),
+    ("DELETE", "/api/v1/anonymous-sessions/current"),
     ("GET", "/api/v1/profile"),
     ("PATCH", "/api/v1/profile"),
     ("POST", "/api/v1/profile/confirm"),
@@ -160,6 +176,46 @@ def test_one_token_cannot_read_or_change_another_tokens_data():
         "return_readiness": None,
         "area_to_explore": None,
     }
+
+
+def test_clear_journey_deletes_everything_and_the_token_stops_working(use_job_description_provider):
+    """AC 3.5.2."""
+    use_job_description_provider(FakeJobDescriptionProvider())
+    token = _new_token()
+    _save_confirmed_profile(token)
+    created_jd = client.post(
+        "/api/v1/job-descriptions",
+        headers=_headers(token),
+        json={"raw_text": "x" * 150},
+    )
+    assert created_jd.status_code == 201
+
+    response = client.delete("/api/v1/anonymous-sessions/current", headers=_headers(token))
+
+    assert response.status_code == 204
+    # The token itself is gone now, not just its data - every protected
+    # endpoint must treat it exactly like an unknown token.
+    after = client.get("/api/v1/anonymous-sessions/current", headers=_headers(token))
+    assert after.status_code == 401
+    assert after.json() == INVALID_TOKEN_ERROR
+
+
+def test_clear_journey_requires_a_token():
+    response = client.delete("/api/v1/anonymous-sessions/current")
+    assert response.status_code == 401
+
+
+def test_clear_journey_does_not_affect_another_tokens_data():
+    token_a = _new_token()
+    token_b = _new_token()
+    _save_confirmed_profile(token_a)
+    _save_confirmed_profile(token_b)
+
+    assert client.delete("/api/v1/anonymous-sessions/current", headers=_headers(token_a)).status_code == 204
+
+    still_there = client.get("/api/v1/profile", headers=_headers(token_b))
+    assert still_there.status_code == 200
+    assert still_there.json()["role_id"] == "software_engineer"
 
 
 def test_session_store_keeps_only_the_token_hash():

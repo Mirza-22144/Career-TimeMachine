@@ -28,6 +28,13 @@ class MemoryJobDescriptionRepository(JobDescriptionRepository):
         records.sort(key=lambda jd: jd.created_at or 0, reverse=True)
         return [deepcopy(jd) for jd in records]
 
+    def set_closest_role(self, owner_token_hash: str, job_description_id: str, role_id: str) -> bool:
+        stored = self._by_owner.get(owner_token_hash, {}).get(job_description_id)
+        if stored is None:
+            return False
+        stored.closest_role_id = role_id
+        return True
+
     def delete_for_owner(self, owner_token_hash: str, job_description_id: str) -> bool:
         owner_store = self._by_owner.get(owner_token_hash, {})
         if job_description_id not in owner_store:

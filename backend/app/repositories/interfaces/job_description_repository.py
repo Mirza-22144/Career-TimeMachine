@@ -29,6 +29,8 @@ class JobDescription:
     keywords: list[str] = field(default_factory=list)
     role_title_guess: str | None = None
     created_at: datetime | None = None
+    # The role she said is closest to this job (AC 5.2.2), once chosen.
+    closest_role_id: str | None = None
 
 
 class JobDescriptionRepository(ABC):
@@ -49,6 +51,12 @@ class JobDescriptionRepository(ABC):
     @abstractmethod
     def list_for_owner(self, owner_token_hash: str) -> list[JobDescription]:
         """Return all of the owner's job descriptions, newest first."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_closest_role(self, owner_token_hash: str, job_description_id: str, role_id: str) -> bool:
+        """Remember the role chosen as closest to one of the owner's job
+        descriptions. Return True if the job description exists."""
         raise NotImplementedError
 
     @abstractmethod

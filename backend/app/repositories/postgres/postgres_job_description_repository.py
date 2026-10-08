@@ -28,7 +28,8 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
 
 _SELECT_COLUMNS = (
     "job_description_id, owner_token_hash, raw_text, extracted_skills, "
-    "extracted_responsibilities, min_years_experience, keywords, role_title_guess, created_at"
+    "extracted_responsibilities, min_years_experience, keywords, role_title_guess, created_at, "
+    "closest_role_id"
 )
 
 
@@ -72,6 +73,7 @@ def _row_to_job_description(row: tuple) -> JobDescription:
     (
         job_description_id, owner_token_hash, raw_text, extracted_skills,
         extracted_responsibilities, min_years_experience, keywords, role_title_guess, created_at,
+        closest_role_id,
     ) = row
     return JobDescription(
         job_description_id=job_description_id,
@@ -83,6 +85,7 @@ def _row_to_job_description(row: tuple) -> JobDescription:
         keywords=list(keywords),
         role_title_guess=role_title_guess,
         created_at=created_at,
+        closest_role_id=closest_role_id,
     )
 
 
@@ -129,6 +132,14 @@ class PostgresJobDescriptionRepository(JobDescriptionRepository):
             (owner_token_hash,),
         )
         return [_row_to_job_description(row) for row in rows]
+
+    def set_closest_role(self, owner_token_hash: str, job_description_id: str, role_id: str) -> bool:
+        rowcount = _execute(
+            "UPDATE job_description SET closest_role_id = %s "
+            "WHERE job_description_id = %s AND owner_token_hash = %s",
+            (role_id, job_description_id, owner_token_hash),
+        )
+        return rowcount > 0
 
     def delete_for_owner(self, owner_token_hash: str, job_description_id: str) -> bool:
         rowcount = _execute(

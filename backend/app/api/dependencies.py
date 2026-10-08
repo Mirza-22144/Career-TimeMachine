@@ -46,6 +46,8 @@ from app.services.practice_session_service import PracticeSessionService
 from app.services.profile_service import ProfileService
 from app.services.role_prediction_service import RolePredictionService
 from app.services.scenario_response_service import ScenarioResponseService
+from app.services.job_description_comparison_service import JobDescriptionComparisonService
+from app.services.roadmap_service import RoadmapService
 from app.services.session_service import SessionService
 
 # Iteration 2 serves single-selection multiple-choice activities.
@@ -263,6 +265,32 @@ def get_practice_session_service(
         provider,
         SCENARIO_PROVIDER_TIMEOUT_SECONDS,
         activity_type,
+    )
+
+
+def get_job_description_comparison_service(
+    predictions: RolePredictionService = Depends(get_role_prediction_service),
+) -> JobDescriptionComparisonService:
+    """Build the profile-vs-job comparison service with shared repositories."""
+    return JobDescriptionComparisonService(
+        _job_description_repository,
+        _profile_repository,
+        _catalogue_repository,
+        predictions,
+    )
+
+
+def get_roadmap_service(
+    predictions: RolePredictionService = Depends(get_role_prediction_service),
+) -> RoadmapService:
+    """Build the roadmap service. Takes the prediction service as a
+    dependency so tests that fake predictions fake the roadmap's too."""
+    return RoadmapService(
+        _profile_repository,
+        _catalogue_repository,
+        predictions,
+        get_practice_role_service(),
+        _practice_session_repository,
     )
 
 

@@ -13,6 +13,7 @@ from app.api.routes import (
     predicted_role,
     predicted_roles,
     profile,
+    roadmap,
     scenario_responses,
 )
 
@@ -32,3 +33,4 @@ api_router.include_router(predicted_roles.router)
 api_router.include_router(practice_sessions.router)
 api_router.include_router(scenario_responses.router)
 api_router.include_router(job_descriptions.router)
+api_router.include_router(roadmap.router)

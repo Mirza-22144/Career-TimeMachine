@@ -1,4 +1,4 @@
-// The 12 interactive hotspots overlaid on assets/workplace.png (AC 4.3.1).
+// The 12 interactive hotspots overlaid on assets/workplace.webp (AC 4.3.1).
 // `left`/`top` are percentages of the IMAGE itself (not the page), so pins
 // stay correctly placed at any screen width. Positions are estimated from
 // the approved Figma mock - may need small visual tweaks once seen live.

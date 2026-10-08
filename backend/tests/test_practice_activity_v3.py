@@ -230,3 +230,69 @@ def test_practice_still_starts_when_earlier_activities_cannot_be_checked(monkeyp
     assert again.status_code == 201
     assert again.json()["history_checked"] is False
     assert again.json()["progress"]["total_activities"] == 4
+
+
+def test_live_question_is_added_after_the_activity_has_started(use_live_questions):
+    """In production the live question is written off the request, so
+    starting never waits for it."""
+    from app.api import dependencies
+
+    pending = []
+    app.dependency_overrides[dependencies.get_background_runner] = lambda: pending.append
+    use_live_questions(FakeLive())
+    headers = _ready(custom_skills=["Looker"])
+
+    started = client.post("/api/v1/practice-sessions", headers=headers, json=SETTINGS).json()
+    before = started["progress"]["total_activities"]
+    first = _answer_current(headers, started)
+    pending.pop()()  # the live question is ready
+    session = client.get(f"/api/v1/practice-sessions/{started['session_id']}", headers=headers).json()
+
+    assert before == 4
+    assert session["progress"]["total_activities"] == 5
+    # The answer saved in the meantime is untouched.
+    assert session["progress"]["completed_activities"] == 1
+    assert first["scenario"]["feedback_status"] == "available"
+    answered = []
+    while session["progress"]["current_scenario_id"]:
+        answered.append(_answer_current(headers, session)["scenario"]["scenario_id"])
+        session = client.get(f"/api/v1/practice-sessions/{started['session_id']}", headers=headers).json()
+    assert answered[-1] == "web_developer_guided_live_v3_test"
+
+
+def test_live_question_arriving_after_the_activity_finished_is_dropped(use_live_questions):
+    from app.api import dependencies
+
+    pending = []
+    app.dependency_overrides[dependencies.get_background_runner] = lambda: pending.append
+    use_live_questions(FakeLive())
+    headers = _ready(custom_skills=["Looker"])
+
+    session, answered = _play_through(headers)
+    pending.pop()()
+    after = client.get(f"/api/v1/practice-sessions/{session['session_id']}", headers=headers).json()
+
+    assert len(answered) == 4
+    assert after["progress"]["total_activities"] == 4
+
+
+def test_questions_about_her_practice_focus_come_first(monkeypatch):
+    """AC 4.4.5."""
+    from app.api import dependencies
+    from app.repositories.interfaces.catalogue_repository import CatalogueItem
+
+    def _role_skills(role_id):
+        return [
+            CatalogueItem(id="react", label="React", in_demand=True),  # she already has it
+            CatalogueItem(id="vue", label="Vue.js", in_demand=True),  # her next skill
+            CatalogueItem(id="jenkins", label="Jenkins", in_demand=True),
+        ]
+
+    monkeypatch.setattr(dependencies._catalogue_repository, "get_skills_for_role", _role_skills)
+    headers = _ready()
+
+    session, answered = _play_through(headers)
+
+    skills = [s["skills_used"] for s in answered]
+    assert "Vue.js" in skills[0]
+    assert "Jenkins" in skills[1]

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Path, status
 
 from app.api.dependencies import get_current_session, get_practice_session_service
 from app.repositories.interfaces.session_repository import AnonSession
-from app.schemas.practice_session import PracticeSessionCreate, PracticeSessionResponse
+from app.schemas.practice_session import PracticeSessionCreate, PracticeSessionResponse, RecentActivityResponse
 from app.services.practice_session_service import PracticeSessionService
 
 router = APIRouter(prefix="/practice-sessions", tags=["practice-sessions"])
@@ -28,6 +28,17 @@ def read_current_practice_session(
 ):
     """Return the active practice session so the user can resume it."""
     return PracticeSessionResponse.model_validate(service.get_current_session(session.token_hash))
+
+
+@router.get("/recent-activities", response_model=list[RecentActivityResponse])
+def read_recent_activities(
+    session: AnonSession = Depends(get_current_session),
+    service: PracticeSessionService = Depends(get_practice_session_service),
+):
+    """AC 3.4.1: completed activities for the dashboard, newest first.
+    Registered before /{session_id} so "recent-activities" is never
+    swallowed as a session id."""
+    return [RecentActivityResponse.model_validate(a) for a in service.list_recent_activities(session.token_hash)]
 
 
 @router.get("/{session_id}", response_model=PracticeSessionResponse)

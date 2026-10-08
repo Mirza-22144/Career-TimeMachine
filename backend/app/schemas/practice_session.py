@@ -113,3 +113,14 @@ class PracticeSessionResponse(BaseModel):
     completed_at: datetime | None
     scenarios: list[PracticeScenarioResponse]
     progress: PracticeProgressResponse
+
+
+class RecentActivityResponse(BaseModel):
+    """One completed activity for the dashboard's "Recent practice" list
+    (AC 3.4.1) - flattened out of whichever session it belongs to."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    title: str
+    activity_type: ActivityType
+    completed_at: datetime

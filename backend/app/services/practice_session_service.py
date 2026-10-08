@@ -3,6 +3,7 @@ import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeoutError
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, TypeVar
 
@@ -60,6 +61,24 @@ def practice_error(status_code: int, code: str, message: str) -> HTTPException:
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+# Dashboard's "Recent practice" list (AC 3.4.1) shows at most this many,
+# newest first - no pagination asked for, just a cap so a long history
+# doesn't grow the response unboundedly.
+MAX_RECENT_ACTIVITIES = 10
+
+
+@dataclass
+class RecentActivity:
+    """One completed activity, flattened out of its practice session for
+    the dashboard - a session can hold several, each possibly a different
+    type. completed_at comes from the response itself (when she actually
+    submitted it), not the session's own timestamps."""
+
+    title: str
+    activity_type: str
+    completed_at: datetime
 
 
 class PracticeSessionService:
@@ -145,6 +164,25 @@ class PracticeSessionService:
                 "No active practice session",
             )
         return session
+
+    def list_recent_activities(self, owner: str) -> list[RecentActivity]:
+        """AC 3.4.1: every completed activity across all of the owner's
+        sessions, newest first, capped at MAX_RECENT_ACTIVITIES. Only
+        scenarios that were actually submitted count - a scenario marked
+        'completed' with no response (shouldn't happen, but never assume)
+        has nothing to date it by and is skipped rather than guessed at."""
+        activities = [
+            RecentActivity(
+                title=scenario.title,
+                activity_type=scenario.activity_type,
+                completed_at=scenario.response.submitted_at,
+            )
+            for session in self.sessions.list_for_owner(owner)
+            for scenario in session.scenarios
+            if scenario.status == "completed" and scenario.response is not None
+        ]
+        activities.sort(key=lambda activity: activity.completed_at, reverse=True)
+        return activities[:MAX_RECENT_ACTIVITIES]
 
     def complete_session(self, owner: str, session_id: str) -> PracticeSession:
         """Mark an active session completed. Completing twice is harmless."""

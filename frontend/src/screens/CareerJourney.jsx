@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import '../styles/CareerJourney.css'
 import TopNav from '../components/TopNav'
+import ClearJourneyDialog from '../components/ClearJourneyDialog'
+import { ArrowRightIcon } from '../components/icons'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { consumeJustReturned } from '../accessToken.js'
 import { setEditReturn } from '../editReturn.js'
 import { getResumeStep } from '../resumeStep.js'
 
-// One row of the four-step journey timeline: a numbered badge, a title,
-// a value line, a caption, and an action button (Edit for steps the user
-// can still change, View for the read-only Skill Relevance Map).
-function JourneyStep({ number, title, value, caption, actionLabel, onAction }) {
+// One row of the journey timeline: a numbered badge, a title, a value
+// line, a caption, and an Edit button back into that wizard step.
+function JourneyStep({ number, title, value, caption, onEdit }) {
   return (
     <div className="cj-step">
       <span className="cj-step-badge">{number}</span>
@@ -19,62 +20,44 @@ function JourneyStep({ number, title, value, caption, actionLabel, onAction }) {
         <p className="cj-step-value">{value || 'Not recorded yet.'}</p>
         <p className="cj-step-caption">{caption}</p>
       </div>
-      <button type="button" className="cj-step-action" onClick={onAction}>
-        {actionLabel} <span aria-hidden="true">›</span>
+      <button type="button" className="cj-step-action" onClick={onEdit}>
+        Edit <span aria-hidden="true">›</span>
       </button>
     </div>
   )
 }
 
-// Career Journey summary, shown at the "/career-journey" URL - reached via
-// the nav at any time (e.g. stepping away from a Workplace Scenario to fix
-// something), or right after entering a valid existing token, in which
-// case the heading briefly says "Welcome back" instead (AC 3.1.5/3.2.1).
+// Career Profile, shown at "/career-journey" - reached from the profile
+// icon dropdown (AC 3.1.7) or right after entering a valid existing token.
+// Iteration 3 trims this to the three profile steps: the Skill Relevance
+// Map and Practice Role rows moved to Your Roadmap / Choose Your Path.
 export default function CareerJourney() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
-  const [practiceRole, setPracticeRole] = useState(null)
   const [responsibilityLabels, setResponsibilityLabels] = useState([])
-  const [breakReasonLabel, setBreakReasonLabel] = useState(null)
-  const [translation, setTranslation] = useState(null)
-  // Read once on mount, not on every visit via the nav - only true right
-  // after AccessTokenModal validates an existing token.
   const [justReturned] = useState(() => consumeJustReturned())
+  // AC 3.5.2: Clear My Journey.
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
+  const [isClearing, setIsClearing] = useState(false)
+  const [clearError, setClearError] = useState('')
 
   const load = async () => {
     try {
-      const [journeyData, practiceRoleData, profileData, responsibilities, breakReasons, translationData] =
-        await Promise.all([
-          api.getCareerJourney(),
-          api.getPracticeRole(),
-          api.getProfile(),
-          api.getCatalogue('responsibilities'),
-          api.getCatalogue('break-reasons'),
-          api.getCareerTranslation(),
-        ])
+      const [journeyData, profileData, responsibilities] = await Promise.all([
+        api.getCareerJourney(),
+        api.getProfile(),
+        api.getCatalogue('responsibilities'),
+      ])
       setJourney(journeyData)
-      setPracticeRole(practiceRoleData)
-      setResponsibilityLabels(
-        [
-          ...profileData.responsibility_ids.map((id) => responsibilities.find((r) => r.id === id)?.label || id),
-          ...profileData.custom_responsibilities,
-        ],
-      )
-      setBreakReasonLabel(
-        profileData.break_reason === 'other'
-          ? profileData.break_reason_other_text
-          : breakReasons.find((r) => r.id === profileData.break_reason)?.label,
-      )
-      setTranslation(translationData)
+      setResponsibilityLabels([
+        ...profileData.responsibility_ids.map((id) => responsibilities.find((r) => r.id === id)?.label || id),
+        ...profileData.custom_responsibilities,
+      ])
       setLoading(false)
     } catch (err) {
-      // A token can be active with no confirmed profile yet (e.g. she left
-      // partway through the wizard) - Career Journey requires a confirmed
-      // profile (409) to load at all. That's not a real load failure, it
-      // just means there's nothing to show here yet - send her back into
-      // the wizard at whichever step is actually still incomplete, not
-      // always Step 1, so already-filled steps aren't repeated.
+      // A token with no confirmed profile yet (409) has nothing to show
+      // here - send her back into the wizard at the first unfinished step.
       if (err instanceof ApiError && err.code === 'HTTP_409') {
         try {
           navigate(getResumeStep(await api.getProfile()))
@@ -101,6 +84,20 @@ export default function CareerJourney() {
     load()
   }
 
+  const handleClear = async () => {
+    setIsClearing(true)
+    setClearError('')
+    try {
+      await api.clearJourney()
+      navigate('/')
+    } catch {
+      // The token is only forgotten locally after a successful delete, so
+      // a failure here leaves it active, as the AC requires.
+      setClearError("We couldn't clear your journey. Please try again.")
+      setIsClearing(false)
+    }
+  }
+
   if (loading) return (
     <>
       <TopNav />
@@ -124,17 +121,18 @@ export default function CareerJourney() {
 
   const { career_break: careerBreak } = journey
   let breakValue = null
+  let breakCaption = 'Return date to be decided'
   if (careerBreak.break_started_on) {
     const startYear = careerBreak.break_started_on.slice(0, 4)
-    const endYear = careerBreak.return_date_unsure ? 'undecided' : careerBreak.planned_return_date?.slice(0, 4)
-    const durationPart = careerBreak.break_duration_months != null
-      ? ` · ${Math.round(careerBreak.break_duration_months / 12)} years away`
-      : ''
-    breakValue = `${startYear} to ${endYear}${durationPart}`
+    const endYear = careerBreak.return_date_unsure ? null : careerBreak.planned_return_date?.slice(0, 4)
+    if (endYear) {
+      const years = Number(endYear) - Number(startYear)
+      breakValue = `${startYear} to ${endYear} · ${years} ${years === 1 ? 'year' : 'years'} away`
+      breakCaption = `Planning to return in ${endYear}`
+    } else {
+      breakValue = `Started ${startYear}`
+    }
   }
-
-  const ownedCount = translation.owned_skills.length + translation.custom_skills.length
-  const newHorizonsCount = translation.new_horizons.length
 
   return (
     <>
@@ -150,59 +148,46 @@ export default function CareerJourney() {
             <JourneyStep
               number="01"
               title="Your Story"
-              value={journey.previous_role && `${journey.previous_role.label} · ${journey.years_experience?.label || ''}`}
+              value={journey.previous_role && `${journey.previous_role.label} · ${journey.years_experience?.label || ''} in IT`}
               caption="Where your professional story started"
-              actionLabel="Edit"
-              onAction={() => { setEditReturn(); navigate('/your-story') }}
+              onEdit={() => { setEditReturn(); navigate('/your-story') }}
             />
             <JourneyStep
               number="02"
               title="Your Experience"
               value={allSkills.length > 0 ? allSkills.join(' · ') : null}
               caption={responsibilityLabels.length > 0 ? responsibilityLabels.join(' · ') : 'No responsibilities recorded yet.'}
-              actionLabel="Edit"
-              onAction={() => { setEditReturn(); navigate('/your-experience') }}
+              onEdit={() => { setEditReturn(); navigate('/your-experience') }}
             />
             <JourneyStep
               number="03"
               title="Your Break"
               value={breakValue}
-              caption={breakReasonLabel || 'No reason shared.'}
-              actionLabel="Edit"
-              onAction={() => { setEditReturn(); navigate('/your-break') }}
-            />
-            <JourneyStep
-              number="04"
-              title="Skill Relevance Map"
-              value={`${ownedCount} skills you keep · ${newHorizonsCount} worth exploring`}
-              caption="What your field values now, based on what you already have"
-              actionLabel="View"
-              onAction={() => navigate('/skill-relevance-map')}
-            />
-            <JourneyStep
-              number="05"
-              title="Practice Role"
-              value={practiceRole?.role_label || null}
-              caption={
-                practiceRole?.source === 'predicted'
-                  ? 'AI-predicted future role'
-                  : practiceRole?.source === 'previous'
-                    ? 'Your previous role'
-                    : 'Choose which role to practise with'
-              }
-              actionLabel="Edit"
-              onAction={() => navigate('/your-direction')}
+              caption={breakCaption}
+              onEdit={() => { setEditReturn(); navigate('/your-break') }}
             />
           </div>
 
           <div className="cj-continue-row">
-            <button type="button" className="cj-continue" onClick={() => navigate('/workplace-scenario')}>
-              Continue your journey <span aria-hidden="true">→</span>
+            <button type="button" className="cj-continue" onClick={() => navigate('/choose-your-path')}>
+              Continue your journey <ArrowRightIcon size={16} />
             </button>
             <span className="cj-continue-note">Or edit any stage above. Nothing is locked in.</span>
+            <button type="button" className="cj-clear" onClick={() => { setClearError(''); setIsClearDialogOpen(true) }}>
+              Clear My Journey
+            </button>
           </div>
         </main>
       </div>
+
+      {isClearDialogOpen && (
+        <ClearJourneyDialog
+          onClear={handleClear}
+          onCancel={() => setIsClearDialogOpen(false)}
+          isClearing={isClearing}
+          error={clearError}
+        />
+      )}
     </>
   )
 }

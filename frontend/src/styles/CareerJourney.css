@@ -25,20 +25,22 @@
 
 .cj-content {
   width: 100%;
-  max-width: 860px;
+  max-width: 1248px;
 }
 
 .cj-heading {
   margin: 0 0 12px;
   font-weight: 800;
-  font-size: 36px;
+  font-size: 44px;
   line-height: 1.2;
 }
 
 .cj-subheading {
-  margin: 0 0 40px;
+  margin: 0 0 56px;
+  max-width: 560px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 17px;
+  line-height: 26px;
   color: var(--ink-600);
 }
 
@@ -158,6 +160,25 @@
   font-weight: 500;
   font-size: 13px;
   color: var(--ink-600);
+}
+
+/* AC 3.5.2 - destructive, so outlined in red and pushed to the far right. */
+.cj-clear {
+  margin-left: auto;
+  padding: 11px 18px;
+  background: #ffffff;
+  border: 1px solid #b91c1c;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: #b91c1c;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cj-clear:hover {
+  background: #fef2f2;
 }
 
 .cj-load-error {

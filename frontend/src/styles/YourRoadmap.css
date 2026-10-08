@@ -1,0 +1,380 @@
+/* Your Roadmap (screens/YourRoadmap.jsx, AC 2.2.3 / 2.2.4). Scoped under .yr-. */
+
+.yr-page {
+  min-height: 100vh;
+  padding: 124px clamp(24px, 7.8vw, 112px) 48px;
+  background: #f7f4ff;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+  color: #0f1728;
+}
+
+.yr-page * {
+  box-sizing: border-box;
+}
+
+.yr-eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  color: #6d28d9;
+}
+
+.yr-heading {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 34px;
+}
+
+.yr-subheading {
+  margin: 0 0 32px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #514b66;
+}
+
+.yr-map {
+  position: relative;
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 0;
+  align-items: center;
+}
+
+/* Curved connector branches, drawn from measured card positions. */
+.yr-connectors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.yr-connectors path {
+  fill: none;
+  stroke: #8b83a8;
+  stroke-width: 1.75;
+}
+
+.yr-connectors circle {
+  fill: #ffffff;
+  stroke: #0f1728;
+  stroke-width: 2;
+}
+
+.yr-card {
+  position: relative;
+  padding: 24px;
+  background: #ffffff;
+  border: 1.5px solid rgba(107, 102, 133, 0.55);
+  border-radius: 18px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+}
+
+.yr-card--previous {
+  border-color: #0f1728;
+}
+
+.yr-card--selected {
+  border: 2px solid #6d28d9;
+}
+
+.yr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.yr-card-label {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: #0f1728;
+}
+
+.yr-card-label--violet {
+  color: #6d28d9;
+}
+
+.yr-info {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid #6d28d9;
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: #6d28d9;
+  cursor: pointer;
+}
+
+.yr-info:hover {
+  background: #f5f3ff;
+}
+
+.yr-card-title {
+  margin: 0 0 6px;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.yr-card-caption {
+  margin: 0 0 18px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #514b66;
+}
+
+.yr-section-label {
+  display: block;
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: #514b66;
+}
+
+.yr-section-label--violet {
+  color: #6d28d9;
+}
+
+.yr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.yr-chips--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.yr-chip-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.yr-chip--owned {
+  background: #eef2ff;
+  border: 1.5px solid #4f46e5;
+  color: #312e81;
+}
+
+.yr-chip--explore {
+  border: 1.5px dashed #6d28d9;
+  color: #0f1728;
+}
+
+.yr-status {
+  font-weight: 500;
+  font-size: 12px;
+  color: #6b6685;
+}
+
+.yr-status--next {
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.yr-note {
+  margin: 0 0 14px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 19px;
+  color: #514b66;
+}
+
+.yr-note--center {
+  padding-left: 160px;
+}
+
+.yr-practise {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  color: #0f1728;
+  cursor: pointer;
+}
+
+.yr-practise-label--on {
+  font-weight: 600;
+  color: #6d28d9;
+}
+
+.yr-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #6b6685;
+  border-radius: 999px;
+}
+
+.yr-radio--on {
+  border-color: #6d28d9;
+  background: #6d28d9;
+}
+
+/* Each branch: a connector line from the previous-role card, the skills
+   along the way, then the suggested role's card. */
+.yr-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.yr-branch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 32px;
+  align-items: center;
+  /* Clear of the curve, which finishes 150px out from the card. */
+  padding-left: 160px;
+}
+
+.yr-branch-skills {
+  position: relative;
+}
+
+.yr-source {
+  margin: 32px 0 0;
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.yr-save-error {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.yr-save-error button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  color: #6d28d9;
+  cursor: pointer;
+}
+
+.yr-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.yr-footer-note {
+  font-weight: 500;
+  font-size: 14px;
+  color: #514b66;
+}
+
+.yr-footer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.yr-btn-outline {
+  padding: 14px 26px;
+  background: #ffffff;
+  border: 1.5px solid rgba(107, 102, 133, 0.55);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f1728;
+  cursor: pointer;
+}
+
+.yr-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  background: #6d28d9;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.yr-btn-primary:disabled {
+  background: #ddd6fe;
+  color: #6b6685;
+  cursor: not-allowed;
+}
+
+.yr-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.yr-message p {
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .yr-map,
+  .yr-branch {
+    grid-template-columns: 1fr;
+  }
+
+  .yr-branches {
+    margin-top: 24px;
+  }
+
+  .yr-branch {
+    padding-left: 0;
+  }
+
+  .yr-connectors {
+    display: none;
+  }
+
+  .yr-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -305,3 +305,10 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
 
     def save(self, session: PracticeSession) -> PracticeSession:
         return self._persist(session)
+
+    def list_for_owner(self, owner_token_hash: str) -> list[PracticeSession]:
+        rows = _query(
+            "SELECT session_id FROM practice_session WHERE owner_token_hash = %s",
+            (owner_token_hash,),
+        )
+        return [self.get_for_owner(owner_token_hash, row[0]) for row in rows]

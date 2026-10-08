@@ -148,3 +148,10 @@ class PracticeSessionRepository(ABC):
     def save(self, session: PracticeSession) -> PracticeSession:
         """Replace the stored state of an existing session."""
         raise NotImplementedError
+
+    @abstractmethod
+    def list_for_owner(self, owner_token_hash: str) -> list[PracticeSession]:
+        """Return every session this owner has started, in no particular
+        order (callers that care about ordering, like the dashboard's
+        recent-activity list, sort by whatever they need)."""
+        raise NotImplementedError

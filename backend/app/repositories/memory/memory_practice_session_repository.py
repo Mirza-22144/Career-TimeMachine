@@ -39,3 +39,10 @@ class MemoryPracticeSessionRepository(PracticeSessionRepository):
     def save(self, session: PracticeSession) -> PracticeSession:
         self._sessions[session.session_id] = deepcopy(session)
         return deepcopy(session)
+
+    def list_for_owner(self, owner_token_hash: str) -> list[PracticeSession]:
+        return [
+            deepcopy(session)
+            for session in self._sessions.values()
+            if session.owner_token_hash == owner_token_hash
+        ]

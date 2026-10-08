@@ -37,6 +37,9 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
         conn = _pool.getconn()
         try:
+            # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
+            # those is a full round trip to a database that is far away.
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.fetchall()
@@ -55,11 +58,10 @@ def _execute(sql: str, params: tuple = ()) -> int:
     try:
         conn = _pool.getconn()
         try:
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
-                rowcount = cur.rowcount
-            conn.commit()
-            return rowcount
+                return cur.rowcount
         except Exception:
             conn.rollback()
             raise

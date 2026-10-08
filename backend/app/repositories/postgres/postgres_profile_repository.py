@@ -36,6 +36,9 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
         conn = _pool.getconn()
         try:
+            # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
+            # those is a full round trip to a database that is far away.
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.fetchall()
@@ -57,6 +60,7 @@ def _run_in_transaction(fn):
     try:
         conn = _pool.getconn()
         try:
+            conn.autocommit = False
             with conn.cursor() as cur:
                 result = fn(cur)
             conn.commit()

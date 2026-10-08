@@ -102,6 +102,14 @@ class ScenarioResponseService:
         scenario.feedback = feedback
         scenario.feedback_status = "available" if feedback is not None else "unavailable"
         scenario.status = "completed"
+        # The next question becomes current: pre-written ones first, the
+        # live one (the only kind carrying its own feedback) last.
+        upcoming = sorted(
+            (s for s in session.scenarios if s.status == "upcoming"),
+            key=lambda s: s.option_feedback is not None,
+        )
+        if upcoming:
+            upcoming[0].status = "current"
         session.updated_at = now
 
         saved = self.practice_sessions.sessions.save(session)
@@ -163,11 +171,17 @@ class ScenarioResponseService:
         )
         provider = self.practice_sessions.provider
         try:
-            raw = call_provider(
-                provider.generate_feedback,
-                request,
-                self.practice_sessions.provider_timeout_seconds,
-            )
+            if scenario.option_feedback is not None:
+                # A live question brought its feedback with it.
+                raw = scenario.option_feedback.get(request.selected_option_id)
+                if raw is None:
+                    raise ScenarioProviderError("no feedback stored for this option")
+            else:
+                raw = call_provider(
+                    provider.generate_feedback,
+                    request,
+                    self.practice_sessions.provider_timeout_seconds,
+                )
             content = FeedbackContent.model_validate(raw)
         except (ScenarioProviderError, ValidationError) as exc:
             # Log the failure type only - never the response or provider output.

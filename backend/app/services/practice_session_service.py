@@ -10,6 +10,7 @@ from typing import Any, TypeVar
 from fastapi import HTTPException, status
 from pydantic import ValidationError
 
+from app.providers.live_question_provider import LiveQuestion, LiveQuestionProvider
 from app.providers.scenario_provider import (
     ScenarioContent,
     ScenarioProvider,
@@ -24,7 +25,7 @@ from app.repositories.interfaces.practice_session_repository import (
     ScenarioOption,
 )
 from app.schemas.practice_session import PracticeSessionCreate
-from app.services.practice_role_service import PracticeRoleService
+from app.services.practice_role_service import PracticeContext, PracticeRoleService
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +80,9 @@ class RecentActivity:
     title: str
     activity_type: str
     completed_at: datetime
+    # Where its feedback can be read again (GET /practice-sessions/{id}).
+    session_id: str
+    scenario_id: str
 
 
 class PracticeSessionService:
@@ -91,6 +95,9 @@ class PracticeSessionService:
         provider: ScenarioProvider,
         provider_timeout_seconds: float = 10.0,
         activity_type: str = "multiple_choice",
+        questions_per_activity: int = 1,
+        live_questions: LiveQuestionProvider | None = None,
+        live_timeout_seconds: float = 8.0,
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.
@@ -100,29 +107,62 @@ class PracticeSessionService:
         self.provider_timeout_seconds = provider_timeout_seconds
         # The interaction new scenarios use (multiple_choice or written_response).
         self.activity_type = activity_type
+        # How many pre-written questions one activity serves, and the
+        # optional provider of one extra live question about a skill she
+        # typed in herself (Iteration 3: four static + one live).
+        self.questions_per_activity = questions_per_activity
+        self.live_questions = live_questions
+        self.live_timeout_seconds = live_timeout_seconds
 
     def start_session(self, owner: str, settings: PracticeSessionCreate) -> PracticeSession:
-        """Start practice with the saved role, saved career context and the
-        chosen settings. Nothing is stored if no scenario can be prepared."""
-        context = self.practice_roles.build_practice_context(owner)
-        scenario = self._generate_scenario(
-            ScenarioRequest(
-                role_id=context.role_id,
-                role_label=context.role_label,
-                skills=tuple(context.skills),
-                duration=settings.duration,
-                difficulty=settings.difficulty,
-                activity_type=self.activity_type,
-            )
-        )
+        """Start one activity with the saved role, saved career context and
+        the chosen settings: up to questions_per_activity pre-written
+        questions she has not answered before, plus one live question when
+        she has typed in a skill of her own. Nothing is stored if no
+        question can be prepared.
 
+        An activity has to be finished before another one starts, so earlier
+        practice is never replaced: an unfinished one is refused with 409,
+        and one whose questions are all answered is closed as completed."""
         now = utc_now()
-        # One active session per user: starting again replaces the old one.
         previous = self.sessions.get_active_for_owner(owner)
         if previous is not None:
-            previous.status = "abandoned"
+            if previous.progress.current_scenario_id is not None:
+                raise practice_error(
+                    status.HTTP_409_CONFLICT,
+                    "ACTIVITY_IN_PROGRESS",
+                    "Finish your current activity before starting a new one",
+                )
+            previous.status = "completed"
+            previous.completed_at = now
             previous.updated_at = now
             self.sessions.save(previous)
+
+        context = self.practice_roles.build_practice_context(owner)
+        # AC 4.3.5 exception: if her earlier activities cannot be checked she
+        # still practises - some questions may repeat, and the response says so.
+        history_checked = True
+        try:
+            earlier = self.sessions.list_for_owner(owner)
+        except HTTPException:
+            logger.warning("Earlier practice could not be checked; questions may repeat")
+            earlier, history_checked = [], False
+        answered = self._answered(earlier, context.role_id, settings.difficulty)
+        scenarios = self._new_questions(context, settings.duration, settings.difficulty, answered)
+        if not scenarios:
+            raise practice_error(
+                status.HTTP_409_CONFLICT,
+                "NO_NEW_ACTIVITIES",
+                "You have completed all the activities for this role at this level",
+            )
+        exclude = answered | {scenario.scenario_id for scenario in scenarios}
+
+        live = self._live_question(context.role_id, settings.difficulty, context.custom_skills, exclude)
+        if live is not None:
+            scenarios.append(live)
+
+        for index, scenario in enumerate(scenarios):
+            scenario.status = "current" if index == 0 else "upcoming"
 
         return self.sessions.add(
             PracticeSession(
@@ -138,7 +178,8 @@ class PracticeSessionService:
                 status="active",
                 created_at=now,
                 updated_at=now,
-                scenarios=[scenario],
+                scenarios=scenarios,
+                history_checked=history_checked,
             )
         )
 
@@ -153,6 +194,65 @@ class PracticeSessionService:
                 "Practice session not found",
             )
         return session
+
+    def remaining_by_difficulty(self, owner: str) -> dict[str, int]:
+        """How many pre-written questions she has not answered yet for her
+        practice role, per difficulty (capped at one activity's worth). The
+        practice screens use it to know what can still be unlocked without
+        preparing anything."""
+        context = self.practice_roles.build_practice_context(owner)
+        sessions = self.sessions.list_for_owner(owner)
+        return {
+            difficulty: len(
+                self._new_questions(
+                    context, "standard", difficulty, self._answered(sessions, context.role_id, difficulty)
+                )
+            )
+            for difficulty in ("guided", "standard", "challenge")
+        }
+
+    @staticmethod
+    def _answered(sessions: list[PracticeSession], role_id: str, difficulty: str) -> set[str]:
+        """AC 4.3.5: every question she has already answered for this role
+        and difficulty - across every earlier session."""
+        return {
+            scenario.scenario_id
+            for session in sessions
+            if session.role.id == role_id and session.difficulty == difficulty
+            for scenario in session.scenarios
+            if scenario.status == "completed"
+        }
+
+    def _new_questions(
+        self, context: PracticeContext, duration: str, difficulty: str, answered: set[str]
+    ) -> list[PracticeScenario]:
+        """Up to questions_per_activity pre-written questions not in
+        `answered`. Empty when she has answered them all; a provider failure
+        with nothing answered before is a real error and is raised."""
+        scenarios: list[PracticeScenario] = []
+        exclude = set(answered)
+        for _ in range(self.questions_per_activity):
+            try:
+                scenario = self._generate_scenario(
+                    ScenarioRequest(
+                        role_id=context.role_id,
+                        role_label=context.role_label,
+                        skills=tuple(context.skills),
+                        duration=duration,
+                        difficulty=difficulty,
+                        activity_type=self.activity_type,
+                        exclude_scenario_ids=tuple(sorted(exclude)),
+                    )
+                )
+            except HTTPException:
+                if scenarios or answered:
+                    break  # simply no more questions
+                raise
+            if scenario.scenario_id in exclude:
+                break  # a provider that ignores exclusions has nothing new
+            scenarios.append(scenario)
+            exclude.add(scenario.scenario_id)
+        return scenarios
 
     def get_current_session(self, owner: str) -> PracticeSession:
         """Return the owner's active session so practice can be resumed."""
@@ -176,6 +276,8 @@ class PracticeSessionService:
                 title=scenario.title,
                 activity_type=scenario.activity_type,
                 completed_at=scenario.response.submitted_at,
+                session_id=session.session_id,
+                scenario_id=scenario.scenario_id,
             )
             for session in self.sessions.list_for_owner(owner)
             for scenario in session.scenarios
@@ -201,6 +303,34 @@ class PracticeSessionService:
         session.completed_at = now
         session.updated_at = now
         return self.sessions.save(session)
+
+    def _live_question(
+        self, role_id: str, difficulty: str, custom_skills: list[str], exclude: set[str]
+    ) -> PracticeScenario | None:
+        """One question about a skill she typed in herself (AC 4.4.6), or
+        None when she has none or nothing valid comes back. Never fails the
+        session: a slow or broken generator simply means no extra question
+        (the provider itself already falls back to a static one)."""
+        if self.live_questions is None or not custom_skills:
+            return None
+        try:
+            result: LiveQuestion | None = call_provider(
+                lambda skills: self.live_questions.generate(role_id, difficulty, skills),
+                custom_skills,
+                self.live_timeout_seconds,
+            )
+            if result is None or result.scenario["scenario_id"] in exclude:
+                return None
+            content = ScenarioContent.model_validate(result.scenario)
+        except (ScenarioProviderError, ValidationError) as exc:
+            logger.warning("Live question unavailable (%s)", type(exc).__name__)
+            return None
+
+        return PracticeScenario(
+            **content.model_dump(exclude={"options"}),
+            options=[ScenarioOption(option_id=option.option_id, text=option.text) for option in content.options],
+            option_feedback=result.option_feedback,
+        )
 
     def _generate_scenario(self, request: ScenarioRequest) -> PracticeScenario:
         """Get one scenario of the requested activity type from the provider

@@ -43,6 +43,9 @@ class PracticeContext:
     role_label: str
     role_source: str
     skills: list[str]
+    # Skill names she typed in herself. Used only to ask for the one live
+    # question about her own skill (AC 4.4.6) - names only, nothing else.
+    custom_skills: list[str]
 
 
 class PracticeRoleService:
@@ -139,6 +142,7 @@ class PracticeRoleService:
             role_label=selection.role_label,
             role_source=selection.source,
             skills=self._labels("skills", profile.skill_ids),
+            custom_skills=list(profile.custom_skills),
         )
 
     def _selection(

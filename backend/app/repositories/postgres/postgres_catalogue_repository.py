@@ -1,3 +1,5 @@
+import time
+
 import psycopg2
 import psycopg2.pool
 
@@ -51,6 +53,24 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         raise database_unavailable(exc) from exc
 
 
+# Roles, skills and role-skill links are reference data that only change
+# when the data team reloads them, but every roadmap, comparison and
+# profile request reads them several times over. Keeping each list for a
+# few minutes turns ~20 round trips per roadmap into a handful.
+_CACHE_SECONDS = 300
+_cache: dict[tuple, tuple[float, list[CatalogueItem]]] = {}
+
+
+def _cached(key: tuple, load) -> list[CatalogueItem]:
+    hit = _cache.get(key)
+    now = time.monotonic()
+    if hit is not None and now - hit[0] < _CACHE_SECONDS:
+        return list(hit[1])
+    items = load()
+    _cache[key] = (now, items)
+    return list(items)
+
+
 class PostgresCatalogueRepository(CatalogueRepository):
     """Reads real data from the database for roles and skills; falls back
     to the same placeholder lists as MemoryCatalogueRepository for kinds
@@ -60,23 +80,30 @@ class PostgresCatalogueRepository(CatalogueRepository):
         """Return the list for a kind. Roles and skills come from the
         database; everything else falls back to the placeholder list."""
         if kind == "roles":
-            rows = _query("SELECT id, label FROM role ORDER BY label")
-            return [CatalogueItem(id=r[0], label=r[1]) for r in rows]
+            return _cached(("items", kind), self._load_roles)
         if kind == "skills":
-            rows = _query(
-                "SELECT id, label, in_demand, hot_technology FROM skill ORDER BY label"
-            )
-            return [
-                CatalogueItem(id=r[0], label=r[1], in_demand=bool(r[2]), hot_technology=bool(r[3]))
-                for r in rows
-            ]
+            return _cached(("items", kind), self._load_skills)
         return CATALOGUES.get(kind, [])  # still-empty tables -> curated mock
+
+    def _load_roles(self) -> list[CatalogueItem]:
+        rows = _query("SELECT id, label FROM role ORDER BY label")
+        return [CatalogueItem(id=r[0], label=r[1]) for r in rows]
+
+    def _load_skills(self) -> list[CatalogueItem]:
+        rows = _query("SELECT id, label, in_demand, hot_technology FROM skill ORDER BY label")
+        return [
+            CatalogueItem(id=r[0], label=r[1], in_demand=bool(r[2]), hot_technology=bool(r[3]))
+            for r in rows
+        ]
 
     def get_skills_for_role(self, role_id: str | None) -> list[CatalogueItem]:
         """Return the skills linked to a role, best matches first. Used by
         the skills catalogue endpoint and the skill relevance comparison."""
         if not role_id:
             return self.get_items("skills")
+        return _cached(("role_skills", role_id), lambda: self._load_skills_for_role(role_id))
+
+    def _load_skills_for_role(self, role_id: str) -> list[CatalogueItem]:
         rows = _query(
             """
             SELECT s.id, s.label, s.in_demand, s.hot_technology, s.category

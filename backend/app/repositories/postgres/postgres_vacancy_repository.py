@@ -1,3 +1,5 @@
+import time
+
 import psycopg2
 import psycopg2.pool
 
@@ -41,11 +43,26 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         raise database_unavailable(exc) from exc
 
 
+_CACHE_SECONDS = 300
+_cache: dict[tuple, tuple[float, RoleMarketData | None]] = {}
+
+
 class PostgresVacancyRepository(VacancyRepository):
     """Reads from role_vacancy_latest (DB 3.1's view over role_anzsco_map +
     vacancy_monthly) - see data/schema/vacancy_schema.sql."""
 
     def get_for_role(self, role_id: str, state: str = NATIONAL_STATE) -> RoleMarketData | None:
+        # Monthly reference data - kept for a few minutes rather than read
+        # again for every role on every roadmap.
+        key = (role_id, state)
+        hit = _cache.get(key)
+        if hit is not None and time.monotonic() - hit[0] < _CACHE_SECONDS:
+            return hit[1]
+        result = self._load_for_role(role_id, state)
+        _cache[key] = (time.monotonic(), result)
+        return result
+
+    def _load_for_role(self, role_id: str, state: str) -> RoleMarketData | None:
         rows = _query(
             """
             SELECT anzsco_code, anzsco_title, confidence, state, latest_month,

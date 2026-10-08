@@ -27,6 +27,7 @@ def test_roadmap_is_empty_before_a_previous_role_is_saved():
         "years_experience_label": None,
         "suggested_roles": [],
         "selected_role_id": None,
+        "chosen_roles": [],
     }
 
 
@@ -68,6 +69,31 @@ def test_selecting_a_role_to_practise_shows_on_the_roadmap():
     body = client.get("/api/v1/roadmap", headers=headers).json()
 
     assert body["selected_role_id"] == "web_developer"
+
+
+def test_chosen_roles_keep_a_dated_history_newest_first():
+    """AC 3.4.1: each role with the date chosen."""
+    headers = _headers()
+    _save_profile(headers)
+    client.put("/api/v1/practice-role", headers=headers, json={"role_id": "web_developer", "source": "previous"})
+    client.put("/api/v1/practice-role", headers=headers, json={"role_id": "data_analyst", "source": "predicted"})
+
+    chosen = client.get("/api/v1/roadmap", headers=headers).json()["chosen_roles"]
+
+    assert [role["role_id"] for role in chosen] == ["data_analyst", "web_developer"]
+    assert chosen[0]["role_label"] == "Data Analyst"
+    assert chosen[0]["chosen_at"]
+
+
+def test_choosing_the_same_role_again_does_not_duplicate_it():
+    headers = _headers()
+    _save_profile(headers)
+    for _ in range(2):
+        client.put("/api/v1/practice-role", headers=headers, json={"role_id": "web_developer", "source": "previous"})
+
+    chosen = client.get("/api/v1/roadmap", headers=headers).json()["chosen_roles"]
+
+    assert [role["role_id"] for role in chosen] == ["web_developer"]
 
 
 def test_roadmap_requires_a_valid_token():

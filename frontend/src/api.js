@@ -41,6 +41,17 @@ function clearToken() {
   }
 }
 
+// Practice history kept in this browser for the token (see
+// practiceHistory.js) - removed with the journey. Kept here, not imported
+// from practiceHistory.js, because that file imports this one.
+function clearLocalPractice() {
+  try {
+    localStorage.removeItem(`ctm_practice_${getToken() || 'none'}`)
+  } catch {
+    // Nothing to clear.
+  }
+}
+
 class ApiError extends Error {
   constructor(code, message, details) {
     super(message)
@@ -169,6 +180,7 @@ export const api = {
   // locally stored copy is forgotten too, atomically with the real delete.
   clearJourney: async () => {
     await request('/anonymous-sessions/current', { method: 'DELETE' })
+    clearLocalPractice()
     clearToken()
   },
 }

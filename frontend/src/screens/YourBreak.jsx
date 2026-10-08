@@ -24,10 +24,10 @@ const MISSING_FIELD_LABELS = {
 
 const CURRENT_YEAR = new Date().getFullYear()
 // A break can only have started in the past (or this year) - never the future.
-const START_YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - i)
+// Both lists run oldest to newest.
+const START_YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - 15 + i)
 // A planned return, by definition, can only be this year or a future one.
-// Descending like the start-year list, so both dropdowns sort the same way.
-const RETURN_YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + 10 - i)
+const RETURN_YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + i)
 
 // The backend stores full ISO dates; the UI only asks for a year (matching
 // the approved design), so a break/return is always saved as 1 January of

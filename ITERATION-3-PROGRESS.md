@@ -55,6 +55,17 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Practice flow restyle, View feedback, completed-level and earlier-profile states, role history, landing hero, grouped roles
+
+- **Status:** [WIP] **Owner:** Thiri **Date:** 2026-10-08
+- **What (backend):** dated history of chosen roles (AC 3.4.1) - new `role_choice` table (`data/schema/add_role_choice_table.sql`), `RoleChoiceRepository` (memory + Postgres), recorded on every `PUT /practice-role` and returned as `chosen_roles` on `GET /roadmap`. Recording and reading are best effort: until the table exists the app keeps working and the dashboard shows "selected to practise" with no date.
+- **What (frontend):** practice intro, difficulty and preparation screens restyled to the new frames. New `/practice-feedback` screen (`PracticeFeedbackView.jsx`) re-reads feedback for a finished activity from the dashboard's View feedback links, reusing the same `PracticeFeedback` component. "You've completed all the activities for this role at this level" with Try Another Difficulty / Explore Another Role / Analyse a Job Description (AC 4.3.5), also reached from Keep Going. A session left part-way resumes on the floor after a refresh. Roadmap and job map keep their last successful result and show "This was based on your earlier profile." with Try Again when a fresh one can't be loaded (AC 3.2.5). Loading messages on dashboard, roadmap and job map. Dashboard lists every chosen role with its date. Landing hero now reads "Ready to start your journey?" with a Generate Token button.
+- **TEMPORARY, browser-only storage (`frontend/src/practiceHistory.js`):** because practice is still frontend-only, finished activities, the place she is up to, and which role/difficulty levels are complete are kept in this browser's localStorage, keyed by token. They do not follow her to another browser or device and are not in the database. Replace with API calls when the backend serves the new activity types.
+- **Later the same day:** See all roles went back to one alphabetical list (team decision; `roleGroups.js` removed). The intro banner now uses the supplied office photo (`assets/practice-intro.png`). Your Break's two year lists both run oldest to newest.
+- **Known gaps:** the Postgres path for `role_choice` is untested until the migration is run.
+- **Verification:** 426 backend tests pass (2 new). Whole flow re-walked in a headless browser, 49 screens, no errors - including View feedback, the completed-level screen and resuming after a refresh.
+- **Blocks / Blocked by:** `role_choice` migration must be run for dates to appear.
+
 ### AC 2.4.1 - Outlook to 2035 removed from the role information panel
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08

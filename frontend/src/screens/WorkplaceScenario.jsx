@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react'
 import '../styles/WorkplaceScenario.css'
+import '../styles/PracticeActivity.css'
 import TopNav from '../components/TopNav'
+import ChoiceActivity from '../components/practice/ChoiceActivity'
+import DragDropActivity from '../components/practice/DragDropActivity'
+import PracticeFeedback, { ActivitySkeleton } from '../components/practice/PracticeFeedback'
 import workplaceImg from '../assets/workplace.png'
-import { WORKPLACE_AREAS, getRelevantAreaIds, getPrimaryAreaId } from '../mockData/workplaceAreas.js'
+import { WORKPLACE_AREAS } from '../mockData/workplaceAreas.js'
+import { loadPracticeSession } from '../mockData/practiceSession.js'
 import {
   UserIcon, BarChartIcon, HeadsetIcon, FileTextIcon, LightbulbIcon, UsersIcon,
-  FlaskIcon, CodeIcon, ShieldIcon, GlobeIcon, BellIcon, LayoutIcon, ClockIcon,
+  FlaskIcon, CodeIcon, ShieldIcon, GlobeIcon, BellIcon, LayoutIcon, CheckIcon, ArrowRightIcon,
 } from '../components/icons'
-import { api, ApiError } from '../api.js'
+import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 
 const AREA_ICONS = {
@@ -25,62 +30,46 @@ const AREA_ICONS = {
 }
 
 const HOW_IT_WORKS = [
-  { number: 1, text: 'Explore your workplace and choose an area.' },
-  { number: 2, text: 'Complete a realistic workplace activity or practical task.' },
+  { number: 1, text: 'Explore your workplace. One area at a time will need you.' },
+  { number: 2, text: 'Complete a realistic workplace activity when you get there.' },
   { number: 3, text: 'Get feedback on what you did well and what you could explore further.' },
 ]
 
-// Duration is no longer a user-facing choice (iteration 2 dropped it - a
-// scenario's content doesn't actually vary by duration, only by difficulty),
-// but the backend's /practice-sessions contract still requires one, so every
-// session starts with this fixed value under the hood.
-const SESSION_DURATION = 'quick'
-
-// Labels match AC 4.2.2 ("Easy, Standard, Complex"); values are the
-// backend's own guided/standard/challenge enum.
+// AC 4.1.4: Easy, Standard and Complex, with no time estimate.
 const DIFFICULTIES = [
   { value: 'guided', label: 'Easy', caption: 'More prompts along the way' },
   { value: 'standard', label: 'Standard', caption: 'Work through it as you would at work' },
   { value: 'challenge', label: 'Complex', caption: 'Less context, more to weigh up' },
 ]
 
-// Reached after Your Direction's "Try a Workplace Scenario" (AC 4.1.2/4.1.3),
-// or from the nav's Practice Scenarios link once a token is active. Walks
-// through the intro (AC 4.2.1), the time/difficulty setup (AC 4.2.2), the
-// prep screen (AC 4.2.3), the interactive workplace (AC 4.3.1-4.3.4), and
-// the activity itself (AC 4.4.1-4.4.2, AC 4.5.1-4.5.3) for whichever role
-// was saved on Your Direction. Talks to the real backend end to end -
-// practice role, session, scenario and feedback all come from
-// POST/GET /practice-role and /practice-sessions, not mock data. Sessions
-// are still in-memory on the backend (not yet in Postgres - see Cross-team
-// blocker B2), so progress does not survive a backend restart yet, but the
-// frontend/backend contract itself is real.
+const areaById = (id) => WORKPLACE_AREAS.find((area) => area.id === id)
+
+// Workplace practice: intro -> difficulty -> preparation -> the workplace
+// floor, where activities unlock one at a time (she never sees what is
+// coming next) -> each activity and its feedback -> the soft stop.
+//
+// The role and practice focus are real (GET /practice-role, GET /roadmap).
+// The activities themselves are frontend-only mock content for now - see
+// mockData/practiceSession.js - so nothing she does here is saved yet.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
-  // null | 'no-role' | 'intro-failed' | 'restore-failed'
-  const [loadError, setLoadError] = useState(null)
+  const [loadError, setLoadError] = useState(null) // null | 'no-role' | 'intro-failed'
   const [role, setRole] = useState(null)
-  // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'complete'
+  // 'intro' | 'setup' | 'prep' | 'workplace' | 'activity' | 'feedback' | 'stop'
   const [step, setStep] = useState('intro')
-  // Nothing pre-selected - Maya must explicitly choose this.
   const [difficulty, setDifficulty] = useState(null)
-  const [attemptedContinue, setAttemptedContinue] = useState(false)
-  // AC 4.2.3 - the prep screen's own data and loading/error state. Starting
-  // the real backend session happens here (POST /practice-sessions), since
-  // that call is what actually generates the scenario shown on this screen.
   const [prepLoading, setPrepLoading] = useState(false)
   const [prepError, setPrepError] = useState(false)
-  const [session, setSession] = useState(null)
-  const [newSkillFocus, setNewSkillFocus] = useState(null)
-  // AC 4.3.2 - the scenario banner can be hidden/shown, but stays loaded
-  // and tied to the session either way.
+  const [focusSkill, setFocusSkill] = useState(null)
+  const [skillsUsed, setSkillsUsed] = useState([])
+  const [activities, setActivities] = useState([])
+  // Index of the one activity currently unlocked; everything before it is done.
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [answers, setAnswers] = useState({}) // activity id -> her answer
+  const [isPreparingActivity, setIsPreparingActivity] = useState(false)
   const [scenarioVisible, setScenarioVisible] = useState(true)
-  // AC 4.3.3 - which hotspot's detail panel is open, if any.
-  const [selectedAreaId, setSelectedAreaId] = useState(null)
-  // AC 4.4.2 - nothing pre-selected; she must explicitly choose an option.
-  const [selectedOptionId, setSelectedOptionId] = useState(null)
-  const [submitError, setSubmitError] = useState(false)
-  const [showSummaryPlaceholder, setShowSummaryPlaceholder] = useState(false)
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [toast, setToast] = useState('')
 
   const load = async () => {
     try {
@@ -90,29 +79,7 @@ export default function WorkplaceScenario() {
         setLoading(false)
         return
       }
-      setRole({ id: practiceRole.role_id, label: practiceRole.role_label, source: practiceRole.source })
-
-      // AC 4.3.4: resume an already-active session (e.g. she left via the
-      // nav and came back through "Practice Scenarios") instead of
-      // restarting the intro.
-      try {
-        const current = await api.getCurrentPracticeSession()
-        setSession(current)
-        setDifficulty(current.difficulty)
-        const activeScenario = current.scenarios[0]
-        if (current.status === 'completed') setStep('complete')
-        else if (activeScenario?.response) setStep('feedback')
-        else setStep('workplace')
-        setLoadError(null)
-        setLoading(false)
-        return
-      } catch (err) {
-        if (!(err instanceof ApiError && err.code === 'PRACTICE_SESSION_NOT_FOUND')) {
-          throw err
-        }
-        // No active session yet - fall through to the intro flow below.
-      }
-
+      setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
       setLoadError(null)
       setLoading(false)
     } catch {
@@ -128,39 +95,32 @@ export default function WorkplaceScenario() {
     run()
   }, [])
 
+  useEffect(() => {
+    if (!toast) return undefined
+    const timer = setTimeout(() => setToast(''), 5000)
+    return () => clearTimeout(timer)
+  }, [toast])
+
   const retryLoad = () => {
     setLoading(true)
     load()
   }
 
-  const handleSetupContinue = () => {
-    setAttemptedContinue(true)
-    if (!difficulty) return
-    setStep('prep')
-    loadPrep()
-  }
-
-  // AC 4.2.3: gathers what the prep screen shows - a real, current in-demand
-  // skill she hasn't already recorded (GET /career-translation's
-  // new_horizons), and starts the real practice session (POST
-  // /practice-sessions), which is what actually generates the scenario
-  // she'll see. Starting again here (e.g. after changing difficulty)
-  // abandons any previous active session, per the backend contract.
+  // Preparation page data: her practice focus and the skills she'll use,
+  // from the roadmap of the role she chose, plus the session's activities.
   const loadPrep = async () => {
     setPrepLoading(true)
     setPrepError(false)
     try {
-      const [roadmap, newSession] = await Promise.all([
-        api.getRoadmap(),
-        api.startPracticeSession(SESSION_DURATION, difficulty),
-      ])
-      // Practice focus = the "Next" skill on the roadmap of the role she
-      // chose to practise (AC 2.2.3).
+      const [roadmap, practice] = await Promise.all([api.getRoadmap(), loadPracticeSession()])
       const practised = [roadmap.previous_role, ...roadmap.suggested_roles].find(
         (r) => r && r.role_id === roadmap.selected_role_id,
       )
-      setNewSkillFocus(practised?.skills_could_explore.find((s) => s.status === 'next')?.label || null)
-      setSession(newSession)
+      setFocusSkill(practised?.skills_could_explore.find((s) => s.status === 'next')?.label || null)
+      setSkillsUsed((practised?.skills_bring_back || []).map((s) => s.label))
+      setActivities(practice.activities)
+      setCurrentIndex(0)
+      setAnswers({})
       setPrepLoading(false)
     } catch {
       setPrepError(true)
@@ -168,59 +128,53 @@ export default function WorkplaceScenario() {
     }
   }
 
-  // The session already exists (started during loadPrep) - entering the
-  // workplace is just a UI transition, no further backend call needed.
-  const handleEnterWorkplace = () => {
-    setStep('workplace')
+  const handleSetupContinue = () => {
+    setStep('prep')
+    loadPrep()
   }
 
-  const handleStartTask = () => {
-    setSelectedOptionId(null)
-    setSubmitError(false)
+  // Shows the "Setting up this situation…" layout for as long as the
+  // activity takes to be ready. Instant with today's local content; this
+  // is where a slow backend or live-generated activity will be waited on.
+  const openActivity = async () => {
+    setIsPanelOpen(false)
+    setIsPreparingActivity(true)
     setStep('activity')
-  }
-
-  // AC 4.4.2: records her answer and gets reflective feedback back in the
-  // same call (AC 4.5.1).
-  const handleSubmitActivity = async () => {
-    if (!selectedOptionId) return
-    setSubmitError(false)
     try {
-      const result = await api.submitScenarioResponse(
-        session.session_id, activity.scenario_id, { selected_option_id: selectedOptionId },
-      )
-      setSession((prev) => ({ ...prev, scenarios: [result.scenario], progress: result.progress }))
-      setStep('feedback')
-    } catch {
-      setSubmitError(true)
+      await loadPracticeSession()
+    } finally {
+      setIsPreparingActivity(false)
     }
   }
 
-  // AC 4.5.3: marks the session completed on the backend before showing the
-  // completion summary.
-  const handleCompletePractice = async () => {
-    try {
-      const completed = await api.completePracticeSession(session.session_id)
-      setSession(completed)
-    } catch {
-      // Non-critical for what's already been done locally - still show the
-      // completion summary from what we already have.
-    }
-    setStep('complete')
+  const handleSubmit = (answer) => {
+    setAnswers((prev) => ({ ...prev, [activity.id]: answer }))
+    setStep('feedback')
   }
 
-  const handleBackToWorkplace = () => {
-    setSelectedAreaId(null)
+  // After feedback: the next activity unlocks on the floor, or - after the
+  // last one - the soft stop.
+  const handleFeedbackContinue = () => {
+    const nextIndex = currentIndex + 1
+    if (nextIndex >= activities.length) {
+      setCurrentIndex(nextIndex)
+      setStep('stop')
+      return
+    }
+    setCurrentIndex(nextIndex)
+    setToast(`Something new has come in at the ${areaById(activities[nextIndex].areaId).label}.`)
     setStep('workplace')
   }
 
-  const primaryAreaId = role ? getPrimaryAreaId(role.id) : null
+  const handleKeepGoing = () => {
+    setStep('prep')
+    loadPrep()
+  }
+
+  const activity = activities[currentIndex] || null
+  const area = activity ? areaById(activity.areaId) : null
+  const completedCount = Math.min(currentIndex, activities.length)
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
-  const relevantAreaIds = role ? getRelevantAreaIds(role.id) : new Set()
-  const activity = session?.scenarios?.[0] || null
-  const isCompleted = activity?.status === 'completed'
-  const selectedArea = selectedAreaId ? WORKPLACE_AREAS.find((a) => a.id === selectedAreaId) : null
-  const isPrimaryAreaSelected = selectedAreaId && selectedAreaId === primaryAreaId
 
   if (loading) return (
     <>
@@ -235,197 +189,79 @@ export default function WorkplaceScenario() {
       <div className="ws-page">
         <div className="ws-load-error">
           <p>
-            {loadError === 'no-role' && "We couldn't load your selected role. Please try again."}
-            {loadError === 'intro-failed' && "We couldn't load your practice introduction. Please try again."}
-            {loadError === 'restore-failed' && "We couldn't restore your practice session. Please try again."}
+            {loadError === 'no-role' && 'Choose a role to practise on your roadmap first.'}
+            {loadError === 'intro-failed' && "We couldn't start your workplace practice. Please try again."}
           </p>
-          <button type="button" onClick={retryLoad}>Try Again</button>
+          {loadError === 'intro-failed' && <button type="button" onClick={retryLoad}>Try Again</button>}
           <button type="button" className="ws-load-error-link" onClick={() => navigate('/your-roadmap')}>
-            Back to Your Roadmap
+            {loadError === 'no-role' ? 'Open Your Roadmap' : 'Back to Your Roadmap'}
           </button>
         </div>
       </div>
     </>
   )
 
-  // AC 4.4.1/4.4.2: the activity itself - a single-selection MCQ, nothing
-  // pre-selected until she chooses an option.
-  if (step === 'activity' && activity) return (
+  if ((step === 'activity' || step === 'feedback') && activity) return (
     <>
       <TopNav />
-      <div className="ws-activity-page">
-        <div className="ws-activity-topbar">
-          <button type="button" className="ws-activity-back" onClick={handleBackToWorkplace}>
+      <div className="pa-page">
+        <div className="pa-topbar">
+          <button type="button" className="pa-back" onClick={() => setStep('workplace')}>
             <span aria-hidden="true">&larr;</span> Back to workplace
           </button>
-          <span className="ws-activity-breadcrumb">
-            {role.label} &middot; {selectedArea?.label}
+          <span className="pa-breadcrumb">
+            {role.label} · {area.label}
+            <span className="pa-count">{currentIndex + 1} of {activities.length}</span>
           </span>
         </div>
-        <main className="ws-activity-body">
-          <div className="ws-activity-main">
-            <span className="ws-eyebrow ws-eyebrow--left">PRACTICAL ACTIVITY</span>
-            <h1 className="ws-activity-heading">{activity.title}</h1>
-            <div className="ws-mcq-card">
-              <p className="ws-mcq-question">{activity.task}</p>
-              <div className="ws-mcq-options">
-                {activity.options.map((option) => {
-                  const isSelected = selectedOptionId === option.option_id
-                  return (
-                    <button
-                      type="button"
-                      key={option.option_id}
-                      className={`ws-mcq-option ${isSelected ? 'ws-mcq-option--selected' : ''}`}
-                      onClick={() => setSelectedOptionId(option.option_id)}
-                    >
-                      <span className={`ws-mcq-radio ${isSelected ? 'ws-mcq-radio--selected' : ''}`}>
-                        {isSelected && <span aria-hidden="true">&#10003;</span>}
-                      </span>
-                      {option.text}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-            {submitError && (
-              <p className="ws-setup-hint">We couldn&rsquo;t submit your response. Please try again.</p>
-            )}
-          </div>
-          <aside className="ws-activity-side">
-            {activity.guidance.length > 0 && (
-              <div className="ws-hint-panel">
-                <span className="ws-hint-label">
-                  <LightbulbIcon size={16} color="#7C3AED" /> Worth remembering
-                </span>
-                <p>{activity.guidance[0]}</p>
-              </div>
-            )}
-            <button
-              type="button"
-              className="ws-intro-continue ws-activity-continue"
-              disabled={!selectedOptionId}
-              onClick={handleSubmitActivity}
-            >
-              Continue <span aria-hidden="true">→</span>
-            </button>
-            <button type="button" className="ws-back-link" onClick={handleBackToWorkplace}>
-              Back to workplace
-            </button>
-          </aside>
-        </main>
+        {step === 'activity' && isPreparingActivity && <ActivitySkeleton areaLabel={area.label} />}
+        {step === 'activity' && !isPreparingActivity && activity.type === 'drag_and_drop' && (
+          <DragDropActivity key={activity.id} activity={activity} areaLabel={area.label} onSubmit={handleSubmit} />
+        )}
+        {step === 'activity' && !isPreparingActivity && activity.type !== 'drag_and_drop' && (
+          <ChoiceActivity key={activity.id} activity={activity} areaLabel={area.label} onSubmit={handleSubmit} />
+        )}
+        {step === 'feedback' && (
+          <PracticeFeedback
+            activity={activity}
+            answer={answers[activity.id]}
+            areaLabel={area.label}
+            isLast={currentIndex === activities.length - 1}
+            onContinue={handleFeedbackContinue}
+          />
+        )}
       </div>
     </>
   )
 
-  // AC 4.5.1/4.5.2: reflective feedback plus a skill to explore, shown
-  // right after she submits the activity.
-  if (step === 'feedback' && activity?.feedback) return (
+  // AC 4.5.4: the soft stop.
+  if (step === 'stop') return (
     <>
       <TopNav />
-      <div className="ws-activity-page">
-        <div className="ws-activity-topbar">
-          <button type="button" className="ws-activity-back" onClick={handleBackToWorkplace}>
-            <span aria-hidden="true">&larr;</span> Back to workplace
-          </button>
-          <span className="ws-activity-breadcrumb">
-            {role.label} &middot; {selectedArea?.label}
-          </span>
+      <div className="pa-page">
+        <main className="pa-body pa-body--stop">
+          <span className="pa-eyebrow">SESSION COMPLETE</span>
+          <h1 className="pa-stop-heading">That&rsquo;s today&rsquo;s practice.</h1>
+          <p className="pa-stop-subheading">Come back anytime, or keep going if you have time.</p>
+          <div className="pa-card pa-stop-list">
+            {activities.map((item) => (
+              <div className="pa-stop-row" key={item.id}>
+                <span className="pa-stop-check"><CheckIcon size={13} color="#3730A3" /></span>
+                {item.title}
+                <span className="pa-stop-area">{areaById(item.areaId).label}</span>
+              </div>
+            ))}
+          </div>
+        </main>
+        <div className="pa-footer">
+          <span className="pa-footer-note">You&rsquo;ve finished all {activities.length} activities in this session.</span>
+          <div className="pa-footer-actions">
+            <button type="button" className="pa-btn-outline" onClick={handleKeepGoing}>Keep Going</button>
+            <button type="button" className="pa-btn-primary" onClick={() => navigate('/dashboard')}>
+              Finish Practice <ArrowRightIcon size={16} />
+            </button>
+          </div>
         </div>
-        <main className="ws-feedback-body">
-          <h1 className="ws-activity-heading">Your practice feedback</h1>
-          <div className="ws-feedback-layout">
-            <div className="ws-feedback-card">
-              <div className="ws-feedback-section">
-                <span className="ws-feedback-label">
-                  <span className="ws-feedback-dot ws-feedback-dot--green" aria-hidden="true" /> WHAT WORKED WELL
-                </span>
-                {activity.feedback.what_worked_well.map((line) => <p key={line}>{line}</p>)}
-              </div>
-              <hr className="ws-intro-divider" />
-              <div className="ws-feedback-section">
-                <span className="ws-feedback-label">
-                  <span className="ws-feedback-dot" aria-hidden="true" /> CONSIDER
-                </span>
-                {[...activity.feedback.trade_offs, ...activity.feedback.areas_to_consider].map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
-              </div>
-            </div>
-            {activity.feedback.skill_to_explore && (
-              <aside className="ws-hint-panel ws-feedback-skill-panel">
-                <span className="ws-hint-label">
-                  <LightbulbIcon size={16} color="#7C3AED" /> SKILL TO EXPLORE
-                </span>
-                <h3 className="ws-feedback-skill-title">{activity.feedback.skill_to_explore.skill}</h3>
-                <p>{activity.feedback.skill_to_explore.why_relevant}</p>
-              </aside>
-            )}
-          </div>
-          <div className="ws-feedback-actions">
-            <button type="button" className="ws-intro-continue" onClick={handleCompletePractice}>
-              Complete practice <span aria-hidden="true">→</span>
-            </button>
-            <button type="button" className="ws-back-link" onClick={handleBackToWorkplace}>
-              Back to workplace
-            </button>
-          </div>
-        </main>
-      </div>
-    </>
-  )
-
-  // AC 4.5.3: shown once the session's one activity is complete.
-  if (step === 'complete') return (
-    <>
-      <TopNav />
-      <div className="ws-page">
-        <main className="ws-intro-content">
-          <h1 className="ws-intro-heading">Practice complete</h1>
-          <p className="ws-intro-subheading">You&rsquo;ve completed the available activities for this practice session.</p>
-
-          <div className="ws-prep-card ws-complete-card">
-            <span className="ws-prep-eyebrow">THIS SESSION</span>
-            <div className="ws-complete-row">
-              <span>Role</span>
-              <strong>{role.label}</strong>
-            </div>
-            <div className="ws-complete-row">
-              <span>Focus</span>
-              <strong>{activity?.title}</strong>
-            </div>
-            <div className="ws-complete-row">
-              <span>Difficulty</span>
-              <strong>{difficultyLabel}</strong>
-            </div>
-            <div className="ws-complete-row">
-              <span>Activities</span>
-              <strong>1 of 1 completed</strong>
-            </div>
-            {activity?.feedback?.skill_to_explore && (
-              <>
-                <hr className="ws-intro-divider" />
-                <span className="ws-prep-eyebrow">SKILL TO EXPLORE</span>
-                <h2 className="ws-prep-title">{activity.feedback.skill_to_explore.skill}</h2>
-              </>
-            )}
-          </div>
-
-          {showSummaryPlaceholder && (
-            <p className="ws-summary-placeholder">
-              <ClockIcon size={16} color="#7C3AED" />
-              Practice summary coming soon. This part of the product is not built yet.
-            </p>
-          )}
-
-          <div className="ws-feedback-actions">
-            <button type="button" className="ws-intro-continue" onClick={() => navigate('/career-journey')}>
-              Continue <span aria-hidden="true">→</span>
-            </button>
-            <button type="button" className="ws-back-link" onClick={() => setShowSummaryPlaceholder(true)}>
-              Practice summary
-            </button>
-          </div>
-        </main>
       </div>
     </>
   )
@@ -463,12 +299,9 @@ export default function WorkplaceScenario() {
             })}
           </div>
 
-          <button type="button" className="ws-intro-continue" onClick={handleSetupContinue}>
+          <button type="button" className="ws-intro-continue" disabled={!difficulty} onClick={handleSetupContinue}>
             Continue <span aria-hidden="true">→</span>
           </button>
-          {attemptedContinue && !difficulty && (
-            <p className="ws-setup-hint">Choose a difficulty to continue.</p>
-          )}
         </main>
       </div>
     </>
@@ -486,13 +319,15 @@ export default function WorkplaceScenario() {
       <TopNav />
       <div className="ws-page">
         <div className="ws-load-error">
-          <p>We couldn&rsquo;t prepare your practice. Please try again.</p>
+          <p>We couldn&rsquo;t start your workplace practice. Please try again.</p>
           <button type="button" onClick={loadPrep}>Try Again</button>
         </div>
       </div>
     </>
   )
 
+  // AC 4.1.4: practice focus, skills she'll use and difficulty - no time
+  // estimate, and nothing about the situations she will meet.
   if (step === 'prep') return (
     <>
       <TopNav />
@@ -503,34 +338,32 @@ export default function WorkplaceScenario() {
 
           <div className="ws-prep-layout">
             <div className="ws-prep-main">
-              <span className="ws-prep-eyebrow">TODAY&rsquo;S FOCUS</span>
-              <h2 className="ws-prep-title">{activity.title}</h2>
-              <span className="ws-prep-eyebrow ws-prep-eyebrow--spaced">YOU&rsquo;LL PRACTISE</span>
-              <p className="ws-prep-task">{activity.task}</p>
+              <span className="ws-prep-eyebrow">YOUR PRACTICE FOCUS</span>
+              <h2 className="ws-prep-title">{focusSkill || `Working as a ${role.label}`}</h2>
+              <p className="ws-prep-task">
+                A few short workplace situations, one at a time. You&rsquo;ll see what each one involves when you
+                get there.
+              </p>
             </div>
             <aside className="ws-prep-side">
               <div>
                 <span className="ws-prep-eyebrow">DIFFICULTY</span>
                 <strong className="ws-prep-footer-value">{difficultyLabel}</strong>
               </div>
-              <div>
-                <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
-                <div className="ws-prep-pills">
-                  {activity.skills_used.map((skill) => (
-                    <span key={skill} className="ws-prep-pill">{skill}</span>
-                  ))}
-                </div>
-              </div>
-              {newSkillFocus && (
+              {skillsUsed.length > 0 && (
                 <div>
-                  <span className="ws-prep-eyebrow">NEW SKILL TO EXPLORE</span>
-                  <p className="ws-prep-task ws-prep-task--small">{newSkillFocus}</p>
+                  <span className="ws-prep-eyebrow">YOU&rsquo;LL USE</span>
+                  <div className="ws-prep-pills">
+                    {skillsUsed.map((skill) => (
+                      <span key={skill} className="ws-prep-pill">{skill}</span>
+                    ))}
+                  </div>
                 </div>
               )}
             </aside>
           </div>
 
-          <button type="button" className="ws-intro-continue" onClick={handleEnterWorkplace}>
+          <button type="button" className="ws-intro-continue" onClick={() => setStep('workplace')}>
             Enter Workplace <span aria-hidden="true">→</span>
           </button>
         </main>
@@ -538,131 +371,103 @@ export default function WorkplaceScenario() {
     </>
   )
 
-  if (step === 'workplace') return (
-    <>
-      <TopNav />
-      <div className="ws-workplace-page">
-        <div className="ws-workplace-header">
-          <div className="ws-workplace-header-left">
-            <span className="ws-workplace-icon"><LayoutIcon size={18} /></span>
-            <div>
-              <h1 className="ws-workplace-title">Your Workplace</h1>
-              <p className="ws-workplace-subtitle">Explore the areas highlighted for your role.</p>
-            </div>
-          </div>
-          <div className="ws-workplace-header-right">
-            <div>
-              <span className="ws-prep-eyebrow">SELECTED ROLE</span>
-              <strong className="ws-workplace-role">{role.label}</strong>
-            </div>
-            <div>
-              <span className="ws-prep-eyebrow">PRACTICE PROGRESS</span>
-              <div className="ws-progress-row">
-                <div className="ws-progress-track">
-                  <div
-                    className="ws-progress-fill"
-                    style={{ width: isCompleted ? '100%' : '0%' }}
-                  />
-                </div>
-                <span className="ws-progress-label">{isCompleted ? 1 : 0} of 1</span>
+  if (step === 'workplace' && activity) {
+    const doneAreaIds = new Set(activities.slice(0, currentIndex).map((item) => item.areaId))
+    const PanelIcon = AREA_ICONS[area.icon]
+    return (
+      <>
+        <TopNav />
+        <div className="ws-workplace-page">
+          <div className="ws-workplace-header">
+            <div className="ws-workplace-header-left">
+              <span className="ws-workplace-icon"><LayoutIcon size={18} /></span>
+              <div>
+                <h1 className="ws-workplace-title">Your Workplace</h1>
+                <p className="ws-workplace-subtitle">Explore the areas highlighted for your role.</p>
               </div>
             </div>
-            <button
-              type="button"
-              className="ws-scenario-toggle"
-              onClick={() => setScenarioVisible((v) => !v)}
-            >
-              {scenarioVisible ? 'Hide scenario' : 'Show scenario'}
-            </button>
-          </div>
-        </div>
-
-        {scenarioVisible && (
-          <div className="ws-scenario-banner">
-            <span className="ws-scenario-banner-label">
-              <FileTextIcon size={14} color="#7C3AED" /> SCENARIO
-            </span>
-            <p className="ws-scenario-banner-text">{activity.situation}</p>
-            <span className="ws-scenario-banner-hint">
-              {selectedArea ? selectedArea.label : 'Choose a highlighted area to begin.'}
-            </span>
-          </div>
-        )}
-
-        <div className="ws-workplace-canvas">
-          <img src={workplaceImg} alt="Your workplace" className="ws-workplace-image" />
-          {WORKPLACE_AREAS.map((area) => {
-            const isRelevant = relevantAreaIds.has(area.id)
-            const Icon = AREA_ICONS[area.icon]
-            return (
-              <button
-                type="button"
-                key={area.id}
-                className={`ws-hotspot ${isRelevant ? 'ws-hotspot--active' : 'ws-hotspot--disabled'}`}
-                style={{ left: `${area.left}%`, top: `${area.top}%` }}
-                disabled={!isRelevant}
-                onClick={() => setSelectedAreaId(area.id)}
-                title={isRelevant ? undefined : 'Not relevant to your selected role'}
-              >
-                <span className="ws-hotspot-icon">
-                  <Icon size={16} color={isRelevant ? '#7C3AED' : '#9CA3AF'} />
-                </span>
-                <span className="ws-hotspot-label">{area.label}</span>
+            <div className="ws-workplace-header-right">
+              <div>
+                <span className="ws-prep-eyebrow">SELECTED ROLE</span>
+                <strong className="ws-workplace-role">{role.label}</strong>
+              </div>
+              <div>
+                <span className="ws-prep-eyebrow">PRACTICE PROGRESS</span>
+                <div className="ws-progress-row">
+                  <div className="ws-progress-track">
+                    <div
+                      className="ws-progress-fill"
+                      style={{ width: `${(completedCount / activities.length) * 100}%` }}
+                    />
+                  </div>
+                  <span className="ws-progress-label">{completedCount} of {activities.length}</span>
+                </div>
+              </div>
+              <button type="button" className="ws-scenario-toggle" onClick={() => setScenarioVisible((v) => !v)}>
+                {scenarioVisible ? 'Hide scenario' : 'Show scenario'}
               </button>
-            )
-          })}
+            </div>
+          </div>
 
-          {selectedArea && (
-            <div className={`ws-area-panel ${selectedArea.left > 50 ? 'ws-area-panel--left' : ''}`}>
-              <span className="ws-prep-eyebrow ws-area-panel-eyebrow">
-                {(() => { const Icon = AREA_ICONS[selectedArea.icon]; return <Icon size={14} color="#7C3AED" /> })()}
-                {selectedArea.label.toUpperCase()}
+          {scenarioVisible && (
+            <div className="ws-scenario-banner">
+              <span className="ws-scenario-banner-label">
+                <FileTextIcon size={14} color="#7C3AED" /> TODAY
               </span>
-              {isPrimaryAreaSelected ? (
-                <>
-                  <h2 className="ws-area-panel-title">{activity.title}</h2>
-                  <p className="ws-area-panel-text">{activity.situation}</p>
-                  <div className="ws-area-panel-todo">
-                    <span className="ws-prep-eyebrow">WHAT YOU NEED TO DO</span>
-                    <p>{activity.task}</p>
-                  </div>
-                  <div className="ws-area-panel-actions">
-                    {isCompleted ? (
-                      <span className="ws-area-panel-done">
-                        <span aria-hidden="true">&#10003;</span> Completed
-                      </span>
-                    ) : (
-                      <button type="button" className="ws-intro-continue" onClick={handleStartTask}>
-                        Start the task <span aria-hidden="true">→</span>
-                      </button>
-                    )}
-                    <button type="button" className="ws-back-link" onClick={() => setSelectedAreaId(null)}>
-                      Back to workplace
-                    </button>
-                  </div>
-                </>
-              ) : (
-                // Only relevant (enabled) hotspots reach this popup at all,
-                // so a non-primary selection is always one of the two
-                // universal areas - a shared space, not a missing activity.
-                <>
-                  <h2 className="ws-area-panel-title">A shared space</h2>
-                  <p className="ws-area-panel-text">
-                    This is a shared space for the team - there&rsquo;s no specific activity here for this practice.
-                  </p>
-                  <div className="ws-area-panel-actions">
-                    <button type="button" className="ws-back-link" onClick={() => setSelectedAreaId(null)}>
-                      Back to workplace
-                    </button>
-                  </div>
-                </>
-              )}
+              <p className="ws-scenario-banner-text">{activity.announcement}</p>
+              <span className="ws-scenario-banner-hint">You will see what it involves when you get there.</span>
             </div>
           )}
+
+          <div className={`ws-workplace-canvas ${isPanelOpen ? 'pa-canvas--dimmed' : ''}`}>
+            <img src={workplaceImg} alt="Your workplace" className="ws-workplace-image" />
+            {WORKPLACE_AREAS.map((item) => {
+              const isCurrent = item.id === area.id
+              const isDone = doneAreaIds.has(item.id)
+              const Icon = AREA_ICONS[item.icon]
+              return (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`ws-hotspot ${isCurrent ? 'ws-hotspot--active pa-hotspot--current' : ''} ${isDone ? 'pa-hotspot--done' : ''} ${!isCurrent && !isDone ? 'ws-hotspot--disabled' : ''}`}
+                  style={{ left: `${item.left}%`, top: `${item.top}%` }}
+                  disabled={!isCurrent}
+                  aria-label={isDone ? `${item.label}, completed` : item.label}
+                  onClick={() => setIsPanelOpen(true)}
+                >
+                  <span className="ws-hotspot-icon">
+                    {isDone ? <CheckIcon size={14} /> : <Icon size={16} color={isCurrent ? '#7C3AED' : '#9CA3AF'} />}
+                  </span>
+                  <span className="ws-hotspot-label">{item.label}</span>
+                </button>
+              )
+            })}
+
+            {isPanelOpen && (
+              <div className={`ws-area-panel ${area.left > 50 ? 'ws-area-panel--left' : ''}`}>
+                <span className="ws-prep-eyebrow ws-area-panel-eyebrow">
+                  <PanelIcon size={14} color="#7C3AED" />
+                  {area.label.toUpperCase()}
+                </span>
+                <h2 className="ws-area-panel-title">{activity.panel.title}</h2>
+                <p className="ws-area-panel-text">{activity.panel.text}</p>
+                <div className="ws-area-panel-actions">
+                  <button type="button" className="ws-intro-continue" onClick={openActivity}>
+                    {activity.panel.cta} <span aria-hidden="true">→</span>
+                  </button>
+                  <button type="button" className="ws-back-link" onClick={() => setIsPanelOpen(false)}>
+                    Not now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {toast && !isPanelOpen && <div className="pa-toast" role="status">{toast}</div>}
+          </div>
         </div>
-      </div>
-    </>
-  )
+      </>
+    )
+  }
 
   return (
     <>
@@ -671,7 +476,8 @@ export default function WorkplaceScenario() {
         <main className="ws-intro-content">
           <h1 className="ws-intro-heading">Welcome to your practice area</h1>
           <p className="ws-intro-subheading">
-            You&rsquo;ll work through a realistic workplace situation based on your selected role and experience.
+            You&rsquo;ll work through a few realistic workplace situations as a {role.label}, with a hint whenever
+            you want one.
           </p>
 
           <h2 className="ws-intro-label">How it works</h2>

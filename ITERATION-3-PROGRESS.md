@@ -55,6 +55,25 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Browser walkthrough of the Iteration 3 flow + roadmap speed-up
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08
+- **What:** drove the whole Iteration 3 flow in a real (headless Chromium) browser against the local backend and the real database - 39 screens, no page or console errors: token gate, profile menu, Choose Your Path, dashboard (empty and populated), Career Journey and the clear dialog, Your Roadmap with both info panels and role selection, paste / analyse / requirements / map for a job, closest-role picker and See all roles, roadmap from a chosen role, remove-job dialog, and the full practice session including a real drag and the select-then-place path. This is the first visual check any of these screens has had.
+- **Found and fixed:** `GET /roadmap` took about 17 seconds against the remote database (roughly 25 round trips at ~0.6 s each). Roles, skills, role-skill links and vacancy rows are now cached in-process for five minutes (`postgres_catalogue_repository.py`, `postgres_vacancy_repository.py`) and the roadmap reads the profile once instead of three times - about 4 s warm from a laptop in Australia to a US database, and it should be far lower once deployed in-region. JetBrains Mono (used for code, counts and vacancy figures) was never loaded, so those fell back to Courier - added to `index.html`. `tests/test_job_description_comparison_api.py` was missing from disk and from git (never committed) - restored, 11 tests.
+- **Important for local testing:** `frontend/.env` points `VITE_API_BASE_URL` at the deployed Cloud Run backend, which does not have the Iteration 3 endpoints. Running the frontend with that file shows blank roadmap, dashboard and job screens (404s). Switch to the commented-out `http://127.0.0.1:8000/api/v1` line for local work.
+- **Not covered by the walkthrough:** the wizard itself (profile was created through the API), the error states, narrow screens, and screen readers.
+- **Verification:** 424 backend tests pass; frontend build and lint clean.
+- **Blocks / Blocked by:** none.
+
+### US 4.6 / US 4.7 / AC 4.4.4 / AC 4.5.4 / AC 4.1.4 - Workplace practice screens (frontend only)
+
+- **Status:** [WIP] **Owner:** Thiri **Date:** 2026-10-08
+- **What:** `screens/WorkplaceScenario.jsx` rebuilt around a three-activity session that unlocks one activity at a time: only the current area is highlighted on the floor, the banner says only where she is needed, completed areas show a tick, and a toast announces the next one. New `components/practice/ChoiceActivity.jsx` (Multiple Choice and Code Review, with the Need a hint? toggle), `DragDropActivity.jsx` (drag a phrase to a gap, or select a phrase then a gap; a filled gap returns its earlier phrase; Escape cancels; Submit only when every gap is filled) and `PracticeFeedback.jsx` (reflective feedback, per-phrase feedback with "What would work better" only for a phrase that doesn't fit, skills used, and the "Setting up this situation…" loading layout). Soft stop with Keep Going and Finish Practice replaces the old Practice complete / Practice summary screen. Preparation page now shows practice focus, skills and difficulty only; Continue on difficulty is disabled until one is chosen.
+- **MOCK DATA (team decision 2026-10-08):** every activity, option, hint and feedback line comes from `frontend/src/mockData/practiceSession.js` - the three Figma examples, the same for every role and difficulty. The backend is not called for sessions at all on this screen now, so **nothing she completes here is saved**: it does not reach Recent practice on the dashboard, does not mark roadmap skills as Practised, and is lost on refresh. The role and practice focus are still real (`GET /practice-role`, `GET /roadmap`).
+- **Not built:** no-repeat across sessions (AC 4.3.5), linking activities to the focus skill (AC 4.4.5), the own-skill scenario (AC 4.4.6), "Activity 2 of 3" exhaustion states, and the two-Drag-and-Drop mix for roles that don't work with code - all need the backend. Keep Going replays the same three activities.
+- **Verification:** frontend build and lint clean; walked through in a headless browser, including a real drag (see the walkthrough entry above).
+- **Blocks / Blocked by:** blocked by the AI team's activity content and the backend session work that follows it. `loadPracticeSession()` in the mock file is the single place to swap in the real API.
+
 ### AC 5.2.1 / 5.2.2 - Your map for the job, closest role, curved roadmap branches
 
 - **Status:** [WIP] **Owner:** Thiri **Date:** 2026-10-08

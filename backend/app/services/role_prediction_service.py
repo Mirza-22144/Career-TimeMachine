@@ -169,13 +169,13 @@ class RolePredictionService:
                 PredictedRoleWithMarketData(
                     role_id=role.role_id,
                     role_label=role.role_label,
-                    market_data=self._market_data_for(role.role_id),
+                    market_data=self.market_data_for(role.role_id),
                 )
                 for role in content.predicted_roles
             ]
         )
 
-    def _market_data_for(self, role_id: str) -> RoleMarketDisplay | None:
+    def market_data_for(self, role_id: str) -> RoleMarketDisplay | None:
         if self.vacancy is None:
             return None
         market = self.vacancy.get_for_role(role_id)

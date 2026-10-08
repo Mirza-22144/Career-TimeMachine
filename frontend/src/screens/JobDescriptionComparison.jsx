@@ -15,8 +15,8 @@ export default function JobDescriptionComparison() {
   return (
     <>
       <TopNav />
-      <div className="dash-page">
-        <div className="dash-card">
+      <div className="dash-page dash-page--centered">
+        <div className="dash-placeholder">
           <h1 className="dash-title">Comparing your profile is coming soon.</h1>
           <p className="dash-text">
             This is where you&rsquo;ll see how your skills and experience relate to what this job asks for.

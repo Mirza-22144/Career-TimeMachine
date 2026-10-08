@@ -43,3 +43,14 @@ def read_job_description(
     """One of the user's job descriptions."""
     result = service.get_for_owner(session.token_hash, job_description_id)
     return JobDescriptionResponse.model_validate(result)
+
+
+@router.delete("/{job_description_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_job_description(
+    job_description_id: str = JobDescriptionId,
+    session: AnonSession = Depends(get_current_session),
+    service: JobDescriptionService = Depends(get_job_description_service),
+):
+    """AC 3.5.1: remove a saved job description. Completed activities are
+    unaffected - this only ever touches the job_description table."""
+    service.delete_for_owner(session.token_hash, job_description_id)

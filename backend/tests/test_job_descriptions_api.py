@@ -235,3 +235,47 @@ def test_list_job_descriptions_is_empty_for_a_new_owner():
     response = client.get("/api/v1/job-descriptions", headers=headers)
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_delete_job_description_removes_it(use_job_description_provider):
+    """AC 3.5.1."""
+    use_job_description_provider(FakeProvider())
+    headers = _headers()
+    created = client.post("/api/v1/job-descriptions", headers=headers, json={"raw_text": RAW_TEXT}).json()
+
+    delete_response = client.delete(f"/api/v1/job-descriptions/{created['job_description_id']}", headers=headers)
+    assert delete_response.status_code == 204
+
+    get_response = client.get(f"/api/v1/job-descriptions/{created['job_description_id']}", headers=headers)
+    assert get_response.status_code == 404
+
+
+def test_delete_job_description_404s_for_unknown_id():
+    headers = _headers()
+    response = client.delete("/api/v1/job-descriptions/does-not-exist", headers=headers)
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "JOB_DESCRIPTION_NOT_FOUND"
+
+
+def test_delete_job_description_does_not_cross_owners(use_job_description_provider):
+    use_job_description_provider(FakeProvider())
+    owner_a_headers = _headers()
+    owner_b_headers = _headers()
+    created = client.post(
+        "/api/v1/job-descriptions", headers=owner_a_headers, json={"raw_text": RAW_TEXT}
+    ).json()
+
+    response = client.delete(
+        f"/api/v1/job-descriptions/{created['job_description_id']}", headers=owner_b_headers
+    )
+    assert response.status_code == 404
+
+    still_there = client.get(
+        f"/api/v1/job-descriptions/{created['job_description_id']}", headers=owner_a_headers
+    )
+    assert still_there.status_code == 200
+
+
+def test_delete_job_description_requires_a_token():
+    response = client.delete("/api/v1/job-descriptions/does-not-exist")
+    assert response.status_code == 401

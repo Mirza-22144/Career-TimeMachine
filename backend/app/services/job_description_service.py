@@ -117,3 +117,15 @@ class JobDescriptionService:
     def list_for_owner(self, owner: str) -> list[JobDescription]:
         """Return every job description the owner has pasted, newest first."""
         return self.repository.list_for_owner(owner)
+
+    def delete_for_owner(self, owner: str, job_description_id: str) -> None:
+        """AC 3.5.1: remove one of the owner's saved job descriptions.
+        404s rather than leaking whether a different owner's id exists -
+        same convention as get_for_owner."""
+        deleted = self.repository.delete_for_owner(owner, job_description_id)
+        if not deleted:
+            raise _job_description_error(
+                status.HTTP_404_NOT_FOUND,
+                "JOB_DESCRIPTION_NOT_FOUND",
+                "Job description not found",
+            )

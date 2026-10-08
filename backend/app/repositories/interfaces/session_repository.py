@@ -40,6 +40,17 @@ class SessionRepository(ABC):
         hash."""
         raise NotImplementedError
 
+    def get_and_touch(self, token_hash: str, seen_at: datetime) -> AnonSession | None:
+        """Return the session with this token hash and record that it was
+        used, or None if none exists. A store may override this to do both
+        in one step."""
+        session = self.get_by_token_hash(token_hash)
+        if session is None:
+            return None
+        self.touch(token_hash, seen_at)
+        session.last_seen_at = seen_at
+        return session
+
     @abstractmethod
     def delete(self, token_hash: str) -> bool:
         """Delete this session (AC 3.5.2, Clear My Journey). The token

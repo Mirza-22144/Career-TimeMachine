@@ -54,15 +54,7 @@ class SessionService:
         if not is_well_formed_token(token):
             return None
 
-        token_hash = hash_token(token)
-        session = self.sessions.get_by_token_hash(token_hash)
-        if session is None:
-            return None
-
-        now = datetime.now(timezone.utc)
-        self.sessions.touch(token_hash, now)
-        session.last_seen_at = now
-        return session
+        return self.sessions.get_and_touch(hash_token(token), datetime.now(timezone.utc))
 
     def clear_journey(self, token_hash: str) -> None:
         """AC 3.5.2: permanently delete everything tied to this token - the

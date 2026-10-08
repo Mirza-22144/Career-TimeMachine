@@ -29,6 +29,9 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
         conn = _pool.getconn()
         try:
+            # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
+            # those is a full round trip to a database that is far away.
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.fetchall()
@@ -49,11 +52,10 @@ def _execute(sql: str, params: tuple = ()) -> int:
     try:
         conn = _pool.getconn()
         try:
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
-                rowcount = cur.rowcount
-            conn.commit()
-            return rowcount
+                return cur.rowcount
         except Exception:
             conn.rollback()
             raise
@@ -91,6 +93,17 @@ class PostgresSessionRepository(SessionRepository):
             "UPDATE anon_session SET last_seen_at = %s WHERE token_hash = %s",
             (seen_at, token_hash),
         )
+
+    def get_and_touch(self, token_hash: str, seen_at: datetime) -> AnonSession | None:
+        # Runs on every protected request, so lookup and touch share one
+        # statement.
+        rows = _query(
+            "UPDATE anon_session SET last_seen_at = %s WHERE token_hash = %s RETURNING created_at",
+            (seen_at, token_hash),
+        )
+        if not rows:
+            return None
+        return AnonSession(token_hash=token_hash, created_at=rows[0][0], last_seen_at=seen_at)
 
     def delete(self, token_hash: str) -> bool:
         # Cascades to profile, job_description and practice_session (and

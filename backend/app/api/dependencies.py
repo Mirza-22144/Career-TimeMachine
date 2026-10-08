@@ -4,15 +4,23 @@ import threading
 from fastapi import Depends, Header, HTTPException, Request, status
 
 from app.core.config import (
+    GEMINI_API_KEY,
     HAS_DATABASE,
     HAS_JOB_DESCRIPTION_MODEL,
     JOB_DESCRIPTION_MODEL_DIR,
     JOB_DESCRIPTION_PROVIDER_TIMEOUT_SECONDS,
+    LIVE_QUESTION_TIMEOUT_SECONDS,
+    QUESTIONS_PER_ACTIVITY,
     SCENARIO_PROVIDER_TIMEOUT_SECONDS,
 )
 from app.core.security_events import log_security_event
 from app.core.tokens import is_well_formed_token
-from app.providers.ai_pool_scenario_provider import AiPoolScenarioProvider
+from app.providers.ai_pool_v3_scenario_provider import AiPoolV3ScenarioProvider
+from app.providers.live_question_provider import (
+    GeminiLiveQuestionProvider,
+    LiveQuestionProvider,
+    StaticFallbackLiveQuestionProvider,
+)
 from app.providers.job_description_extraction_provider import JobDescriptionExtractionProvider
 from app.providers.ml_role_prediction_provider import MLRolePredictionProvider
 from app.providers.ml_two_role_prediction_provider import MLTwoRolePredictionProvider
@@ -131,7 +139,13 @@ def _build_job_description_extraction_provider() -> JobDescriptionExtractionProv
 # their model as a live external API - this is a drop-in replacement for
 # that call, same ScenarioProvider interface, so swapping in the real API
 # later only touches this one provider class, not any route/service code.
-_scenario_provider: ScenarioProvider = AiPoolScenarioProvider()
+_scenario_provider: ScenarioProvider = AiPoolV3ScenarioProvider()
+
+# The live question about her own skill. Constructing this is cheap - the
+# embedding model and Gemini client are only built on first use.
+_live_question_provider: LiveQuestionProvider = (
+    GeminiLiveQuestionProvider(GEMINI_API_KEY) if GEMINI_API_KEY else StaticFallbackLiveQuestionProvider()
+)
 
 # Real trained career-role classifier (see app/ml/career_role_predictor.py),
 # runs in-process - no external API or key involved (see role_prediction
@@ -260,6 +274,12 @@ def get_scenario_provider() -> ScenarioProvider:
     return _scenario_provider
 
 
+def get_live_question_provider() -> LiveQuestionProvider:
+    """Return the live-question provider; tests override this so they never
+    call Gemini."""
+    return _live_question_provider
+
+
 def get_practice_activity_type() -> str:
     """Return the activity type new practice scenarios use. Tests override
     this to exercise written responses."""
@@ -269,6 +289,7 @@ def get_practice_activity_type() -> str:
 def get_practice_session_service(
     provider: ScenarioProvider = Depends(get_scenario_provider),
     activity_type: str = Depends(get_practice_activity_type),
+    live_questions: LiveQuestionProvider = Depends(get_live_question_provider),
 ) -> PracticeSessionService:
     """Build practice-session service with shared repositories and the provider."""
     return PracticeSessionService(
@@ -277,6 +298,9 @@ def get_practice_session_service(
         provider,
         SCENARIO_PROVIDER_TIMEOUT_SECONDS,
         activity_type,
+        QUESTIONS_PER_ACTIVITY,
+        live_questions,
+        LIVE_QUESTION_TIMEOUT_SECONDS,
     )
 
 

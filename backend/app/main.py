@@ -1,4 +1,5 @@
 import logging
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -7,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.api.dependencies import get_live_question_provider
 from app.api.router import api_router  # import the API router
 from app.core.config import CORS_ORIGINS, HAS_DATABASE
 from app.core.exceptions import (
@@ -38,6 +40,8 @@ def log_storage_mode() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log_storage_mode()
+    # In the background so startup (and Cloud Run's health check) never waits.
+    threading.Thread(target=get_live_question_provider().warm_up, daemon=True).start()
     yield
 
 

@@ -33,6 +33,62 @@ class ExtractedSkillResponse(BaseModel):
     category: Literal["technical", "soft"]
 
 
+class RefreshItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    requirement: str
+    profile_skill: str
+
+
+class TransferableItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    experience: str
+    relates_to: str
+    explanation: str
+
+
+class JobComparisonResponse(BaseModel):
+    """Her map for one job (AC 5.2.1). No score, percentage or verdict."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    job_description_id: str
+    job_title: str | None
+    experience_sentence: str | None
+    break_start_year: int | None
+    skills_bring_back: list[str]
+    worth_refreshing: list[RefreshItemResponse]
+    transferable_experience: list[TransferableItemResponse]
+    skills_could_explore: list[str]
+
+
+class RoleOptionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    role_id: str
+    role_label: str
+
+
+class ClosestRolesResponse(BaseModel):
+    """AC 5.2.2 - the roles closest to the job title, closest first."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    job_title: str | None
+    exact_role_id: str | None
+    closest: list[RoleOptionResponse]
+    chosen_role_id: str | None
+
+
+class ClosestRoleChoice(BaseModel):
+    """PUT body: the role she chose as closest to a job description."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    role_id: Annotated[str, StringConstraints(min_length=1, max_length=64)]
+
+
 class JobDescriptionResponse(BaseModel):
     """API shape for one job description and its extracted requirements."""
 

@@ -1,0 +1,93 @@
+/* Choose Your Path screen (screens/ChooseYourPath.jsx, AC 2.3.3). Scoped
+   under .cyp- to match the app's per-screen CSS convention. */
+
+.cyp-page {
+  min-height: 100vh;
+  padding: 132px clamp(24px, 6vw, 96px) 64px;
+  background: #f7f4ff;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+}
+
+.cyp-heading {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 34px;
+  color: #0f1728;
+}
+
+.cyp-subheading {
+  margin: 0 0 40px;
+  max-width: 640px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: #6b6685;
+}
+
+.cyp-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 900px;
+}
+
+.cyp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+  box-sizing: border-box;
+}
+
+.cyp-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  background: #f5f3ff;
+  border-radius: 12px;
+}
+
+.cyp-card-title {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 19px;
+  color: #0f1728;
+}
+
+.cyp-card-text {
+  margin: 0 0 24px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #6b6685;
+}
+
+.cyp-card-cta {
+  margin-top: auto;
+  padding: 11px 22px;
+  background: #ffffff;
+  border: 1px solid #7c3aed;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: #7c3aed;
+  cursor: pointer;
+}
+
+.cyp-card-cta:hover {
+  background: #f5f3ff;
+}
+
+@media (max-width: 720px) {
+  .cyp-cards {
+    grid-template-columns: 1fr;
+  }
+}

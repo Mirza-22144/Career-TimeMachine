@@ -38,18 +38,33 @@ class ApiError extends Error {
   }
 }
 
-async function request(path, { method = 'GET', body, auth = true } = {}) {
+async function request(path, { method = 'GET', body, auth = true, timeoutMs } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (auth) {
     const token = getToken() || (await createSession())
     headers['X-Session-Token'] = token
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  // Only a slow outer bound for calls that specify one (job description
+  // analysis, AC 5.1.2's 30s exception) - every other call keeps relying on
+  // the browser's own default, unbounded fetch behaviour.
+  const controller = timeoutMs ? new AbortController() : undefined
+  const timer = timeoutMs ? setTimeout(() => controller.abort(), timeoutMs) : undefined
+
+  let res
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller?.signal,
+    })
+  } catch (err) {
+    if (err.name === 'AbortError') throw new ApiError('TIMEOUT', 'Request took too long', [])
+    throw err
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
 
   if (res.status === 204) return null
 
@@ -122,6 +137,13 @@ export const api = {
   completePracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}/complete`, { method: 'POST' }),
   submitScenarioResponse: (sessionId, scenarioId, answer) =>
     request(`/practice-sessions/${sessionId}/scenarios/${scenarioId}/response`, { method: 'POST', body: answer }),
+  // Iteration 3 - Job description analysis (AC 5.1.1/5.1.2). 30s outer
+  // bound matches the exception condition's own wording; the backend's
+  // internal provider timeout is shorter (20s) so this is a true backstop,
+  // not the primary timeout.
+  createJobDescription: (rawText) =>
+    request('/job-descriptions', { method: 'POST', body: { raw_text: rawText }, timeoutMs: 30000 }),
+  getPredictedRoles: () => request('/predicted-roles'),
 }
 
 export { ApiError }

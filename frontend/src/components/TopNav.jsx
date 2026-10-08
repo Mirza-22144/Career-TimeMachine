@@ -6,13 +6,7 @@ import { useAccessTokenFlow } from "../hooks/useAccessTokenFlow.js";
 import AccessTokenModal from "./AccessTokenModal";
 import GeneratedTokenModal from "./GeneratedTokenModal";
 import MyTokenModal from "./MyTokenModal";
-import TokenRequiredModal from "./TokenRequiredModal";
-
-// Every wizard step belongs conceptually under Career Journey (its Edit
-// buttons route back into these exact same steps), so the nav should show
-// Career Journey as active while inside any of them too, not just on the
-// literal "/career-journey" URL.
-const WIZARD_PATHS = ["/your-story", "/your-experience", "/your-break", "/skill-relevance-map", "/your-direction"];
+import ProfileMenu from "./ProfileMenu";
 
 /**
  * Fixed top nav shared by every page (Landing, the onboarding wizard,
@@ -51,8 +45,7 @@ export default function TopNav({ flow: providedFlow }) {
         <div className="tn-nav-actions">
           <div className="tn-nav-links">
             {navLinks.map((link) => {
-              const isActive = link.href === currentPath
-                || (link.href === "/career-journey" && WIZARD_PATHS.includes(currentPath));
+              const isActive = link.href === currentPath;
               if (!link.gated) {
                 // "Home" is the only ungated link today - path-aware since
                 // it now renders on every page, not just Landing.
@@ -72,10 +65,8 @@ export default function TopNav({ flow: providedFlow }) {
                   key={link.label}
                   type="button"
                   className={`tn-nav-link tn-nav-link--button ${isActive ? "tn-nav-link--active" : ""}`}
-                  onClick={flow.checkTokenGate(() => {
-                    // ePortfolio has no real page yet - everything else
-                    // (Career Journey, Practice Scenarios) does.
-                    if (!link.href.startsWith("#")) navigate(link.href);
+                  onClick={flow.checkTokenGate(() => navigate(link.href), {
+                    requireProfile: link.requireProfile,
                   })}
                 >
                   {link.label}
@@ -84,10 +75,7 @@ export default function TopNav({ flow: providedFlow }) {
             })}
           </div>
           {flow.activeToken ? (
-            <button type="button" className="tn-token-pill" onClick={flow.handleViewToken}>
-              <span className="tn-token-pill-dot" />
-              My Token
-            </button>
+            <ProfileMenu onViewToken={flow.handleViewToken} />
           ) : (
             <button type="button" className="tn-token-pill" onClick={flow.openAccessModal}>
               <span className="tn-token-pill-dot" />
@@ -135,16 +123,14 @@ export default function TopNav({ flow: providedFlow }) {
         </div>
       )}
 
-      {flow.isTokenRequiredOpen && (
-        <TokenRequiredModal onClose={() => flow.setIsTokenRequiredOpen(false)} />
-      )}
-
       {flow.tokenCheckError && (
         <div className="tn-modal-error">
           <span>We couldn&rsquo;t verify your access. Please try again.</span>
           <button
             type="button"
-            onClick={() => flow.lastGateAction && flow.attemptTokenGate(flow.lastGateAction)}
+            onClick={() =>
+              flow.lastGateAction && flow.attemptTokenGate(flow.lastGateAction, flow.lastGateOptions)
+            }
           >
             Try Again
           </button>

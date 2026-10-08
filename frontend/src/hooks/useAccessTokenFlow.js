@@ -18,11 +18,12 @@ export function useAccessTokenFlow() {
   const [modalView, setModalView] = useState(null);
   const [accessModalError, setAccessModalError] = useState(false);
   const [tokenGenerationError, setTokenGenerationError] = useState(false);
-  const [isTokenRequiredOpen, setIsTokenRequiredOpen] = useState(false);
   const [tokenCheckError, setTokenCheckError] = useState(false);
-  // Last nav-gate attempt, so the "couldn't verify" exception's Try Again
-  // button can re-run the same check instead of just dismissing it.
+  // Last nav-gate attempt (and its options), so the "couldn't verify"
+  // exception's Try Again button can re-run the exact same check instead
+  // of just dismissing it.
   const [lastGateAction, setLastGateAction] = useState(null);
+  const [lastGateOptions, setLastGateOptions] = useState(undefined);
   // Mirrors accessToken.js in local state (AC 3.1.5) so the nav pill and
   // Hero CTA re-render as soon as a token is generated or entered, instead
   // of only reflecting it after the next full page load.
@@ -117,33 +118,44 @@ export function useAccessTokenFlow() {
     }
   };
 
-  // Guards a token-dependent nav item (Career Journey, Practice Scenarios,
-  // ePortfolio). Shows the "access token required" notice when there is no
-  // active token yet; runs `onAllowed` when there is one.
-  const attemptTokenGate = (onAllowed) => {
+  // Guards a token-dependent nav item (Choose Your Path, Practice
+  // Scenarios, Dashboard). AC 3.1.6: with no active token, opens the
+  // dedicated Access Token Required page instead of just blocking the
+  // click. `requireProfile` (AC 3.3.3's rule, applied to every page that
+  // depends on a career profile) additionally sends her back into the
+  // wizard, at whichever step is actually unfinished, when a token exists
+  // but the profile was never confirmed - same getResumeStep() used
+  // everywhere else a confirmed profile is required.
+  const attemptTokenGate = async (onAllowed, { requireProfile = false } = {}) => {
     try {
       setTokenCheckError(false);
-      if (hasActiveToken()) {
-        onAllowed();
-      } else {
-        setIsTokenRequiredOpen(true);
+      if (!hasActiveToken()) {
+        navigate("/access-token-required");
+        return;
       }
+      if (requireProfile) {
+        const profile = await api.getProfile();
+        if (!profile.confirmed) {
+          navigate(getResumeStep(profile));
+          return;
+        }
+      }
+      onAllowed();
     } catch {
       setTokenCheckError(true);
     }
   };
-  const checkTokenGate = (onAllowed) => (e) => {
+  const checkTokenGate = (onAllowed, options) => (e) => {
     e.preventDefault();
     setLastGateAction(() => onAllowed);
-    attemptTokenGate(onAllowed);
+    setLastGateOptions(options);
+    attemptTokenGate(onAllowed, options);
   };
 
   return {
     modalView,
     accessModalError,
     tokenGenerationError,
-    isTokenRequiredOpen,
-    setIsTokenRequiredOpen,
     tokenCheckError,
     activeToken,
     loadTokenError,
@@ -156,6 +168,7 @@ export function useAccessTokenFlow() {
     checkTokenGate,
     attemptTokenGate,
     lastGateAction,
+    lastGateOptions,
     lastValidToken,
   };
 }

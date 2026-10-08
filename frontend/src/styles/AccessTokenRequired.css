@@ -1,0 +1,55 @@
+/* Access Token Required page (screens/AccessTokenRequired.jsx, AC 3.1.6).
+   Scoped under .atr- to match the app's per-screen CSS convention. */
+
+.atr-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 108px 24px 48px;
+  background: #f7f4ff;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+}
+
+.atr-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.atr-title {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 24px;
+  color: #0f1728;
+}
+
+.atr-message {
+  margin: 0 0 28px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #6b6685;
+}
+
+.atr-cta {
+  padding: 14px 28px;
+  background: linear-gradient(90deg, #7c3aed 0%, #9333ea 100%);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.atr-cta:hover {
+  opacity: 0.92;
+}

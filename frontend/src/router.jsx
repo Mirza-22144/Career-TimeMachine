@@ -5,11 +5,22 @@ import YourExperience from './screens/YourExperience.jsx'
 import YourBreak from './screens/YourBreak.jsx'
 import SkillRelevanceMap from './screens/SkillRelevanceMap.jsx'
 import YourDirection from './screens/YourDirection.jsx'
+import ProfileSetUp from './screens/ProfileSetUp.jsx'
+import ChooseYourPath from './screens/ChooseYourPath.jsx'
+import AccessTokenRequired from './screens/AccessTokenRequired.jsx'
+import Dashboard from './screens/Dashboard.jsx'
+import AnalyseJobDescription from './screens/AnalyseJobDescription.jsx'
+import JobDescriptionComparison from './screens/JobDescriptionComparison.jsx'
 import CareerJourney from './screens/CareerJourney.jsx'
 import WorkplaceScenario from './screens/WorkplaceScenario.jsx'
 import { getCurrentPath } from './navigate.js'
 
 // Path -> screen component. Add an entry here as each new screen is built.
+// /skill-relevance-map and /your-direction stay registered for now - AC
+// 2.2.3/2.3.3 replace what they show, but that replacement (Your Roadmap,
+// Choose Your Path) is a separate, not-yet-finished piece of this same
+// Iteration 3 nav/routing change; removing the old routes before their
+// replacements exist would strand CareerJourney's Edit links.
 const routes = {
   '/': LandingPage,
   '/your-story': YourStory,
@@ -17,6 +28,12 @@ const routes = {
   '/your-break': YourBreak,
   '/skill-relevance-map': SkillRelevanceMap,
   '/your-direction': YourDirection,
+  '/profile-set-up': ProfileSetUp,
+  '/choose-your-path': ChooseYourPath,
+  '/access-token-required': AccessTokenRequired,
+  '/dashboard': Dashboard,
+  '/analyse-job-description': AnalyseJobDescription,
+  '/job-description-comparison': JobDescriptionComparison,
   '/career-journey': CareerJourney,
   '/workplace-scenario': WorkplaceScenario,
 }

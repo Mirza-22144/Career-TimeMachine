@@ -3,6 +3,7 @@ import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
 import SidePhotoPanel from '../components/SidePhotoPanel'
+import SaveProfileDialog from '../components/SaveProfileDialog'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { api, ApiError } from '../api.js'
@@ -51,6 +52,11 @@ export default function YourBreak() {
   // Read once on mount - true only when this page was reached via Career
   // Journey's Edit button, not via the normal linear wizard (AC 3.2.2/3.2.3).
   const [isEditReturn] = useState(() => consumeEditReturn())
+  // AC 3.2.4: the "Save your career profile?" question, shown only the
+  // first time (the linear wizard path, never on an edit-return).
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveDialogError, setSaveDialogError] = useState('')
 
   const load = async () => {
     try {
@@ -91,12 +97,11 @@ export default function YourBreak() {
   if (!bothSelected) timelineMessage = 'Select both years to see your timeline.'
   else if (!isValidRange) timelineMessage = stepThreeData.invalidRangeMessage
 
-  // Saves the break details, confirms the profile is complete, then moves
-  // to the Skill Relevance Map. Runs when the Continue button is clicked.
-  const handleContinue = async () => {
-    setAttemptedSubmit(true)
-    if (!canContinue) return
-
+  // The actual save, shared by the edit-return path and the Save My
+  // Profile button in the confirmation dialog. Returns 'ok' | 'incomplete'
+  // | 'failed' instead of throwing, so each call site can react to the
+  // outcome without relying on a stale read of state right after setting it.
+  const saveAndConfirm = async () => {
     setConfirmError('')
     try {
       await api.patchProfile({
@@ -105,14 +110,48 @@ export default function YourBreak() {
         return_date_unsure: returnUnsure,
       })
       await api.confirmProfile()
-      navigate(isEditReturn ? '/career-journey' : '/skill-relevance-map')
+      return 'ok'
     } catch (err) {
       if (err instanceof ApiError && err.code === 'PROFILE_INCOMPLETE' && err.details?.length) {
         const missing = err.details.map((f) => MISSING_FIELD_LABELS[f] || f).join(', ')
         setConfirmError(`Please go back and complete: ${missing}.`)
-      } else {
-        setConfirmError("We couldn't save your changes. Your previous information is still available.")
+        return 'incomplete'
       }
+      setConfirmError("We couldn't save your changes. Your previous information is still available.")
+      return 'failed'
+    }
+  }
+
+  // On an edit-return, save and confirm immediately (re-confirming is not
+  // a "first time" event, so AC 3.2.4's dialog doesn't apply here - this
+  // path is unchanged from before). On the linear wizard path, open the
+  // "Save your career profile?" question first instead of saving right away.
+  const handleContinue = async () => {
+    setAttemptedSubmit(true)
+    if (!canContinue) return
+
+    if (isEditReturn) {
+      if ((await saveAndConfirm()) === 'ok') navigate('/career-journey')
+      return
+    }
+    setSaveDialogError('')
+    setIsSaveDialogOpen(true)
+  }
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true)
+    setSaveDialogError('')
+    const result = await saveAndConfirm()
+    setIsSaving(false)
+    if (result === 'ok') {
+      setIsSaveDialogOpen(false)
+      navigate('/profile-set-up')
+    } else if (result === 'incomplete') {
+      // The page-level banner below already explains what's missing -
+      // close the dialog so she can see it and go back to fix the step.
+      setIsSaveDialogOpen(false)
+    } else {
+      setSaveDialogError("We couldn't save your career profile. Please try again.")
     }
   }
 
@@ -226,6 +265,15 @@ export default function YourBreak() {
 
       <SidePhotoPanel backgroundImage={breakPhoto} label={sidePhoto.label} value={sidePhoto.value} caption={sidePhoto.caption} />
       </div>
+
+      {isSaveDialogOpen && (
+        <SaveProfileDialog
+          onSave={handleSaveProfile}
+          onCancel={() => setIsSaveDialogOpen(false)}
+          isSaving={isSaving}
+          error={saveDialogError}
+        />
+      )}
     </>
   )
 }

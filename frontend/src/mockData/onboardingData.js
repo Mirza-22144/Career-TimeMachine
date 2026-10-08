@@ -99,7 +99,7 @@ export const stepThreeData = {
   note: "We use these dates to show what changed in your field while you were away.",
   invalidRangeMessage:
     "Your planning-to-return year must be the same as or after your career break start year.",
-  ctaLabel: "See My Skills Map",
+  ctaLabel: "Complete your profile",
 };
 
 export const sidePhoto = {

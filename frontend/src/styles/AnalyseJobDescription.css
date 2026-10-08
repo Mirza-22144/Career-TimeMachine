@@ -1,0 +1,237 @@
+/* Analyse a Job Description screen (screens/AnalyseJobDescription.jsx,
+   AC 5.1.1/5.1.2). Scoped under .ajd- to match the app's per-screen
+   CSS convention. */
+
+.ajd-page {
+  min-height: 100vh;
+  padding: 132px clamp(24px, 6vw, 96px) 96px;
+  background: #f7f4ff;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+}
+
+.ajd-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #7c3aed;
+}
+
+.ajd-heading {
+  margin: 0 0 24px;
+  font-weight: 800;
+  font-size: 30px;
+  color: #0f1728;
+}
+
+.ajd-subheading {
+  margin: -16px 0 24px;
+  max-width: 640px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #6b6685;
+}
+
+.ajd-input-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  max-width: 1120px;
+}
+
+.ajd-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1120px;
+}
+
+.ajd-card {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+  box-sizing: border-box;
+}
+
+.ajd-card-label {
+  display: block;
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #9ca3af;
+}
+
+.ajd-textarea {
+  width: 100%;
+  min-height: 420px;
+  padding: 16px;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0f1728;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.ajd-textarea:focus {
+  border-color: #7c3aed;
+}
+
+.ajd-textarea:disabled {
+  background: #faf9fd;
+  color: #6b6685;
+}
+
+.ajd-char-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-weight: 500;
+  font-size: 12px;
+  color: #9ca3af;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.ajd-char-row span:first-child {
+  font-family: 'Manrope', sans-serif;
+}
+
+.ajd-how-item {
+  padding: 14px 0;
+}
+
+.ajd-how-item--divided {
+  border-top: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.ajd-how-item strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #0f1728;
+}
+
+.ajd-how-item p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  color: #6b6685;
+}
+
+.ajd-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ajd-pill {
+  padding: 7px 14px;
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #0f1728;
+}
+
+.ajd-list p {
+  margin: 0 0 10px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0f1728;
+}
+
+.ajd-list p:last-child {
+  margin-bottom: 0;
+}
+
+.ajd-experience {
+  margin: 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0f1728;
+}
+
+.ajd-empty {
+  font-weight: 500;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.ajd-error {
+  max-width: 1120px;
+  margin: 16px 0 0;
+  font-weight: 600;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.ajd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1120px;
+  margin-top: 32px;
+}
+
+.ajd-footer-note {
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.ajd-footer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ajd-btn-outline {
+  padding: 12px 24px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.14);
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: #0f1728;
+  cursor: pointer;
+}
+
+.ajd-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #7c3aed 0%, #9333ea 100%);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.ajd-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 860px) {
+  .ajd-input-grid,
+  .ajd-results-grid {
+    grid-template-columns: 1fr;
+  }
+}

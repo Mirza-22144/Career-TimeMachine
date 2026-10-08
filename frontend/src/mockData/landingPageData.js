@@ -2,15 +2,19 @@
 // Nothing here is wired to the backend yet — replace with real API data later.
 
 // Top navigation links, shared across every page via components/TopNav.jsx.
-// `gated: true` marks a token-dependent destination - selecting it checks
-// for an active access token first and shows the "Access token required"
-// notice if there isn't one, instead of navigating. "Home" is the only
-// ungated link. ePortfolio has no real page yet, so its href stays "#".
+// `gated: true` marks a token-dependent destination - selecting it opens
+// the Access Token Required page (AC 3.1.6) if there isn't one yet.
+// `requireProfile: true` additionally requires a confirmed profile - these
+// destinations all build on her career profile, so an incomplete one sends
+// her back into the wizard at the first unfinished step instead (AC 3.3.3's
+// rule, applied consistently to every page that depends on it). "Home" is
+// the only link with neither requirement. Career Journey now lives in the
+// profile dropdown (AC 3.1.7) rather than the top-level nav.
 export const navLinks = [
-  { label: "Home", href: "/", gated: false },
-  { label: "Career Journey", href: "/career-journey", gated: true },
-  { label: "Practice Scenarios", href: "/workplace-scenario", gated: true },
-  { label: "ePortfolio", href: "#", gated: true },
+  { label: "Home", href: "/", gated: false, requireProfile: false },
+  { label: "Choose Your Path", href: "/choose-your-path", gated: true, requireProfile: true },
+  { label: "Practice Scenarios", href: "/workplace-scenario", gated: true, requireProfile: true },
+  { label: "Dashboard", href: "/dashboard", gated: true, requireProfile: true },
 ];
 
 export const trustItems = [

@@ -1,0 +1,117 @@
+/* "Your career profile is set up." screen (screens/ProfileSetUp.jsx,
+   AC 3.2.4). Scoped under .psu- to match the app's per-screen convention. */
+
+.psu-page {
+  min-height: 100vh;
+  padding: 132px clamp(24px, 6vw, 96px) 64px;
+  background: #f7f4ff;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.psu-content {
+  flex: 1;
+  max-width: 760px;
+}
+
+.psu-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  border: 1.5px solid #7c3aed;
+  border-radius: 999px;
+}
+
+.psu-heading {
+  margin: 0 0 8px;
+  font-weight: 800;
+  font-size: 28px;
+  color: #0f1728;
+}
+
+.psu-subheading {
+  margin: 0 0 32px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b6685;
+}
+
+.psu-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.psu-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: baseline;
+  gap: 8px 24px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+}
+
+.psu-row-label {
+  grid-column: 1;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #9ca3af;
+}
+
+.psu-row-value {
+  grid-column: 2;
+  font-weight: 700;
+  font-size: 18px;
+  color: #0f1728;
+}
+
+.psu-row-caption {
+  grid-column: 2;
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.psu-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 760px;
+  padding: 24px 0;
+  margin-top: 48px;
+  border-top: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.psu-footer-note {
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.psu-continue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  background: linear-gradient(90deg, #7c3aed 0%, #9333ea 100%);
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.psu-continue:hover {
+  opacity: 0.92;
+}

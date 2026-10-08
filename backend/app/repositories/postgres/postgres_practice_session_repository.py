@@ -1,6 +1,7 @@
+import json
+
 import psycopg2
 import psycopg2.pool
-from psycopg2.extras import execute_values
 
 from app.core.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_SSLMODE, DB_USER
 from app.repositories.interfaces.practice_session_repository import (
@@ -39,13 +40,32 @@ _SELECT_SESSION_SQL = """
     FROM practice_session WHERE session_id = %s AND owner_token_hash = %s
 """
 
+_SELECT_OWNER_SESSIONS_SQL = """
+    SELECT session_id, owner_token_hash, role_id, role_label, role_source,
+           duration, difficulty, status, created_at, updated_at, completed_at
+    FROM practice_session WHERE owner_token_hash = %s ORDER BY created_at
+"""
+
+_SELECT_ACTIVE_SESSION_SQL = """
+    SELECT session_id, owner_token_hash, role_id, role_label, role_source,
+           duration, difficulty, status, created_at, updated_at, completed_at
+    FROM practice_session WHERE owner_token_hash = %s AND status = 'active'
+    ORDER BY created_at DESC LIMIT 1
+"""
+
 _SELECT_SCENARIOS_SQL = """
-    SELECT scenario_id, title, workplace_area, situation, task, activity_type,
+    SELECT session_id, scenario_id, title, workplace_area, situation, task, activity_type,
            guidance, skills_used, new_skill_focus, status,
            response_selected_option_id, response_text, response_submitted_at,
            feedback_what_worked_well, feedback_areas_to_consider, feedback_trade_offs,
-           feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status
-    FROM practice_scenario WHERE session_id = %s ORDER BY scenario_id
+           feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status,
+           option_feedback
+    FROM practice_scenario WHERE session_id = ANY(%s) ORDER BY scenario_id
+"""
+
+_SELECT_OPTIONS_SQL = """
+    SELECT session_id, scenario_id, option_id, text
+    FROM practice_scenario_option WHERE session_id = ANY(%s) ORDER BY option_id
 """
 
 _UPSERT_SESSION_SQL = """
@@ -65,8 +85,9 @@ _UPSERT_SCENARIO_SQL = """
         guidance, skills_used, new_skill_focus, status,
         response_selected_option_id, response_text, response_submitted_at,
         feedback_what_worked_well, feedback_areas_to_consider, feedback_trade_offs,
-        feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status,
+        option_feedback
+    ) VALUES %s
     ON CONFLICT (session_id, scenario_id) DO UPDATE SET
         status = EXCLUDED.status,
         response_selected_option_id = EXCLUDED.response_selected_option_id,
@@ -85,6 +106,9 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
         conn = _pool.getconn()
         try:
+            # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
+            # those is a full round trip to a database that is far away.
+            conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.fetchall()
@@ -99,16 +123,16 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         raise database_unavailable(exc) from exc
 
 
-def _run_in_transaction(fn):
-    """Runs fn(cursor) and commits only if it completes without raising, so
-    a session and its scenarios either all land or none do."""
+def _execute_together(build) -> None:
+    """Runs every statement build(cursor) returns in a single round trip.
+    Postgres treats statements sent together as one transaction, so a
+    session and its scenarios still either all land or none do."""
     try:
         conn = _pool.getconn()
         try:
+            conn.autocommit = True
             with conn.cursor() as cur:
-                result = fn(cur)
-            conn.commit()
-            return result
+                cur.execute(b";".join(build(cur)))
         except Exception:
             conn.rollback()
             raise
@@ -118,8 +142,15 @@ def _run_in_transaction(fn):
         raise database_unavailable(exc) from exc
 
 
-def _upsert_session(cur, session: PracticeSession) -> None:
-    cur.execute(
+def _values_statement(cur, sql: str, rows: list[tuple]) -> bytes:
+    """Fill a "VALUES %s" statement with every row, safely quoted."""
+    template = "(" + ",".join(["%s"] * len(rows[0])) + ")"
+    head, tail = sql.split("%s")
+    return head.encode() + b",".join(cur.mogrify(template, row) for row in rows) + tail.encode()
+
+
+def _session_statement(cur, session: PracticeSession) -> bytes:
+    return cur.mogrify(
         _UPSERT_SESSION_SQL,
         (
             session.session_id,
@@ -137,61 +168,73 @@ def _upsert_session(cur, session: PracticeSession) -> None:
     )
 
 
-def _upsert_scenario(cur, session_id: str, scenario: PracticeScenario) -> None:
+def _scenario_row(session_id: str, scenario: PracticeScenario) -> tuple:
     response = scenario.response
     feedback = scenario.feedback
     skill = feedback.skill_to_explore if feedback else None
-    cur.execute(
-        _UPSERT_SCENARIO_SQL,
-        (
-            scenario.scenario_id,
-            session_id,
-            scenario.title,
-            scenario.workplace_area,
-            scenario.situation,
-            scenario.task,
-            scenario.activity_type,
-            scenario.guidance,
-            scenario.skills_used,
-            scenario.new_skill_focus,
-            scenario.status,
-            response.selected_option_id if response else None,
-            response.response_text if response else None,
-            response.submitted_at if response else None,
-            feedback.what_worked_well if feedback else None,
-            feedback.areas_to_consider if feedback else None,
-            feedback.trade_offs if feedback else [],
-            skill.skill if skill else None,
-            skill.why_relevant if skill else None,
-            scenario.feedback_status,
-        ),
+    return (
+        scenario.scenario_id,
+        session_id,
+        scenario.title,
+        scenario.workplace_area,
+        scenario.situation,
+        scenario.task,
+        scenario.activity_type,
+        scenario.guidance,
+        scenario.skills_used,
+        scenario.new_skill_focus,
+        scenario.status,
+        response.selected_option_id if response else None,
+        response.response_text if response else None,
+        response.submitted_at if response else None,
+        feedback.what_worked_well if feedback else None,
+        feedback.areas_to_consider if feedback else None,
+        feedback.trade_offs if feedback else [],
+        skill.skill if skill else None,
+        skill.why_relevant if skill else None,
+        scenario.feedback_status,
+        json.dumps(scenario.option_feedback) if scenario.option_feedback is not None else None,
     )
 
 
-def _insert_options(cur, session_id: str, scenario: PracticeScenario) -> None:
+_INSERT_OPTIONS_SQL = """
+    INSERT INTO practice_scenario_option (session_id, scenario_id, option_id, text)
+    VALUES %s
+    ON CONFLICT (session_id, scenario_id, option_id) DO NOTHING
+"""
+
+
+def _scenario_statements(cur, session: PracticeSession) -> list[bytes]:
+    if not session.scenarios:
+        return []
+    statements = [
+        _values_statement(
+            cur,
+            _UPSERT_SCENARIO_SQL,
+            [_scenario_row(session.session_id, scenario) for scenario in session.scenarios],
+        )
+    ]
     # Options are set once when a scenario is created and never change, so a
     # later save() re-inserting the same rows is a harmless no-op. Keyed by
     # (session_id, scenario_id, option_id) - see fix_practice_scenario_
     # session_scoping.sql for why scenario_id alone is not unique.
-    if not scenario.options:
-        return
-    execute_values(
-        cur,
-        """
-        INSERT INTO practice_scenario_option (session_id, scenario_id, option_id, text)
-        VALUES %s
-        ON CONFLICT (session_id, scenario_id, option_id) DO NOTHING
-        """,
-        [(session_id, scenario.scenario_id, option.option_id, option.text) for option in scenario.options],
-    )
+    options = [
+        (session.session_id, scenario.scenario_id, option.option_id, option.text)
+        for scenario in session.scenarios
+        for option in scenario.options
+    ]
+    if options:
+        statements.append(_values_statement(cur, _INSERT_OPTIONS_SQL, options))
+    return statements
 
 
 def _row_to_scenario(row: tuple, options: list[ScenarioOption]) -> PracticeScenario:
     (
-        scenario_id, title, workplace_area, situation, task, activity_type,
+        _session_id, scenario_id, title, workplace_area, situation, task, activity_type,
         guidance, skills_used, new_skill_focus, status,
         resp_option_id, resp_text, resp_submitted_at,
         fb_worked_well, fb_areas, fb_trade_offs, fb_skill_title, fb_skill_why, fb_status,
+        option_feedback,
     ) = row
 
     response = None
@@ -228,6 +271,7 @@ def _row_to_scenario(row: tuple, options: list[ScenarioOption]) -> PracticeScena
         response=response,
         feedback=feedback,
         feedback_status=fb_status,
+        option_feedback=option_feedback,
     )
 
 
@@ -250,17 +294,22 @@ def _row_to_session(row: tuple, scenarios: list[PracticeScenario]) -> PracticeSe
     )
 
 
-def _load_scenarios(session_id: str) -> list[PracticeScenario]:
-    scenarios = []
-    for row in _query(_SELECT_SCENARIOS_SQL, (session_id,)):
-        option_rows = _query(
-            "SELECT option_id, text FROM practice_scenario_option "
-            "WHERE session_id = %s AND scenario_id = %s ORDER BY option_id",
-            (session_id, row[0]),
-        )
-        options = [ScenarioOption(option_id=option_id, text=text) for option_id, text in option_rows]
-        scenarios.append(_row_to_scenario(row, options))
-    return scenarios
+def _load_sessions(session_rows: list[tuple]) -> list[PracticeSession]:
+    """Attach scenarios and options to the given session rows in two queries
+    in total, however many sessions there are."""
+    if not session_rows:
+        return []
+    session_ids = [row[0] for row in session_rows]
+
+    options: dict[tuple[str, str], list[ScenarioOption]] = {}
+    for session_id, scenario_id, option_id, text in _query(_SELECT_OPTIONS_SQL, (session_ids,)):
+        options.setdefault((session_id, scenario_id), []).append(ScenarioOption(option_id=option_id, text=text))
+
+    scenarios: dict[str, list[PracticeScenario]] = {}
+    for row in _query(_SELECT_SCENARIOS_SQL, (session_ids,)):
+        scenarios.setdefault(row[0], []).append(_row_to_scenario(row, options.get((row[0], row[1]), [])))
+
+    return [_row_to_session(row, scenarios.get(row[0], [])) for row in session_rows]
 
 
 class PostgresPracticeSessionRepository(PracticeSessionRepository):
@@ -272,13 +321,7 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
     session."""
 
     def _persist(self, session: PracticeSession) -> PracticeSession:
-        def _do(cur):
-            _upsert_session(cur, session)
-            for scenario in session.scenarios:
-                _upsert_scenario(cur, session.session_id, scenario)
-                _insert_options(cur, session.session_id, scenario)
-
-        _run_in_transaction(_do)
+        _execute_together(lambda cur: [_session_statement(cur, session), *_scenario_statements(cur, session)])
         return session
 
     def add(self, session: PracticeSession) -> PracticeSession:
@@ -286,29 +329,15 @@ class PostgresPracticeSessionRepository(PracticeSessionRepository):
 
     def get_for_owner(self, owner_token_hash: str, session_id: str) -> PracticeSession | None:
         rows = _query(_SELECT_SESSION_SQL, (session_id, owner_token_hash))
-        if not rows:
-            return None
-        return _row_to_session(rows[0], _load_scenarios(session_id))
+        sessions = _load_sessions(rows[:1])
+        return sessions[0] if sessions else None
 
     def get_active_for_owner(self, owner_token_hash: str) -> PracticeSession | None:
-        rows = _query(
-            """
-            SELECT session_id FROM practice_session
-            WHERE owner_token_hash = %s AND status = 'active'
-            ORDER BY created_at DESC LIMIT 1
-            """,
-            (owner_token_hash,),
-        )
-        if not rows:
-            return None
-        return self.get_for_owner(owner_token_hash, rows[0][0])
+        sessions = _load_sessions(_query(_SELECT_ACTIVE_SESSION_SQL, (owner_token_hash,)))
+        return sessions[0] if sessions else None
 
     def save(self, session: PracticeSession) -> PracticeSession:
         return self._persist(session)
 
     def list_for_owner(self, owner_token_hash: str) -> list[PracticeSession]:
-        rows = _query(
-            "SELECT session_id FROM practice_session WHERE owner_token_hash = %s",
-            (owner_token_hash,),
-        )
-        return [self.get_for_owner(owner_token_hash, row[0]) for row in rows]
+        return _load_sessions(_query(_SELECT_OWNER_SESSIONS_SQL, (owner_token_hash,)))

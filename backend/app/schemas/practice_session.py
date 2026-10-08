@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.providers.scenario_provider import ActivityType
 
@@ -81,7 +81,7 @@ class PracticeScenarioResponse(BaseModel):
     guidance: list[str]
     skills_used: list[str]
     new_skill_focus: str | None
-    status: Literal["current", "completed"]
+    status: Literal["upcoming", "current", "completed"]
     response: ScenarioAttemptResponse | None
     feedback: ReflectiveFeedbackResponse | None
     feedback_status: Literal["available", "unavailable"] | None
@@ -113,6 +113,17 @@ class PracticeSessionResponse(BaseModel):
     completed_at: datetime | None
     scenarios: list[PracticeScenarioResponse]
     progress: PracticeProgressResponse
+    # False when her earlier activities could not be checked, so some of
+    # these questions may be ones she has seen (AC 4.3.5 exception).
+    history_checked: bool = True
+
+    @field_validator("scenarios", mode="before")
+    @classmethod
+    def _hide_upcoming(cls, scenarios):
+        """Questions she hasn't reached yet stay on the server, so the
+        client can't show (or leak) what is coming next. progress still
+        counts them in total_activities."""
+        return [s for s in scenarios if getattr(s, "status", None) != "upcoming"]
 
 
 class RecentActivityResponse(BaseModel):
@@ -124,3 +135,5 @@ class RecentActivityResponse(BaseModel):
     title: str
     activity_type: ActivityType
     completed_at: datetime
+    session_id: str
+    scenario_id: str

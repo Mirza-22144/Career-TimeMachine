@@ -60,12 +60,18 @@ class PracticeScenario:
     new_skill_focus: str | None
     # Two or more for multiple_choice, empty for written_response.
     options: list[ScenarioOption] = field(default_factory=list)
-    status: str = "current"  # "current" | "completed"
+    # "upcoming" (not reached yet) | "current" | "completed". An activity's
+    # questions are answered one at a time, so exactly one is current.
+    status: str = "current"
     response: ScenarioAttempt | None = None
     feedback: ReflectiveFeedback | None = None
     # Once a response exists: "available", or "unavailable" if feedback
     # could not be generated.
     feedback_status: str | None = None
+    # Live questions only: option id -> reflective feedback, kept with the
+    # scenario because there is no pool to look it up in. Never sent to the
+    # client as a whole - only the chosen option's feedback is, after she answers.
+    option_feedback: dict | None = None
 
 
 @dataclass
@@ -105,6 +111,10 @@ class PracticeSession:
     updated_at: datetime
     scenarios: list[PracticeScenario] = field(default_factory=list)
     completed_at: datetime | None = None
+    # False only on the response to starting an activity when her earlier
+    # sessions could not be read, so questions may repeat (AC 4.3.5). Not
+    # stored.
+    history_checked: bool = True
 
     @property
     def duration_minutes(self) -> int:

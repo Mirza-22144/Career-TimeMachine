@@ -7,10 +7,13 @@ import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 import { getResumeStep } from "../resumeStep.js";
 import { setCurrentJobDescriptionId } from "../currentJob.js";
+import { listCompleted, setViewingFeedback } from "../practiceHistory.js";
 
 const ACTIVITY_TYPE_LABELS = {
   multiple_choice: "Multiple Choice",
   written_response: "Written Response",
+  code_review: "Code Review",
+  drag_and_drop: "Drag and Drop",
 };
 
 const shortDate = (iso) =>
@@ -33,6 +36,13 @@ export default function Dashboard() {
   const [jobDescriptions, setJobDescriptions] = useState(null);
   // The role selected on Your Roadmap, or null if none (or it couldn't load).
   const [selectedRole, setSelectedRole] = useState(null);
+  // Every role she has chosen to practise, with the date (GET /roadmap).
+  const [chosenRoles, setChosenRoles] = useState([]);
+  // The next-step card depends on the roadmap, so the page waits for it.
+  const [isRoadmapSettled, setIsRoadmapSettled] = useState(false);
+  // Activities finished in this browser (see practiceHistory.js) - these
+  // are the ones whose feedback can be re-read.
+  const [localActivities] = useState(() => listCompleted());
   const [removeTarget, setRemoveTarget] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeError, setRemoveError] = useState("");
@@ -65,8 +75,10 @@ export default function Dashboard() {
           .then((roadmap) => {
             const roles = [roadmap.previous_role, ...roadmap.suggested_roles];
             setSelectedRole(roles.find((r) => r && r.role_id === roadmap.selected_role_id) || null);
+            setChosenRoles(roadmap.chosen_roles);
           })
-          .catch(() => setSelectedRole(null));
+          .catch(() => setSelectedRole(null))
+          .finally(() => setIsRoadmapSettled(true));
       })
       .catch(() => {
         if (!cancelled) navigate("/your-story");
@@ -97,11 +109,27 @@ export default function Dashboard() {
     }
   };
 
-  const isLoading = isChecking || activities === null || jobDescriptions === null;
+  const isLoading = isChecking || !isRoadmapSettled || activities === null || jobDescriptions === null;
   const steps = selectedRole?.skills_could_explore || [];
   const nextSkill = steps.find((skill) => skill.status === "next");
+  // Newest first across both sources. Only local ones have feedback to re-read.
+  const recent = Array.isArray(activities)
+    ? [
+        ...localActivities.map((a) => ({
+          key: a.id, title: a.title, type: a.type, when: a.completedAt, feedbackId: a.id,
+        })),
+        ...activities.map((a) => ({
+          key: `${a.title}-${a.completed_at}`, title: a.title, type: a.activity_type, when: a.completed_at,
+        })),
+      ].sort((a, b) => new Date(b.when) - new Date(a.when))
+    : [];
+  // The selected role always appears, even before its history row exists.
+  const roleRows = chosenRoles.length > 0
+    ? chosenRoles
+    : selectedRole ? [{ role_id: selectedRole.role_id, role_label: selectedRole.role_label, chosen_at: null }] : [];
   const nothingYet =
     !selectedRole &&
+    recent.length === 0 &&
     Array.isArray(activities) && activities.length === 0 &&
     Array.isArray(jobDescriptions) && jobDescriptions.length === 0;
 
@@ -111,7 +139,7 @@ export default function Dashboard() {
       <div className="dash-page">
         <h1 className="dash-heading">Your progress</h1>
 
-        {isLoading && <p className="dash-subheading">&nbsp;</p>}
+        {isLoading && <p className="dash-subheading" role="status">Loading your progress…</p>}
 
         {!isLoading && nothingYet && (
           <>
@@ -197,20 +225,31 @@ export default function Dashboard() {
                     <span>We couldn&rsquo;t load this. Please try again.</span>
                     <button type="button" className="dash-link" onClick={loadActivities}>Try Again</button>
                   </div>
-                ) : activities.length === 0 ? (
+                ) : recent.length === 0 ? (
                   <div className="dash-row dash-row--message">
                     <span>No completed activities yet.</span>
                   </div>
                 ) : (
-                  activities.map((activity) => (
-                    <div className="dash-row" key={`${activity.title}-${activity.completed_at}`}>
+                  recent.map((activity) => (
+                    <div className="dash-row" key={activity.key}>
                       <div>
                         <span className="dash-row-title">{activity.title}</span>
                         <span className="dash-row-meta">
-                          {ACTIVITY_TYPE_LABELS[activity.activity_type] || activity.activity_type} ·{" "}
-                          {shortDate(activity.completed_at)}
+                          {ACTIVITY_TYPE_LABELS[activity.type] || activity.type} · {shortDate(activity.when)}
                         </span>
                       </div>
+                      {activity.feedbackId && (
+                        <button
+                          type="button"
+                          className="dash-link"
+                          onClick={() => {
+                            setViewingFeedback(activity.feedbackId);
+                            navigate("/practice-feedback");
+                          }}
+                        >
+                          View feedback <span aria-hidden="true">›</span>
+                        </button>
+                      )}
                     </div>
                   ))
                 )}
@@ -218,21 +257,28 @@ export default function Dashboard() {
 
               <div className="dash-card">
                 <h2 className="dash-card-title">Your roadmaps</h2>
-                {selectedRole && (
-                  <button type="button" className="dash-row dash-row--link" onClick={() => navigate("/your-roadmap")}>
+                {roleRows.map((role) => (
+                  <button
+                    type="button"
+                    key={role.role_id}
+                    className="dash-row dash-row--link"
+                    onClick={() => navigate("/your-roadmap")}
+                  >
                     <div>
-                      <span className="dash-row-title">{selectedRole.role_label}</span>
-                      <span className="dash-row-meta">Role · selected to practise</span>
+                      <span className="dash-row-title">{role.role_label}</span>
+                      <span className="dash-row-meta">
+                        Role · {role.chosen_at ? `chosen ${shortDate(role.chosen_at)}` : "selected to practise"}
+                      </span>
                     </div>
                     <span aria-hidden="true" className="dash-chevron">›</span>
                   </button>
-                )}
+                ))}
                 {jobDescriptions === "error" ? (
                   <div className="dash-row dash-row--message">
                     <span>We couldn&rsquo;t load this. Please try again.</span>
                     <button type="button" className="dash-link" onClick={loadJobDescriptions}>Try Again</button>
                   </div>
-                ) : jobDescriptions.length === 0 && !selectedRole ? (
+                ) : jobDescriptions.length === 0 && roleRows.length === 0 ? (
                   <div className="dash-row dash-row--message">
                     <span>No roadmaps yet.</span>
                   </div>

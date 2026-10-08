@@ -6,6 +6,7 @@ import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 import { getResumeStep } from "../resumeStep.js";
+import { recallResult, rememberResult } from "../lastGood.js";
 
 const shortDate = (iso) => new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short" });
 
@@ -108,6 +109,9 @@ export default function YourRoadmap() {
   const [infoRole, setInfoRole] = useState(null);
   const mapRef = useRef(null);
   const [branches, setBranches] = useState(null);
+  // True when showing the last roadmap that loaded because a fresh one
+  // could not be fetched (AC 3.2.5 exception).
+  const [isStale, setIsStale] = useState(false);
 
   // Redraw the connector curves whenever the map's size changes (first
   // layout, window resize, fonts loading, a status label appearing).
@@ -127,11 +131,21 @@ export default function YourRoadmap() {
         return;
       }
       const data = await api.getRoadmap();
+      rememberResult("roadmap", data);
       setRoadmap(data);
       setSelectedRoleId(data.selected_role_id);
+      setIsStale(false);
       setStatus("ready");
     } catch {
-      setStatus("error");
+      const earlier = recallResult("roadmap");
+      if (earlier?.previous_role) {
+        setRoadmap(earlier);
+        setSelectedRoleId(earlier.selected_role_id);
+        setIsStale(true);
+        setStatus("ready");
+      } else {
+        setStatus("error");
+      }
     }
   };
 
@@ -164,6 +178,7 @@ export default function YourRoadmap() {
       <>
         <TopNav />
         <div className="yr-page">
+          {status === "loading" && <p className="yr-loading" role="status">Opening your roadmap…</p>}
           {status === "error" && (
             <div className="yr-message">
               <p>We couldn&rsquo;t open your roadmap. Please try again.</p>
@@ -189,6 +204,13 @@ export default function YourRoadmap() {
         <p className="yr-subheading">
           Your experience already leads somewhere. Follow a branch, then select the role you want to practise.
         </p>
+
+        {isStale && (
+          <div className="yr-stale" role="status">
+            <span>This was based on your earlier profile.</span>
+            <button type="button" onClick={retry}>Try Again</button>
+          </div>
+        )}
 
         <div className="yr-map" role="radiogroup" aria-label="Role to practise" ref={mapRef}>
           {branches && (

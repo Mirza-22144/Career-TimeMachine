@@ -4,7 +4,7 @@ import "../styles/ClosestRoleDialog.css";
 /**
  * "Which role is closest to this job?" (AC 5.2.2). Shows the closest
  * roles with the closest preselected, or - via See all roles - every role
- * in the role catalogue. With no close role it becomes the "We don't have
+ * in the role catalogue, alphabetically. With no close role it becomes the "We don't have
  * a roadmap for this kind of role yet." notice instead.
  */
 export default function ClosestRoleDialog({ closest, allRoles, onConfirm, onBack, onExploreRoles, isSaving, error }) {
@@ -30,7 +30,23 @@ export default function ClosestRoleDialog({ closest, allRoles, onConfirm, onBack
     );
   }
 
-  const options = showAll ? allRoles : closest;
+  const renderOption = (role, isClosest) => {
+    const isSelected = role.role_id === selectedId;
+    return (
+      <button
+        key={role.role_id}
+        type="button"
+        role="radio"
+        aria-checked={isSelected}
+        className={`${showAll ? "crd-all-option" : "crd-option"} ${isSelected ? "is-selected" : ""}`}
+        onClick={() => setSelectedId(role.role_id)}
+      >
+        <span className={`crd-radio ${isSelected ? "crd-radio--on" : ""}`} />
+        <span className="crd-option-label">{role.role_label}</span>
+        {isClosest && <span className="crd-closest">Closest to this ad</span>}
+      </button>
+    );
+  };
 
   return (
     <div className="crd-overlay" onClick={isSaving ? undefined : onBack}>
@@ -49,23 +65,7 @@ export default function ClosestRoleDialog({ closest, allRoles, onConfirm, onBack
         </p>
 
         <div className={showAll ? "crd-all" : "crd-options"} role="radiogroup" aria-label="Closest role">
-          {options.map((role, index) => {
-            const isSelected = role.role_id === selectedId;
-            return (
-              <button
-                key={role.role_id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                className={`${showAll ? "crd-all-option" : "crd-option"} ${isSelected ? "is-selected" : ""}`}
-                onClick={() => setSelectedId(role.role_id)}
-              >
-                <span className={`crd-radio ${isSelected ? "crd-radio--on" : ""}`} />
-                <span className="crd-option-label">{role.role_label}</span>
-                {!showAll && index === 0 && <span className="crd-closest">Closest to this ad</span>}
-              </button>
-            );
-          })}
+          {(showAll ? allRoles : closest).map((role, index) => renderOption(role, !showAll && index === 0))}
         </div>
 
         {!showAll && (

@@ -9,7 +9,7 @@ import {
   footerSection,
 } from "../mockData/landingPageData";
 import logoEmblem from "../assets/Logo.png";
-import { ArrowRightIcon, ArrowDownIcon } from "../components/icons";
+import { ArrowRightIcon } from "../components/icons";
 import TopNav from "../components/TopNav";
 import { useAccessTokenFlow } from "../hooks/useAccessTokenFlow.js";
 import { api } from "../api.js";
@@ -19,21 +19,11 @@ import { getResumeStep } from "../resumeStep.js";
  * First screen visitors see, shown at the root URL "/" ("01 Landing"
  */
 
-// Label shown on the Hero CTA. Returning-visitor detection (token-based
-// "Continue" label) is out of scope until auth/tokens exist.
-const journeyCtaLabel = "Enter My Journey";
-
 export default function LandingPage() {
   // Shared with <TopNav flow={flow} /> so the nav pill and this page's own
   // Hero CTA reflect the exact same access-token state - two independent
   // hook instances on one page would risk them drifting out of sync.
   const flow = useAccessTokenFlow();
-
-  // Smooth-scrolls to an in-page section instead of following the anchor link.
-  const scrollToId = (id) => (e) => {
-    e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
 
   // "Continue your journey" (shown when a token is already active in this
   // tab). Career Journey requires a confirmed profile (409 otherwise) - a
@@ -100,23 +90,14 @@ export default function LandingPage() {
               </button>
             </div>
           ) : (
-            <div className="lp-ctas">
-              <button
-                type="button"
-                className="lp-btn-primary"
-                onClick={flow.openAccessModal}
-              >
-                <span className="lp-btn-label">{journeyCtaLabel}</span>
-                <ArrowRightIcon size={16} />
+            <div className="lp-active-journey">
+              <span className="lp-active-journey-title">Ready to start your journey?</span>
+              <p className="lp-active-journey-text">
+                Generate an access token to save your journey and return to it later.
+              </p>
+              <button type="button" className="lp-btn-primary" onClick={flow.handleGenerateToken}>
+                <span className="lp-btn-label">Generate Token</span>
               </button>
-              <a
-                href="#roadmap"
-                className="lp-btn-ghost"
-                onClick={scrollToId("roadmap")}
-              >
-                <span>See how it works</span>
-                <ArrowDownIcon size={15} />
-              </a>
             </div>
           )}
 

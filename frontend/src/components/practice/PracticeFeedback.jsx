@@ -15,7 +15,7 @@ function SkillsUsed({ skills }) {
  * right/wrong labels, and for Drag and Drop no count of phrases that fit -
  * "What would work better" appears only under a phrase that doesn't.
  */
-export default function PracticeFeedback({ activity, answer, areaLabel, isLast, onContinue }) {
+export default function PracticeFeedback({ activity, answer, areaLabel, isLast, continueLabel, onContinue }) {
   const isDragDrop = activity.type === "drag_and_drop";
   const chosen = isDragDrop ? null : activity.options.find((option) => option.id === answer);
   const placedPhrases = isDragDrop ? answer.map((id) => activity.phrases.find((p) => p.id === id)) : [];
@@ -80,7 +80,7 @@ export default function PracticeFeedback({ activity, answer, areaLabel, isLast, 
       <div className="pa-footer">
         <span className="pa-footer-note">Nothing here is graded.</span>
         <button type="button" className="pa-btn-primary" onClick={onContinue}>
-          {isLast ? "Continue" : "Back to the floor"} <ArrowRightIcon size={16} />
+          {continueLabel || (isLast ? "Continue" : "Back to the floor")} <ArrowRightIcon size={16} />
         </button>
       </div>
     </>

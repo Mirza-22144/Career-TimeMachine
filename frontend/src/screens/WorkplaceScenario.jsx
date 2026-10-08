@@ -150,11 +150,16 @@ export default function WorkplaceScenario() {
     setPrepLoading(true)
     setPrepError(false)
     try {
-      const [translation, newSession] = await Promise.all([
-        api.getCareerTranslation(),
+      const [roadmap, newSession] = await Promise.all([
+        api.getRoadmap(),
         api.startPracticeSession(SESSION_DURATION, difficulty),
       ])
-      setNewSkillFocus(translation.new_horizons?.[0]?.label || null)
+      // Practice focus = the "Next" skill on the roadmap of the role she
+      // chose to practise (AC 2.2.3).
+      const practised = [roadmap.previous_role, ...roadmap.suggested_roles].find(
+        (r) => r && r.role_id === roadmap.selected_role_id,
+      )
+      setNewSkillFocus(practised?.skills_could_explore.find((s) => s.status === 'next')?.label || null)
       setSession(newSession)
       setPrepLoading(false)
     } catch {
@@ -235,8 +240,8 @@ export default function WorkplaceScenario() {
             {loadError === 'restore-failed' && "We couldn't restore your practice session. Please try again."}
           </p>
           <button type="button" onClick={retryLoad}>Try Again</button>
-          <button type="button" className="ws-load-error-link" onClick={() => navigate('/your-direction')}>
-            Back to Your Direction
+          <button type="button" className="ws-load-error-link" onClick={() => navigate('/your-roadmap')}>
+            Back to Your Roadmap
           </button>
         </div>
       </div>

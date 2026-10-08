@@ -5,7 +5,6 @@ import ClearJourneyDialog from '../components/ClearJourneyDialog'
 import { ArrowRightIcon } from '../components/icons'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
-import { consumeJustReturned } from '../accessToken.js'
 import { setEditReturn } from '../editReturn.js'
 import { getResumeStep } from '../resumeStep.js'
 
@@ -36,7 +35,6 @@ export default function CareerJourney() {
   const [loadError, setLoadError] = useState(false)
   const [journey, setJourney] = useState(null)
   const [responsibilityLabels, setResponsibilityLabels] = useState([])
-  const [justReturned] = useState(() => consumeJustReturned())
   // AC 3.5.2: Clear My Journey.
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
@@ -139,7 +137,7 @@ export default function CareerJourney() {
       <TopNav />
       <div className="cj-page">
         <main className="cj-content">
-          <h1 className="cj-heading">{justReturned ? 'Welcome back' : 'Your Career Journey'}</h1>
+          <h1 className="cj-heading">Your Career Journey</h1>
           <p className="cj-subheading">
             Here&rsquo;s the journey you&rsquo;ve built so far. Everything is saved and ready when you are.
           </p>

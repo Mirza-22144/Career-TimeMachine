@@ -98,8 +98,8 @@ function PractiseToggle({ isSelected, onSelect }) {
 }
 
 // Your Roadmap (AC 2.2.3 / 2.2.4), reached from Choose Your Path's Explore
-// Roles. All data comes from GET /roadmap; only the info panel's outlook
-// and relationship text are mock (see mockData/roadmapData.js).
+// Roles. All data comes from GET /roadmap; only the info panel's
+// relationship text is mock (see mockData/roadmapData.js).
 export default function YourRoadmap() {
   const [status, setStatus] = useState("loading"); // loading | error | ready
   const [roadmap, setRoadmap] = useState(null);
@@ -301,7 +301,7 @@ export default function YourRoadmap() {
           <span className="yr-footer-note">
             {selectedRole
               ? `You will practise as a ${selectedRole.role_label}. You can come back and choose another role.`
-              : "Select a role to practise. Use the i on any card for vacancies and outlook."}
+              : "Select a role to practise. Use the i on any card for current job vacancies."}
           </span>
           <div className="yr-footer-actions">
             <button type="button" className="yr-btn-outline" onClick={() => window.history.back()}>

@@ -55,6 +55,13 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### AC 2.4.1 - Outlook to 2035 removed from the role information panel
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08
+- **What:** team decision - the "i" panel no longer shows an outlook to 2035. Removed the section and its mock text from `RoleInfoModal.jsx` and `mockData/roadmapData.js`; the panel now shows the vacancy range with source and date, plus "How it relates to <previous role>" for suggested roles (still mock). Roadmap footer and the Explore Roles card on Choose Your Path no longer mention the outlook.
+- **Why:** there is no outlook data source, and the team chose to drop it rather than keep placeholder text. Earlier entries in this log that mention the outlook are superseded by this one.
+- **Blocks / Blocked by:** none. AC 2.4.1's wording in the acceptance-criteria document still mentions the outlook and needs updating to match.
+
 ### Browser walkthrough of the Iteration 3 flow + roadmap speed-up
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08

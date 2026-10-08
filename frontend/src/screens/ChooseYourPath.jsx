@@ -83,7 +83,7 @@ export default function ChooseYourPath() {
             </div>
             <h2 className="cyp-card-title">Explore Roles</h2>
             <p className="cyp-card-text">
-              See where your experience could lead, with current job vacancies and the outlook for each role.
+              See where your experience could lead, with current job vacancies for each role.
             </p>
             <button type="button" className="cyp-card-cta" onClick={() => navigate("/your-roadmap")}>
               Explore roles <span aria-hidden="true">›</span>

@@ -208,14 +208,15 @@ def test_practice_context_uses_saved_career_information_only(fake_catalogue):
 
     context = PracticeRoleService(profiles, fake_catalogue).build_practice_context("owner")
 
-    # Custom free text, break details, years of experience, responsibilities
-    # and the owner key are not included - scenario generation gets skills
-    # and role only (BE 3.1).
+    # Break details, years of experience, responsibilities (picked or typed)
+    # and the owner key are not included. Custom skill NAMES are, since
+    # Iteration 3: they are what the one live question is about (AC 4.4.6).
     assert context == PracticeContext(
         role_id="web_developer",
         role_label="Web Developer",
         role_source="predicted",
         skills=["Python", "Git"],
+        custom_skills=["Private side project"],
     )
 
 

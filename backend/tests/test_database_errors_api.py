@@ -46,7 +46,13 @@ class FakeCursor:
     def __exit__(self, *exc_info):
         return False
 
+    def mogrify(self, sql, params=None):
+        return sql.encode()
+
     def execute(self, sql, params=None):
+        # Practice sessions send their statements together as bytes.
+        if isinstance(sql, bytes):
+            sql = sql.decode()
         if self.connection.fails_on(sql):
             raise self.connection.error
 

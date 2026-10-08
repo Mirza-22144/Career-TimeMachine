@@ -94,6 +94,16 @@ def test_create_job_description_rejects_empty_text():
     assert response.status_code == 422
 
 
+def test_create_job_description_rejects_text_under_150_characters():
+    """AC 5.1.1's exception condition - the frontend enforces this before
+    submitting, this is the real backend backstop."""
+    headers = _headers()
+    too_short = "Short job ad text, well under the real minimum length."
+    assert len(too_short) < 150
+    response = client.post("/api/v1/job-descriptions", headers=headers, json={"raw_text": too_short})
+    assert response.status_code == 422
+
+
 def test_create_job_description_rejects_oversized_text():
     headers = _headers()
     too_long = "a" * 20001

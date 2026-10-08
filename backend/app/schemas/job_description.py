@@ -5,8 +5,16 @@ from pydantic import BaseModel, ConfigDict, StringConstraints
 
 from app.providers.job_description_extraction_provider import MAX_RAW_TEXT_CHARACTERS
 
+# 150-character minimum matches AC 5.1.1's exception condition ("This looks
+# too short to be a full job description") - the frontend enforces this
+# client-side before ever submitting, this is the real backstop.
+MIN_RAW_TEXT_CHARACTERS = 150
+
 RawText = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_RAW_TEXT_CHARACTERS)
+    str,
+    StringConstraints(
+        strip_whitespace=True, min_length=MIN_RAW_TEXT_CHARACTERS, max_length=MAX_RAW_TEXT_CHARACTERS
+    ),
 ]
 
 

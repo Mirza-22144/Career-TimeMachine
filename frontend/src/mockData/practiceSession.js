@@ -1,58 +1,13 @@
-// MOCK DATA for the workplace practice session (screens/WorkplaceScenario.jsx).
+// MOCK DATA for the two workplace activities the AI team has not delivered
+// yet: Code Review and Drag and Drop (screens/WorkplaceScenario.jsx).
 //
-// Frontend-only for now (team decision, 2026-10-08): the three-activity
-// session - Multiple Choice, Code Review, Drag and Drop - is built against
-// this fixed content until the backend can serve it (waiting on the AI
-// team's activities). Nothing here is saved; a completed session does not
-// reach the dashboard yet.
-//
-// loadPracticeSession() is async on purpose: it is the one place to swap
-// in the real API call, and the screens already show their loading state
-// while it is pending.
+// Multiple-choice practice is real - it comes from POST /practice-sessions
+// and is stored by the backend. These two are fixed content, the same for
+// every role, and a completed one is only remembered in this browser (see
+// practiceHistory.js). Replace loadMockActivities() with the real API call
+// when their content arrives.
 
 const ACTIVITIES = [
-  {
-    id: "priya-question",
-    type: "multiple_choice",
-    areaId: "stakeholder_client_studio",
-    announcement: "Something needs you in the Stakeholder / Client Studio.",
-    panel: {
-      title: "Priya has a question",
-      text: "She has walked over from the product area and would like a quick answer about the last release.",
-      cta: "See what she needs",
-    },
-    title: "Priya has a question",
-    person: { initial: "P", name: "Priya", role: "Product owner, checkout" },
-    quote: "Sign-ups are fine, but people are dropping out at checkout since the release. Can you just roll it back today?",
-    context: "She has walked over from the product area. The release went out on Tuesday and you reviewed part of it.",
-    prompt: "How do you respond?",
-    hint: "Consider what you know for certain so far, and what you don’t.",
-    options: [
-      {
-        id: "ask",
-        text: "Ask what she is seeing, and since when, before deciding anything.",
-        workedWell: "You asked what Priya was seeing before agreeing to anything, so the decision rests on evidence rather than urgency.",
-        consider: "You could also agree when you will come back to her, so she is not left waiting on an open question.",
-      },
-      {
-        id: "rollback",
-        text: "Agree to roll the release back today.",
-        workedWell: "You took Priya’s concern seriously and moved quickly to protect customers.",
-        consider: "A rollback also removes everything else in the release. Checking what changed at checkout first would show whether it is needed.",
-      },
-      {
-        id: "ticket",
-        text: "Tell her a rollback needs a ticket raised first.",
-        workedWell: "You pointed to the agreed process, which keeps changes traceable.",
-        consider: "Leading with process can feel like a brush-off. Asking what she is seeing first keeps her on side while the ticket is raised.",
-      },
-    ],
-    skillToExplore: {
-      skill: "Incident triage",
-      why: "Working out how serious a problem is before choosing a fix is a routine part of release work now.",
-    },
-    skillsUsed: ["Incident triage", "Stakeholder communication"],
-  },
   {
     id: "arjun-review",
     type: "code_review",
@@ -164,6 +119,34 @@ const ACTIVITIES = [
   },
 ];
 
-export async function loadPracticeSession() {
-  return { activities: ACTIVITIES };
+// AC 4.4.4 / 4.7.1: Code Review is only for roles that work with code.
+// Decided here by role until the backend serves this activity; a role
+// typed in by hand ("other") is treated as not working with code.
+const ROLES_WORKING_WITH_CODE = new Set([
+  "blockchain_engineer",
+  "business_intelligence_analyst",
+  "computer_and_information_research_scientist",
+  "computer_programmer",
+  "computer_systems_engineer_architect",
+  "data_scientist",
+  "data_warehousing_specialist",
+  "database_administrator",
+  "database_architect",
+  "information_security_engineer",
+  "penetration_tester",
+  "software_developer",
+  "software_qa_analyst_tester",
+  "video_game_designer",
+  "web_administrator",
+  "web_developer",
+]);
+
+// The mock activities this role can be given.
+export async function loadMockActivities(roleId) {
+  return ACTIVITIES.filter((item) => item.type !== "code_review" || ROLES_WORKING_WITH_CODE.has(roleId));
+}
+
+// Every mock activity, for re-reading feedback whatever her role is now.
+export async function loadAllMockActivities() {
+  return ACTIVITIES;
 }

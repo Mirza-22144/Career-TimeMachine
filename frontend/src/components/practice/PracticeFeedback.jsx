@@ -15,9 +15,59 @@ function SkillsUsed({ skills }) {
  * right/wrong labels, and for Drag and Drop no count of phrases that fit -
  * "What would work better" appears only under a phrase that doesn't.
  */
-export default function PracticeFeedback({ activity, answer, areaLabel, isLast, continueLabel, onContinue }) {
+function FeedbackLines({ lines }) {
+  return lines.map((line) => <p className="pa-feedback-text" key={line}>{line}</p>);
+}
+
+// Feedback stored by the backend for a real question (what_worked_well,
+// trade_offs, areas_to_consider, skill_to_explore). A section with nothing
+// in it is left out rather than shown empty.
+function StoredFeedback({ feedback }) {
+  if (!feedback) {
+    return (
+      <div className="pa-card pa-feedback-card">
+        <span className="pa-feedback-label">YOUR RESPONSE IS SAVED</span>
+        <p className="pa-feedback-text">Feedback isn&rsquo;t available for this one right now. You can carry on.</p>
+      </div>
+    );
+  }
+  const skill = feedback.skill_to_explore;
+  return (
+    <>
+      {feedback.what_worked_well.length > 0 && (
+        <div className="pa-card pa-feedback-card">
+          <span className="pa-feedback-label pa-feedback-label--blue">WHAT WORKED WELL</span>
+          <FeedbackLines lines={feedback.what_worked_well} />
+        </div>
+      )}
+      {feedback.trade_offs.length > 0 && (
+        <div className="pa-card pa-feedback-card">
+          <span className="pa-feedback-label">TRADE-OFFS</span>
+          <FeedbackLines lines={feedback.trade_offs} />
+        </div>
+      )}
+      {feedback.areas_to_consider.length > 0 && (
+        <div className="pa-card pa-feedback-card">
+          <span className="pa-feedback-label">CONSIDER</span>
+          <FeedbackLines lines={feedback.areas_to_consider} />
+        </div>
+      )}
+      {skill && (
+        <div className="pa-card pa-feedback-card">
+          <span className="pa-feedback-label pa-feedback-label--violet">SKILL TO EXPLORE</span>
+          <h2 className="pa-feedback-skill">{skill.skill}</h2>
+          <p className="pa-feedback-why">{skill.why_relevant}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function PracticeFeedback({ activity, answer, feedback, areaLabel, isLast, continueLabel, onContinue }) {
   const isDragDrop = activity.type === "drag_and_drop";
-  const chosen = isDragDrop ? null : activity.options.find((option) => option.id === answer);
+  // Real questions bring their feedback from the backend (possibly null).
+  const isStored = feedback !== undefined;
+  const chosen = isDragDrop || isStored ? null : activity.options.find((option) => option.id === answer);
   const placedPhrases = isDragDrop ? answer.map((id) => activity.phrases.find((p) => p.id === id)) : [];
   const completedMessage = isDragDrop
     ? activity.message
@@ -32,7 +82,9 @@ export default function PracticeFeedback({ activity, answer, areaLabel, isLast, 
         <span className="pa-eyebrow">{areaLabel.toUpperCase()}</span>
         <h1 className="pa-heading">Your practice feedback</h1>
 
-        {isDragDrop ? (
+        {isStored ? (
+          <StoredFeedback feedback={feedback} />
+        ) : isDragDrop ? (
           <>
             <div className="pa-card pa-feedback-card">
               <span className="pa-feedback-label pa-feedback-label--blue">YOUR MESSAGE</span>

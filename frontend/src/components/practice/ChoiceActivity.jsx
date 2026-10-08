@@ -12,7 +12,7 @@ export function HintToggle({ hint }) {
       {isOpen && (
         <div className="pa-hint">
           <strong>Hint</strong>
-          <p>{hint}</p>
+          {(Array.isArray(hint) ? hint : [hint]).map((line) => <p key={line}>{line}</p>)}
         </div>
       )}
     </>
@@ -25,10 +25,13 @@ export function HintToggle({ hint }) {
  * question on the right. Nothing is preselected and no option is marked
  * right or wrong.
  */
-export default function ChoiceActivity({ activity, areaLabel, onSubmit }) {
+export default function ChoiceActivity({ activity, areaLabel, isSubmitting = false, submitError = "", onSubmit }) {
   const [selectedId, setSelectedId] = useState(null);
   const isCode = activity.type === "code_review";
-  const submitLabel = isCode ? "Submit" : "Reply";
+  // A real question describes a situation; the mock ones quote a colleague.
+  const isSituation = Boolean(activity.situation);
+  const submitLabel = isCode || isSituation ? "Submit" : "Reply";
+  const hasHint = Array.isArray(activity.hint) ? activity.hint.length > 0 : Boolean(activity.hint);
 
   return (
     <>
@@ -57,6 +60,11 @@ export default function ChoiceActivity({ activity, areaLabel, onSubmit }) {
                 <p>&ldquo;{activity.quote}&rdquo;</p>
               </div>
             </div>
+          ) : isSituation ? (
+            <div className="pa-card">
+              <span className="pa-eyebrow">THE SITUATION</span>
+              <p className="pa-situation">{activity.situation}</p>
+            </div>
           ) : (
             <div className="pa-card">
               <div className="pa-person">
@@ -84,6 +92,7 @@ export default function ChoiceActivity({ activity, areaLabel, onSubmit }) {
                     role="radio"
                     aria-checked={isSelected}
                     className={`pa-option ${isSelected ? "pa-option--selected" : ""}`}
+                    disabled={isSubmitting}
                     onClick={() => setSelectedId(option.id)}
                   >
                     <span className={`pa-radio ${isSelected ? "pa-radio--on" : ""}`}>
@@ -94,19 +103,25 @@ export default function ChoiceActivity({ activity, areaLabel, onSubmit }) {
                 );
               })}
             </div>
-            <HintToggle hint={activity.hint} />
+            {hasHint && <HintToggle hint={activity.hint} />}
           </div>
         </div>
       </main>
 
       <div className="pa-footer">
-        <span className="pa-footer-note">
-          {selectedId
-            ? `You can change your ${isCode ? "choice before you submit" : "reply before you send it"}.`
-            : isCode ? "Choose one option to submit." : "Choose a reply to continue."}
+        <span className={`pa-footer-note ${submitError ? "pa-footer-note--error" : ""}`} role={submitError ? "alert" : undefined}>
+          {submitError
+            || (selectedId
+              ? `You can change your ${isCode || isSituation ? "choice before you submit" : "reply before you send it"}.`
+              : isCode || isSituation ? "Choose one option to submit." : "Choose a reply to continue.")}
         </span>
-        <button type="button" className="pa-btn-primary" disabled={!selectedId} onClick={() => onSubmit(selectedId)}>
-          {submitLabel} {selectedId && <ArrowRightIcon size={16} />}
+        <button
+          type="button"
+          className="pa-btn-primary"
+          disabled={!selectedId || isSubmitting}
+          onClick={() => onSubmit(selectedId)}
+        >
+          {isSubmitting ? "Saving…" : submitLabel} {selectedId && !isSubmitting && <ArrowRightIcon size={16} />}
         </button>
       </div>
     </>

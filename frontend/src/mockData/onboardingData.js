@@ -17,18 +17,6 @@ export const onboardingSteps = [
     path: "/your-experience",
   },
   { id: 3, title: "Your Break", subtitle: "What changed", path: "/your-break" },
-  {
-    id: 4,
-    title: "Skill Relevance Map",
-    subtitle: "What is relevant now",
-    path: "/skill-relevance-map",
-  },
-  {
-    id: 5,
-    title: "Your Direction",
-    subtitle: "Where you want to go",
-    path: "/your-direction",
-  },
 ];
 
 export const sidebarBrand = {

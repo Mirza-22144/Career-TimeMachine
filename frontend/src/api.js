@@ -30,6 +30,17 @@ function setToken(token) {
   }
 }
 
+// Forgets the locally stored token without telling the backend anything -
+// used after clearJourney() has already deleted the session server-side,
+// so this tab stops treating the now-dead token as active.
+function clearToken() {
+  try {
+    sessionStorage.removeItem(TOKEN_KEY)
+  } catch {
+    // Same private-browsing case as setToken - nothing to clean up then.
+  }
+}
+
 class ApiError extends Error {
   constructor(code, message, details) {
     super(message)
@@ -143,7 +154,18 @@ export const api = {
   // not the primary timeout.
   createJobDescription: (rawText) =>
     request('/job-descriptions', { method: 'POST', body: { raw_text: rawText }, timeoutMs: 30000 }),
+  listJobDescriptions: () => request('/job-descriptions'),
+  deleteJobDescription: (jobDescriptionId) =>
+    request(`/job-descriptions/${jobDescriptionId}`, { method: 'DELETE' }),
   getPredictedRoles: () => request('/predicted-roles'),
+  getRecentActivities: () => request('/practice-sessions/recent-activities'),
+  // AC 3.5.2 - permanently deletes the profile, every job description and
+  // the session itself; the token stops working immediately after, so the
+  // locally stored copy is forgotten too, atomically with the real delete.
+  clearJourney: async () => {
+    await request('/anonymous-sessions/current', { method: 'DELETE' })
+    clearToken()
+  },
 }
 
 export { ApiError }

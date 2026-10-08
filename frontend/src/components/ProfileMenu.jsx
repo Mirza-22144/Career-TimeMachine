@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "../styles/ProfileMenu.css";
-import { UserIcon } from "./icons";
+import { UserIcon, ShieldIcon } from "./icons";
 import { navigate } from "../navigate.js";
 
 /**
@@ -54,7 +54,13 @@ export default function ProfileMenu({ onViewToken }) {
               onViewToken();
             }}
           >
-            My Token
+            <span className="pm-menu-icon">
+              <ShieldIcon size={16} />
+            </span>
+            <span className="pm-menu-text">
+              <strong>My Token</strong>
+              <span>See your token so you can come back later.</span>
+            </span>
           </button>
           <button
             type="button"
@@ -65,7 +71,13 @@ export default function ProfileMenu({ onViewToken }) {
               navigate("/career-journey");
             }}
           >
-            Career Profile
+            <span className="pm-menu-icon">
+              <UserIcon size={16} />
+            </span>
+            <span className="pm-menu-text">
+              <strong>Career Profile</strong>
+              <span>Edit your details. Changes refresh your roadmap and suggestions.</span>
+            </span>
           </button>
         </div>
       )}

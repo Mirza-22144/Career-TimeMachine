@@ -91,13 +91,13 @@ class RoadmapService:
         )
         suggested = [
             self._role(profile, role.role_id, role.role_label, skill_labels, len(all_skills), practised)
-            for role in self.predictions.predict_two_for_session(session_token).predicted_roles
+            for role in self.predictions.predict_two_for_profile(profile).predicted_roles
         ]
 
         # A role she chose herself (closest to a job description, or from
         # See All Roles) that is neither her previous role nor one of the
         # suggestions still gets its own card, first in the list.
-        selected_role_id = self.practice_roles.get_for_session(session_token).role_id
+        selected_role_id = self.practice_roles.get_for_profile(profile).role_id
         shown = {previous.role_id} | {role.role_id for role in suggested}
         if selected_role_id and selected_role_id not in shown and selected_role_id in role_labels:
             suggested.insert(

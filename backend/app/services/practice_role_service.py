@@ -57,6 +57,10 @@ class PracticeRoleService:
         """Return the saved practice role for the session, if any."""
         return self._selection(self.profiles.get_by_session_token(session_token))
 
+    def get_for_profile(self, profile: Profile | None) -> PracticeRoleSelection:
+        """Same as get_for_session for an already-loaded profile."""
+        return self._selection(profile)
+
     def select_for_session(
         self,
         session_token: str,

@@ -18,7 +18,7 @@ from app.providers.two_role_prediction_provider import (
     TwoRolePredictionProviderError,
 )
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
-from app.repositories.interfaces.profile_repository import ProfileRepository
+from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
 from app.repositories.interfaces.vacancy_repository import RoleMarketData, VacancyRepository
 from app.services.practice_role_service import OTHER_ROLE_ID
 
@@ -141,7 +141,11 @@ class RolePredictionService:
         mapping yet (e.g. "other"), never fabricated. Never raises; resolves
         to an empty list for "no prediction yet" or a model failure, same
         convention as predict_for_session."""
-        profile = self.profiles.get_by_session_token(session_token)
+        return self.predict_two_for_profile(self.profiles.get_by_session_token(session_token))
+
+    def predict_two_for_profile(self, profile: Profile | None) -> PredictedRolesResult:
+        """Same as predict_two_for_session for a profile the caller has
+        already loaded, so it isn't read from storage a second time."""
         if profile is None or profile.role_id is None or self.two_role_provider is None:
             return PredictedRolesResult()
 

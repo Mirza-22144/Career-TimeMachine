@@ -1,11 +1,15 @@
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.practice_session_repository import PracticeSessionRepository
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
+from app.repositories.interfaces.role_choice_repository import RoleChoiceRepository
 from app.services.practice_role_service import OTHER_ROLE_ID, PracticeRoleService
 from app.services.role_prediction_service import RoleMarketDisplay, RolePredictionService
+
+logger = logging.getLogger(__name__)
 
 # Skills You Could Explore is a short, ordered path (Practised / Next /
 # Later), not the role's whole skill list.
@@ -43,6 +47,15 @@ class RoadmapRole:
 
 
 @dataclass
+class ChosenRole:
+    """A role she has chosen to practise, for the dashboard (AC 3.4.1)."""
+
+    role_id: str
+    role_label: str
+    chosen_at: datetime
+
+
+@dataclass
 class Roadmap:
     """Your Roadmap (AC 2.2.3): the previous role and up to two suggested
     roles. previous_role is None until a previous role has been saved."""
@@ -51,6 +64,7 @@ class Roadmap:
     years_experience_label: str | None = None
     suggested_roles: list[RoadmapRole] = field(default_factory=list)
     selected_role_id: str | None = None
+    chosen_roles: list[ChosenRole] = field(default_factory=list)
 
 
 class RoadmapService:
@@ -65,12 +79,14 @@ class RoadmapService:
         predictions: RolePredictionService,
         practice_roles: PracticeRoleService,
         practice_sessions: PracticeSessionRepository,
+        role_choices: RoleChoiceRepository | None = None,
     ) -> None:
         self.profiles = profiles
         self.catalogue = catalogue
         self.predictions = predictions
         self.practice_roles = practice_roles
         self.practice_sessions = practice_sessions
+        self.role_choices = role_choices
 
     def build_for_session(self, session_token: str) -> Roadmap:
         profile = self.profiles.get_by_session_token(session_token)
@@ -113,7 +129,24 @@ class RoadmapService:
             years_experience_label=years.get(profile.years_experience),
             suggested_roles=suggested,
             selected_role_id=selected_role_id,
+            chosen_roles=self._chosen_roles(session_token, role_labels),
         )
+
+    def _chosen_roles(self, session_token: str, role_labels: dict[str, str]) -> list[ChosenRole]:
+        """Her dated role history, newest first. Empty rather than an error
+        if the history can't be read - the roadmap itself doesn't depend on it."""
+        if self.role_choices is None:
+            return []
+        try:
+            choices = self.role_choices.list_for_owner(session_token)
+        except Exception:
+            logger.warning("Could not read role choice history", exc_info=True)
+            return []
+        return [
+            ChosenRole(choice.role_id, role_labels[choice.role_id], choice.chosen_at)
+            for choice in choices
+            if choice.role_id in role_labels
+        ]
 
     def _role(
         self,

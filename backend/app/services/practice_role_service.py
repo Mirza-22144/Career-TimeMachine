@@ -1,10 +1,15 @@
+import logging
 from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
+from app.repositories.interfaces.role_choice_repository import RoleChoiceRepository
 from app.schemas.practice_role import PracticeRoleUpdate
+
+logger = logging.getLogger(__name__)
 
 PREVIOUS_ROLE = "previous"
 PREDICTED_ROLE = "predicted"
@@ -48,10 +53,13 @@ class PracticeRoleService:
         self,
         profiles: ProfileRepository,
         catalogue: CatalogueRepository,
+        role_choices: RoleChoiceRepository | None = None,
     ) -> None:
         # Depend on interfaces so storage and catalogue data can be swapped.
         self.profiles = profiles
         self.catalogue = catalogue
+        # Optional: the dated history of chosen roles (AC 3.4.1).
+        self.role_choices = role_choices
 
     def get_for_session(self, session_token: str) -> PracticeRoleSelection:
         """Return the saved practice role for the session, if any."""
@@ -89,7 +97,19 @@ class PracticeRoleService:
                 practice_role_source=update.source,
             )
         )
+        self._record_choice(session_token, update.role_id)
         return self._selection(saved, role_labels)
+
+    def _record_choice(self, session_token: str, role_id: str) -> None:
+        """Add the role to her dated history. Best effort: the choice itself
+        is already saved on the profile, so a history failure (for example
+        the role_choice table not created yet) must not fail the request."""
+        if self.role_choices is None:
+            return
+        try:
+            self.role_choices.record(session_token, role_id, datetime.now(timezone.utc))
+        except Exception:
+            logger.warning("Could not record role choice history", exc_info=True)
 
     def build_practice_context(self, session_token: str) -> PracticeContext:
         """Return the saved career context for practice, so the user never has

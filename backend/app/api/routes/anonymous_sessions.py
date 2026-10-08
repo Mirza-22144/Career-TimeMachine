@@ -23,3 +23,14 @@ def read_current_session(session: AnonSession = Depends(get_current_session)):
     """Validate the X-Session-Token header (401 if missing/invalid). Used by
     the returning-user flow; the token itself is not echoed back."""
     return session
+
+
+@router.delete("/current", status_code=status.HTTP_204_NO_CONTENT)
+def clear_journey(
+    session: AnonSession = Depends(get_current_session),
+    service: SessionService = Depends(get_session_service),
+):
+    """AC 3.5.2: Clear My Journey - permanently deletes the profile, every
+    saved job description, and the session itself. The token stops
+    working immediately; there is no way to undo this."""
+    service.clear_journey(session.token_hash)

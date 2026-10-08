@@ -169,8 +169,8 @@ else:
 
 
 def get_session_service() -> SessionService:
-    """Build the service with the shared repo. Routes ask for this."""
-    return SessionService(_session_repository)
+    """Build the service with the shared repos. Routes ask for this."""
+    return SessionService(_session_repository, _profile_repository, _job_description_repository)
 
 
 def get_current_session(

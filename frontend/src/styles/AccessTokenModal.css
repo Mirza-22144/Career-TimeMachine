@@ -267,6 +267,39 @@
   background: #f5f3ff;
 }
 
+/* Irreversible actions (Clear My Journey, Remove job description). */
+.atm-btn-destructive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px;
+  background: #b91c1c;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.atm-btn-destructive:hover {
+  background: #991b1b;
+}
+
+.atm-actions-row .atm-btn-destructive {
+  flex: 1;
+  width: auto;
+}
+
+.atm-btn-primary:disabled,
+.atm-btn-outline:disabled,
+.atm-btn-destructive:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ---------- Generated token display (AC 3.1.2) ---------- */
 
 .atm-token-box {

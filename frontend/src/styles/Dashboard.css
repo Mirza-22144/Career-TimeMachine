@@ -1,18 +1,195 @@
-/* Dashboard placeholder (screens/Dashboard.jsx). Scoped under .dash- to
-   match the app's per-screen CSS convention. */
+/* Dashboard (screens/Dashboard.jsx, US 3.4) and the small placeholder card
+   JobDescriptionComparison.jsx still borrows. Scoped under .dash-. */
 
 .dash-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  padding: 108px 24px 48px;
+  padding: 136px clamp(24px, 7.8vw, 112px) 64px;
   background: #f7f4ff;
   box-sizing: border-box;
   font-family: 'Manrope', sans-serif;
+  color: #0f1728;
+}
+
+.dash-page * {
+  box-sizing: border-box;
+}
+
+.dash-heading {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1.15;
+}
+
+.dash-subheading {
+  margin: 0 0 28px;
+  font-weight: 500;
+  font-size: 17px;
+  color: #514b66;
+}
+
+.dash-empty {
+  padding: 44px;
+  background: #ffffff;
+  border: 1.5px dashed rgba(107, 102, 133, 0.6);
+  border-radius: 20px;
+}
+
+.dash-empty-title {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 26px;
+}
+
+.dash-empty-text {
+  margin: 0 0 24px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #514b66;
+}
+
+.dash-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: #6d28d9;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dash-btn-primary:hover {
+  opacity: 0.92;
 }
 
 .dash-card {
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 20px;
+  box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
+}
+
+.dash-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 36px;
+}
+
+.dash-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: #6d28d9;
+}
+
+.dash-next-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 28px;
+}
+
+.dash-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.dash-card-title {
+  margin: 0 0 20px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.dash-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  border-top: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.dash-row:last-child {
+  padding-bottom: 0;
+}
+
+.dash-row--message {
+  font-weight: 500;
+  font-size: 14px;
+  color: #6b6685;
+}
+
+.dash-row-title {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.dash-row-meta {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  color: #6b6685;
+}
+
+.dash-link,
+.dash-remove {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dash-link {
+  color: #6d28d9;
+}
+
+.dash-remove {
+  color: #b91c1c;
+}
+
+.dash-toast {
+  position: fixed;
+  left: clamp(24px, 7.8vw, 112px);
+  bottom: 32px;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #0f1728;
+  border-radius: 10px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* Placeholder card (JobDescriptionComparison.jsx). */
+.dash-page--centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-placeholder {
   width: 100%;
   max-width: 440px;
   padding: 40px;
@@ -20,14 +197,12 @@
   border-radius: 20px;
   box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
   text-align: center;
-  box-sizing: border-box;
 }
 
 .dash-title {
   margin: 0 0 12px;
   font-weight: 800;
   font-size: 22px;
-  color: #0f1728;
 }
 
 .dash-text {
@@ -51,6 +226,13 @@
   cursor: pointer;
 }
 
-.dash-cta:hover {
-  background: #f5f3ff;
+@media (max-width: 860px) {
+  .dash-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-next {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

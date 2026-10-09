@@ -531,8 +531,18 @@
 }
 
 .pa-better-label {
-  margin: 6px 0 4px;
-  font-size: 11px;
+  margin: 8px 0 2px;
+  font-size: 10px;
+  color: #6b6685;
+}
+
+/* The suggestion under it is secondary to how the phrase comes across. */
+.pa-phrase-row .pa-better-label + p {
+  font-style: italic;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 19px;
+  color: #6b6685;
 }
 
 .pa-skills-used {

@@ -57,6 +57,14 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### AC 3.1.6 / 3.2.4 - Explain why she is sent back to profile setup; wizard and feedback polish
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09
+- **What:** (1) When she opens a page that needs a finished profile (Choose Your Path, Practice Scenarios, Dashboard, her roadmap, Career Profile) before her profile is saved, she was sent to the wizard with no explanation. She now sees a popup on the step she lands on: "Finish setting up your profile first" (`components/FinishProfileNotice.jsx`, `sendToProfileSetup()` in `resumeStep.js`). It also appears when she is already on that step, for example clicking Dashboard from Your Break. (2) The step she is sent to now counts skills: with a role but fewer than three skills she goes to Your Experience. (3) Your Experience hint reads "Select at least three skills to improve the accuracy of your predicted roles and practice." (4) The Your experience summary card stays below the fixed nav bar when the page scrolls (its heading was covered), and a long role name wraps inside it. (5) "Select year" is no longer a choice in the Your Break year lists; it only shows as the prompt. (6) In Drag and Drop feedback, the "what would work better" note is smaller, italic and grey, so it reads as secondary to how the phrase comes across.
+- **Why:** found in Thiri's walkthrough on 2026-10-09.
+- **Verification:** eslint and build clean. Headless-browser run with a new token and no profile: the popup appeared for Dashboard, Choose Your Path and Practice Scenarios, for Career Profile from Your Experience, and for Dashboard from Your Break; Continue stayed disabled with two skills and enabled with three; the summary card sat at 104px after scrolling (nav is 84px); the year list starts at 2011. No page errors.
+- **Blocks / Blocked by:** none.
+
 ### Second round of fixes from local testing: job map skills, footer and button size, spacing, loading popup font
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09

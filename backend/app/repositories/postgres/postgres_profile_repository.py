@@ -5,6 +5,7 @@ from psycopg2.extras import execute_values
 from app.core.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_SSLMODE, DB_USER
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
 from app.repositories.postgres.db_errors import database_unavailable
+from app.repositories.postgres.pooling import KEEPALIVE, checkout, release, rollback_quietly
 
 # One shared pool of database connections, reused across every request
 # instead of opening a new connection each time. FastAPI runs sync routes
@@ -21,6 +22,7 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
     user=DB_USER,
     password=DB_PASSWORD,
     sslmode=DB_SSLMODE,
+    **KEEPALIVE,
 )
 
 _PROFILE_COLUMNS = (
@@ -34,7 +36,7 @@ _PROFILE_COLUMNS = (
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
             # those is a full round trip to a database that is far away.
@@ -45,10 +47,10 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         except Exception:
             # A failed statement leaves the connection in an aborted
             # transaction; roll back so the pool doesn't hand it out broken.
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 
@@ -58,7 +60,7 @@ def _run_in_transaction(fn):
     the profile upsert and its junction-table delete+insert either all land
     or none do."""
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             conn.autocommit = False
             with conn.cursor() as cur:
@@ -66,10 +68,10 @@ def _run_in_transaction(fn):
             conn.commit()
             return result
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 

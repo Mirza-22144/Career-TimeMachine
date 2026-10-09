@@ -6,6 +6,7 @@ import psycopg2.pool
 from app.core.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_SSLMODE, DB_USER
 from app.repositories.interfaces.session_repository import AnonSession, SessionRepository
 from app.repositories.postgres.db_errors import database_unavailable
+from app.repositories.postgres.pooling import KEEPALIVE, checkout, release, rollback_quietly
 
 # One shared pool of database connections, reused across every request
 # instead of opening a new connection each time. FastAPI runs sync routes
@@ -22,12 +23,13 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
     user=DB_USER,
     password=DB_PASSWORD,
     sslmode=DB_SSLMODE,
+    **KEEPALIVE,
 )
 
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
             # those is a full round trip to a database that is far away.
@@ -38,10 +40,10 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
         except Exception:
             # A failed statement leaves the connection in an aborted
             # transaction; roll back so the pool doesn't hand it out broken.
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 
@@ -50,17 +52,17 @@ def _execute(sql: str, params: tuple = ()) -> int:
     """Runs one write statement, commits it, and returns the affected row
     count (most callers ignore it - delete() is the one that needs it)."""
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.rowcount
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 

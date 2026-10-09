@@ -1,12 +1,12 @@
-// Completed Code Review and Drag and Drop activities, and which activity is
-// unlocked next, kept in this browser.
+// Completed Code Review activities, and which activity is unlocked next,
+// kept in this browser.
 //
-// TEMPORARY: these two activity types are still mock content (see
-// mockData/practiceSession.js) because the AI team has not delivered them,
-// so the backend has nowhere to store them yet. Multiple-choice practice
-// is real and lives in the backend - nothing about it is kept here.
+// TEMPORARY: Code Review is still mock content (see
+// mockData/practiceSession.js) because the AI team has not delivered it,
+// so the backend has nowhere to store it yet. Multiple Choice and Drag and
+// Drop are real and live in the backend - nothing about them is kept here.
 // This is keyed by access token, so it survives a refresh but NOT another
-// browser or device. Remove this file when the backend serves both types.
+// browser or device. Remove this file when the backend serves Code Review.
 import { api } from "./api.js";
 
 const VIEWING_KEY = "ctm_viewing_feedback";

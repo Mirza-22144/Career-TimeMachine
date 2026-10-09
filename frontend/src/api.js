@@ -153,9 +153,12 @@ export const api = {
   getPracticeRole: () => request('/practice-role'),
   getPredictedRole: () => request('/predicted-role'),
   putPracticeRole: (roleId, source) => request('/practice-role', { method: 'PUT', body: { role_id: roleId, source } }),
-  startPracticeSession: (duration, difficulty) => request('/practice-sessions', { method: 'POST', body: { duration, difficulty } }),
+  // activityType: 'multiple_choice' (default) or 'drag_and_drop'.
+  startPracticeSession: (duration, difficulty, activityType = 'multiple_choice') =>
+    request('/practice-sessions', { method: 'POST', body: { duration, difficulty, activity_type: activityType } }),
   getCurrentPracticeSession: () => request('/practice-sessions/current'),
-  // Multiple-choice questions still new to her, per difficulty: { guided, standard, challenge }.
+  // Questions still new to her, per kind of activity and difficulty:
+  // { multiple_choice: { guided, standard, challenge }, drag_and_drop: { ... } }.
   getRemainingQuestions: () => request('/practice-sessions/remaining'),
   getPracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}`),
   completePracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}/complete`, { method: 'POST' }),

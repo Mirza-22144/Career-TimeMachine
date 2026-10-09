@@ -3,7 +3,7 @@
 
 .cyp-page {
   min-height: 100vh;
-  padding: 132px clamp(24px, 6vw, 96px) 64px;
+  padding: 112px clamp(24px, 6vw, 96px) 64px;
   background: #f7f4ff;
   box-sizing: border-box;
   font-family: 'Manrope', sans-serif;

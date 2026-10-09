@@ -3,7 +3,7 @@
 
 .psu-page {
   min-height: 100vh;
-  padding: 132px clamp(24px, 6vw, 96px) 64px;
+  padding: 112px clamp(24px, 6vw, 96px) 64px;
   background: #f7f4ff;
   box-sizing: border-box;
   font-family: 'Manrope', sans-serif;
@@ -101,7 +101,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 20px;
+  padding: 10px 18px;
   background: linear-gradient(90deg, #7c3aed 0%, #9333ea 100%);
   border: none;
   border-radius: 999px;

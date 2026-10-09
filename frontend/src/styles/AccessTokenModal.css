@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   background: rgba(13, 22, 40, 0.55);
 }
 
@@ -19,7 +19,7 @@
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 28px;
+  padding: 22px;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.24);
@@ -38,7 +38,7 @@
 .atm-btn-okay {
   width: auto;
   margin-left: auto;
-  padding: 12px 28px;
+  padding: 12px 22px;
 }
 
 .atm-header {
@@ -51,7 +51,7 @@
 .atm-title {
   margin: 0;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 18px;
   color: #0f1728;
 }
 
@@ -66,7 +66,7 @@
   border-radius: 999px;
   background: #f3f0fb;
   color: #6b6685;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
 }
@@ -76,7 +76,7 @@
 }
 
 .atm-subtitle {
-  margin: 10px 0 24px;
+  margin: 10px 0 20px;
   font-weight: 500;
   font-size: 14px;
   line-height: 20px;
@@ -84,7 +84,7 @@
 }
 
 .atm-panel {
-  padding: 20px;
+  padding: 18px;
   border-radius: 16px;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .atm-panel--existing {
-  margin-top: 20px;
+  margin-top: 18px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.1);
 }
@@ -126,7 +126,7 @@
 
 .atm-panel-title {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   color: #0f1728;
 }
 
@@ -308,8 +308,8 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 18px;
+  margin-bottom: 18px;
   background: #faf9fd;
   border: 1px dashed rgba(124, 58, 237, 0.35);
   border-radius: 14px;
@@ -327,7 +327,7 @@
   width: 100%;
   max-width: 100%;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: 0.3px;
   line-height: 1.5;
   color: #7c3aed;
@@ -341,7 +341,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   background: #f5f3ff;
   border-radius: 12px;
 }
@@ -378,6 +378,6 @@
 
 @media (max-width: 520px) {
   .atm-modal {
-    padding: 22px;
+    padding: 20px;
   }
 }

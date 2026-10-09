@@ -49,7 +49,7 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 | B1  | `role_anzsco_mapping` does not exist yet - CTM's roles are O*NET-based, the Internet Vacancy Index is keyed by ANZSCO/OSCA codes, and the two cannot be joined without this table being populated first. | Backend | Database/data team to source and map | `[DONE]` resolved by DB 3.1 (2026-10-08 check: vacancy ranges are served from real data) |
 | B2  | Live, per-user AI video generation (discussed earlier) conflicts with the context document, which lists it under "Not part of the current core scope" and specifies ~150 pre-generated videos instead. Needs an explicit team decision before any video work starts, so it isn't built twice in two different directions. | Backend | Team decision | `[DONE]` closed 2026-10-08: team decided skill videos are not being built |
 | B3  | Historical snapshot strategy for `role_market_data` not decided - "doubled since her break started" style claims need a fixed comparison period per user, not just the latest data pull. | Backend | Database/data team | `[TODO]` |
-| B4  | Code Review and Drag and Drop activities have no real content. Both screens run on one fixed placeholder each, and what she completes there (and which activity is waiting for her) is remembered in the browser only. | Frontend, Backend | AI team to deliver Code Review and Drag and Drop content | `[TODO]` |
+| B4  | Code Review has no real content. Its screen runs on one fixed placeholder, and a completed Code Review (and which activity is waiting for her) is remembered in the browser only. Drag and Drop was delivered and integrated on 2026-10-09. | Frontend, Backend | AI team to deliver the Code Review pool | `[TODO]` |
 
 ---
 
@@ -289,6 +289,17 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Deployment:** `google-genai` and `sentence-transformers` added to `requirements.txt`; the Dockerfile downloads MiniLM at build time; `GEMINI_API_KEY` must be set as a Cloud Run secret (without it the static fallback is used).
 - **Blocks / Blocked by:** none. Drag and Drop and Code Review content is still not delivered by the AI team.
 
+### US 4.6 / AC 4.6.1 / 4.6.2 / 4.4.6 - Drag and Drop on the AI team's activities, with live generation
+
+- **Status:** [WIP - code and tests done, waiting on one database query] **Owner:** Thiri **Date:** 2026-10-09
+- **What:** integrated the AI team's drag and drop handover (received as a ZIP, 2026-10-09). Runtime files are in `app/ml/drag_and_drop_v1/` (their `live_drag_and_drop_service.py` unchanged, and the 324-activity pool). New `app/providers/drag_and_drop_provider.py`. Drag and Drop is now a real activity type in practice sessions: `POST /practice-sessions` takes `activity_type` (`multiple_choice` by default, or `drag_and_drop`), builds up to four messages she has not done for the role and level, hands them over one at a time, and adds a fifth written live by Gemini when she has typed in a skill of her own. A message is answered with `placements` (blank id -> phrase id). The answered scenario returns her completed message and, for each phrase she placed, how it comes across, with "what would work better" only when the phrase does not fit where she put it. `GET /practice-sessions/remaining` now reports both kinds.
+- **Kept on the server:** which phrase is meant for which gap (`fits_blank_id`) and the feedback for unplaced phrases are stored in a new `practice_scenario.content` column and never sent. The five phrases are shuffled, because in the pool the first three are always the fitting ones in gap order.
+- **Team decision (Thiri, 2026-10-09):** use the AI team's service exactly as delivered. The live drag and drop activity is given her role, typed-in skills, years of experience and responsibilities (picked and typed); pre-written ones use role only. Multiple choice still receives role, difficulty and skill names only.
+- **Also fixed:** a generated question id could be longer than the 64-character `scenario_id` column for the longest role ids, so a live question for those roles was silently dropped; ids are now trimmed to fit.
+- **Frontend:** the Drag and Drop screen, feedback screen and View feedback run on the real activities; the placeholder Drag and Drop is removed. Code Review is now the only mock activity.
+- **Verification:** 462 backend tests pass (11 new in `tests/test_drag_and_drop_api.py`). Run through the API and in a headless browser with practice sessions held in memory and everything else on the real database: four pre-written messages plus a live one about "Looker" from real Gemini, feedback for every placed phrase, dashboard rows with View feedback. **Not yet verified against the real practice tables**: every practice request returns 503 until `data/schema/add_practice_scenario_drag_and_drop.sql` is run, because the queries now read the two new columns.
+- **Blocks / Blocked by:** blocked by that migration.
+
 ### AC 2.2.4 / 5.1.2 - Practised skills ticked on the roadmap, cleaner job description skills, dropped database connections
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09
@@ -388,8 +399,9 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 ### BE 3.7 - Drag-and-drop activity type
 
-- **Status:** [BLOCKED] **Owner:** TBD **Date:** 2026-10-04
+- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
 - **Update 2026-10-08:** waiting on Drag and Drop content from the AI team (blocker B4). The frontend screen exists on placeholder content.
+- **Update 2026-10-09:** delivered by the AI team and integrated - see "US 4.6 / AC 4.6.1 / 4.6.2 / 4.4.6" at the top of this section.
 - **What:** new `ActivityType` value `drag_and_drop`. Sentence template with 3 blanks, 5 options (3 correct, 2 distractors), constructive feedback on every option - never "wrong". Uses skills, role, years of experience and responsibilities (team decision, see Iteration 3 goal 4). Full request/response JSON in the spec doc, Section 8.
 - **Why:** one of the two new activity types replacing "MCQ only" as the sole interaction type, per Iteration 2 feedback's most-repeated workplace complaint.
 - **Blocks / Blocked by:** needs `practice_scenario.sentence_template` and `practice_scenario_option.fits_blank_id` columns (DB, see spec Section 9.8/9.9).

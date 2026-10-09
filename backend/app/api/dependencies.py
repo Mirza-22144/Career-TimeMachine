@@ -333,6 +333,7 @@ def get_job_description_comparison_service(
 
 def get_roadmap_service(
     predictions: RolePredictionService = Depends(get_role_prediction_service),
+    scenarios: ScenarioProvider = Depends(get_scenario_provider),
 ) -> RoadmapService:
     """Build the roadmap service. Takes the prediction service as a
     dependency so tests that fake predictions fake the roadmap's too."""
@@ -343,6 +344,7 @@ def get_roadmap_service(
         get_practice_role_service(),
         _practice_session_repository,
         _role_choice_repository,
+        scenarios,
     )
 
 

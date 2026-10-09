@@ -57,6 +57,16 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Fixes from local testing: skills minimum, job map circles, loading popup, smaller type and spacing
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09
+- **What:** (1) Your Experience now needs at least three skills before Continue, with a line saying how many more are needed. (2) The two shapes on "Your map for this job" are always true circles (they stretched into ovals before). (3) New `components/LoadingPopup.jsx`: one loading popup used by every screen while it waits for data, replacing blank pages and plain "Loading…" text; it fades in after a short delay so quick loads never flash it. (4) One smaller, consistent scale for type and spacing across all 20 stylesheets: headings and large text shrink the most (for example 34px -> 26px, 20px -> 17px), body text by about 1px, text of 14px and under is unchanged, large paddings and gaps shrink by 20-28%, and button heights by about 14%. Page side gutters and the space kept for the fixed top nav are unchanged. (5) The preparation page shows the focus skill the activity really uses (`focus_skill` on `POST /practice-sessions`).
+- **Why:** found in Thiri's local test run. At a laptop width (1366px) the practice question did not fit the screen before the resize.
+- **Not changed:** Clear My Journey still ends the token and returns to the home page, as AC 3.5.2 says (confirmed by Thiri).
+- **Known limit:** the three-skill minimum is enforced on the screen only; the API still accepts fewer.
+- **Verification:** eslint and build clean. 40-screen headless-browser run at 1366x768 against the real backend before and after, no page errors; screenshots compared.
+- **Blocks / Blocked by:** none.
+
 ### AC 4.3.1 / 4.3.5 / 4.4.6 / 4.5.4 / 3.4.1 / 2.4.1 - Workplace practice on real questions, one activity at a time
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08
@@ -278,6 +288,14 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Verification:** 434 backend tests pass (8 new in `tests/test_practice_activity_v3.py`). `option_feedback` migration run 2026-10-08. Against the real database and real Gemini: an activity of four questions, and of five with a typed-in skill (the fifth written live about that skill); one question shown at a time; 409 `NO_NEW_ACTIVITIES` afterwards. Warm Gemini calls 3.4-4.3 s; an instruction-like custom skill was rejected and replaced by the static fallback. Building the generator takes about 11 s, so it is warmed in a background thread at startup. **Not verified:** the Docker build and Cloud Run deployment.
 - **Deployment:** `google-genai` and `sentence-transformers` added to `requirements.txt`; the Dockerfile downloads MiniLM at build time; `GEMINI_API_KEY` must be set as a Cloud Run secret (without it the static fallback is used).
 - **Blocks / Blocked by:** none. Drag and Drop and Code Review content is still not delivered by the AI team.
+
+### AC 2.2.4 / 5.1.2 - Practised skills ticked on the roadmap, cleaner job description skills, dropped database connections
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09
+- **What:** (1) **Roadmap ticks (AC 2.2.4).** Skills You Could Explore listed the role's first three in-demand skills, which the practice questions often do not use, so finishing practice never ticked them. The list now puts skills the role's practice questions are tagged with first (`ScenarioProvider.skills_for_role`), so the next skill is one she can really practise. The three steps shown are a window around the next skill: the focus of her latest activity as Practised, then Next, then Later. (2) **Job description technical skills (AC 5.1.2).** The extraction model's two broad labels ("technical skill", "development practice") were also tagging ordinary phrases such as "backend development experience", "incident reviews", "agile delivery" and "non-technical users". A phrase under those labels that ends in a non-technical word is no longer listed, and "hybrid" / "checkout" style words are blocked; the five specific labels (language, cloud platform, container technology, software tool, database technology) are untouched. Changed in both copies of `job_description_extractor.py`. (3) **Dropped connections.** After about ten idle minutes the remote database had closed the pooled connections and every request returned 503 until the backend was restarted. New `app/repositories/postgres/pooling.py`: TCP keepalives on every pool, and a connection that has been idle is tested before use and replaced if it is dead.
+- **Why:** all three found in local testing on 2026-10-09; the third would have failed a demo after any pause.
+- **Verification:** 451 backend tests pass (13 new). Browser run against the real database: after a Multiple Choice activity whose focus was Angular, the roadmap shows "Angular - Practised 9 Oct", then Next and Later, and the dashboard's next step moves on. The sample job description now lists 10 technical skills instead of 14, with the four wrong ones gone. The idle-connection case is covered by unit tests with a simulated dead connection, not yet by a real ten-minute idle run.
+- **Blocks / Blocked by:** none. Worth telling the AI team about the extractor change so their copy stays in step.
 
 ### AC 4.4.5 / 4.4.6 - Practice focus first; live question written in the background
 

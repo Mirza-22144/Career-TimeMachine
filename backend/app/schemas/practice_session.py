@@ -116,6 +116,9 @@ class PracticeSessionResponse(BaseModel):
     # False when her earlier activities could not be checked, so some of
     # these questions may be ones she has seen (AC 4.3.5 exception).
     history_checked: bool = True
+    # AC 4.4.5: the skill from her roadmap this activity uses, or null when
+    # it uses none of them (or the session was not just started).
+    focus_skill: str | None = None
 
     @field_validator("scenarios", mode="before")
     @classmethod

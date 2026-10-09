@@ -165,7 +165,7 @@ class PracticeSessionService:
                 "You have completed all the activities for this role at this level",
             )
         exclude = answered | {scenario.scenario_id for scenario in scenarios}
-        self._put_focus_first(scenarios, context, earlier)
+        focus_skill = self._put_focus_first(scenarios, context, earlier)
 
         wants_live = self.live_questions is not None and bool(context.custom_skills)
         if wants_live and self.run_in_background is None:
@@ -193,6 +193,7 @@ class PracticeSessionService:
                 updated_at=now,
                 scenarios=scenarios,
                 history_checked=history_checked,
+                focus_skill=focus_skill,
             )
         )
         if wants_live and self.run_in_background is not None:
@@ -220,14 +221,16 @@ class PracticeSessionService:
 
     def _put_focus_first(
         self, scenarios: list[PracticeScenario], context: PracticeContext, earlier: list[PracticeSession]
-    ) -> None:
-        """AC 4.4.5: questions that use her practice focus come first. The
-        focus is the next skill to explore on her roadmap for this role - an
-        in-demand skill of the role that she doesn't have and hasn't
-        practised (the same rule as RoadmapService) - followed by the ones
-        after it. Questions that use none of them keep their order."""
-        if self.catalogue is None or len(scenarios) < 2:
-            return
+    ) -> str | None:
+        """AC 4.4.5: questions that use her practice focus come first.
+        Returns the focus this activity really uses, or None when it uses
+        none of the skills left for her to explore.
+
+        The order of focus is the roadmap's (RoadmapService._explore_steps):
+        skills of the role she doesn't have and hasn't practised, in
+        catalogue order. Questions that use none of them keep their order."""
+        if self.catalogue is None or not scenarios:
+            return None
         owned = {label.casefold() for label in context.skills}
         practised = {
             label.casefold()
@@ -237,17 +240,21 @@ class PracticeSessionService:
             if scenario.status == "completed"
             for label in scenario.skills_used
         }
+        in_activity = {skill.casefold() for scenario in scenarios for skill in scenario.skills_used}
         focus = [
-            skill.label.casefold()
+            skill.label
             for skill in self.catalogue.get_skills_for_role(context.role_id)
-            if skill.in_demand and skill.label.casefold() not in owned and skill.label.casefold() not in practised
+            if skill.label.casefold() in in_activity
+            and skill.label.casefold() not in owned
+            and skill.label.casefold() not in practised
         ]
-        rank = {label: index for index, label in reversed(list(enumerate(focus)))}
+        rank = {label.casefold(): index for index, label in reversed(list(enumerate(focus)))}
 
         def position(scenario: PracticeScenario) -> int:
             return min((rank[s.casefold()] for s in scenario.skills_used if s.casefold() in rank), default=len(focus))
 
         scenarios.sort(key=position)  # stable: ties keep the pool's order
+        return focus[0] if focus else None
 
     def get_session(self, owner: str, session_id: str) -> PracticeSession:
         """Return one of the owner's sessions. Another user's session gets

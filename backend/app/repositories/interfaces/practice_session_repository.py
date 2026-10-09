@@ -115,6 +115,9 @@ class PracticeSession:
     # sessions could not be read, so questions may repeat (AC 4.3.5). Not
     # stored.
     history_checked: bool = True
+    # The skill to explore this activity's first question uses, told to her
+    # on the preparation page. Only on the response to starting; not stored.
+    focus_skill: str | None = None
 
     @property
     def duration_minutes(self) -> int:

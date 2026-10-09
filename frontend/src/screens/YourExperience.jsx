@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../styles/YourExperience.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import FinishProfileNotice from '../components/FinishProfileNotice'
 import LoadingPopup from '../components/LoadingPopup'
 import ExperienceSummaryCard from '../components/ExperienceSummaryCard'
 import { stepTwoData } from '../mockData/onboardingData'
@@ -241,6 +242,7 @@ export default function YourExperience() {
   return (
     <>
       <TopNav />
+      <FinishProfileNotice />
       <div className="ye-page">
       <OnboardingSidebar currentStep={2} showPhoto={false} />
 
@@ -450,9 +452,8 @@ export default function YourExperience() {
           </button>
           {selectedSkillLabels.length < MIN_SKILLS && (
             <p className="ye-hint">
-              {selectedSkillLabels.length === 0
-                ? `Add at least ${MIN_SKILLS} skills to continue. They shape the roles we suggest and your practice.`
-                : `Add ${MIN_SKILLS - selectedSkillLabels.length} more ${MIN_SKILLS - selectedSkillLabels.length === 1 ? 'skill' : 'skills'} to continue.`}
+              Select at least {MIN_SKILLS === 3 ? 'three' : MIN_SKILLS} skills to improve the accuracy of your
+              predicted roles and practice.
             </p>
           )}
         </div>

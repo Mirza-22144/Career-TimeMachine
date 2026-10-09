@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import FinishProfileNotice from '../components/FinishProfileNotice'
 import LoadingPopup from '../components/LoadingPopup'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import SaveProfileDialog from '../components/SaveProfileDialog'
@@ -179,6 +180,7 @@ export default function YourBreak() {
   return (
     <>
       <TopNav />
+      <FinishProfileNotice />
       <div className="yb-page">
       <OnboardingSidebar currentStep={3} showPhoto={false} />
 
@@ -192,7 +194,7 @@ export default function YourBreak() {
             <div className="yb-year-field">
               <label className="yb-year-label">{stepThreeData.startLabel}</label>
               <select value={startYear} onChange={(e) => setStartYear(e.target.value)} className="yb-select">
-                <option value="">Select year</option>
+                <option value="" disabled hidden>Select year</option>
                 {START_YEAR_OPTIONS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
@@ -206,7 +208,7 @@ export default function YourBreak() {
                 className="yb-select"
                 disabled={returnUnsure}
               >
-                <option value="">Select year</option>
+                <option value="" disabled hidden>Select year</option>
                 {RETURN_YEAR_OPTIONS.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}

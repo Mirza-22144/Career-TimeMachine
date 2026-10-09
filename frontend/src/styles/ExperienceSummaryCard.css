@@ -11,7 +11,8 @@
   flex: 0 0 300px;
   align-self: flex-start;
   position: sticky;
-  top: 56px;
+  /* Below the fixed top nav (84px), so its heading is never covered. */
+  top: 104px;
   margin-top: 40px;
   padding: 20px;
   background: #ffffff;
@@ -57,6 +58,8 @@
   font-size: 14px;
   color: var(--violet-600);
   text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .esc-skills {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/ChooseYourPath.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import { FileTextIcon, SearchIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
@@ -45,7 +46,7 @@ export default function ChooseYourPath() {
     return (
       <>
         <TopNav />
-        <div className="cyp-page" />
+        <div className="cyp-page"><LoadingPopup text="Opening your paths…" /></div>
       </>
     );
   }

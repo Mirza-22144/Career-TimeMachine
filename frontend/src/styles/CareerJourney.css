@@ -145,7 +145,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 22px;
+  padding: 11px 20px;
   background: linear-gradient(90deg, var(--violet-600) 0%, #9333ea 100%);
   border: none;
   border-radius: 999px;

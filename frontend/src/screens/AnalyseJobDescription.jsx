@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../styles/AnalyseJobDescription.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import { api, ApiError } from "../api.js";
 import { navigate } from "../navigate.js";
 import { setCurrentJobDescriptionId } from "../currentJob.js";
@@ -148,6 +149,7 @@ export default function AnalyseJobDescription() {
   return (
     <>
       <TopNav />
+      {stage === "analysing" && <LoadingPopup text="Reading the job description…" caption="This can take up to half a minute." />}
       <div className="ajd-page">
         <span className="ajd-eyebrow">ANALYSE A JOB DESCRIPTION</span>
         <h1 className="ajd-heading">See how your experience relates to a role</h1>

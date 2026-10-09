@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/JobDescriptionComparison.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import ClosestRoleDialog from "../components/ClosestRoleDialog";
 import { ArrowRightIcon, RefreshIcon } from "../components/icons";
 import { api } from "../api.js";
@@ -115,7 +116,7 @@ export default function JobDescriptionComparison() {
       <>
         <TopNav />
         <div className="jdc-page">
-          {status === "loading" && <p className="jdc-loading" role="status">Comparing with your profile…</p>}
+          {status === "loading" && <LoadingPopup text="Comparing with your profile…" />}
           {status === "error" && (
             <div className="jdc-message">
               <p>We couldn&rsquo;t complete the comparison. Please try again.</p>

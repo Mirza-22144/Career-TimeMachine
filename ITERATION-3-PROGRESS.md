@@ -57,6 +57,14 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Second round of fixes from local testing: job map skills, footer and button size, spacing, loading popup font
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09
+- **What:** (1) On "Your map for this job", the job's skills wrap across the circle instead of running down in one column and out of it; the first eight are shown with a "+N more" control. (2) The loading popup sets its own font, so it looks the same on the job description screen as everywhere else. (3) The footer bar and the primary and outline buttons are smaller on every screen (footer padding 16px -> 10px, button padding about 15px -> 10px, button text 15px -> 14px). (4) Less empty space between the nav bar and the page heading on the dashboard, Choose Your Path, Profile Set Up, job description and roadmap screens. (5) On the practice preparation card, focus and difficulty share the top row and each card is only as tall as its content. (6) Job description extractor: phrases ending in "-powered", "approach", "programme" and similar are no longer listed as technical skills under any label (both copies of `job_description_extractor.py`).
+- **Also:** the AI team's re-saved `live_mcq_hybrid_semantic_retriever_v2_2.joblib` (scikit-learn 1.6.1) replaced the old one in `app/ml/reflective_mcq_v3/` and `ai/reflective_mcq_v3/models/`. The version warning at startup is gone and live questions still generate (3.4-4.5 s).
+- **Verification:** 463 backend tests pass; eslint and build clean; 39-screen browser run at 1366x768 against the real backend. A flaky drag and drop test (it searched the AI team's feedback wording for the word "correct") now checks field names instead.
+- **Blocks / Blocked by:** none. The AI team synced the extractor to their branch before change (6), so they need to sync once more.
+
 ### Fixes from local testing: skills minimum, job map circles, loading popup, smaller type and spacing
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09

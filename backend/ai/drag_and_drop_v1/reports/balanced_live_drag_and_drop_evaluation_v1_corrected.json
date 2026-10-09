@@ -1,0 +1,1243 @@
+{
+  "report_name": "Corrected balanced live drag-and-drop evaluation",
+  "created_at_utc": "2026-10-08T15:53:00.645636+00:00",
+  "evaluation_design": {
+    "total_live_tests": 6,
+    "originally_accepted_tests": 4,
+    "targeted_corrected_tests": 2,
+    "production_generation_attempt_limit": 2,
+    "fallback_type": "matching validated static activity"
+  },
+  "quality_correction": {
+    "reason": "Two generated activities contained implausibly weak distractors.",
+    "changes": [
+      "Strengthened prompt requirements for professional distractors.",
+      "Added deterministic rejection of obviously weak distractor phrases.",
+      "Retested only the two previously failed cases."
+    ]
+  },
+  "results": [
+    {
+      "test_id": "guided_software_feedback",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.3923,
+      "test_passed": true,
+      "evaluation_version": "original_accepted",
+      "complete_evidence": {
+        "test_id": "guided_software_feedback",
+        "request": {
+          "role_id": "software_developer",
+          "skills": [
+            "Constructive code review communication"
+          ],
+          "years_experience": "4",
+          "responsibilities": [
+            "Reviewed junior developers' code"
+          ],
+          "difficulty": "guided",
+          "activity_type": "drag_and_drop"
+        },
+        "result": {
+          "source": "live_gemini",
+          "activity_id": "software_developer_guided_live_v1_eae93d11014d",
+          "activity": {
+            "title": "Providing Code Review Feedback",
+            "situation": "You are reviewing a pull request submitted by a junior developer and need to leave constructive comments on their code changes.",
+            "sentence_template": "Hi, I have {blank_1} your changes. Overall it looks good, but please {blank_2} before we merge, and remember to {blank_3} for future implementations.",
+            "blanks": [
+              {
+                "blank_id": "blank_1"
+              },
+              {
+                "blank_id": "blank_2"
+              },
+              {
+                "blank_id": "blank_3"
+              }
+            ],
+            "options": [
+              {
+                "option_id": "o1",
+                "text": "reviewed",
+                "fits_blank_id": "blank_1"
+              },
+              {
+                "option_id": "o2",
+                "text": "refactor the database query logic",
+                "fits_blank_id": "blank_2"
+              },
+              {
+                "option_id": "o3",
+                "text": "add unit tests for the edge cases",
+                "fits_blank_id": "blank_3"
+              },
+              {
+                "option_id": "o4",
+                "text": "checked out",
+                "fits_blank_id": null
+              },
+              {
+                "option_id": "o5",
+                "text": "rewrite everything",
+                "fits_blank_id": null
+              }
+            ],
+            "feedback_by_option": {
+              "o1": {
+                "what_to_improve": null,
+                "why": "Accurately describes the action taken on the pull request."
+              },
+              "o2": {
+                "what_to_improve": null,
+                "why": "Provides specific and actionable feedback on what needs to be adjusted in the codebase."
+              },
+              "o3": {
+                "what_to_improve": null,
+                "why": "Clearly identifies the testing requirement to maintain code quality."
+              },
+              "o4": {
+                "what_to_improve": "Use more precise professional vocabulary such as 'reviewed' to maintain clarity in technical communication.",
+                "why": "While understandable, 'checked out' is overly colloquial for a formal code review comment."
+              },
+              "o5": {
+                "what_to_improve": "Provide constructive, specific feedback rather than vague requests for a complete rewrite.",
+                "why": "Telling someone to rewrite everything lacks actionable detail and can hinder collaborative progress."
+              }
+            },
+            "skills_used": [
+              "Constructive code review communication"
+            ],
+            "guidance": [
+              "Focus on being specific and actionable when suggesting code improvements to colleagues."
+            ]
+          },
+          "live_generation_attempted": true,
+          "attempts": [
+            {
+              "attempt_number": 1,
+              "latency_seconds": 2.3921,
+              "passed": true,
+              "errors": []
+            }
+          ],
+          "total_latency_seconds": 2.3923
+        },
+        "frontend_safe_activity": {
+          "title": "Providing Code Review Feedback",
+          "situation": "You are reviewing a pull request submitted by a junior developer and need to leave constructive comments on their code changes.",
+          "sentence_template": "Hi, I have {blank_1} your changes. Overall it looks good, but please {blank_2} before we merge, and remember to {blank_3} for future implementations.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "reviewed"
+            },
+            {
+              "option_id": "o2",
+              "text": "refactor the database query logic"
+            },
+            {
+              "option_id": "o3",
+              "text": "add unit tests for the edge cases"
+            },
+            {
+              "option_id": "o4",
+              "text": "checked out"
+            },
+            {
+              "option_id": "o5",
+              "text": "rewrite everything"
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "Accurately describes the action taken on the pull request."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "Provides specific and actionable feedback on what needs to be adjusted in the codebase."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "Clearly identifies the testing requirement to maintain code quality."
+            },
+            "o4": {
+              "what_to_improve": "Use more precise professional vocabulary such as 'reviewed' to maintain clarity in technical communication.",
+              "why": "While understandable, 'checked out' is overly colloquial for a formal code review comment."
+            },
+            "o5": {
+              "what_to_improve": "Provide constructive, specific feedback rather than vague requests for a complete rewrite.",
+              "why": "Telling someone to rewrite everything lacks actionable detail and can hinder collaborative progress."
+            }
+          },
+          "skills_used": [
+            "Constructive code review communication"
+          ],
+          "guidance": [
+            "Focus on being specific and actionable when suggesting code improvements to colleagues."
+          ]
+        },
+        "measured_latency_seconds": 2.3925,
+        "checks": {
+          "live_succeeded": true,
+          "custom_skill_preserved": true,
+          "answer_mapping_hidden": true,
+          "backend_mapping_retained": true,
+          "judge_accepted": true
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 5,
+            "workplace_realism": 5,
+            "sentence_coherence": 5,
+            "option_distinctness": 4,
+            "distractor_plausibility": 5,
+            "feedback_quality": 5,
+            "supportive_language": 5,
+            "difficulty_alignment": 5
+          },
+          "strengths": [
+            "The pull request review scenario is highly representative of routine mentoring responsibilities for a software developer.",
+            "The distractors effectively mirror real-world pitfalls, such as using colloquial git jargon ('checked out') or unconstructive, dismissive feedback ('rewrite everything').",
+            "Feedback for every option is constructive, supportive, and clearly explains the rationale for professional phrasing."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "option_distinctness",
+              "explanation": "Both o2 ('refactor the database query logic') and o3 ('add unit tests for the edge cases') are base verb phrases that could grammatically fit either blank_2 or blank_3, although the temporal cues ('before we merge' vs 'for future implementations') help guide the learner.",
+              "recommended_fix": "Consider sharpening the prompt framing or tailoring the wording so each phrase more uniquely signals immediate remediation versus future process adherence."
+            }
+          ],
+          "summary": "An authentic, well-scaffolded guided activity that reinforces constructive technical communication. The distractors and feedback accurately reflect workplace standards, warranting acceptance."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 4,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 15.7947,
+            "error": null
+          }
+        ],
+        "passed": true,
+        "evaluation_version": "original_accepted"
+      }
+    },
+    {
+      "test_id": "guided_user_support",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.3739,
+      "test_passed": true,
+      "evaluation_version": "original_accepted",
+      "complete_evidence": {
+        "test_id": "guided_user_support",
+        "request": {
+          "role_id": "computer_user_support_specialist",
+          "skills": [
+            "Explaining technical issues to non-technical users"
+          ],
+          "years_experience": "2",
+          "responsibilities": [
+            "Resolved user support requests"
+          ],
+          "difficulty": "guided",
+          "activity_type": "drag_and_drop"
+        },
+        "result": {
+          "source": "live_gemini",
+          "activity_id": "computer_user_support_specialist_guided_live_v1_88c3a6903c14",
+          "activity": {
+            "title": "Explaining a Software Installation Issue",
+            "situation": "As a computer user support specialist with two years of experience, you need to write an email update to a colleague who is waiting for a software installation to resolve their support request.",
+            "sentence_template": "Hello, I have {blank_1} regarding your recent request. The installation is now {blank_2}, so you can {blank_3}.",
+            "blanks": [
+              {
+                "blank_id": "blank_1"
+              },
+              {
+                "blank_id": "blank_2"
+              },
+              {
+                "blank_id": "blank_3"
+              }
+            ],
+            "options": [
+              {
+                "option_id": "o1",
+                "text": "investigated the technical cause",
+                "fits_blank_id": "blank_1"
+              },
+              {
+                "option_id": "o2",
+                "text": "completed successfully",
+                "fits_blank_id": "blank_2"
+              },
+              {
+                "option_id": "o3",
+                "text": "access the application now",
+                "fits_blank_id": "blank_3"
+              },
+              {
+                "option_id": "o4",
+                "text": "fixed the computer",
+                "fits_blank_id": null
+              },
+              {
+                "option_id": "o5",
+                "text": "wait for a bit longer",
+                "fits_blank_id": null
+              }
+            ],
+            "feedback_by_option": {
+              "o1": {
+                "what_to_improve": null,
+                "why": "This clearly indicates that you have taken action on the support request."
+              },
+              "o2": {
+                "what_to_improve": null,
+                "why": "This provides a precise status update on the installation progress."
+              },
+              "o3": {
+                "what_to_improve": null,
+                "why": "This gives the user a clear and actionable next step."
+              },
+              "o4": {
+                "what_to_improve": "Try to be more specific about the exact component or software involved rather than using a broad term.",
+                "why": "Saying you fixed the computer is vague and does not clarify the specific resolution for the software installation."
+              },
+              "o5": {
+                "what_to_improve": "Ensure your updates provide definitive progress rather than asking the user to wait without a clear reason.",
+                "why": "Telling the user to wait contradicts the message that the installation is finished."
+              }
+            },
+            "skills_used": [
+              "Explaining technical issues to non-technical users"
+            ],
+            "guidance": [
+              "Consider what specific action has been completed regarding the support request."
+            ]
+          },
+          "live_generation_attempted": true,
+          "attempts": [
+            {
+              "attempt_number": 1,
+              "latency_seconds": 2.3738,
+              "passed": true,
+              "errors": []
+            }
+          ],
+          "total_latency_seconds": 2.3739
+        },
+        "frontend_safe_activity": {
+          "title": "Explaining a Software Installation Issue",
+          "situation": "As a computer user support specialist with two years of experience, you need to write an email update to a colleague who is waiting for a software installation to resolve their support request.",
+          "sentence_template": "Hello, I have {blank_1} regarding your recent request. The installation is now {blank_2}, so you can {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "investigated the technical cause"
+            },
+            {
+              "option_id": "o2",
+              "text": "completed successfully"
+            },
+            {
+              "option_id": "o3",
+              "text": "access the application now"
+            },
+            {
+              "option_id": "o4",
+              "text": "fixed the computer"
+            },
+            {
+              "option_id": "o5",
+              "text": "wait for a bit longer"
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly indicates that you have taken action on the support request."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This provides a precise status update on the installation progress."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This gives the user a clear and actionable next step."
+            },
+            "o4": {
+              "what_to_improve": "Try to be more specific about the exact component or software involved rather than using a broad term.",
+              "why": "Saying you fixed the computer is vague and does not clarify the specific resolution for the software installation."
+            },
+            "o5": {
+              "what_to_improve": "Ensure your updates provide definitive progress rather than asking the user to wait without a clear reason.",
+              "why": "Telling the user to wait contradicts the message that the installation is finished."
+            }
+          },
+          "skills_used": [
+            "Explaining technical issues to non-technical users"
+          ],
+          "guidance": [
+            "Consider what specific action has been completed regarding the support request."
+          ]
+        },
+        "measured_latency_seconds": 2.3741,
+        "checks": {
+          "live_succeeded": true,
+          "custom_skill_preserved": true,
+          "answer_mapping_hidden": true,
+          "backend_mapping_retained": true,
+          "judge_accepted": true
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 4,
+            "workplace_realism": 4,
+            "sentence_coherence": 3,
+            "option_distinctness": 4,
+            "distractor_plausibility": 4,
+            "feedback_quality": 4,
+            "supportive_language": 5,
+            "difficulty_alignment": 4
+          },
+          "strengths": [
+            "The scenario accurately reflects day-to-day communications handled by a computer user support specialist resolving user tickets.",
+            "The distractors represent realistic workplace communication errors, such as providing overly vague updates or conflicting instructions.",
+            "The feedback provided for both correct options and distractors is constructive, professional, and free of punitive phrasing."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "sentence_coherence",
+              "explanation": "The completed sentence ('I have investigated the technical cause regarding your recent request. The installation is now completed successfully...') is slightly unnatural in phrasing, specifically 'investigated the technical cause regarding' and the passive construction 'is now completed successfully'.",
+              "recommended_fix": "Refine the phrasing to sound more natural, such as 'completed the software setup' for blank 1 or 'is now complete' for blank 2."
+            },
+            {
+              "severity": "minor",
+              "criterion": "role_relevance",
+              "explanation": "While the task suits a support specialist, it does not actively test the stated skill of 'Explaining technical issues to non-technical users', as no technical concepts are simplified or explained.",
+              "recommended_fix": "Introduce a brief, non-technical explanation of the underlying problem into the sentence template or correct options."
+            }
+          ],
+          "summary": "This activity provides an authentic and supportive exercise for an entry-level IT support specialist communicating ticket resolution. The grammatical flow is slightly awkward in places and could better showcase the targeted explanation skill, but the overall design is solid and ready for use."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 3,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 15.8963,
+            "error": null
+          }
+        ],
+        "passed": true,
+        "evaluation_version": "original_accepted"
+      }
+    },
+    {
+      "test_id": "standard_security_incident",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.5156,
+      "test_passed": true,
+      "evaluation_version": "original_accepted",
+      "complete_evidence": {
+        "test_id": "standard_security_incident",
+        "request": {
+          "role_id": "information_security_analyst",
+          "skills": [
+            "Security incident communication"
+          ],
+          "years_experience": "5",
+          "responsibilities": [
+            "Coordinated incident response activities"
+          ],
+          "difficulty": "standard",
+          "activity_type": "drag_and_drop"
+        },
+        "result": {
+          "source": "live_gemini",
+          "activity_id": "information_security_analyst_standard_live_v1_ded2b73ae845",
+          "activity": {
+            "title": "Communicating a Security Incident",
+            "situation": "As an information security analyst with five years of experience, you recently coordinated incident response activities for a malware outbreak. You need to provide a clear, structured update to internal stakeholders.",
+            "sentence_template": "Following the recent detection of unauthorized access, {blank_1} was initiated immediately. We identified that {blank_2}, and our priority moving forward is to ensure {blank_3}.",
+            "blanks": [
+              {
+                "blank_id": "blank_1"
+              },
+              {
+                "blank_id": "blank_2"
+              },
+              {
+                "blank_id": "blank_3"
+              }
+            ],
+            "options": [
+              {
+                "option_id": "o1",
+                "text": "our standardized incident response protocol",
+                "fits_blank_id": "blank_1"
+              },
+              {
+                "option_id": "o2",
+                "text": "the affected endpoint was isolated within ten minutes",
+                "fits_blank_id": "blank_2"
+              },
+              {
+                "option_id": "o3",
+                "text": "all credentials across similar systems are rotated",
+                "fits_blank_id": "blank_3"
+              },
+              {
+                "option_id": "o4",
+                "text": "some technical actions were taken by the team",
+                "fits_blank_id": null
+              },
+              {
+                "option_id": "o5",
+                "text": "everything is back to normal now",
+                "fits_blank_id": null
+              }
+            ],
+            "feedback_by_option": {
+              "o1": {
+                "what_to_improve": null,
+                "why": "This accurately specifies the exact procedure followed during the coordinated response."
+              },
+              "o2": {
+                "what_to_improve": null,
+                "why": "This provides precise, factual detail regarding the containment phase of the incident."
+              },
+              "o3": {
+                "what_to_improve": null,
+                "why": "This clearly identifies the actionable preventative measure required for remediation."
+              },
+              "o4": {
+                "what_to_improve": "Include specific procedural details rather than generalized statements.",
+                "why": "Vague phrasing lacks the necessary context for stakeholders assessing the security posture."
+              },
+              "o5": {
+                "what_to_improve": "Avoid overly casual summaries and specify the exact status of remediation.",
+                "why": "Oversimplifying the resolution can obscure remaining security tasks and risk ongoing vulnerabilities."
+              }
+            },
+            "skills_used": [
+              "Security incident communication"
+            ],
+            "guidance": [
+              "Ensure technical updates are precise and reference specific containment actions."
+            ]
+          },
+          "live_generation_attempted": true,
+          "attempts": [
+            {
+              "attempt_number": 1,
+              "latency_seconds": 2.5155,
+              "passed": true,
+              "errors": []
+            }
+          ],
+          "total_latency_seconds": 2.5156
+        },
+        "frontend_safe_activity": {
+          "title": "Communicating a Security Incident",
+          "situation": "As an information security analyst with five years of experience, you recently coordinated incident response activities for a malware outbreak. You need to provide a clear, structured update to internal stakeholders.",
+          "sentence_template": "Following the recent detection of unauthorized access, {blank_1} was initiated immediately. We identified that {blank_2}, and our priority moving forward is to ensure {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "our standardized incident response protocol"
+            },
+            {
+              "option_id": "o2",
+              "text": "the affected endpoint was isolated within ten minutes"
+            },
+            {
+              "option_id": "o3",
+              "text": "all credentials across similar systems are rotated"
+            },
+            {
+              "option_id": "o4",
+              "text": "some technical actions were taken by the team"
+            },
+            {
+              "option_id": "o5",
+              "text": "everything is back to normal now"
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This accurately specifies the exact procedure followed during the coordinated response."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This provides precise, factual detail regarding the containment phase of the incident."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This clearly identifies the actionable preventative measure required for remediation."
+            },
+            "o4": {
+              "what_to_improve": "Include specific procedural details rather than generalized statements.",
+              "why": "Vague phrasing lacks the necessary context for stakeholders assessing the security posture."
+            },
+            "o5": {
+              "what_to_improve": "Avoid overly casual summaries and specify the exact status of remediation.",
+              "why": "Oversimplifying the resolution can obscure remaining security tasks and risk ongoing vulnerabilities."
+            }
+          },
+          "skills_used": [
+            "Security incident communication"
+          ],
+          "guidance": [
+            "Ensure technical updates are precise and reference specific containment actions."
+          ]
+        },
+        "measured_latency_seconds": 2.5158,
+        "checks": {
+          "live_succeeded": true,
+          "custom_skill_preserved": true,
+          "answer_mapping_hidden": true,
+          "backend_mapping_retained": true,
+          "judge_accepted": true
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 5,
+            "workplace_realism": 5,
+            "sentence_coherence": 4,
+            "option_distinctness": 5,
+            "distractor_plausibility": 4,
+            "feedback_quality": 5,
+            "supportive_language": 5,
+            "difficulty_alignment": 5
+          },
+          "strengths": [
+            "The scenario accurately reflects standard incident response communication expected from an experienced information security analyst.",
+            "The distractors effectively represent realistic communication weaknesses, such as vague technical descriptions and premature reassurance.",
+            "Feedback explanations are constructive, specific, and explain the operational impact of clarity and precision."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "sentence_coherence",
+              "explanation": "In blank 2, phrasing 'We identified that the affected endpoint was isolated within ten minutes' is slightly unnatural, as containment actions are typically 'confirmed' or 'verified' rather than 'identified'.",
+              "recommended_fix": "Adjust the template prompt to 'We confirmed that {blank_2}' or rephrase the option to focus on an investigative discovery, such as 'malware execution was restricted to a single host'."
+            }
+          ],
+          "summary": "This is a well-designed, realistic workplace communication activity that aligns closely with incident response documentation standards. The options and feedback are high quality and meet all requirements for standard difficulty."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 4,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 12.9052,
+            "error": null
+          }
+        ],
+        "passed": true,
+        "evaluation_version": "original_accepted"
+      }
+    },
+    {
+      "test_id": "standard_project_scope",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.9021,
+      "test_passed": true,
+      "evaluation_version": "post_correction",
+      "complete_evidence": {
+        "test_id": "standard_project_scope",
+        "request": {
+          "role_id": "it_project_manager",
+          "skills": [
+            "Scope negotiation"
+          ],
+          "years_experience": "7",
+          "responsibilities": [
+            "Led cross-functional delivery teams"
+          ],
+          "difficulty": "standard",
+          "activity_type": "drag_and_drop"
+        },
+        "served_source": "live_gemini",
+        "generation_attempts": [
+          {
+            "attempt_number": 1,
+            "latency_seconds": 2.9018,
+            "passed": true,
+            "errors": []
+          }
+        ],
+        "generation_latency_seconds": 2.9021,
+        "activity": {
+          "title": "Managing Scope and Stakeholder Expectations",
+          "situation": "You are leading a cross-functional delivery team and need to respond to a stakeholder request that threatens current project boundaries. You must handle this through scope negotiation.",
+          "sentence_template": "Regarding the latest feature additions, we can proceed by {blank_1}, provided that we maintain {blank_2}, and schedule a review with {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "integrating the core items into the next sprint",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "our current delivery velocity and quality standards",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "the steering committee next Tuesday morning",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "accepting all change requests immediately without re-estimating",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "deferring stakeholder alignment until the final release phase",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This option clearly defines an actionable step that fits naturally into the workflow without committing to unrealistic timelines."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This option protects critical delivery parameters while remaining constructive to stakeholder needs."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This option identifies a specific governance forum and timeframe, ensuring appropriate oversight."
+            },
+            "o4": {
+              "what_to_improve": "Ensure change requests are formally evaluated against capacity rather than accepted unconditionally.",
+              "why": "While proactive in tone, accepting all requests without re-estimation risks team burnout and scope creep."
+            },
+            "o5": {
+              "what_to_improve": "Involve stakeholders earlier to prevent misaligned expectations later in the delivery lifecycle.",
+              "why": "Deferring alignment until the final stage creates a high risk of late-stage rework and stakeholder dissatisfaction."
+            }
+          },
+          "skills_used": [
+            "Scope negotiation"
+          ],
+          "guidance": []
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 5,
+            "workplace_realism": 5,
+            "sentence_coherence": 5,
+            "option_distinctness": 4,
+            "distractor_plausibility": 4,
+            "feedback_quality": 5,
+            "supportive_language": 5,
+            "difficulty_alignment": 4
+          },
+          "strengths": [
+            "The scenario accurately captures the delicate balance required when managing scope creep and communicating trade-offs to stakeholders.",
+            "The target sentence reads coherently and naturally once completed with the intended options.",
+            "Feedback explanations are supportive, objective, and clearly articulate the strategic implications of each approach without using punitive phrasing."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "distractor_plausibility",
+              "explanation": "Both distractors (o4 and o5) rely on gerund phrases starting with verbs ('accepting...', 'deferring...'), which primarily make them syntactic candidates for blank_1 rather than blanks 2 or 3.",
+              "recommended_fix": "Consider varying the syntactic form of one distractor so that it presents a plausible alternative for blank_2 or blank_3, such as a noun phrase reflecting poor delivery metrics."
+            }
+          ],
+          "summary": "This is a well-structured and realistic activity for a delivery lead negotiating scope. The sentence structure is coherent, the options are distinct, and the feedback provided is constructive and educational."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 4,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 10.46,
+            "error": null
+          }
+        ],
+        "calculated_decision": "accept",
+        "test_passed": true,
+        "evaluation_version": "post_correction"
+      }
+    },
+    {
+      "test_id": "challenge_data_explanation",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.0782,
+      "test_passed": true,
+      "evaluation_version": "original_accepted",
+      "complete_evidence": {
+        "test_id": "challenge_data_explanation",
+        "request": {
+          "role_id": "data_scientist",
+          "skills": [
+            "Explaining model limitations to stakeholders"
+          ],
+          "years_experience": "6",
+          "responsibilities": [
+            "Presented analytical findings to senior stakeholders"
+          ],
+          "difficulty": "challenge",
+          "activity_type": "drag_and_drop"
+        },
+        "result": {
+          "source": "live_gemini",
+          "activity_id": "data_scientist_challenge_live_v1_82c2ac1138b0",
+          "activity": {
+            "title": "Explaining complex machine learning outputs to leadership",
+            "situation": "You need to present analytical findings and associated model limitations to senior stakeholders during a quarterly review meeting.",
+            "sentence_template": "During the review, {blank_1} regarding the prediction accuracy, {blank_2} on the training data constraints, and {blank_3} for mitigation.",
+            "blanks": [
+              {
+                "blank_id": "blank_1"
+              },
+              {
+                "blank_id": "blank_2"
+              },
+              {
+                "blank_id": "blank_3"
+              }
+            ],
+            "options": [
+              {
+                "option_id": "o1",
+                "text": "we must highlight key variances",
+                "fits_blank_id": "blank_1"
+              },
+              {
+                "option_id": "o2",
+                "text": "provide transparent context",
+                "fits_blank_id": "blank_2"
+              },
+              {
+                "option_id": "o3",
+                "text": "propose clear next steps",
+                "fits_blank_id": "blank_3"
+              },
+              {
+                "option_id": "o4",
+                "text": "share some thoughts",
+                "fits_blank_id": null
+              },
+              {
+                "option_id": "o5",
+                "text": "talk about the models",
+                "fits_blank_id": null
+              }
+            ],
+            "feedback_by_option": {
+              "o1": {
+                "what_to_improve": null,
+                "why": "This option precisely targets the need to highlight key variances regarding prediction accuracy."
+              },
+              "o2": {
+                "what_to_improve": null,
+                "why": "This option accurately captures the necessity of providing transparent context on training data constraints."
+              },
+              "o3": {
+                "what_to_improve": null,
+                "why": "This option effectively addresses the requirement to propose clear next steps for mitigation."
+              },
+              "o4": {
+                "what_to_improve": "Use more precise language rather than vague expressions like 'share some thoughts' to ensure stakeholders understand the analytical scope.",
+                "why": "Vague phrasing lacks the specificity required when communicating technical limitations to senior leadership."
+              },
+              "o5": {
+                "what_to_improve": "Reference specific model attributes rather than a broad mention of 'the models' to maintain clarity and accountability.",
+                "why": "Overly generalised statements do not adequately convey the nuances of complex analytical findings."
+              }
+            },
+            "skills_used": [
+              "Explaining model limitations to stakeholders"
+            ],
+            "guidance": []
+          },
+          "live_generation_attempted": true,
+          "attempts": [
+            {
+              "attempt_number": 1,
+              "latency_seconds": 2.078,
+              "passed": true,
+              "errors": []
+            }
+          ],
+          "total_latency_seconds": 2.0782
+        },
+        "frontend_safe_activity": {
+          "title": "Explaining complex machine learning outputs to leadership",
+          "situation": "You need to present analytical findings and associated model limitations to senior stakeholders during a quarterly review meeting.",
+          "sentence_template": "During the review, {blank_1} regarding the prediction accuracy, {blank_2} on the training data constraints, and {blank_3} for mitigation.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "we must highlight key variances"
+            },
+            {
+              "option_id": "o2",
+              "text": "provide transparent context"
+            },
+            {
+              "option_id": "o3",
+              "text": "propose clear next steps"
+            },
+            {
+              "option_id": "o4",
+              "text": "share some thoughts"
+            },
+            {
+              "option_id": "o5",
+              "text": "talk about the models"
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This option precisely targets the need to highlight key variances regarding prediction accuracy."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This option accurately captures the necessity of providing transparent context on training data constraints."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This option effectively addresses the requirement to propose clear next steps for mitigation."
+            },
+            "o4": {
+              "what_to_improve": "Use more precise language rather than vague expressions like 'share some thoughts' to ensure stakeholders understand the analytical scope.",
+              "why": "Vague phrasing lacks the specificity required when communicating technical limitations to senior leadership."
+            },
+            "o5": {
+              "what_to_improve": "Reference specific model attributes rather than a broad mention of 'the models' to maintain clarity and accountability.",
+              "why": "Overly generalised statements do not adequately convey the nuances of complex analytical findings."
+            }
+          },
+          "skills_used": [
+            "Explaining model limitations to stakeholders"
+          ],
+          "guidance": []
+        },
+        "measured_latency_seconds": 2.0783,
+        "checks": {
+          "live_succeeded": true,
+          "custom_skill_preserved": true,
+          "answer_mapping_hidden": true,
+          "backend_mapping_retained": true,
+          "judge_accepted": true
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 5,
+            "workplace_realism": 4,
+            "sentence_coherence": 4,
+            "option_distinctness": 4,
+            "distractor_plausibility": 3,
+            "feedback_quality": 4,
+            "supportive_language": 5,
+            "difficulty_alignment": 3
+          },
+          "strengths": [
+            "The scenario directly targets the core data science skill of communicating machine learning constraints and model governance to executive leadership.",
+            "The sentence template reads smoothly when completed with the intended options, maintaining syntactic coordination across clauses.",
+            "Feedback for both correct selections and distractors is professional, non-judgemental, and articulates precise professional expectations."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "difficulty_alignment",
+              "explanation": "Given the challenge level and six years of professional experience, the distractors ('share some thoughts' and 'talk about the models') are rather basic colloquialisms, reducing the cognitive challenge of the task.",
+              "recommended_fix": "Replace overly informal distractors with more nuanced alternatives that resemble common senior communication pitfalls, such as overly technical descriptions or uncommitted passive phrasing."
+            }
+          ],
+          "summary": "A well-crafted workplace communication scenario that accurately reflects the responsibilities of an experienced data scientist presenting model constraints. Minor adjustments to elevate distractor complexity would better suit the challenge difficulty rating."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 3,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 18.231,
+            "error": null
+          }
+        ],
+        "passed": true,
+        "evaluation_version": "original_accepted"
+      }
+    },
+    {
+      "test_id": "challenge_network_outage",
+      "source": "live_gemini",
+      "judge_decision": "accept",
+      "latency_seconds": 2.6613,
+      "test_passed": true,
+      "evaluation_version": "post_correction",
+      "complete_evidence": {
+        "test_id": "challenge_network_outage",
+        "request": {
+          "role_id": "network_and_systems_administrator",
+          "skills": [
+            "Critical outage escalation"
+          ],
+          "years_experience": "8",
+          "responsibilities": [
+            "Coordinated on-call response and mentored junior staff"
+          ],
+          "difficulty": "challenge",
+          "activity_type": "drag_and_drop"
+        },
+        "served_source": "live_gemini",
+        "generation_attempts": [
+          {
+            "attempt_number": 1,
+            "latency_seconds": 2.661,
+            "passed": true,
+            "errors": []
+          }
+        ],
+        "generation_latency_seconds": 2.6613,
+        "activity": {
+          "title": "Critical Outage Escalation Communication",
+          "situation": "As an experienced network and systems administrator coordinating an on-call response while mentoring junior staff, you need to inform senior stakeholders about a major infrastructure incident affecting core services, outlining the immediate mitigation steps and the planned restoration schedule.",
+          "sentence_template": "During the recent critical outage escalation, {blank_1} to stabilise the core routing infrastructure, while {blank_2} alongside the junior engineers to ensure knowledge transfer, and {blank_3} to provide a transparent progress report.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "we immediately implemented the secondary BGP failover paths",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "I guided the team through systematic log analysis",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "we committed to delivering hourly status updates",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "we temporarily bypassed all standard change control protocols",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "I handled every diagnostic task independently",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This accurately highlights the technical action taken to address the critical outage escalation."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This effectively reflects your mentoring responsibilities while actively managing the incident response."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes clear stakeholder expectations regarding communication during a high-priority event."
+            },
+            "o4": {
+              "what_to_improve": "Ensure governance procedures are maintained even under pressure, as bypassing change control entirely introduces operational risk.",
+              "why": "Bypassing formal protocols entirely can lead to undocumented configuration drift and secondary incidents."
+            },
+            "o5": {
+              "what_to_improve": "Delegate appropriate diagnostic tasks to junior staff to support their professional development during live incidents.",
+              "why": "Handling everything independently misses an opportunity for mentorship and can overwhelm the lead administrator."
+            }
+          },
+          "skills_used": [
+            "Critical outage escalation"
+          ],
+          "guidance": []
+        },
+        "judge_review": {
+          "decision": "accept",
+          "scores": {
+            "role_relevance": 5,
+            "workplace_realism": 5,
+            "sentence_coherence": 5,
+            "option_distinctness": 5,
+            "distractor_plausibility": 4,
+            "feedback_quality": 5,
+            "supportive_language": 5,
+            "difficulty_alignment": 5
+          },
+          "strengths": [
+            "The scenario accurately reflects the operational balance between technical mitigation and mentoring during incident response.",
+            "The intended options assemble into an articulate, grammatically fluent update suitable for senior stakeholders.",
+            "The feedback clearly articulates the operational risks of bypassing change management and failing to delegate."
+          ],
+          "issues": [
+            {
+              "severity": "minor",
+              "criterion": "distractor_plausibility",
+              "explanation": "If option o5 ('I handled every diagnostic task independently') is placed into blank_2, it creates a slight semantic contradiction with the following clause ('alongside the junior engineers').",
+              "recommended_fix": "Consider rephrasing option o5 slightly, for example to 'I focused on troubleshooting critical services without direct input', to keep the contrast natural without directly clashing with the adjacent phrase."
+            }
+          ],
+          "summary": "This is a well-designed activity that convincingly captures the communicative and mentoring challenges faced by senior technical administrators during major incidents."
+        },
+        "judge_assessment": {
+          "model_decision": "accept",
+          "calculated_decision": "accept",
+          "minimum_score": 4,
+          "unexplained_low_scores": [],
+          "decision_consistent": true,
+          "review_consistent": true
+        },
+        "judge_attempts": [
+          {
+            "attempt_number": 1,
+            "valid": true,
+            "latency_seconds": 10.645,
+            "error": null
+          }
+        ],
+        "calculated_decision": "accept",
+        "test_passed": true,
+        "evaluation_version": "post_correction"
+      }
+    }
+  ],
+  "summary": {
+    "live_tests_completed": 6,
+    "live_tests_passed": 6,
+    "judge_accepted": 6,
+    "mean_live_latency_seconds": 2.4872,
+    "p95_live_latency_seconds": 2.8419,
+    "security_tests_passed": 6,
+    "security_tests_total": 6,
+    "forced_static_fallback_passed": true,
+    "frontend_answer_mapping_hidden": true,
+    "backend_answer_mapping_retained": true,
+    "exact_duplicate_situations": 0,
+    "near_duplicate_situations": 0,
+    "final_live_evaluation_passed": true
+  },
+  "change_management_note": "The original Step 16 result is retained as pre-correction evidence. This report records the targeted correction and final outcome."
+}

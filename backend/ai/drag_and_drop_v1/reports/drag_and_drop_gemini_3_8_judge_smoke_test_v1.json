@@ -1,0 +1,265 @@
+{
+  "report_name": "drag_and_drop_gemini_3_8_judge_smoke_test_v1",
+  "created_at_utc": "2026-10-08T12:41:40.665745+00:00",
+  "generator_model": "gemini-3.5-flash",
+  "judge_model": "gemini-3.8-flash",
+  "judge_model_verification": {
+    "response": {
+      "status": "ready"
+    },
+    "latency_seconds": 1.9901
+  },
+  "reviewed_activity_count": 4,
+  "accepted_count": 4,
+  "revision_required_count": 0,
+  "rejected_count": 0,
+  "consistent_review_count": 4,
+  "reviews": [
+    {
+      "activity_id": "software_developer_guided_v1_01",
+      "review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 4,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "Skill integration of Prometheus and Django is seamless and directly reflects real diagnostic workflows for a backend developer.",
+          "The feedback entries for both correct selections and distractors are constructive, clearly highlighting the value of accountability and verifiable metrics.",
+          "The scenario accurately reflects typical incident communication expectations during an API performance degradation."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "sentence_coherence",
+            "explanation": "The final sentence contains consecutive coordinating conjunctions ('and expect to deploy a hotfix by 14:00, and [blank_3]'), making the phrasing slightly repetitive when o3 is inserted.",
+            "recommended_fix": "Remove the second 'and' or rephrase the sentence template to: 'I am currently adjusting the connection pool limits, expect to deploy a hotfix by 14:00, and {blank_3}.'"
+          },
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o5 ('hope it will all start working again on its own very soon') is somewhat naive and leans toward a caricature of poor workplace communication.",
+            "recommended_fix": "Refine o5 into a more plausible distractor, such as 'assume the traffic spike will subside naturally without further intervention'."
+          }
+        ],
+        "summary": "This is a well-designed guided activity for a software developer role, effectively incorporating Prometheus and Django into an authentic incident update scenario. With minor polishing to the sentence template syntax and distractor subtlety, it is ready for deployment."
+      },
+      "assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 13.9837,
+          "error": null
+        }
+      ]
+    },
+    {
+      "activity_id": "software_developer_guided_v1_02",
+      "review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately reflects typical pull request and code review communication for software developers working with Kubernetes manifests.",
+          "The sentence template and correct options combine smoothly into an articulate, professional, and actionable code review comment.",
+          "The feedback provided for each option is constructive, specific, and models healthy workplace collaboration standards."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o4 ('the configuration files look completely messy and will probably crash the cluster') is slightly exaggerated and overtly unprofessional compared to typical workplace peer feedback.",
+            "recommended_fix": "Consider phrasing o4 more subtly to test discernment between constructive critique and vague technical commentary, for instance: 'the current structure looks disorganised and risks causing performance instability across our cluster nodes'."
+          }
+        ],
+        "summary": "This is a well-designed, realistic workplace communication activity for a software developer reviewing infrastructure-as-code. The options and feedback clearly illustrate the contrast between objective, collaborative code review practices and emotive, unhelpful responses."
+      },
+      "assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 11.6631,
+          "error": null
+        }
+      ]
+    },
+    {
+      "activity_id": "software_developer_guided_v1_03",
+      "review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario addresses a realistic engineering situation involving Apache Kafka configuration and operational risk management ahead of high-traffic events.",
+          "The sentence template links cause, business impact, and concrete remediation in a coherent three-part escalation structure.",
+          "The distractors model common communication errors (hyperbolic alarmism in option o4 and passive vagueness in option o5) without breaking grammatical flow.",
+          "Feedback is constructive, supportive, and specifically explains the professional rationale behind each choice."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o4 ('there is a massive disaster waiting to happen with our messaging setup') is somewhat dramatic for an engineering escalation, though it remains a recognisable communication trap for guided learners.",
+            "recommended_fix": "Consider phrasing o4 with slightly more technical veneer, such as 'our messaging architecture is completely unstable and bound to fail during peak load'."
+          }
+        ],
+        "summary": "This is a high-quality guided activity that accurately portrays risk escalation for a software developer working with distributed messaging. The sentence flow is seamless, the feedback is clear and professional, and all criteria are met."
+      },
+      "assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 12.3101,
+          "error": null
+        }
+      ]
+    },
+    {
+      "activity_id": "software_developer_guided_v1_04",
+      "review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario is highly authentic for a software developer, directly embedding technical handover conventions with Jenkins and Python.",
+          "The intended sentences assemble into a cohesive, professional handover message with clean grammatical transitions.",
+          "Feedback explanations are constructive, specific, and clearly detail the professional rationale behind each choice."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o5 begins with 'we should probably catch up', which prevents it from grammatically fitting blank_3 preceded by 'Let's'. Consequently, option o3 is the only option that fits blank_3 syntactically.",
+            "recommended_fix": "Change option o5 to start with a bare infinitive verb, such as 'catch up sometime next week or whenever you have a moment', so that it serves as a viable syntactic distractor for blank_3 as well as blank_2."
+          }
+        ],
+        "summary": "This is a well-designed, realistic workplace communication activity that aligns closely with the software developer role and target technical skills. The options assemble into a logical and professional handover paragraph. A minor syntactic adjustment to distractor o5 would improve distractor competition for the third blank, but the activity is ready for use."
+      },
+      "assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 20.1618,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "negative_control": {
+    "review": {
+      "decision": "reject",
+      "scores": {
+        "role_relevance": 5,
+        "workplace_realism": 4,
+        "sentence_coherence": 5,
+        "option_distinctness": 4,
+        "distractor_plausibility": 3,
+        "feedback_quality": 2,
+        "supportive_language": 1,
+        "difficulty_alignment": 4
+      },
+      "strengths": [
+        "The scenario and target skills (Prometheus and Django) are highly authentic and relevant to the Software Developer role.",
+        "The sentence template and correct options integrate seamlessly to form a coherent, professional incident update.",
+        "The guided difficulty level is appropriately supported by clear, actionable guidance."
+      ],
+      "issues": [
+        {
+          "severity": "critical",
+          "criterion": "supportive_language",
+          "explanation": "The feedback for option o4 states 'Choosing it shows that the user is incompetent' and 'This is the wrong option.' This employs overtly demeaning, hostile, and blunt pass/fail correctness language, which directly undermines a supportive learning environment.",
+          "recommended_fix": "Remove all derogatory remarks about user competence. Frame the feedback constructively, explaining that speculative statements without supporting metrics reduce stakeholder confidence."
+        },
+        {
+          "severity": "major",
+          "criterion": "feedback_quality",
+          "explanation": "The feedback for distractor o4 provides no pedagogical value or actionable advice, merely declaring the choice wrong rather than explaining why vague speculation is unhelpful in an incident update.",
+          "recommended_fix": "Provide constructive guidance explaining why relying on unverified assumptions about server-side network issues misdirects troubleshooting efforts when diagnostics have already isolated the database connection pool."
+        }
+      ],
+      "summary": "While the core technical scenario, sentence structure, and primary options are well conceived for a software developer, the activity must be rejected due to hostile and demeaning feedback on option o4 that insults the learner."
+    },
+    "assessment": {
+      "model_decision": "reject",
+      "calculated_decision": "reject",
+      "minimum_score": 1,
+      "unexplained_low_scores": [],
+      "decision_consistent": true,
+      "review_consistent": true
+    },
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "valid": true,
+        "latency_seconds": 32.0063,
+        "error": null
+      }
+    ],
+    "passed": true
+  },
+  "retired_model_attempt": "gemini-2.5-flash returned 404 NOT_FOUND and recommended gemini-3.8-flash",
+  "qwen_used_as_final_gate": false,
+  "ready_for_full_generation": true
+}

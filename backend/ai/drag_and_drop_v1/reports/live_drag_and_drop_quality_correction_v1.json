@@ -1,0 +1,289 @@
+{
+  "step": "16B",
+  "created_at_utc": "2026-10-08T15:51:28.631206+00:00",
+  "change": "Strengthened the live prompt and added a deterministic professional-plausibility gate for distractors.",
+  "production_generation_attempt_limit": 2,
+  "tests_repeated": 2,
+  "tests_passed": 2,
+  "all_corrections_passed": true,
+  "results": [
+    {
+      "test_id": "standard_project_scope",
+      "request": {
+        "role_id": "it_project_manager",
+        "skills": [
+          "Scope negotiation"
+        ],
+        "years_experience": "7",
+        "responsibilities": [
+          "Led cross-functional delivery teams"
+        ],
+        "difficulty": "standard",
+        "activity_type": "drag_and_drop"
+      },
+      "served_source": "live_gemini",
+      "generation_attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 2.9018,
+          "passed": true,
+          "errors": []
+        }
+      ],
+      "generation_latency_seconds": 2.9021,
+      "activity": {
+        "title": "Managing Scope and Stakeholder Expectations",
+        "situation": "You are leading a cross-functional delivery team and need to respond to a stakeholder request that threatens current project boundaries. You must handle this through scope negotiation.",
+        "sentence_template": "Regarding the latest feature additions, we can proceed by {blank_1}, provided that we maintain {blank_2}, and schedule a review with {blank_3}.",
+        "blanks": [
+          {
+            "blank_id": "blank_1"
+          },
+          {
+            "blank_id": "blank_2"
+          },
+          {
+            "blank_id": "blank_3"
+          }
+        ],
+        "options": [
+          {
+            "option_id": "o1",
+            "text": "integrating the core items into the next sprint",
+            "fits_blank_id": "blank_1"
+          },
+          {
+            "option_id": "o2",
+            "text": "our current delivery velocity and quality standards",
+            "fits_blank_id": "blank_2"
+          },
+          {
+            "option_id": "o3",
+            "text": "the steering committee next Tuesday morning",
+            "fits_blank_id": "blank_3"
+          },
+          {
+            "option_id": "o4",
+            "text": "accepting all change requests immediately without re-estimating",
+            "fits_blank_id": null
+          },
+          {
+            "option_id": "o5",
+            "text": "deferring stakeholder alignment until the final release phase",
+            "fits_blank_id": null
+          }
+        ],
+        "feedback_by_option": {
+          "o1": {
+            "what_to_improve": null,
+            "why": "This option clearly defines an actionable step that fits naturally into the workflow without committing to unrealistic timelines."
+          },
+          "o2": {
+            "what_to_improve": null,
+            "why": "This option protects critical delivery parameters while remaining constructive to stakeholder needs."
+          },
+          "o3": {
+            "what_to_improve": null,
+            "why": "This option identifies a specific governance forum and timeframe, ensuring appropriate oversight."
+          },
+          "o4": {
+            "what_to_improve": "Ensure change requests are formally evaluated against capacity rather than accepted unconditionally.",
+            "why": "While proactive in tone, accepting all requests without re-estimation risks team burnout and scope creep."
+          },
+          "o5": {
+            "what_to_improve": "Involve stakeholders earlier to prevent misaligned expectations later in the delivery lifecycle.",
+            "why": "Deferring alignment until the final stage creates a high risk of late-stage rework and stakeholder dissatisfaction."
+          }
+        },
+        "skills_used": [
+          "Scope negotiation"
+        ],
+        "guidance": []
+      },
+      "judge_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 4,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 4
+        },
+        "strengths": [
+          "The scenario accurately captures the delicate balance required when managing scope creep and communicating trade-offs to stakeholders.",
+          "The target sentence reads coherently and naturally once completed with the intended options.",
+          "Feedback explanations are supportive, objective, and clearly articulate the strategic implications of each approach without using punitive phrasing."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Both distractors (o4 and o5) rely on gerund phrases starting with verbs ('accepting...', 'deferring...'), which primarily make them syntactic candidates for blank_1 rather than blanks 2 or 3.",
+            "recommended_fix": "Consider varying the syntactic form of one distractor so that it presents a plausible alternative for blank_2 or blank_3, such as a noun phrase reflecting poor delivery metrics."
+          }
+        ],
+        "summary": "This is a well-structured and realistic activity for a delivery lead negotiating scope. The sentence structure is coherent, the options are distinct, and the feedback provided is constructive and educational."
+      },
+      "judge_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "judge_attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 10.46,
+          "error": null
+        }
+      ],
+      "calculated_decision": "accept",
+      "test_passed": true
+    },
+    {
+      "test_id": "challenge_network_outage",
+      "request": {
+        "role_id": "network_and_systems_administrator",
+        "skills": [
+          "Critical outage escalation"
+        ],
+        "years_experience": "8",
+        "responsibilities": [
+          "Coordinated on-call response and mentored junior staff"
+        ],
+        "difficulty": "challenge",
+        "activity_type": "drag_and_drop"
+      },
+      "served_source": "live_gemini",
+      "generation_attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 2.661,
+          "passed": true,
+          "errors": []
+        }
+      ],
+      "generation_latency_seconds": 2.6613,
+      "activity": {
+        "title": "Critical Outage Escalation Communication",
+        "situation": "As an experienced network and systems administrator coordinating an on-call response while mentoring junior staff, you need to inform senior stakeholders about a major infrastructure incident affecting core services, outlining the immediate mitigation steps and the planned restoration schedule.",
+        "sentence_template": "During the recent critical outage escalation, {blank_1} to stabilise the core routing infrastructure, while {blank_2} alongside the junior engineers to ensure knowledge transfer, and {blank_3} to provide a transparent progress report.",
+        "blanks": [
+          {
+            "blank_id": "blank_1"
+          },
+          {
+            "blank_id": "blank_2"
+          },
+          {
+            "blank_id": "blank_3"
+          }
+        ],
+        "options": [
+          {
+            "option_id": "o1",
+            "text": "we immediately implemented the secondary BGP failover paths",
+            "fits_blank_id": "blank_1"
+          },
+          {
+            "option_id": "o2",
+            "text": "I guided the team through systematic log analysis",
+            "fits_blank_id": "blank_2"
+          },
+          {
+            "option_id": "o3",
+            "text": "we committed to delivering hourly status updates",
+            "fits_blank_id": "blank_3"
+          },
+          {
+            "option_id": "o4",
+            "text": "we temporarily bypassed all standard change control protocols",
+            "fits_blank_id": null
+          },
+          {
+            "option_id": "o5",
+            "text": "I handled every diagnostic task independently",
+            "fits_blank_id": null
+          }
+        ],
+        "feedback_by_option": {
+          "o1": {
+            "what_to_improve": null,
+            "why": "This accurately highlights the technical action taken to address the critical outage escalation."
+          },
+          "o2": {
+            "what_to_improve": null,
+            "why": "This effectively reflects your mentoring responsibilities while actively managing the incident response."
+          },
+          "o3": {
+            "what_to_improve": null,
+            "why": "This establishes clear stakeholder expectations regarding communication during a high-priority event."
+          },
+          "o4": {
+            "what_to_improve": "Ensure governance procedures are maintained even under pressure, as bypassing change control entirely introduces operational risk.",
+            "why": "Bypassing formal protocols entirely can lead to undocumented configuration drift and secondary incidents."
+          },
+          "o5": {
+            "what_to_improve": "Delegate appropriate diagnostic tasks to junior staff to support their professional development during live incidents.",
+            "why": "Handling everything independently misses an opportunity for mentorship and can overwhelm the lead administrator."
+          }
+        },
+        "skills_used": [
+          "Critical outage escalation"
+        ],
+        "guidance": []
+      },
+      "judge_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately reflects the operational balance between technical mitigation and mentoring during incident response.",
+          "The intended options assemble into an articulate, grammatically fluent update suitable for senior stakeholders.",
+          "The feedback clearly articulates the operational risks of bypassing change management and failing to delegate."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "If option o5 ('I handled every diagnostic task independently') is placed into blank_2, it creates a slight semantic contradiction with the following clause ('alongside the junior engineers').",
+            "recommended_fix": "Consider rephrasing option o5 slightly, for example to 'I focused on troubleshooting critical services without direct input', to keep the contrast natural without directly clashing with the adjacent phrase."
+          }
+        ],
+        "summary": "This is a well-designed activity that convincingly captures the communicative and mentoring challenges faced by senior technical administrators during major incidents."
+      },
+      "judge_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "judge_attempts": [
+        {
+          "attempt_number": 1,
+          "valid": true,
+          "latency_seconds": 10.645,
+          "error": null
+        }
+      ],
+      "calculated_decision": "accept",
+      "test_passed": true
+    }
+  ]
+}

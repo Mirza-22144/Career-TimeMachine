@@ -1,0 +1,217 @@
+{
+  "report_name": "drag_and_drop_qwen_review_diagnostic_v1",
+  "created_at_utc": "2026-10-08T12:20:54.375171+00:00",
+  "reviewed_activity_count": 4,
+  "inconsistent_review_count": 4,
+  "judge_requires_recalibration": true,
+  "records": [
+    {
+      "activity_id": "software_developer_guided_v1_01",
+      "title": "Database Connection Pool Latency Update",
+      "situation": "You are a software developer who has diagnosed an API latency issue. You need to update your team with the verified cause, current impact, a resolution timeframe, and when you will next check in.",
+      "intended_completed_message": "I have investigated the API latency issue and confirmed via Prometheus metrics that the Django application is exhausting its database connection pool. Consequently, new incoming requests are experiencing significant delays or timeout errors. I am currently adjusting the connection pool limits and expect to deploy a hotfix by 14:00, and will send another status update as soon as the deployment is complete.",
+      "distractors": [
+        "think there might be some kind of network issue on the server side",
+        "hope it will all start working again on its own very soon"
+      ],
+      "scores": {
+        "role_relevance": 1,
+        "workplace_realism": 1,
+        "sentence_coherence": 1,
+        "option_distinctness": 1,
+        "distractor_plausibility": 1,
+        "feedback_quality": 1,
+        "supportive_language": 1,
+        "difficulty_alignment": 1
+      },
+      "minimum_score": 1,
+      "decision": "revision_required",
+      "issues": [
+        {
+          "severity": "major",
+          "criterion": "role_relevance",
+          "explanation": "The situation does not plausibly belong to the stated IT role (Software Developer). The activity focuses on a scenario that is more relevant to a system administrator or operations engineer.",
+          "recommended_fix": "Change the role label to 'System Administrator' or 'Operations Engineer'."
+        }
+      ],
+      "summary": "The activity is unsafe due to the mismatch between the role and the scenario.",
+      "low_score_criteria": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "unexplained_low_scores": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "serious_issue_count": 1,
+      "review_consistent": false
+    },
+    {
+      "activity_id": "software_developer_guided_v1_02",
+      "title": "Kubernetes Manifest Review Feedback",
+      "situation": "You are reviewing a deployment configuration submitted by a colleague. You need to clarify the team's resource configuration standards, point out where the configuration is lacking, and propose a collaborative way to resolve it.",
+      "intended_completed_message": "Regarding the new deployment configuration, our team standard requires all Kubernetes manifests to define explicit CPU and memory resource limits. Specifically, the newly submitted deployment template lacks these configurations for the core service containers. To resolve this, let's pair up for ten minutes to add these limits and verify them against our staging guidelines.",
+      "distractors": [
+        "the configuration files look completely messy and will probably crash the cluster",
+        "someone needs to fix this file before we can even think about deploying it"
+      ],
+      "scores": {
+        "role_relevance": 1,
+        "workplace_realism": 1,
+        "sentence_coherence": 1,
+        "option_distinctness": 1,
+        "distractor_plausibility": 1,
+        "feedback_quality": 1,
+        "supportive_language": 1,
+        "difficulty_alignment": 1
+      },
+      "minimum_score": 1,
+      "decision": "revision_required",
+      "issues": [
+        {
+          "severity": "minor",
+          "criterion": "option_distinctness",
+          "explanation": "Option o4 and o5 are nearly identical in content and could be considered a duplicate.",
+          "recommended_fix": "Consider making Option o4 more specific or adding a unique element to differentiate it from Option o5."
+        }
+      ],
+      "summary": "The activity contains a minor issue with option distinctness, which could be improved to ensure clarity and uniqueness among the options.",
+      "low_score_criteria": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "unexplained_low_scores": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "serious_issue_count": 0,
+      "review_consistent": false
+    },
+    {
+      "activity_id": "software_developer_guided_v1_03",
+      "title": "Kafka Message Retention Risk Escalation",
+      "situation": "You notice that the production messaging cluster is configured with a very short retention period ahead of a major marketing campaign. You need to escalate this risk, explain the impact, and recommend an action.",
+      "intended_completed_message": "During the pre-event audit, I identified that the production Kafka cluster message retention is currently set to only twenty-four hours. Consequently, we risk losing critical transaction events if downstream processing experiences any prolonged downtime. Therefore, I recommend we temporarily increase the retention period to seventy-two hours before the event starts.",
+      "distractors": [
+        "there is a massive disaster waiting to happen with our messaging setup",
+        "somebody should probably look into changing some settings at some point"
+      ],
+      "scores": {
+        "role_relevance": 1,
+        "workplace_realism": 1,
+        "sentence_coherence": 1,
+        "option_distinctness": 1,
+        "distractor_plausibility": 1,
+        "feedback_quality": 1,
+        "supportive_language": 1,
+        "difficulty_alignment": 1
+      },
+      "minimum_score": 1,
+      "decision": "revision_required",
+      "issues": [
+        {
+          "severity": "major",
+          "criterion": "workplace_realism",
+          "explanation": "The situation does not seem realistic in a typical workplace setting as it involves a Kafka cluster which is not commonly used in everyday office interactions.",
+          "recommended_fix": "Replace the Kafka scenario with a more common IT topic that would naturally arise in a workplace setting, such as database performance or network security."
+        }
+      ],
+      "summary": "The activity lacks realism in a typical workplace setting and should be revised to better align with common IT topics.",
+      "low_score_criteria": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "unexplained_low_scores": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language"
+      ],
+      "serious_issue_count": 1,
+      "review_consistent": false
+    },
+    {
+      "activity_id": "software_developer_guided_v1_04",
+      "title": "CI/CD Pipeline Handover",
+      "situation": "You are preparing to go on annual leave and need to hand over the configuration of a new Python CI/CD pipeline in Jenkins to a teammate.",
+      "intended_completed_message": "To help you take over the pipeline setup, I have documented the Jenkinsfile configurations and verified that the Python unit tests run successfully in the staging environment. Moving forward, you will be the primary owner responsible for finalising the deployment stage of this pipeline. Let's schedule a brief sync tomorrow morning to address any questions before my leave starts.",
+      "distractors": [
+        "everything is mostly done and you can just figure out the rest from the commit history",
+        "we should probably catch up sometime next week or whenever you have a moment"
+      ],
+      "scores": {
+        "role_relevance": 1,
+        "workplace_realism": 1,
+        "sentence_coherence": 1,
+        "option_distinctness": 1,
+        "distractor_plausibility": 1,
+        "feedback_quality": 1,
+        "supportive_language": 1,
+        "difficulty_alignment": 1
+      },
+      "minimum_score": 1,
+      "decision": "revision_required",
+      "issues": [
+        {
+          "severity": "major",
+          "criterion": "role_relevance",
+          "explanation": "The situation does not plausibly belong to the stated IT role (Software Developer). The activity focuses on a handover process which is more relevant to a project manager or team leader.",
+          "recommended_fix": "Change the scenario to reflect a Software Developer's responsibilities, such as documenting Jenkins configurations and verifying Python scripts."
+        }
+      ],
+      "summary": "The activity lacks relevance to the stated IT role and should be revised to better align with the responsibilities of a Software Developer.",
+      "low_score_criteria": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "role_relevance",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "unexplained_low_scores": [
+        "difficulty_alignment",
+        "distractor_plausibility",
+        "feedback_quality",
+        "option_distinctness",
+        "sentence_coherence",
+        "supportive_language",
+        "workplace_realism"
+      ],
+      "serious_issue_count": 1,
+      "review_consistent": false
+    }
+  ]
+}

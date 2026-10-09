@@ -780,9 +780,15 @@ export default function WorkplaceScenario() {
 
           <div className="pa-columns pa-columns--prep">
             <div className="pa-card">
-              <div className="pa-prep-section">
-                <span className="pa-prep-label">TODAY&rsquo;S FOCUS</span>
-                <h2 className="pa-prep-focus">{focusSkill || `Working as a ${role.label}`}</h2>
+              <div className="pa-prep-section pa-prep-top">
+                <div>
+                  <span className="pa-prep-label">TODAY&rsquo;S FOCUS</span>
+                  <h2 className="pa-prep-focus">{focusSkill || `Working as a ${role.label}`}</h2>
+                </div>
+                <div className="pa-prep-level">
+                  <span className="pa-prep-label">DIFFICULTY</span>
+                  <strong className="pa-prep-value">{difficultyLabel}</strong>
+                </div>
               </div>
               {skillsUsed.length > 0 && (
                 <div className="pa-prep-section">
@@ -797,10 +803,6 @@ export default function WorkplaceScenario() {
                 <p className="pa-prep-text">
                   Handling the everyday situations a {role.label} meets with colleagues and stakeholders.
                 </p>
-              </div>
-              <div className="pa-prep-section">
-                <span className="pa-prep-label">DIFFICULTY</span>
-                <strong className="pa-prep-value">{difficultyLabel}</strong>
               </div>
             </div>
 

@@ -660,7 +660,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px clamp(24px, 7.8vw, 112px);
+  padding: 10px clamp(24px, 7.8vw, 112px);
   background: #ffffff;
   border-top: 1px solid rgba(15, 23, 40, 0.08);
 }
@@ -680,13 +680,13 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 15px 22px;
+  padding: 10px 20px;
   background: #6d28d9;
   border: none;
   border-radius: 999px;
   font-family: inherit;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: #ffffff;
   cursor: pointer;
   white-space: nowrap;
@@ -699,13 +699,13 @@
 }
 
 .pa-btn-outline {
-  padding: 15px 22px;
+  padding: 10px 20px;
   background: #ffffff;
   border: 1.5px solid rgba(107, 102, 133, 0.6);
   border-radius: 999px;
   font-family: inherit;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: #0f1728;
   cursor: pointer;
   white-space: nowrap;
@@ -895,7 +895,8 @@
 
 .pa-columns--prep {
   grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
-  align-items: stretch;
+  /* Each card is as tall as its own content, so neither has an empty half. */
+  align-items: start;
 }
 
 .pa-prep-section {
@@ -1052,4 +1053,20 @@
   font-size: 15px;
   line-height: 22px;
   color: #2e1065;
+}
+
+/* ---- Preparation card: focus and difficulty share the top row ---- */
+
+.pa-prep-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pa-prep-level {
+  flex: none;
+  min-width: 140px;
+  padding-left: 24px;
+  border-left: 1px solid rgba(15, 23, 40, 0.08);
 }

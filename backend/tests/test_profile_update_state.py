@@ -19,7 +19,7 @@ client = TestClient(app)
 VALID_PROFILE = {
     "role_id": "software_engineer",
     "years_experience": "5",
-    "skill_ids": ["python"],
+    "skill_ids": ["python", "git", "sql"],
     "custom_skills": ["Mentoring"],
     "break_started_on": "2024-01-01",
     "planned_return_date": "2024-06-01",

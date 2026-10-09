@@ -36,7 +36,7 @@ class FakeJobDescriptionProvider(JobDescriptionExtractionProvider):
 SAVED_PROFILE = {
     "role_id": "software_engineer",
     "years_experience": "5",
-    "skill_ids": ["python"],
+    "skill_ids": ["python", "git", "sql"],
     "break_reason": "prefer_not_to_say",
     "break_started_on": "2024-01-01",
     "planned_return_date": "2024-06-01",
@@ -129,7 +129,7 @@ def test_returning_with_the_same_token_restores_saved_profile_and_journey():
 
     assert profile.status_code == 200
     assert profile.json()["role_id"] == "software_engineer"
-    assert profile.json()["skill_ids"] == ["python"]
+    assert profile.json()["skill_ids"] == ["python", "git", "sql"]
     assert profile.json()["confirmed"] is True
     assert journey.status_code == 200
     assert journey.json()["previous_role"] == {"id": "software_engineer", "label": "Software Engineer"}
@@ -147,7 +147,7 @@ def test_editing_with_the_same_token_updates_the_existing_profile():
     assert reconfirm.status_code == 200
     assert profile["years_experience"] == "7"
     assert profile["role_id"] == "software_engineer"
-    assert profile["skill_ids"] == ["python"]
+    assert profile["skill_ids"] == ["python", "git", "sql"]
     assert profile["confirmed"] is True
 
 

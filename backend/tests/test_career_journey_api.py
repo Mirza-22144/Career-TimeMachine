@@ -91,7 +91,7 @@ def test_career_journey_keeps_planned_return_null_when_return_date_unsure():
         json={
             "role_id": "qa_engineer",
             "years_experience": "5",
-            "skill_ids": ["git"],
+            "skill_ids": ["git", "python", "sql"],
             "break_started_on": "2024-01-01",
             "planned_return_date": "2024-12-01",
             "return_date_unsure": True,

@@ -151,6 +151,8 @@ def test_confirm_complete_profile_sets_confirmed_true():
         json={
             "role_id": "software_engineer",
             "years_experience": "10_plus",
+            "skill_ids": ["python", "git"],
+            "custom_skills": ["Mentoring"],
             "break_reason": "prefer_not_to_say",
             "break_started_on": "2023-01-01",
             "planned_return_date": "2024-01-01",
@@ -163,6 +165,28 @@ def test_confirm_complete_profile_sets_confirmed_true():
     assert response.json()["confirmed"] is True
 
 
+def test_confirm_needs_at_least_three_skills():
+    """Picked and typed-in skills both count towards the three."""
+    headers = _new_session_headers()
+    profile = {
+        "role_id": "software_engineer",
+        "years_experience": "10_plus",
+        "break_started_on": "2023-01-01",
+        "planned_return_date": "2024-01-01",
+        "skill_ids": ["python", "git"],
+    }
+    client.patch("/api/v1/profile", headers=headers, json=profile)
+
+    too_few = client.post("/api/v1/profile/confirm", headers=headers)
+    client.patch("/api/v1/profile", headers=headers, json={"custom_skills": ["Mentoring"]})
+    enough = client.post("/api/v1/profile/confirm", headers=headers)
+
+    assert too_few.status_code == 400
+    assert too_few.json()["error"]["code"] == "PROFILE_INCOMPLETE"
+    assert "skills" in too_few.json()["error"]["details"]
+    assert enough.status_code == 200
+
+
 def test_patch_after_confirmation_resets_confirmed_false():
     headers = _new_session_headers()
     client.patch(
@@ -171,6 +195,7 @@ def test_patch_after_confirmation_resets_confirmed_false():
         json={
             "role_id": "software_engineer",
             "years_experience": "3",
+            "skill_ids": ["python", "git", "sql"],
             "break_started_on": "2024-01-01",
             "planned_return_date": "2024-02-01",
         },

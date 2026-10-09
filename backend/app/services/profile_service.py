@@ -9,6 +9,9 @@ from app.repositories.interfaces.profile_repository import Profile, ProfileRepos
 from app.schemas.profile import ProfileUpdate
 
 
+# The fewest skills a profile needs before it can be confirmed.
+MIN_SKILLS = 3
+
 class ProfileService:
     """Business logic for profile capture, confirmation, and deletion."""
 
@@ -154,6 +157,12 @@ class ProfileService:
 
         if profile.years_experience is None:
             missing.append("years_experience")
+
+        # Role suggestions and practice are built from her skills; fewer
+        # than this gives them too little to go on. Picked and typed-in
+        # skills both count.
+        if len(profile.skill_ids) + len(profile.custom_skills) < MIN_SKILLS:
+            missing.append("skills")
 
         if profile.break_reason == "other" and not profile.break_reason_other_text:
             missing.append("break_reason_other_text")

@@ -31,7 +31,7 @@ def written_activities(use_activity_type, use_provider):
 PROFILE = {
     "role_id": "software_engineer",
     "years_experience": "5",
-    "skill_ids": ["python"],
+    "skill_ids": ["python", "git", "sql"],
     "custom_skills": ["Secret hobby project"],
     "break_reason": "caregiving",
     "break_started_on": "2024-01-01",

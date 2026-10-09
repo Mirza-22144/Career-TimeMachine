@@ -55,7 +55,7 @@ def _ready(custom_skills=()):
     profile = {
         "role_id": ROLE,
         "years_experience": "5",
-        "skill_ids": ["react"],
+        "skill_ids": ["react", "git", "sql"],
         "custom_skills": list(custom_skills),
         "custom_responsibilities": ["Mentoring juniors"],
         "break_started_on": "2024-01-01",

@@ -18,6 +18,7 @@ const MISSING_FIELD_LABELS = {
   role_id: 'your previous role (Step 1)',
   role_other_text: 'your previous role (Step 1)',
   years_experience: 'your years of experience (Step 1)',
+  skills: 'at least three skills (Step 2)',
   break_started_on: 'when your break started',
   planned_return_date: 'your planned return date',
   valid_break_dates: 'a valid break date range',

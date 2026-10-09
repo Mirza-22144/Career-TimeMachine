@@ -11,8 +11,8 @@
   justify-content: center;
   min-height: 100vh;
   width: 100%;
-  padding: 64px 24px;
-  padding-top: 148px;
+  padding: 46px 20px;
+  padding-top: 130px;
   font-family: 'Manrope', sans-serif;
   color: var(--ink-900);
   background: var(--bg-app);
@@ -31,31 +31,31 @@
 .cj-heading {
   margin: 0 0 12px;
   font-weight: 800;
-  font-size: 44px;
+  font-size: 30px;
   line-height: 1.2;
 }
 
 .cj-subheading {
-  margin: 0 0 56px;
+  margin: 0 0 40px;
   max-width: 560px;
   font-weight: 500;
-  font-size: 17px;
-  line-height: 26px;
+  font-size: 15px;
+  line-height: 22px;
   color: var(--ink-600);
 }
 
 .cj-timeline {
   display: flex;
   flex-direction: column;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .cj-step {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 20px;
-  padding: 20px 0;
+  gap: 18px;
+  padding: 18px 0;
   border-bottom: 1px solid rgba(15, 23, 40, 0.08);
 }
 
@@ -98,7 +98,7 @@
   display: block;
   margin-bottom: 4px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .cj-step-value {
@@ -118,7 +118,7 @@
 .cj-step-action {
   flex-shrink: 0;
   align-self: center;
-  padding: 10px 18px;
+  padding: 10px 16px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.15);
   border-radius: 999px;
@@ -145,7 +145,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 28px;
+  padding: 16px 22px;
   background: linear-gradient(90deg, var(--violet-600) 0%, #9333ea 100%);
   border: none;
   border-radius: 999px;
@@ -165,7 +165,7 @@
 /* AC 3.5.2 - destructive, so outlined in red and pushed to the far right. */
 .cj-clear {
   margin-left: auto;
-  padding: 11px 18px;
+  padding: 11px 16px;
   background: #ffffff;
   border: 1px solid #b91c1c;
   border-radius: 999px;
@@ -187,8 +187,8 @@
   align-items: flex-start;
   gap: 16px;
   max-width: 420px;
-  margin: 80px auto;
-  padding: 32px;
+  margin: 58px auto;
+  padding: 26px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
@@ -198,12 +198,12 @@
 .cj-load-error p {
   margin: 0;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-900);
 }
 
 .cj-load-error button {
-  padding: 10px 20px;
+  padding: 10px 18px;
   background: var(--violet-600);
   border: none;
   border-radius: 999px;

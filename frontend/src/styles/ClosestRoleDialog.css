@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   background: rgba(13, 22, 40, 0.55);
 }
 
@@ -16,7 +16,7 @@
   max-width: 560px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
-  padding: 36px;
+  padding: 28px;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.24);
@@ -36,15 +36,15 @@
 .crd-title {
   margin: 0 0 12px;
   font-weight: 800;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.25;
 }
 
 .crd-text {
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 21px;
   color: #514b66;
 }
 
@@ -52,7 +52,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .crd-option {
@@ -60,13 +60,13 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 16px 20px;
+  padding: 16px 18px;
   background: #ffffff;
   border: 1.5px solid rgba(107, 102, 133, 0.55);
   border-radius: 12px;
   font-family: inherit;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   color: #0f1728;
   text-align: left;
   cursor: pointer;
@@ -89,8 +89,8 @@
 
 .crd-all {
   column-count: 3;
-  column-gap: 32px;
-  margin-bottom: 24px;
+  column-gap: 26px;
+  margin-bottom: 20px;
 }
 
 .crd-all-option {
@@ -104,7 +104,7 @@
   break-inside: avoid;
   font-family: inherit;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   color: #0f1728;
   text-align: left;
   cursor: pointer;
@@ -129,7 +129,7 @@
 
 .crd-link {
   display: block;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding: 0;
   border: none;
   background: none;
@@ -156,11 +156,11 @@
 
 .crd-btn-outline,
 .crd-btn-primary {
-  padding: 14px 26px;
+  padding: 14px 20px;
   border-radius: 999px;
   font-family: inherit;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
 }
 

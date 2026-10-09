@@ -77,6 +77,14 @@ def _submit(headers, session, placements):
     return client.post(path, headers=headers, json={"placements": placements})
 
 
+def _all_keys(value) -> set[str]:
+    if isinstance(value, dict):
+        return set(value) | {key for child in value.values() for key in _all_keys(child)}
+    if isinstance(value, list):
+        return {key for child in value for key in _all_keys(child)}
+    return set()
+
+
 def _first_three(scenario):
     ids = [option["option_id"] for option in scenario["options"]]
     return {"blank_1": ids[0], "blank_2": ids[1], "blank_3": ids[2]}
@@ -129,8 +137,9 @@ def test_submitting_shows_the_message_and_how_each_phrase_comes_across():
     assert [f["blank_id"] for f in feedback] == ["blank_1", "blank_2", "blank_3"]
     assert [f["option_id"] for f in feedback] == list(placements.values())
     assert all(f["comes_across"] for f in feedback)
-    for banned in ("score", "correct", "incorrect", "wrong", "is_fit", '"fits'):
-        assert banned not in response.text.lower()
+    # No field anywhere in the response grades her. (Field names are checked,
+    # not the wording: the AI team's feedback may use a word like "corrective".)
+    assert not _all_keys(response.json()) & {"score", "correct", "is_correct", "incorrect", "wrong", "fits", "fits_blank_id", "result"}
     # The next message is unlocked.
     assert response.json()["progress"]["completed_activities"] == 1
     assert response.json()["progress"]["current_scenario_id"] != scenario["scenario_id"]

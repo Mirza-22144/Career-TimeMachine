@@ -10,6 +10,7 @@ from app.repositories.interfaces.job_description_repository import (
     JobDescriptionRepository,
 )
 from app.repositories.postgres.db_errors import database_unavailable
+from app.repositories.postgres.pooling import KEEPALIVE, checkout, release, rollback_quietly
 
 # One shared pool of database connections. FastAPI runs sync routes in a
 # thread pool, so this must be the threaded pool variant - see
@@ -24,6 +25,7 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
     user=DB_USER,
     password=DB_PASSWORD,
     sslmode=DB_SSLMODE,
+    **KEEPALIVE,
 )
 
 _SELECT_COLUMNS = (
@@ -35,7 +37,7 @@ _SELECT_COLUMNS = (
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             # Autocommit: a lone statement needs no BEGIN/COMMIT, and each of
             # those is a full round trip to a database that is far away.
@@ -44,10 +46,10 @@ def _query(sql: str, params: tuple = ()) -> list[tuple]:
                 cur.execute(sql, params)
                 return cur.fetchall()
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 
@@ -56,17 +58,17 @@ def _execute(sql: str, params: tuple = ()) -> int:
     """Runs one write statement, commits it, and returns the affected row
     count (callers that don't need it, like add(), just ignore it)."""
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.rowcount
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 

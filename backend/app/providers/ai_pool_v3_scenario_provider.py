@@ -96,6 +96,17 @@ class AiPoolV3ScenarioProvider(ScenarioProvider):
                 return scenario
         raise ScenarioProviderError("No further scenarios for this role and difficulty")
 
+    def skills_for_role(self, role_id: str) -> list[str]:
+        return sorted(
+            {
+                skill
+                for (pool_role_id, _difficulty), scenarios in _V3_BY_ROLE_DIFFICULTY.items()
+                if pool_role_id == role_id
+                for scenario in scenarios
+                for skill in scenario["skills_used"]
+            }
+        )
+
     def generate_feedback(self, request: FeedbackRequest) -> dict[str, Any]:
         if request.activity_type != "multiple_choice" or request.selected_option_id is None:
             raise ScenarioProviderError("The AI pool only has multiple_choice feedback")

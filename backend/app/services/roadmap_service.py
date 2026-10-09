@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from app.providers.scenario_provider import ScenarioProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
 from app.repositories.interfaces.practice_session_repository import PracticeSessionRepository
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
@@ -67,6 +68,16 @@ class Roadmap:
     chosen_roles: list[ChosenRole] = field(default_factory=list)
 
 
+class PractisedSkills(dict):
+    """(role id, skill label) -> when the skill was first practised.
+    activity_started gives, for the same keys, when the activity it was
+    practised in began, so skills from one activity can be kept together."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.activity_started: dict[tuple[str, str], datetime] = {}
+
+
 class RoadmapService:
     """Builds Your Roadmap from the profile, the role/skill catalogue, the
     two-role prediction and the practice history. Nothing here is scored or
@@ -80,6 +91,7 @@ class RoadmapService:
         practice_roles: PracticeRoleService,
         practice_sessions: PracticeSessionRepository,
         role_choices: RoleChoiceRepository | None = None,
+        scenarios: ScenarioProvider | None = None,
     ) -> None:
         self.profiles = profiles
         self.catalogue = catalogue
@@ -87,6 +99,8 @@ class RoadmapService:
         self.practice_roles = practice_roles
         self.practice_sessions = practice_sessions
         self.role_choices = role_choices
+        # Tells the roadmap which skills her practice can actually cover.
+        self.scenarios = scenarios
 
     def build_for_session(self, session_token: str) -> Roadmap:
         profile = self.profiles.get_by_session_token(session_token)
@@ -180,28 +194,68 @@ class RoadmapService:
         # shows only the skills of hers that are listed for that role.
         bring_back = own_skills if is_previous else [s for s in own_skills if s.id in role_skill_ids]
 
-        explore: list[ExploreSkill] = []
-        next_assigned = False
-        for skill in role_skills:
-            if not skill.in_demand or skill.id in owned_ids:
-                continue
-            practised_on = practised.get((role_id, skill.label.casefold()))
-            if practised_on is not None:
-                status = "practised"
-            elif not next_assigned:
-                status, next_assigned = "next", True
-            else:
-                status = "later"
-            explore.append(ExploreSkill(skill.id, skill.label, status, practised_on))
-            if len(explore) == MAX_EXPLORE_SKILLS:
-                break
+        explore = self._explore_steps(role_id, role_skills, owned_ids, practised)
 
         return RoadmapRole(role_id, role_label, True, bring_back, explore, market)
 
-    def _practised_skills(self, session_token: str) -> dict[tuple[str, str], datetime]:
+    def _explore_steps(
+        self,
+        role_id: str,
+        role_skills: list,
+        owned_ids: set[str],
+        practised: dict[tuple[str, str], datetime],
+    ) -> list[ExploreSkill]:
+        """Skills You Could Explore as Practised / Next / Later steps
+        (AC 2.2.4): skills of the role she doesn't have, limited to
+        MAX_EXPLORE_SKILLS.
+
+        Skills her practice activities are tagged with come first, so the
+        next skill is one she can really practise and then see ticked -
+        an in-demand skill no activity uses could never be marked practised.
+        What is shown is a window around the next skill: the most recently
+        practised one(s) before it and what comes after it."""
+        practisable = {label.casefold() for label in self.scenarios.skills_for_role(role_id)} if self.scenarios else set()
+        candidates = [
+            skill
+            for skill in role_skills
+            if skill.id not in owned_ids and (skill.in_demand or skill.label.casefold() in practisable)
+        ]
+        # Practised skills in the order to show them: by the activity they
+        # were practised in, and within one activity its focus last - the
+        # focus is the earliest candidate the activity used (see
+        # PracticeSessionService._put_focus_first), so reversing the
+        # catalogue order puts it at the end, next to the "next" step.
+        activity_started = getattr(practised, "activity_started", {})
+        order = {skill.id: index for index, skill in enumerate(candidates)}
+
+        def shown_after(skill) -> tuple:
+            key = (role_id, skill.label.casefold())
+            return (activity_started.get(key, practised[key]), -order[skill.id])
+
+        done = sorted((skill for skill in candidates if (role_id, skill.label.casefold()) in practised), key=shown_after)
+        # sorted() is stable, so each group keeps the catalogue's order.
+        to_do = sorted(
+            (skill for skill in candidates if (role_id, skill.label.casefold()) not in practised),
+            key=lambda skill: skill.label.casefold() not in practisable,
+        )
+
+        steps = [
+            ExploreSkill(skill.id, skill.label, "practised", practised[(role_id, skill.label.casefold())])
+            for skill in done
+        ] + [
+            ExploreSkill(skill.id, skill.label, "next" if index == 0 else "later", None)
+            for index, skill in enumerate(to_do)
+        ]
+        # Keep one practised step in view when there is a next and a later
+        # one to show beside it; otherwise simply the last few.
+        start = max(0, len(done) - (MAX_EXPLORE_SKILLS - 2 if len(to_do) >= 2 else MAX_EXPLORE_SKILLS - len(to_do)))
+        start = max(0, min(start, len(steps) - MAX_EXPLORE_SKILLS))
+        return steps[start : start + MAX_EXPLORE_SKILLS]
+
+    def _practised_skills(self, session_token: str) -> "PractisedSkills":
         """(role id, skill label) -> when it was first practised, taken from
         the skills tagged on each completed activity (AC 2.2.4)."""
-        practised: dict[tuple[str, str], datetime] = {}
+        practised = PractisedSkills()
         for session in self.practice_sessions.list_for_owner(session_token):
             for scenario in session.scenarios:
                 if scenario.status != "completed" or scenario.response is None:
@@ -214,4 +268,5 @@ class RoadmapService:
                     when = scenario.response.submitted_at
                     if key not in practised or when < practised[key]:
                         practised[key] = when
+                        practised.activity_started[key] = session.created_at
         return practised

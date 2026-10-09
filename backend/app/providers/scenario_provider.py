@@ -180,6 +180,14 @@ class ScenarioProvider(ABC):
         """Return one scenario matching ScenarioContent."""
         raise NotImplementedError
 
+    def skills_for_role(self, role_id: str) -> list[str]:
+        """Skill names this provider's activities for a role are tagged
+        with, across every difficulty. The roadmap lists these first under
+        Skills You Could Explore, so the skills it shows are ones she can
+        actually practise (and then see marked as practised). Empty when
+        unknown."""
+        return []
+
     @abstractmethod
     def generate_feedback(self, request: FeedbackRequest) -> dict[str, Any]:
         """Return reflective feedback matching FeedbackContent."""

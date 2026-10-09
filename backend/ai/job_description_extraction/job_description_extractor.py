@@ -152,6 +152,10 @@ class JobDescriptionExtractor:
     # skill. The five specific labels (language, cloud platform, container
     # technology, software tool, database technology) are not filtered.
     VAGUE_ENTITY_LABELS = {'development practice', 'technical skill'}
+    # Under any label: a phrase ending like this names a way of working or
+    # describes something else ("Salesforce-powered", "user-first approach",
+    # "Solution Design Services Programme"), not a technology in itself.
+    NEVER_TECHNICAL_ENDINGS = {'powered', 'based', 'driven', 'focused', 'approach', 'programme', 'program', 'mindset', 'culture'}
     NON_TECHNICAL_ENDINGS = {'experience', 'process', 'processes', 'review', 'reviews', 'delivery', 'skill', 'skills', 'basics', 'users', 'user', 'knowledge', 'requirements', 'issues', 'feedback', 'performance', 'team', 'teams', 'stakeholders', 'environment', 'role', 'work', 'working', 'detail', 'manner', 'service', 'management', 'communication'}
     NUMBER_WORDS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19, 'twenty': 20}
 
@@ -254,6 +258,8 @@ class JobDescriptionExtractor:
                 continue
             words = re.findall('[a-z0-9]+', candidate.casefold())
             if entity['label'] in self.VAGUE_ENTITY_LABELS and (not words or words[-1] in self.NON_TECHNICAL_ENDINGS):
+                continue
+            if words and words[-1] in self.NEVER_TECHNICAL_ENDINGS:
                 continue
             if len(candidate) < 2:
                 continue

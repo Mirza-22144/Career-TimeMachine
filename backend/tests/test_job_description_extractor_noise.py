@@ -26,6 +26,9 @@ def test_ordinary_phrases_are_not_technical_skills():
             _entity("incident reviews", "development practice"),
             _entity("release process", "development practice"),
             _entity("agile delivery", "development practice"),
+            _entity("Salesforce-powered", "software tool"),
+            _entity("user-first approach", "development practice"),
+            _entity("Solution Design Services Programme", "software tool"),
             _entity("hybrid", "cloud platform"),
             _entity("checkout", "cloud platform"),
         ]

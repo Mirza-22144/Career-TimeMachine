@@ -6,7 +6,7 @@ import LoadingPopup from "../components/LoadingPopup";
 import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
-import { getResumeStep } from "../resumeStep.js";
+import { sendToProfileSetup } from "../resumeStep.js";
 import { setCurrentJobDescriptionId } from "../currentJob.js";
 import { listCompleted, setViewingFeedback } from "../practiceHistory.js";
 import { apiFeedbackId } from "../practiceAdapters.js";
@@ -66,7 +66,7 @@ export default function Dashboard() {
       .then((profile) => {
         if (cancelled) return;
         if (!profile.confirmed) {
-          navigate(getResumeStep(profile));
+          sendToProfileSetup(profile);
           return;
         }
         setIsChecking(false);

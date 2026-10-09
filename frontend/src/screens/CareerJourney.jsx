@@ -7,7 +7,7 @@ import { ArrowRightIcon } from '../components/icons'
 import { api, ApiError } from '../api.js'
 import { navigate } from '../navigate.js'
 import { setEditReturn } from '../editReturn.js'
-import { getResumeStep } from '../resumeStep.js'
+import { sendToProfileSetup } from '../resumeStep.js'
 
 // One row of the journey timeline: a numbered badge, a title, a value
 // line, a caption, and an Edit button back into that wizard step.
@@ -59,7 +59,7 @@ export default function CareerJourney() {
       // here - send her back into the wizard at the first unfinished step.
       if (err instanceof ApiError && err.code === 'HTTP_409') {
         try {
-          navigate(getResumeStep(await api.getProfile()))
+          sendToProfileSetup(await api.getProfile())
         } catch {
           navigate('/your-story')
         }

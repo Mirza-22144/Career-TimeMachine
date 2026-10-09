@@ -5,7 +5,7 @@ import LoadingPopup from "../components/LoadingPopup";
 import { FileTextIcon, SearchIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
-import { getResumeStep } from "../resumeStep.js";
+import { sendToProfileSetup } from "../resumeStep.js";
 
 /**
  * AC 2.3.3: the fork point right after profile setup (and reachable again
@@ -29,7 +29,7 @@ export default function ChooseYourPath() {
       .then((profile) => {
         if (cancelled) return;
         if (!profile.confirmed) {
-          navigate(getResumeStep(profile));
+          sendToProfileSetup(profile);
           return;
         }
         setIsChecking(false);

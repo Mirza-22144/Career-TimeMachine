@@ -30,7 +30,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 56px 64px 120px;
+  padding: 40px 46px 72px;
 }
 
 .ys-form-content {
@@ -50,27 +50,27 @@
 .ys-heading {
   margin: 0 0 12px;
   font-weight: 800;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1.2;
   letter-spacing: -0.5px;
   color: var(--ink-900);
 }
 
 .ys-subheading {
-  margin: 0 0 32px;
+  margin: 0 0 26px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-600);
 }
 
 .ys-question {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .ys-question-label {
   margin: 0 0 16px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-900);
 }
 
@@ -130,7 +130,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 18px;
+  padding: 16px 16px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.1);
   border-radius: 12px;
@@ -171,7 +171,7 @@
 }
 
 .ys-slider-card {
-  padding: 24px;
+  padding: 20px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.1);
   border-radius: 16px;
@@ -182,17 +182,17 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 26px;
 }
 
 .ys-slider-value {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-600);
 }
 
 .ys-slider-value strong {
   margin-right: 4px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   white-space: nowrap;
   color: var(--violet-600);
@@ -274,7 +274,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 28px;
+  padding: 16px 22px;
   background: linear-gradient(90deg, var(--violet-600) 0%, #9333ea 100%);
   border: none;
   border-radius: 12px;
@@ -304,8 +304,8 @@
   align-items: flex-start;
   gap: 16px;
   max-width: 420px;
-  margin: 80px auto;
-  padding: 32px;
+  margin: 58px auto;
+  padding: 26px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: var(--elevation-1);
@@ -315,12 +315,12 @@
 .ys-load-error p {
   margin: 0;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-900);
 }
 
 .ys-load-error button {
-  padding: 10px 20px;
+  padding: 10px 18px;
   background: var(--violet-600);
   border: none;
   border-radius: 999px;

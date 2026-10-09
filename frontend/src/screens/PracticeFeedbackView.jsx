@@ -6,7 +6,7 @@ import PracticeFeedback from "../components/practice/PracticeFeedback";
 import { WORKPLACE_AREAS, getPrimaryAreaId } from "../mockData/workplaceAreas.js";
 import { loadMockActivities } from "../mockData/practiceSession.js";
 import { getLocalFeedback, getViewingFeedbackId } from "../practiceHistory.js";
-import { parseApiFeedbackId, toChoiceActivity } from "../practiceAdapters.js";
+import { parseApiFeedbackId, toChoiceActivity, toDragDropActivity, toDragDropFeedback } from "../practiceAdapters.js";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 
@@ -17,6 +17,15 @@ async function loadStored({ sessionId, scenarioId }) {
   const session = await api.getPracticeSession(sessionId);
   const scenario = session.scenarios.find((item) => item.scenario_id === scenarioId);
   if (!scenario || scenario.status !== "completed") return null;
+  if (scenario.activity_type === "drag_and_drop") {
+    const activity = toDragDropActivity(scenario);
+    return {
+      activity,
+      dragDropFeedback: toDragDropFeedback(scenario, activity),
+      roleLabel: session.role.label,
+      areaLabel: areaLabel("project_delivery_board"),
+    };
+  }
   return {
     activity: toChoiceActivity(scenario),
     feedback: scenario.feedback,
@@ -25,7 +34,7 @@ async function loadStored({ sessionId, scenarioId }) {
   };
 }
 
-// Code Review or Drag and Drop: still mock, kept in this browser.
+// Code Review: still mock, kept in this browser.
 async function loadLocal(id) {
   const entry = getLocalFeedback(id);
   if (!entry) return null;
@@ -71,6 +80,7 @@ export default function PracticeFeedbackView() {
             activity={view.activity}
             answer={view.answer}
             feedback={view.feedback}
+            dragDropFeedback={view.dragDropFeedback}
             areaLabel={view.areaLabel}
             continueLabel="Back to dashboard"
             onContinue={() => navigate("/dashboard")}

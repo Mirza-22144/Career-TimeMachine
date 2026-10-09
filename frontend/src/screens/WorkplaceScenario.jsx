@@ -17,7 +17,7 @@ import {
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
 import { addCompleted, clearPending, getPending, hasCompleted, setPending } from '../practiceHistory.js'
-import { toChoiceActivity } from '../practiceAdapters.js'
+import { toChoiceActivity, toDragDropActivity, toDragDropFeedback } from '../practiceAdapters.js'
 
 const AREA_ICONS = {
   user: UserIcon,
@@ -49,6 +49,13 @@ const DIFFICULTIES = [
 const areaById = (id) => WORKPLACE_AREAS.find((area) => area.id === id)
 
 const MCQ = 'multiple_choice'
+const DND = 'drag_and_drop'
+// Activities the backend prepares, stores and resumes. Code Review is not
+// one of them yet - it is still mock content.
+const REAL_KINDS = [MCQ, DND]
+const isReal = (activityKind) => REAL_KINDS.includes(activityKind)
+// Where on the floor Drag and Drop happens.
+const DND_AREA_ID = 'project_delivery_board'
 
 // AC 4.3.5 exception.
 const MAY_REPEAT = 'We couldn’t check your earlier activities, so some may repeat.'
@@ -61,6 +68,15 @@ const mcqFloor = (roleLabel, areaLabel, completed) => ({
     title: 'A few situations need your judgement',
     // No count here: a question about her own skill can still be on its way.
     text: `Situations a ${roleLabel} meets at work, one at a time. You will see each one when you get there.`,
+    cta: completed > 0 ? 'Carry on' : 'See the first one',
+  },
+})
+
+const dndFloor = (roleLabel, areaLabel, completed) => ({
+  announcement: `The ${areaLabel} needs attention.`,
+  panel: {
+    title: 'A few messages need finishing',
+    text: `Messages a ${roleLabel} sends at work, one at a time. You will see each one when you get there.`,
     cta: completed > 0 ? 'Carry on' : 'See the first one',
   },
 })
@@ -87,11 +103,11 @@ function SettingUp({ text }) {
 // is, the soft stop appears and the next one is unlocked: Keep Going opens
 // it now, Finish Practice leaves it waiting for her next visit.
 //
-// Multiple Choice is real: POST /practice-sessions builds an activity of
-// four questions (plus a live one about a skill she typed in herself), the
-// backend hands them over one at a time and stores her answers and
-// feedback, so leaving part-way and coming back resumes at the same
-// question. Code Review and Drag and Drop are still mock content - see
+// Multiple Choice and Drag and Drop are real: POST /practice-sessions
+// builds an activity of four questions (plus a live one about a skill she
+// typed in herself), the backend hands them over one at a time and stores
+// her answers and feedback, so leaving part-way and coming back resumes at
+// the same question. Code Review is still mock content - see
 // mockData/practiceSession.js.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
@@ -107,7 +123,7 @@ export default function WorkplaceScenario() {
   const [mockActivities, setMockActivities] = useState([])
   // The one kind of activity currently unlocked.
   const [kind, setKind] = useState(null)
-  // The multiple-choice activity in progress: { id, total, completed }.
+  // The backend activity in progress: { id, total, completed }.
   const [session, setSession] = useState(null)
   // Its current question, as the API returns it.
   const [question, setQuestion] = useState(null)
@@ -119,7 +135,7 @@ export default function WorkplaceScenario() {
   // The activity unlocked after this one: 'checking' while it is being
   // worked out, null when nothing new is left, 'retry' if that check failed.
   const [nextKind, setNextKind] = useState(null)
-  // New multiple-choice questions left per difficulty (GET /practice-sessions/remaining).
+  // New questions left per kind and difficulty (GET /practice-sessions/remaining).
   const [remaining, setRemaining] = useState(null)
   // True when her earlier activities could not be checked for the activity
   // now open (AC 4.3.5 exception): she continues, and is told some may repeat.
@@ -189,7 +205,7 @@ export default function WorkplaceScenario() {
       if (current && current.progress.current_scenario_id) {
         setRole({ id: current.role.id, label: current.role.label })
         setDifficulty(current.difficulty)
-        setKind(MCQ)
+        setKind(current.scenarios.some((item) => item.activity_type === DND) ? DND : MCQ)
         applySession(current)
         setStep('resume')
       } else {
@@ -233,37 +249,43 @@ export default function WorkplaceScenario() {
     load()
   }
 
-  const areaIdFor = (activityKind) =>
-    activityKind === MCQ ? getPrimaryAreaId(role.id) : mockActivities.find((item) => item.type === activityKind)?.areaId
+  const areaIdFor = (activityKind) => {
+    if (activityKind === MCQ) return getPrimaryAreaId(role.id)
+    if (activityKind === DND) return DND_AREA_ID
+    return mockActivities.find((item) => item.type === activityKind)?.areaId
+  }
 
   const mockLeft = (level) => mockActivities.filter((item) => !hasCompleted(role.id, level, item.id))
   // Unknown counts (the check failed) are treated as "there may be more".
-  const levelHasWork = (level, counts) => !counts || counts[level] > 0 || mockLeft(level).length > 0
+  const realLeft = (level, counts) => REAL_KINDS.filter((item) => !counts || counts[item]?.[level] > 0)
+  const levelHasWork = (level, counts) => realLeft(level, counts).length > 0 || mockLeft(level).length > 0
 
   // Picks, at random, a kind of activity she has not done for this role and
   // level - or null when nothing new is left (AC 4.3.5).
-  const pickNext = async (level, { withoutMcq = false } = {}) => {
+  const pickNext = async (level, { without = [] } = {}) => {
     let counts = null
     try {
       counts = await takeEarly('remaining', api.getRemainingQuestions)
     } catch {
-      // AC 4.3.5 exception: she still practises; Multiple Choice is assumed
-      // to have something left and the backend has the final say.
+      // AC 4.3.5 exception: she still practises; the backend's activities are
+      // assumed to have something left and the backend has the final say.
       unchecked.current = true
     }
     setRemaining(counts)
-    const mcqLeft = !withoutMcq && (!counts || counts[level] > 0)
-    const kinds = [...(mcqLeft ? [MCQ] : []), ...mockLeft(level).map((item) => item.type)]
+    const kinds = [
+      ...realLeft(level, counts).filter((item) => !without.includes(item)),
+      ...mockLeft(level).map((item) => item.type),
+    ]
     return kinds.length > 0 ? kinds[Math.floor(Math.random() * kinds.length)] : null
   }
 
-  // Opens the picked activity. Multiple Choice is prepared by the backend
-  // (a few seconds when a live question is being written). Returns false if
-  // it turned out there was nothing new after all.
+  // Opens the picked activity. Multiple Choice and Drag and Drop are
+  // prepared by the backend. Returns false if it turned out there was
+  // nothing new after all.
   const enter = async (activityKind, level) => {
-    if (activityKind === MCQ) {
+    if (isReal(activityKind)) {
       try {
-        const started = await api.startPracticeSession('standard', level)
+        const started = await api.startPracticeSession('standard', level, activityKind)
         if (started.history_checked === false) unchecked.current = true
         sessionFocus.current = started.focus_skill || null
         applySession(started)
@@ -288,12 +310,17 @@ export default function WorkplaceScenario() {
     sessionFocus.current = null
     const opened = await (async () => {
       // A waiting activity she has since completed elsewhere is not reopened.
-      const stillNew = preferred === MCQ || mockLeft(level).some((item) => item.type === preferred)
+      const stillNew = isReal(preferred) || mockLeft(level).some((item) => item.type === preferred)
       if (preferred && stillNew && (await enter(preferred, level))) return preferred
-      let picked = await pickNext(level, { withoutMcq: preferred === MCQ })
-      if (picked === MCQ && !(await enter(MCQ, level))) picked = await pickNext(level, { withoutMcq: true })
-      if (picked === MCQ) return MCQ
-      if (picked && (await enter(picked, level))) return picked
+      // A kind the backend turns out to have nothing new for is left out
+      // of the next pick.
+      const emptied = isReal(preferred) ? [preferred] : []
+      for (let attempt = 0; attempt <= REAL_KINDS.length; attempt += 1) {
+        const picked = await pickNext(level, { without: emptied })
+        if (!picked) break
+        if (await enter(picked, level)) return picked
+        emptied.push(picked)
+      }
       clearPending()
       return null
     })()
@@ -397,7 +424,7 @@ export default function WorkplaceScenario() {
   }
 
   const handleSubmit = async (answer) => {
-    if (kind !== MCQ) {
+    if (!isReal(kind)) {
       addCompleted({
         activityId: mock.id,
         title: mock.title,
@@ -416,7 +443,12 @@ export default function WorkplaceScenario() {
     setIsSubmitting(true)
     setSubmitError('')
     try {
-      const saved = await api.submitScenarioResponse(session.id, question.scenario_id, { selected_option_id: answer })
+      // Drag and Drop sends which phrase went into which blank; Multiple
+      // Choice sends the one option chosen.
+      const body = kind === DND
+        ? { placements: Object.fromEntries(activity.blankIds.map((blankId, gap) => [blankId, answer[gap]])) }
+        : { selected_option_id: answer }
+      const saved = await api.submitScenarioResponse(session.id, question.scenario_id, body)
       const hasNext = Boolean(saved.progress.current_scenario_id)
       // Finishing the activity frees her to start another one later. If
       // this call is lost, the next visit finishes it instead.
@@ -429,7 +461,11 @@ export default function WorkplaceScenario() {
         total: saved.progress.total_activities,
       }))
       setFinished((titles) => [...titles, question.title])
-      setResult({ activity: toChoiceActivity(question), feedback: saved.scenario.feedback, hasNext })
+      setResult(
+        kind === DND
+          ? { activity, dragDropFeedback: toDragDropFeedback(saved.scenario, activity), hasNext }
+          : { activity, feedback: saved.scenario.feedback, hasNext },
+      )
       setStep('feedback')
     } catch {
       setSubmitError("We couldn't save your answer. Please try again.")
@@ -447,12 +483,19 @@ export default function WorkplaceScenario() {
     finishActivity()
   }
 
-  const mock = kind && kind !== MCQ ? mockActivities.find((item) => item.type === kind) : null
+  const mock = kind && !isReal(kind) ? mockActivities.find((item) => item.type === kind) : null
   const area = kind ? areaById(areaIdFor(kind)) : null
-  const total = kind === MCQ ? session?.total || 0 : 1
-  const completedCount = kind === MCQ ? session?.completed || 0 : 0
-  const activity = kind === MCQ ? (question ? toChoiceActivity(question) : null) : mock
-  const floor = kind === MCQ && area ? mcqFloor(role.label, area.label, completedCount) : mock
+  const total = isReal(kind) ? session?.total || 0 : 1
+  const completedCount = isReal(kind) ? session?.completed || 0 : 0
+  let activity = mock
+  if (isReal(kind)) {
+    if (!question) activity = null
+    else activity = kind === DND ? toDragDropActivity(question) : toChoiceActivity(question)
+  }
+  let floor = mock
+  if (isReal(kind) && area) {
+    floor = (kind === DND ? dndFloor : mcqFloor)(role.label, area.label, completedCount)
+  }
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
 
   if (loading) return (
@@ -562,7 +605,14 @@ export default function WorkplaceScenario() {
           </main>
         )}
         {step === 'activity' && !isPreparingActivity && !questionError && activity?.type === 'drag_and_drop' && (
-          <DragDropActivity key={activity.id} activity={activity} areaLabel={area.label} onSubmit={handleSubmit} />
+          <DragDropActivity
+            key={activity.id}
+            activity={activity}
+            areaLabel={area.label}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            onSubmit={handleSubmit}
+          />
         )}
         {step === 'activity' && !isPreparingActivity && !questionError && activity && activity.type !== 'drag_and_drop' && (
           <ChoiceActivity
@@ -579,6 +629,7 @@ export default function WorkplaceScenario() {
             activity={result.activity}
             answer={result.answer}
             feedback={result.feedback}
+            dragDropFeedback={result.dragDropFeedback}
             areaLabel={area.label}
             continueLabel={result.hasNext ? 'Next Situation' : 'Continue'}
             onContinue={handleFeedbackContinue}

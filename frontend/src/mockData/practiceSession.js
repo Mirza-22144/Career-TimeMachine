@@ -1,11 +1,11 @@
-// MOCK DATA for the two workplace activities the AI team has not delivered
-// yet: Code Review and Drag and Drop (screens/WorkplaceScenario.jsx).
+// MOCK DATA for the one workplace activity the AI team has not delivered
+// yet: Code Review (screens/WorkplaceScenario.jsx).
 //
-// Multiple-choice practice is real - it comes from POST /practice-sessions
-// and is stored by the backend. These two are fixed content, the same for
-// every role, and a completed one is only remembered in this browser (see
-// practiceHistory.js). Replace loadMockActivities() with the real API call
-// when their content arrives.
+// Multiple Choice and Drag and Drop are real - they come from
+// POST /practice-sessions and are stored by the backend. Code Review is
+// fixed content, the same for every role, and a completed one is only
+// remembered in this browser (see practiceHistory.js). Replace
+// loadMockActivities() with the real API call when its content arrives.
 
 const ACTIVITIES = [
   {
@@ -65,58 +65,7 @@ const ACTIVITIES = [
     },
     skillsUsed: ["Code review", "Python"],
   },
-  {
-    id: "priya-update",
-    type: "drag_and_drop",
-    areaId: "project_delivery_board",
-    announcement: "The Project & Delivery Board needs attention.",
-    panel: {
-      title: "Priya needs an update",
-      text: "The checkout fix will miss today’s release and she has not been told. You led this piece of work, so the message should come from you before stand-up.",
-      cta: "Write the update",
-    },
-    title: "Tell Priya where the fix stands",
-    instruction: "Complete the message. Three of the five phrases fit.",
-    to: "Priya · Checkout fix, update before stand-up",
-    // Text and gaps in order; a gap is { gap: index }.
-    message: ["Hi Priya, the checkout total fix", { gap: 0 }, ", so I have", { gap: 1 }, "and I will", { gap: 2 }, "."],
-    hint: "A clear update says where things stand, what you have done, and what happens next.",
-    phrases: [
-      {
-        id: "hopefully",
-        text: "should hopefully be fine",
-        fits: false,
-        comesAcross: "“Hopefully” reads as uncertain, so Priya cannot plan around it.",
-        better: "Say plainly whether the fix will make today’s release.",
-      },
-      {
-        id: "paused",
-        text: "paused the rollout so no more orders are affected",
-        fits: true,
-        comesAcross: "Shows you have already acted, which is what she needs to hear next.",
-      },
-      {
-        id: "some-point",
-        text: "let you know at some point",
-        fits: false,
-        comesAcross: "“At some point” leaves her without a time to plan around.",
-        better: "Give a time she can expect to hear from you.",
-      },
-      {
-        id: "not-ready",
-        text: "will not be ready for today’s release",
-        fits: true,
-        comesAcross: "Clear and direct. Priya knows straight away that the release is affected.",
-      },
-      {
-        id: "confirm",
-        text: "confirm a new date by 3pm tomorrow",
-        fits: true,
-        comesAcross: "Gives her a time she can plan around.",
-      },
-    ],
-    skillsUsed: ["Escalation updates", "Stakeholder communication"],
-  },
+
 ];
 
 // Code Review is offered to every role: the skills our database lists for

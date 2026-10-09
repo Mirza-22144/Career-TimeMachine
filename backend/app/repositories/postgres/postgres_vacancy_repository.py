@@ -10,6 +10,7 @@ from app.repositories.interfaces.vacancy_repository import (
     VacancyRepository,
 )
 from app.repositories.postgres.db_errors import database_unavailable
+from app.repositories.postgres.pooling import KEEPALIVE, checkout, release, rollback_quietly
 
 # Read-only reference data (data/pipeline/build_vacancy_seed.py owns
 # writing it) - still its own pool, matching every other repository in this
@@ -24,21 +25,22 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
     user=DB_USER,
     password=DB_PASSWORD,
     sslmode=DB_SSLMODE,
+    **KEEPALIVE,
 )
 
 
 def _query(sql: str, params: tuple = ()) -> list[tuple]:
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 return cur.fetchall()
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 

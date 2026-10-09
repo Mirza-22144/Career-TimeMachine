@@ -6,6 +6,7 @@ import psycopg2.pool
 from app.core.config import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_SSLMODE, DB_USER
 from app.repositories.interfaces.role_choice_repository import RoleChoice, RoleChoiceRepository
 from app.repositories.postgres.db_errors import database_unavailable
+from app.repositories.postgres.pooling import KEEPALIVE, checkout, release, rollback_quietly
 
 # Threaded pool - FastAPI runs sync routes in a thread pool (see
 # postgres_practice_session_repository.py).
@@ -18,12 +19,13 @@ _pool = psycopg2.pool.ThreadedConnectionPool(
     user=DB_USER,
     password=DB_PASSWORD,
     sslmode=DB_SSLMODE,
+    **KEEPALIVE,
 )
 
 
 def _run(sql: str, params: tuple, fetch: bool) -> list[tuple]:
     try:
-        conn = _pool.getconn()
+        conn = checkout(_pool)
         try:
             with conn.cursor() as cur:
                 cur.execute(sql, params)
@@ -31,10 +33,10 @@ def _run(sql: str, params: tuple, fetch: bool) -> list[tuple]:
             conn.commit()
             return rows
         except Exception:
-            conn.rollback()
+            rollback_quietly(conn)
             raise
         finally:
-            _pool.putconn(conn)
+            release(_pool, conn)
     except psycopg2.Error as exc:
         raise database_unavailable(exc) from exc
 

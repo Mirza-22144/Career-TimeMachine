@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 20px;
+  padding: 18px;
   background: rgba(13, 22, 40, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -45,7 +45,7 @@
 
 .spp-stat-value {
   font-weight: 800;
-  font-size: 28px;
+  font-size: 22px;
   color: #ffffff;
 }
 

@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   background: rgba(13, 22, 40, 0.55);
 }
 
@@ -16,7 +16,7 @@
   max-width: 540px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
-  padding: 32px;
+  padding: 26px;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0px 20px 48px -12px rgba(76, 29, 149, 0.24);
@@ -29,7 +29,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .rim-eyebrow {
@@ -44,7 +44,7 @@
 .rim-title {
   margin: 0;
   font-weight: 800;
-  font-size: 24px;
+  font-size: 20px;
   color: #0f1728;
 }
 
@@ -55,7 +55,7 @@
   border: none;
   border-radius: 999px;
   background: #f3f0fb;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   color: #514b66;
   cursor: pointer;
@@ -65,8 +65,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 24px;
-  padding: 20px;
+  margin-bottom: 20px;
+  padding: 18px;
   background: #f5f3ff;
   border-radius: 14px;
 }
@@ -82,7 +82,7 @@
 .rim-range {
   font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
   font-weight: 700;
-  font-size: 28px;
+  font-size: 22px;
   color: #2e1065;
 }
 
@@ -103,7 +103,7 @@
 .rim-text {
   margin: 8px 0 6px;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 21px;
   color: #2e1065;
 }

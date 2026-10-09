@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../styles/YourBreak.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import LoadingPopup from '../components/LoadingPopup'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import SaveProfileDialog from '../components/SaveProfileDialog'
 import breakPhoto from '../assets/yourbreak.png'
@@ -158,7 +159,7 @@ export default function YourBreak() {
   if (loading) return (
     <>
       <TopNav />
-      <div className="yb-page" />
+      <div className="yb-page"><LoadingPopup text="Opening your profile…" /></div>
     </>
   )
 

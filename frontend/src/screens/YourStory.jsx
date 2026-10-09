@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import '../styles/YourStory.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import LoadingPopup from '../components/LoadingPopup'
 import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, roleSearchAliases } from '../mockData/onboardingData'
 import { SearchIcon, CheckIcon, ArrowRightIcon } from '../components/icons'
@@ -127,7 +128,7 @@ export default function YourStory() {
   if (loading) return (
     <>
       <TopNav />
-      <div className="ys-page" />
+      <div className="ys-page"><LoadingPopup text="Opening your profile…" /></div>
     </>
   )
 

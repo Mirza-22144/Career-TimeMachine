@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import '../styles/YourExperience.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import LoadingPopup from '../components/LoadingPopup'
 import ExperienceSummaryCard from '../components/ExperienceSummaryCard'
 import { stepTwoData } from '../mockData/onboardingData'
 import { api } from '../api.js'
@@ -54,6 +55,10 @@ function useTagDraft(commitValue, emptyErrorMessage) {
  * backend catalogue; skills depend on the role chosen in step 1, since the
  * real catalogue is role-specific and far too large to browse flat.
  */
+// Role suggestions and practice are built from her skills; fewer than
+// three gives the role model too little to go on.
+const MIN_SKILLS = 3
+
 export default function YourExperience() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
@@ -188,7 +193,7 @@ export default function YourExperience() {
   if (loading) return (
     <>
       <TopNav />
-      <div className="ye-page" />
+      <div className="ye-page"><LoadingPopup text="Opening your profile…" /></div>
     </>
   )
 
@@ -437,13 +442,19 @@ export default function YourExperience() {
           <button
             type="button"
             className="ye-continue"
-            disabled={selectedSkillLabels.length === 0}
+            disabled={selectedSkillLabels.length < MIN_SKILLS}
             onClick={handleContinue}
           >
             {stepTwoData.ctaLabel}
             <ArrowRightIcon size={16} />
           </button>
-          {selectedSkillLabels.length === 0 && <p className="ye-hint">Select at least one skill to continue.</p>}
+          {selectedSkillLabels.length < MIN_SKILLS && (
+            <p className="ye-hint">
+              {selectedSkillLabels.length === 0
+                ? `Add at least ${MIN_SKILLS} skills to continue. They shape the roles we suggest and your practice.`
+                : `Add ${MIN_SKILLS - selectedSkillLabels.length} more ${MIN_SKILLS - selectedSkillLabels.length === 1 ? 'skill' : 'skills'} to continue.`}
+            </p>
+          )}
         </div>
       </main>
 

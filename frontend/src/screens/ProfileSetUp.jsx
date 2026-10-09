@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/ProfileSetUp.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import { CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
@@ -83,7 +84,7 @@ export default function ProfileSetUp() {
     <>
       <TopNav />
       <div className="psu-page">
-        {loading && <div className="psu-content" />}
+        {loading && <div className="psu-content"><LoadingPopup text="Putting your profile together…" /></div>}
 
         {!loading && loadError && (
           <div className="psu-content">

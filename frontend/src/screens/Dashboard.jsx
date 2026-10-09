@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../styles/Dashboard.css";
 import "../styles/AccessTokenModal.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
@@ -141,7 +142,7 @@ export default function Dashboard() {
       <div className="dash-page">
         <h1 className="dash-heading">Your progress</h1>
 
-        {isLoading && <p className="dash-subheading" role="status">Loading your progress…</p>}
+        {isLoading && <LoadingPopup text="Loading your progress…" />}
 
         {!isLoading && nothingYet && (
           <>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import '../styles/CareerJourney.css'
 import TopNav from '../components/TopNav'
+import LoadingPopup from '../components/LoadingPopup'
 import ClearJourneyDialog from '../components/ClearJourneyDialog'
 import { ArrowRightIcon } from '../components/icons'
 import { api, ApiError } from '../api.js'
@@ -99,7 +100,7 @@ export default function CareerJourney() {
   if (loading) return (
     <>
       <TopNav />
-      <div className="cj-page" />
+      <div className="cj-page"><LoadingPopup text="Opening your career profile…" /></div>
     </>
   )
 

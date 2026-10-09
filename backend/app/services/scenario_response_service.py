@@ -29,7 +29,12 @@ from app.services.practice_session_service import (
 logger = logging.getLogger(__name__)
 
 # The one answer field each activity type accepts.
-EXPECTED_ANSWER_FIELD = {"multiple_choice": "selected_option_id", "written_response": "response_text"}
+EXPECTED_ANSWER_FIELD = {
+    "multiple_choice": "selected_option_id",
+    "written_response": "response_text",
+    "drag_and_drop": "placements",
+}
+BLANK_IDS = {"blank_1", "blank_2", "blank_3"}
 
 
 @dataclass
@@ -91,22 +96,28 @@ class ScenarioResponseService:
             else None
         )
 
-        feedback = self._generate_feedback(session, scenario, submission, selected_option)
-
         now = utc_now()
-        scenario.response = ScenarioAttempt(
-            submitted_at=now,
-            response_text=submission.response_text,
-            selected_option_id=submission.selected_option_id,
-        )
-        scenario.feedback = feedback
-        scenario.feedback_status = "available" if feedback is not None else "unavailable"
+        if scenario.activity_type == "drag_and_drop":
+            self._check_placements(scenario, submission.placements)
+            # Its feedback is read from the activity itself (see
+            # PracticeScenario.phrase_feedback), so there is nothing to generate.
+            scenario.response = ScenarioAttempt(submitted_at=now, placements=dict(submission.placements))
+            scenario.feedback_status = "available"
+        else:
+            feedback = self._generate_feedback(session, scenario, submission, selected_option)
+            scenario.response = ScenarioAttempt(
+                submitted_at=now,
+                response_text=submission.response_text,
+                selected_option_id=submission.selected_option_id,
+            )
+            scenario.feedback = feedback
+            scenario.feedback_status = "available" if feedback is not None else "unavailable"
         scenario.status = "completed"
         # The next question becomes current: pre-written ones first, the
         # live one (the only kind carrying its own feedback) last.
         upcoming = sorted(
             (s for s in session.scenarios if s.status == "upcoming"),
-            key=lambda s: s.option_feedback is not None,
+            key=lambda s: "_live_" in s.scenario_id,
         )
         if upcoming:
             upcoming[0].status = "current"
@@ -132,6 +143,18 @@ class ScenarioResponseService:
                 "Scenario not found in this practice session",
             )
         return scenario
+
+    def _check_placements(self, scenario: PracticeScenario, placements: dict[str, str]) -> None:
+        """Every blank needs one phrase, each phrase used once, and every
+        phrase must belong to this activity."""
+        phrase_ids = {option.option_id for option in scenario.options}
+        placed = list(placements.values())
+        if set(placements) != BLANK_IDS or len(set(placed)) != len(placed) or not set(placed) <= phrase_ids:
+            raise practice_error(
+                status.HTTP_400_BAD_REQUEST,
+                "INVALID_PLACEMENTS",
+                "Place one phrase from this activity in each of the three gaps",
+            )
 
     def _find_option(self, scenario: PracticeScenario, option_id: str) -> ScenarioOption:
         """Return the selected option only if it belongs to this scenario, so an

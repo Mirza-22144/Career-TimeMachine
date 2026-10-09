@@ -30,14 +30,15 @@ def read_current_practice_session(
     return PracticeSessionResponse.model_validate(service.get_current_session(session.token_hash))
 
 
-@router.get("/remaining", response_model=dict[str, int])
+@router.get("/remaining", response_model=dict[str, dict[str, int]])
 def read_remaining_questions(
     session: AnonSession = Depends(get_current_session),
     service: PracticeSessionService = Depends(get_practice_session_service),
 ):
-    """AC 4.3.5 / 4.5.4: how many multiple-choice questions are still new to
-    her for her practice role, per difficulty - so the screens can offer the
-    "activities run out" choices without starting anything."""
+    """AC 4.3.5 / 4.5.4: how many questions are still new to her for her
+    practice role, per kind of activity and difficulty - so the screens can
+    unlock the next activity, or offer the "activities run out" choices,
+    without starting anything."""
     return service.remaining_by_difficulty(session.token_hash)
 
 

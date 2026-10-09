@@ -2,7 +2,7 @@
 
 .jdc-page {
   min-height: 100vh;
-  padding: 116px clamp(24px, 7.8vw, 112px) 40px;
+  padding: 108px clamp(24px, 7.8vw, 112px) 40px;
   background: #f7f4ff;
   box-sizing: border-box;
   font-family: 'Manrope', sans-serif;
@@ -129,9 +129,35 @@
   gap: 8px;
 }
 
+/* The job's side: chips wrap across the width of the circle's outer part
+   rather than running down in one column and out of the circle. */
 .jdc-chips--stacked {
-  flex-direction: column;
-  align-items: center;
+  max-width: 100%;
+}
+
+.jdc-chips--stacked .jdc-chip {
+  padding: 5px 11px;
+  font-size: 13px;
+}
+
+/* Keep each outer column clear of its circle's curved edge. */
+.jdc-col:first-of-type {
+  padding-left: 6%;
+}
+
+.jdc-col:last-of-type {
+  padding-right: 6%;
+}
+
+.jdc-more {
+  padding: 5px 11px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  color: #6d28d9;
+  cursor: pointer;
 }
 
 .jdc-chip {
@@ -256,7 +282,7 @@
 }
 
 .jdc-btn-outline {
-  padding: 14px 20px;
+  padding: 10px 18px;
   background: #ffffff;
   border: 1.5px solid rgba(107, 102, 133, 0.55);
   border-radius: 999px;
@@ -271,7 +297,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 10px 18px;
   background: #6d28d9;
   border: none;
   border-radius: 999px;

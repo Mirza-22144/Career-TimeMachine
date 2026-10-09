@@ -16,9 +16,13 @@ import { recallResult, rememberResult } from "../lastGood.js";
  * matches the ad's extracted requirements against her real profile. No
  * score, percentage or verdict is shown anywhere.
  */
+// How many of the job's skills fit inside its circle before "+N more".
+const MAX_EXPLORE_SHOWN = 8;
+
 export default function JobDescriptionComparison() {
   const [status, setStatus] = useState("loading"); // loading | error | none | ready
   const [comparison, setComparison] = useState(null);
+  const [showAllExplore, setShowAllExplore] = useState(false);
   const [profile, setProfile] = useState(null);
   const [roleStep, setRoleStep] = useState(null); // { closest, allRoles } while the picker is open
   const [isOpening, setIsOpening] = useState(false);
@@ -199,7 +203,14 @@ export default function JobDescriptionComparison() {
               <h2 className="jdc-group">Skills You Could Explore</h2>
               {explore.length === 0 && <p className="jdc-empty">Nothing here for this ad.</p>}
               <div className="jdc-chips jdc-chips--stacked">
-                {explore.map((skill) => <span key={skill} className="jdc-chip jdc-chip--explore">{skill}</span>)}
+                {(showAllExplore ? explore : explore.slice(0, MAX_EXPLORE_SHOWN)).map((skill) => (
+                  <span key={skill} className="jdc-chip jdc-chip--explore">{skill}</span>
+                ))}
+                {explore.length > MAX_EXPLORE_SHOWN && (
+                  <button type="button" className="jdc-more" onClick={() => setShowAllExplore((v) => !v)}>
+                    {showAllExplore ? "Show fewer" : `+${explore.length - MAX_EXPLORE_SHOWN} more`}
+                  </button>
+                )}
               </div>
             </div>
           </div>

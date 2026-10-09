@@ -30,7 +30,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 56px 48px 120px;
+  padding: 40px 34px 72px;
 }
 
 .ye-form-content {
@@ -50,20 +50,20 @@
 .ye-heading {
   margin: 0 0 12px;
   font-weight: 800;
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1.2;
   letter-spacing: -0.5px;
 }
 
 .ye-subheading {
-  margin: 0 0 32px;
+  margin: 0 0 26px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-600);
 }
 
 .ye-question {
-  margin-bottom: 32px;
+  margin-bottom: 26px;
 }
 
 .ye-question-header {
@@ -76,7 +76,7 @@
 .ye-question-label {
   margin: 0;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .ye-selected-count {
@@ -173,7 +173,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 10px 16px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.12);
   border-radius: 999px;
@@ -226,7 +226,7 @@
 }
 
 .ye-pill-input {
-  padding: 10px 18px;
+  padding: 10px 16px;
   min-width: 140px;
   background: #ffffff;
   border: 1px solid var(--violet-500);
@@ -263,7 +263,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 18px;
+  padding: 16px 16px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.1);
   border-radius: 12px;
@@ -318,7 +318,7 @@
 }
 
 .ye-responsibility-input {
-  padding: 16px 18px;
+  padding: 16px 16px;
   background: #ffffff;
   border: 1px solid var(--violet-500);
   border-radius: 12px;
@@ -330,8 +330,8 @@
 }
 
 .ye-translate-note {
-  padding: 16px 20px;
-  margin-bottom: 28px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
   background: var(--violet-50);
   border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: 12px;
@@ -344,7 +344,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 28px;
+  padding: 16px 22px;
   background: linear-gradient(90deg, var(--violet-600) 0%, #9333ea 100%);
   border: none;
   border-radius: 12px;
@@ -381,8 +381,8 @@
   align-items: flex-start;
   gap: 16px;
   max-width: 420px;
-  margin: 80px auto;
-  padding: 32px;
+  margin: 58px auto;
+  padding: 26px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0px 2px 8px -2px rgba(76, 29, 149, 0.08);
@@ -392,12 +392,12 @@
 .ye-load-error p {
   margin: 0;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-900);
 }
 
 .ye-load-error button {
-  padding: 10px 20px;
+  padding: 10px 18px;
   background: var(--violet-600);
   border: none;
   border-radius: 999px;

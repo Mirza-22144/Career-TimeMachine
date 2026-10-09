@@ -6,7 +6,7 @@ import ClosestRoleDialog from "../components/ClosestRoleDialog";
 import { ArrowRightIcon, RefreshIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
-import { getResumeStep } from "../resumeStep.js";
+import { sendToProfileSetup } from "../resumeStep.js";
 import { getCurrentJobDescriptionId } from "../currentJob.js";
 import { recallResult, rememberResult } from "../lastGood.js";
 
@@ -33,7 +33,7 @@ export default function JobDescriptionComparison() {
     try {
       const profileData = await api.getProfile();
       if (!profileData.confirmed) {
-        navigate(getResumeStep(profileData));
+        sendToProfileSetup(profileData);
         return;
       }
       // The id handed over by the previous screen, else her most recent one.

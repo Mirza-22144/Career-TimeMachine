@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import '../styles/YourStory.css'
 import OnboardingSidebar from '../components/OnboardingSidebar'
 import TopNav from '../components/TopNav'
+import FinishProfileNotice from '../components/FinishProfileNotice'
 import LoadingPopup from '../components/LoadingPopup'
 import sidebarPhoto from '../assets/storyimage.png'
 import { stepOneData, roleSearchAliases } from '../mockData/onboardingData'
@@ -147,6 +148,7 @@ export default function YourStory() {
   return (
     <>
       <TopNav />
+      <FinishProfileNotice />
       <div className="ys-page">
       <OnboardingSidebar currentStep={1} backgroundImage={sidebarPhoto} />
 

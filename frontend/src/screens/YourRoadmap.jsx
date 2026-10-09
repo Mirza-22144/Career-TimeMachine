@@ -6,7 +6,7 @@ import RoleInfoModal from "../components/RoleInfoModal";
 import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
-import { getResumeStep } from "../resumeStep.js";
+import { sendToProfileSetup } from "../resumeStep.js";
 import { recallResult, rememberResult } from "../lastGood.js";
 
 const shortDate = (iso) => new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short" });
@@ -128,7 +128,7 @@ export default function YourRoadmap() {
     try {
       const profile = await api.getProfile();
       if (!profile.confirmed) {
-        navigate(getResumeStep(profile));
+        sendToProfileSetup(profile);
         return;
       }
       const data = await api.getRoadmap();

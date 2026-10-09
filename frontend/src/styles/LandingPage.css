@@ -137,7 +137,7 @@
 }
 
 .lp-h1 {
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   max-width: 600px;
   font-weight: 800;
   font-size: clamp(32px, 4vw + 20px, 48px);
@@ -147,11 +147,11 @@
 }
 
 .lp-lead {
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   max-width: 448px;
   font-weight: 600;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 17px;
+  line-height: 24px;
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -166,7 +166,7 @@
   max-width: 448px;
   font-weight: 500;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 19px;
   color: var(--violet-300);
 }
 
@@ -175,7 +175,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
 
 /* Shown instead of .lp-ctas once a token is active (AC 3.1.5). */
@@ -184,12 +184,12 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
 
 .lp-active-journey-title {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 17px;
   color: #ffffff;
 }
 
@@ -197,7 +197,7 @@
   margin: 0 0 8px;
   font-weight: 400;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 19px;
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -207,7 +207,7 @@
   gap: 8px;
   width: auto;
   white-space: nowrap;
-  padding: 16px 28px;
+  padding: 16px 22px;
   background: linear-gradient(90deg, var(--violet-600) 0%, #9333ea 100%);
   box-shadow: var(--elevation-2);
   border: none;
@@ -242,7 +242,7 @@
 .lp-trust-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 20px;
+  gap: 12px 18px;
   max-width: 448px;
 }
 
@@ -297,16 +297,16 @@
 .lp-stat-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 32px;
+  gap: 26px;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 28px;
 }
 
 .lp-stat-tile {
   flex: 1;
   min-width: 200px;
   text-align: center;
-  padding: 32px 20px;
+  padding: 26px 18px;
   background: #ffffff;
   border: 1px solid rgba(124, 58, 237, 0.12);
   border-radius: 16px;
@@ -337,7 +337,7 @@
   align-items: flex-start;
   gap: 16px;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 28px;
 }
 
 .lp-roadmap-step {
@@ -363,7 +363,7 @@
   display: block;
   margin-top: 12px;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: 0.5px;
   color: var(--ink-900);
 }
@@ -399,13 +399,13 @@
 .lp-footer-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 80px;
+  gap: 58px;
 }
 
 .lp-footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   width: 360px;
   max-width: 100%;
 }
@@ -418,14 +418,14 @@
   margin: 0;
   font-weight: 400;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 19px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .lp-footer-columns {
   display: flex;
   flex-wrap: wrap;
-  gap: 72px;
+  gap: 52px;
 }
 
 .lp-footer-column {
@@ -450,7 +450,7 @@
 .lp-footer-link {
   font-weight: 400;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 19px;
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
 }
@@ -471,14 +471,14 @@
 
 .lp-footer-divider {
   height: 1px;
-  margin: 56px 0 32px;
+  margin: 40px 0 26px;
   background: rgba(255, 255, 255, 0.08);
 }
 
 .lp-footer-bottom {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 26px;
 }
 
 .lp-footer-copyright {
@@ -524,7 +524,7 @@
 
   .lp-roadmap-steps {
     flex-direction: column;
-    gap: 32px;
+    gap: 26px;
   }
 
   .lp-roadmap-connector {

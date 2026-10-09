@@ -159,8 +159,10 @@ def test_remaining_counts_new_questions_per_difficulty():
     after = client.get("/api/v1/practice-sessions/remaining", headers=headers)
 
     assert before.status_code == 200
-    assert before.json() == {"guided": 4, "standard": 4, "challenge": 4}
-    assert after.json() == {"guided": 0, "standard": 4, "challenge": 4}
+    assert before.json()["multiple_choice"] == {"guided": 4, "standard": 4, "challenge": 4}
+    assert after.json()["multiple_choice"] == {"guided": 0, "standard": 4, "challenge": 4}
+    # Drag and drop is counted separately and is untouched by multiple choice.
+    assert after.json()["drag_and_drop"] == before.json()["drag_and_drop"]
 
 
 def test_custom_skill_adds_one_live_question_last(use_live_questions):
@@ -296,3 +298,18 @@ def test_questions_about_her_practice_focus_come_first(monkeypatch):
     skills = [s["skills_used"] for s in answered]
     assert "Vue.js" in skills[0]
     assert "Jenkins" in skills[1]
+
+
+def test_generated_ids_fit_the_database_column_for_the_longest_role_ids():
+    from app.providers.live_question_provider import MAX_SCENARIO_ID_LENGTH, _fit_scenario_id
+
+    long_id = "computer_and_information_research_scientist_challenge_live_v3_0123456789ab"
+    short_id = "web_developer_guided_live_v3_0123456789ab"
+
+    fitted = _fit_scenario_id(long_id)
+
+    assert len(fitted) == MAX_SCENARIO_ID_LENGTH
+    # The unique suffix and the "_live_" marker survive; the front is trimmed.
+    assert fitted.endswith("_live_v3_0123456789ab")
+    assert fitted.startswith("computer_and_information")
+    assert _fit_scenario_id(short_id) == short_id

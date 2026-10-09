@@ -208,16 +208,23 @@ def test_practice_context_uses_saved_career_information_only(fake_catalogue):
 
     context = PracticeRoleService(profiles, fake_catalogue).build_practice_context("owner")
 
-    # Break details, years of experience, responsibilities (picked or typed)
-    # and the owner key are not included. Custom skill NAMES are, since
-    # Iteration 3: they are what the one live question is about (AC 4.4.6).
+    # Break details and the owner key are not included. Custom skill NAMES
+    # are, since Iteration 3: they are what the one live question is about
+    # (AC 4.4.6). Years of experience and responsibilities are carried for a
+    # live Drag and Drop activity only (team decision, 2026-10-09) - see
+    # test_provider_receives_only_the_career_context_it_needs for the proof
+    # that multiple choice never receives them.
     assert context == PracticeContext(
         role_id="web_developer",
         role_label="Web Developer",
         role_source="predicted",
         skills=["Python", "Git"],
         custom_skills=["Private side project"],
+        years_experience="5",
+        responsibilities=context.responsibilities,
     )
+    assert context.responsibilities[-1] == "Family business"
+    assert len(context.responsibilities) == 2
 
 
 @pytest.mark.parametrize(

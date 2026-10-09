@@ -224,6 +224,7 @@ def test_answered_multiple_choice_scenario_serialises_options_and_selection():
     assert body["response"] == {
         "selected_option_id": "option_b",
         "response_text": None,
+        "placements": None,
         "submitted_at": "2026-09-14T10:06:00Z",
     }
     assert body["feedback"]["trade_offs"] == FEEDBACK["trade_offs"]

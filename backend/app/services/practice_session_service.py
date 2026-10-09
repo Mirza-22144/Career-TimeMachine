@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from app.providers.live_question_provider import LiveQuestion, LiveQuestionProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
+from app.providers.drag_and_drop_provider import DragDropProvider
 from app.providers.scenario_provider import (
     ScenarioContent,
     ScenarioProvider,
@@ -101,6 +102,7 @@ class PracticeSessionService:
         live_timeout_seconds: float = 8.0,
         catalogue: CatalogueRepository | None = None,
         run_in_background: Callable[[Callable[[], None]], None] | None = None,
+        drag_drop: DragDropProvider | None = None,
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.
@@ -122,6 +124,8 @@ class PracticeSessionService:
         # started instead of making her wait for it: it is added to the
         # session as soon as it is ready, well before she reaches it.
         self.run_in_background = run_in_background
+        # Drag and Drop activities (US 4.6). None means they are not offered.
+        self.drag_drop = drag_drop
 
     def start_session(self, owner: str, settings: PracticeSessionCreate) -> PracticeSession:
         """Start one activity with the saved role, saved career context and
@@ -157,7 +161,11 @@ class PracticeSessionService:
             logger.warning("Earlier practice could not be checked; questions may repeat")
             earlier, history_checked = [], False
         answered = self._answered(earlier, context.role_id, settings.difficulty)
-        scenarios = self._new_questions(context, settings.duration, settings.difficulty, answered)
+        is_drag_drop = settings.activity_type == "drag_and_drop"
+        if is_drag_drop:
+            scenarios = self._new_drag_drop(context, settings.difficulty, answered)
+        else:
+            scenarios = self._new_questions(context, settings.duration, settings.difficulty, answered)
         if not scenarios:
             raise practice_error(
                 status.HTTP_409_CONFLICT,
@@ -167,9 +175,22 @@ class PracticeSessionService:
         exclude = answered | {scenario.scenario_id for scenario in scenarios}
         focus_skill = self._put_focus_first(scenarios, context, earlier)
 
-        wants_live = self.live_questions is not None and bool(context.custom_skills)
+        # One more, about a skill she typed in herself. Written inline here,
+        # or off the request when a background runner is set.
+        if is_drag_drop:
+            wants_live = self.drag_drop is not None and bool(context.custom_skills)
+
+            def make_live() -> PracticeScenario | None:
+                return self._live_drag_drop(context, settings.difficulty)
+        else:
+            wants_live = self.live_questions is not None and bool(context.custom_skills)
+            role_id, difficulty, skills = context.role_id, settings.difficulty, list(context.custom_skills)
+
+            def make_live() -> PracticeScenario | None:
+                return self._live_question(role_id, difficulty, skills, exclude)
+
         if wants_live and self.run_in_background is None:
-            live = self._live_question(context.role_id, settings.difficulty, context.custom_skills, exclude)
+            live = make_live()
             if live is not None:
                 scenarios.append(live)
 
@@ -197,20 +218,50 @@ class PracticeSessionService:
             )
         )
         if wants_live and self.run_in_background is not None:
-            role_id, difficulty, skills = context.role_id, settings.difficulty, list(context.custom_skills)
-            self.run_in_background(
-                lambda: self._add_live_question(owner, session_id, role_id, difficulty, skills, exclude)
-            )
+            self.run_in_background(lambda: self._add_live_question(owner, session_id, make_live))
         return started
 
-    def _add_live_question(
-        self, owner: str, session_id: str, role_id: str, difficulty: str, custom_skills: list[str], exclude: set[str]
-    ) -> None:
+    def _new_drag_drop(self, context: PracticeContext, difficulty: str, answered: set[str]) -> list[PracticeScenario]:
+        """Up to questions_per_activity pre-written Drag and Drop activities
+        she has not done for this role and difficulty."""
+        if self.drag_drop is None:
+            return []
+        return [
+            self._to_drag_drop_scenario(fields)
+            for fields in self.drag_drop.static_activities(
+                context.role_id, difficulty, answered, self.questions_per_activity
+            )
+        ]
+
+    def _live_drag_drop(self, context: PracticeContext, difficulty: str) -> PracticeScenario | None:
+        """One Drag and Drop activity about a skill she typed in herself, or
+        None when it cannot be produced in time. Never fails the session."""
+        try:
+            fields = call_provider(
+                lambda skills: self.drag_drop.live_activity(
+                    context.role_id, difficulty, skills, context.years_experience, list(context.responsibilities)
+                ),
+                list(context.custom_skills),
+                self.live_timeout_seconds,
+            )
+        except ScenarioProviderError as exc:
+            logger.warning("Live drag-and-drop activity unavailable (%s)", type(exc).__name__)
+            return None
+        return self._to_drag_drop_scenario(fields) if fields is not None else None
+
+    @staticmethod
+    def _to_drag_drop_scenario(fields: dict) -> PracticeScenario:
+        return PracticeScenario(
+            **{key: value for key, value in fields.items() if key != "options"},
+            options=[ScenarioOption(option_id=o["option_id"], text=o["text"]) for o in fields["options"]],
+        )
+
+    def _add_live_question(self, owner: str, session_id: str, make_live: Callable[[], PracticeScenario | None]) -> None:
         """Write the live question and add it as the last question of an
         activity that has already started. Runs off the request; any failure
         just means the activity keeps its pre-written questions."""
         try:
-            live = self._live_question(role_id, difficulty, custom_skills, exclude)
+            live = make_live()
             if live is None:
                 return
             live.status = "upcoming"
@@ -268,21 +319,21 @@ class PracticeSessionService:
             )
         return session
 
-    def remaining_by_difficulty(self, owner: str) -> dict[str, int]:
+    def remaining_by_difficulty(self, owner: str) -> dict[str, dict[str, int]]:
         """How many pre-written questions she has not answered yet for her
-        practice role, per difficulty (capped at one activity's worth). The
-        practice screens use it to know what can still be unlocked without
-        preparing anything."""
+        practice role, per kind of activity and difficulty (capped at one
+        activity's worth). The practice screens use it to know what can
+        still be unlocked without preparing anything."""
         context = self.practice_roles.build_practice_context(owner)
         sessions = self.sessions.list_for_owner(owner)
-        return {
-            difficulty: len(
-                self._new_questions(
-                    context, "standard", difficulty, self._answered(sessions, context.role_id, difficulty)
-                )
+        remaining: dict[str, dict[str, int]] = {"multiple_choice": {}, "drag_and_drop": {}}
+        for difficulty in ("guided", "standard", "challenge"):
+            answered = self._answered(sessions, context.role_id, difficulty)
+            remaining["multiple_choice"][difficulty] = len(
+                self._new_questions(context, "standard", difficulty, answered)
             )
-            for difficulty in ("guided", "standard", "challenge")
-        }
+            remaining["drag_and_drop"][difficulty] = len(self._new_drag_drop(context, difficulty, answered))
+        return remaining
 
     @staticmethod
     def _answered(sessions: list[PracticeSession], role_id: str, difficulty: str) -> set[str]:

@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, replace, field
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
@@ -46,6 +46,11 @@ class PracticeContext:
     # Skill names she typed in herself. Used only to ask for the one live
     # question about her own skill (AC 4.4.6) - names only, nothing else.
     custom_skills: list[str]
+    # Used only for a live Drag and Drop activity (team decision,
+    # 2026-10-09: the AI team's live generator takes them to make the
+    # situation plausible). Never passed to multiple choice.
+    years_experience: str | None = None
+    responsibilities: list[str] = field(default_factory=list)
 
 
 class PracticeRoleService:
@@ -143,6 +148,11 @@ class PracticeRoleService:
             role_source=selection.source,
             skills=self._labels("skills", profile.skill_ids),
             custom_skills=list(profile.custom_skills),
+            years_experience=profile.years_experience,
+            responsibilities=[
+                *self._labels("responsibilities", profile.responsibility_ids),
+                *profile.custom_responsibilities,
+            ],
         )
 
     def _selection(

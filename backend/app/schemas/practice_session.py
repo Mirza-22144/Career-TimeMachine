@@ -20,6 +20,8 @@ class PracticeSessionCreate(BaseModel):
 
     duration: PracticeDuration
     difficulty: PracticeDifficulty
+    # Which kind of activity to start. Code Review is not served yet.
+    activity_type: Literal["multiple_choice", "drag_and_drop"] = "multiple_choice"
 
 
 class PracticeRoleRefResponse(BaseModel):
@@ -65,7 +67,23 @@ class ScenarioAttemptResponse(BaseModel):
 
     selected_option_id: str | None
     response_text: str | None
+    # Drag and drop: blank id -> the id of the phrase she placed there.
+    placements: dict[str, str] | None = None
     submitted_at: datetime
+
+
+class PhraseFeedbackResponse(BaseModel):
+    """How one placed phrase comes across (drag and drop, AC 4.6.2).
+    what_would_work_better is null unless the phrase does not fit where she
+    put it. There is no right/wrong flag and no count."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    blank_id: str
+    option_id: str
+    text: str
+    comes_across: str
+    what_would_work_better: str | None
 
 
 class PracticeScenarioResponse(BaseModel):
@@ -85,6 +103,12 @@ class PracticeScenarioResponse(BaseModel):
     response: ScenarioAttemptResponse | None
     feedback: ReflectiveFeedbackResponse | None
     feedback_status: Literal["available", "unavailable"] | None
+    # Drag and drop only. The message with {blank_1}..{blank_3} gaps; which
+    # phrase is meant for which gap is never sent.
+    sentence_template: str | None = None
+    # Drag and drop, after she submits.
+    completed_message: str | None = None
+    phrase_feedback: list[PhraseFeedbackResponse] | None = None
 
 
 class PracticeProgressResponse(BaseModel):

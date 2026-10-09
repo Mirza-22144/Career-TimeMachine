@@ -37,12 +37,14 @@ class ScenarioAttempt:
     """The user's submitted answer, stored as data and never executed.
 
     Multiple choice sets selected_option_id; a written response sets
-    response_text. The other field stays None.
+    response_text; drag and drop sets placements (blank id -> the id of the
+    phrase she put there). The other fields stay None.
     """
 
     submitted_at: datetime
     response_text: str | None = None
     selected_option_id: str | None = None
+    placements: dict | None = None
 
 
 @dataclass
@@ -54,7 +56,7 @@ class PracticeScenario:
     workplace_area: str
     situation: str
     task: str
-    activity_type: str  # "multiple_choice" | "written_response"
+    activity_type: str  # "multiple_choice" | "written_response" | "drag_and_drop"
     guidance: list[str]
     skills_used: list[str]
     new_skill_focus: str | None
@@ -72,6 +74,56 @@ class PracticeScenario:
     # scenario because there is no pool to look it up in. Never sent to the
     # client as a whole - only the chosen option's feedback is, after she answers.
     option_feedback: dict | None = None
+    # Drag and drop only, and never sent to the client as it is:
+    # {"sentence_template", "fits": phrase id -> the blank it is meant for
+    # (or None), "feedback_by_option": phrase id -> {"why", "what_to_improve"}}.
+    content: dict | None = None
+
+    @property
+    def sentence_template(self) -> str | None:
+        """The message with its {blank_1}..{blank_3} gaps (drag and drop)."""
+        return self.content.get("sentence_template") if self.content else None
+
+    @property
+    def phrase_feedback(self) -> list[dict] | None:
+        """Drag and drop, once she has submitted: how each phrase she placed
+        comes across, in the order of the gaps. "what_would_work_better" is
+        only set for a phrase that does not fit where she put it - nothing
+        is ever labelled right or wrong, and nothing is counted."""
+        if not self.content or self.response is None or not self.response.placements:
+            return None
+        texts = {option.option_id: option.text for option in self.options}
+        fits = self.content.get("fits", {})
+        feedback = self.content.get("feedback_by_option", {})
+        phrases = []
+        for blank_id in sorted(self.response.placements):
+            option_id = self.response.placements[blank_id]
+            entry = feedback.get(option_id, {})
+            better = entry.get("what_to_improve")
+            meant_for = fits.get(option_id)
+            if better is None and meant_for is not None and meant_for != blank_id:
+                better = "This phrase reads more naturally in a different gap of the message."
+            phrases.append(
+                {
+                    "blank_id": blank_id,
+                    "option_id": option_id,
+                    "text": texts.get(option_id, ""),
+                    "comes_across": entry.get("why", ""),
+                    "what_would_work_better": better,
+                }
+            )
+        return phrases
+
+    @property
+    def completed_message(self) -> str | None:
+        """Her finished message (drag and drop, once submitted)."""
+        if not self.content or self.response is None or not self.response.placements:
+            return None
+        texts = {option.option_id: option.text for option in self.options}
+        message = self.content.get("sentence_template", "")
+        for blank_id, option_id in self.response.placements.items():
+            message = message.replace("{" + blank_id + "}", texts.get(option_id, ""))
+        return message
 
 
 @dataclass

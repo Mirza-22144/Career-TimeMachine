@@ -61,7 +61,7 @@ _SELECT_SCENARIOS_SQL = """
            response_selected_option_id, response_text, response_submitted_at,
            feedback_what_worked_well, feedback_areas_to_consider, feedback_trade_offs,
            feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status,
-           option_feedback
+           option_feedback, content, response_placements
     FROM practice_scenario WHERE session_id = ANY(%s) ORDER BY scenario_id
 """
 
@@ -88,7 +88,7 @@ _UPSERT_SCENARIO_SQL = """
         response_selected_option_id, response_text, response_submitted_at,
         feedback_what_worked_well, feedback_areas_to_consider, feedback_trade_offs,
         feedback_skill_to_explore_title, feedback_skill_to_explore_why, feedback_status,
-        option_feedback
+        option_feedback, content, response_placements
     ) VALUES %s
     ON CONFLICT (session_id, scenario_id) DO UPDATE SET
         status = EXCLUDED.status,
@@ -100,7 +100,8 @@ _UPSERT_SCENARIO_SQL = """
         feedback_trade_offs = EXCLUDED.feedback_trade_offs,
         feedback_skill_to_explore_title = EXCLUDED.feedback_skill_to_explore_title,
         feedback_skill_to_explore_why = EXCLUDED.feedback_skill_to_explore_why,
-        feedback_status = EXCLUDED.feedback_status
+        feedback_status = EXCLUDED.feedback_status,
+        response_placements = EXCLUDED.response_placements
 """
 
 
@@ -196,6 +197,8 @@ def _scenario_row(session_id: str, scenario: PracticeScenario) -> tuple:
         skill.why_relevant if skill else None,
         scenario.feedback_status,
         json.dumps(scenario.option_feedback) if scenario.option_feedback is not None else None,
+        json.dumps(scenario.content) if scenario.content is not None else None,
+        json.dumps(response.placements) if response and response.placements is not None else None,
     )
 
 
@@ -232,7 +235,7 @@ def _row_to_scenario(row: tuple, options: list[ScenarioOption]) -> PracticeScena
         guidance, skills_used, new_skill_focus, status,
         resp_option_id, resp_text, resp_submitted_at,
         fb_worked_well, fb_areas, fb_trade_offs, fb_skill_title, fb_skill_why, fb_status,
-        option_feedback,
+        option_feedback, content, resp_placements,
     ) = row
 
     response = None
@@ -241,6 +244,7 @@ def _row_to_scenario(row: tuple, options: list[ScenarioOption]) -> PracticeScena
             submitted_at=resp_submitted_at,
             response_text=resp_text,
             selected_option_id=resp_option_id,
+            placements=resp_placements,
         )
 
     feedback = None
@@ -270,6 +274,7 @@ def _row_to_scenario(row: tuple, options: list[ScenarioOption]) -> PracticeScena
         feedback=feedback,
         feedback_status=fb_status,
         option_feedback=option_feedback,
+        content=content,
     )
 
 

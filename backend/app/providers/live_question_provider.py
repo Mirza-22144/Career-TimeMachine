@@ -33,9 +33,27 @@ class LiveQuestion:
     is_live: bool  # False when this is the static fallback
 
 
+# practice_scenario.scenario_id is VARCHAR(64), and a generated id is the
+# role id plus a suffix - too long for the longest role ids.
+MAX_SCENARIO_ID_LENGTH = 64
+
+
+def _fit_scenario_id(scenario_id: str) -> str:
+    """Shorten an over-long generated id by trimming its role-id prefix; the
+    unique suffix (and the "_live_" marker in it) is kept whole."""
+    overflow = len(scenario_id) - MAX_SCENARIO_ID_LENGTH
+    if overflow <= 0:
+        return scenario_id
+    marker = scenario_id.find("_live_")
+    head = scenario_id[:marker] if marker > 0 else scenario_id
+    return head[: len(head) - overflow] + scenario_id[len(head):]
+
+
 def _from_question(question: dict[str, Any], is_live: bool) -> LiveQuestion:
+    scenario = question_to_scenario(question)
+    scenario["scenario_id"] = _fit_scenario_id(scenario["scenario_id"])
     return LiveQuestion(
-        scenario=question_to_scenario(question),
+        scenario=scenario,
         option_feedback=question["option_feedback"],
         is_live=is_live,
     )

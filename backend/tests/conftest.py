@@ -20,6 +20,7 @@ from app.repositories.memory.memory_practice_session_repository import (
     MemoryPracticeSessionRepository,
 )
 from app.repositories.memory.memory_profile_repository import MemoryProfileRepository
+from app.providers.drag_and_drop_provider import AiDragDropProvider
 from app.providers.live_question_provider import LiveQuestionProvider
 from app.repositories.memory.memory_role_choice_repository import MemoryRoleChoiceRepository
 from app.repositories.memory.memory_session_repository import MemorySessionRepository
@@ -115,9 +116,11 @@ def no_live_questions():
     # No background threads in tests: the live question is written inline
     # unless a test supplies its own runner.
     app.dependency_overrides[dependencies.get_background_runner] = lambda: None
+    app.dependency_overrides[dependencies.get_drag_drop_provider] = lambda: AiDragDropProvider(api_key="")
     yield
     app.dependency_overrides.pop(dependencies.get_live_question_provider, None)
     app.dependency_overrides.pop(dependencies.get_background_runner, None)
+    app.dependency_overrides.pop(dependencies.get_drag_drop_provider, None)
 
 
 @pytest.fixture

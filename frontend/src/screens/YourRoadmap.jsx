@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "../styles/YourRoadmap.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import RoleInfoModal from "../components/RoleInfoModal";
 import { ArrowRightIcon, CheckIcon } from "../components/icons";
 import { api } from "../api.js";
@@ -178,7 +179,7 @@ export default function YourRoadmap() {
       <>
         <TopNav />
         <div className="yr-page">
-          {status === "loading" && <p className="yr-loading" role="status">Opening your roadmap…</p>}
+          {status === "loading" && <LoadingPopup text="Opening your roadmap…" />}
           {status === "error" && (
             <div className="yr-message">
               <p>We couldn&rsquo;t open your roadmap. Please try again.</p>

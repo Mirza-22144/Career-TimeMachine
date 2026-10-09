@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import '../styles/WorkplaceScenario.css'
 import '../styles/PracticeActivity.css'
 import TopNav from '../components/TopNav'
+import LoadingPopup from '../components/LoadingPopup'
 import ChoiceActivity from '../components/practice/ChoiceActivity'
 import DragDropActivity from '../components/practice/DragDropActivity'
 import PracticeFeedback, { ActivitySkeleton } from '../components/practice/PracticeFeedback'
@@ -69,10 +70,8 @@ function SettingUp({ text }) {
     <>
       <TopNav />
       <div className="pa-page">
-        <main className="pa-body pa-body--stop" aria-busy="true">
-          <h1 className="pa-question pa-setting-up"><span className="pa-setting-dot" /> {text}</h1>
-          <p className="pa-question-caption">This takes a few seconds.</p>
-        </main>
+        <main className="pa-body pa-body--stop" aria-busy="true" />
+        <LoadingPopup text={text} />
       </div>
     </>
   )
@@ -126,6 +125,7 @@ export default function WorkplaceScenario() {
   // now open (AC 4.3.5 exception): she continues, and is told some may repeat.
   const [mayRepeat, setMayRepeat] = useState(false)
   const unchecked = useRef(false)
+  const sessionFocus = useRef(null)
   // Requested as soon as the page opens, so they are usually ready by the
   // time she has chosen a level. Each is used once, then fetched fresh.
   const early = useRef({ roadmap: null, remaining: null })
@@ -265,6 +265,7 @@ export default function WorkplaceScenario() {
       try {
         const started = await api.startPracticeSession('standard', level)
         if (started.history_checked === false) unchecked.current = true
+        sessionFocus.current = started.focus_skill || null
         applySession(started)
       } catch (err) {
         if (err.code !== 'NO_NEW_ACTIVITIES') throw err
@@ -284,6 +285,7 @@ export default function WorkplaceScenario() {
 
   const pickAndEnter = async (level, preferred) => {
     unchecked.current = false
+    sessionFocus.current = null
     const opened = await (async () => {
       // A waiting activity she has since completed elsewhere is not reopened.
       const stillNew = preferred === MCQ || mockLeft(level).some((item) => item.type === preferred)
@@ -317,7 +319,11 @@ export default function WorkplaceScenario() {
       const practised = [roadmap.previous_role, ...roadmap.suggested_roles].find(
         (r) => r && r.role_id === roadmap.selected_role_id,
       )
-      setFocusSkill(practised?.skills_could_explore.find((item) => item.status === 'next')?.label || null)
+      // The activity's own focus when it has one (a skill from her roadmap
+      // its questions use), otherwise the next skill on her roadmap.
+      setFocusSkill(
+        sessionFocus.current || practised?.skills_could_explore.find((item) => item.status === 'next')?.label || null,
+      )
       setSkillsUsed((practised?.skills_bring_back || []).map((item) => item.label))
       setStep('prep')
     } catch (err) {
@@ -452,7 +458,7 @@ export default function WorkplaceScenario() {
   if (loading) return (
     <>
       <TopNav />
-      <div className="ws-page" />
+      <div className="ws-page"><LoadingPopup text="Opening your practice…" /></div>
     </>
   )
 

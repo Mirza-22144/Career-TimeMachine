@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/PracticeActivity.css";
 import TopNav from "../components/TopNav";
+import LoadingPopup from "../components/LoadingPopup";
 import PracticeFeedback from "../components/practice/PracticeFeedback";
 import { WORKPLACE_AREAS, getPrimaryAreaId } from "../mockData/workplaceAreas.js";
 import { loadMockActivities } from "../mockData/practiceSession.js";
@@ -75,7 +76,7 @@ export default function PracticeFeedbackView() {
             onContinue={() => navigate("/dashboard")}
           />
         )}
-        {status === "loading" && <main className="pa-body"><p className="pa-loading">Loading your feedback…</p></main>}
+        {status === "loading" && <LoadingPopup text="Loading your feedback…" />}
         {status === "none" && (
           <main className="pa-body">
             <p className="pa-loading">We couldn&rsquo;t find feedback for this activity.</p>

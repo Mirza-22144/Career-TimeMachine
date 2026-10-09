@@ -1037,3 +1037,19 @@
   font-size: 16px;
   color: #0f1728;
 }
+
+/* ---- Drag and drop: the situation above the message ---- */
+
+.pa-message-situation {
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(15, 23, 40, 0.08);
+}
+
+.pa-message-situation p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: #2e1065;
+}

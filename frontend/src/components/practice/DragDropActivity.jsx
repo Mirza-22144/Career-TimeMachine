@@ -8,7 +8,7 @@ import { HintToggle } from "./ChoiceActivity";
  * drag a phrase onto a gap; select a phrase then select a gap (mouse,
  * touch or keyboard); select a filled gap to send its phrase back.
  */
-export default function DragDropActivity({ activity, areaLabel, onSubmit }) {
+export default function DragDropActivity({ activity, areaLabel, isSubmitting = false, submitError = "", onSubmit }) {
   const gapCount = activity.message.filter((part) => typeof part !== "string").length;
   const [placed, setPlaced] = useState(() => Array(gapCount).fill(null)); // gap index -> phrase id
   const [selectedId, setSelectedId] = useState(null);
@@ -88,7 +88,10 @@ export default function DragDropActivity({ activity, areaLabel, onSubmit }) {
         <p className="pa-subheading">{activity.instruction}</p>
 
         <div className="pa-card pa-message-card">
-          <div className="pa-message-to"><span>To</span> {activity.to}</div>
+          <div className="pa-message-situation">
+            <span className="pa-eyebrow">THE SITUATION</span>
+            <p>{activity.situation}</p>
+          </div>
           <p className="pa-message">
             {activity.message.map((part, index) => {
               if (typeof part === "string") return <span key={index}>{part}</span>;
@@ -145,16 +148,22 @@ export default function DragDropActivity({ activity, areaLabel, onSubmit }) {
         <p className="pa-status" role="status" aria-live="polite">{status}</p>
 
         <div className="pa-hint-wrap">
-          <HintToggle hint={activity.hint} />
+          {activity.hint?.length > 0 && <HintToggle hint={activity.hint} />}
         </div>
       </main>
 
       <div className="pa-footer">
-        <span className="pa-footer-note">
-          {isComplete ? "Every gap is filled. You can still swap phrases." : "Submit unlocks when every gap is filled."}
+        <span className={`pa-footer-note ${submitError ? "pa-footer-note--error" : ""}`} role={submitError ? "alert" : undefined}>
+          {submitError
+            || (isComplete ? "Every gap is filled. You can still swap phrases." : "Submit unlocks when every gap is filled.")}
         </span>
-        <button type="button" className="pa-btn-primary" disabled={!isComplete} onClick={() => onSubmit(placed)}>
-          Submit {isComplete && <ArrowRightIcon size={16} />}
+        <button
+          type="button"
+          className="pa-btn-primary"
+          disabled={!isComplete || isSubmitting}
+          onClick={() => onSubmit(placed)}
+        >
+          {isSubmitting ? "Saving…" : "Submit"} {isComplete && !isSubmitting && <ArrowRightIcon size={16} />}
         </button>
       </div>
     </>

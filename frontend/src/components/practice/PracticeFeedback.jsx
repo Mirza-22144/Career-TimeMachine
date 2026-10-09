@@ -63,18 +63,14 @@ function StoredFeedback({ feedback }) {
   );
 }
 
-export default function PracticeFeedback({ activity, answer, feedback, areaLabel, isLast, continueLabel, onContinue }) {
+export default function PracticeFeedback({
+  activity, answer, feedback, dragDropFeedback, areaLabel, isLast, continueLabel, onContinue,
+}) {
   const isDragDrop = activity.type === "drag_and_drop";
-  // Real questions bring their feedback from the backend (possibly null).
+  // Real multiple-choice questions bring their feedback from the backend
+  // (possibly null); the mock Code Review reads it from its own options.
   const isStored = feedback !== undefined;
   const chosen = isDragDrop || isStored ? null : activity.options.find((option) => option.id === answer);
-  const placedPhrases = isDragDrop ? answer.map((id) => activity.phrases.find((p) => p.id === id)) : [];
-  const completedMessage = isDragDrop
-    ? activity.message
-        .map((part) => (typeof part === "string" ? part : placedPhrases[part.gap].text))
-        .join(" ")
-        .replace(/\s+([,.])/g, "$1")
-    : "";
 
   return (
     <>
@@ -82,22 +78,20 @@ export default function PracticeFeedback({ activity, answer, feedback, areaLabel
         <span className="pa-eyebrow">{areaLabel.toUpperCase()}</span>
         <h1 className="pa-heading">Your practice feedback</h1>
 
-        {isStored ? (
-          <StoredFeedback feedback={feedback} />
-        ) : isDragDrop ? (
+        {isDragDrop ? (
           <>
             <div className="pa-card pa-feedback-card">
               <span className="pa-feedback-label pa-feedback-label--blue">YOUR MESSAGE</span>
-              <p className="pa-feedback-text">{completedMessage}</p>
+              <p className="pa-feedback-text">{dragDropFeedback.message}</p>
             </div>
             <div className="pa-card pa-feedback-card">
               <span className="pa-feedback-label">HOW EACH PHRASE COMES ACROSS</span>
-              {placedPhrases.map((phrase) => (
+              {dragDropFeedback.phrases.map((phrase) => (
                 <div className="pa-phrase-row" key={phrase.id}>
                   <span className="pa-phrase-chip">{phrase.text}</span>
                   <div>
                     <p>{phrase.comesAcross}</p>
-                    {!phrase.fits && (
+                    {phrase.better && (
                       <>
                         <span className="pa-eyebrow pa-better-label">WHAT WOULD WORK BETTER</span>
                         <p>{phrase.better}</p>
@@ -108,6 +102,8 @@ export default function PracticeFeedback({ activity, answer, feedback, areaLabel
               ))}
             </div>
           </>
+        ) : isStored ? (
+          <StoredFeedback feedback={feedback} />
         ) : (
           <>
             <div className="pa-card pa-feedback-card">

@@ -6,6 +6,7 @@ Living document. Everyone updates their own section as they make progress. This 
 
 - Find your section (Frontend, Backend, Database, Security, AI). Add your update there.
 - Add a new numbered entry at the **top** of your section's log. Never overwrite or delete old entries - this file is our version history.
+- Cleaned up on 2026-10-10 (Thiri): entries for work the team decided not to build (skill videos, "While You Were Away", outlook to 2035, certifications), the early planning stubs that the real entries replaced, and notes about placeholder content that no longer exists were removed. The full earlier text is in git history.
 - Numbering is `AREA <iteration>.<n>`, e.g. `BE 3.1`, `BE 3.2`. Iteration 3 = the `3.x` series.
 - Every entry states: status, owner, date, what changed, why, and any blocker (what you are waiting on, or what your work now unblocks).
 - If your work is blocked by, or blocks, another team, **also** add a row to the Cross-team blockers table so it is visible to everyone.
@@ -17,7 +18,6 @@ Living document. Everyone updates their own section as they make progress. This 
 - `[WIP]` - in progress
 - `[BLOCKED]` - cannot proceed, see blocker
 - `[TODO]` - planned, not started
-- `[NOT BUILDING]` - dropped by team decision; kept here as history
 
 ## Entry template (copy this)
 
@@ -35,21 +35,18 @@ Living document. Everyone updates their own section as they make progress. This 
 Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3_Endpoints_AI_Database_Spec.docx` - read both before starting work, this file tracks progress against them, not the requirements themselves.
 
 1. **Job description analysis (Path 1).** A user pastes a real job advertisement; local AI extracts its requirements and compares them against her full profile (skills, roles, years of experience, responsibilities).
-2. **Two AI-predicted roles, with real Australian market data.** Expands Iteration 2's single predicted role to two, each shown with hiring-demand and shortage-status figures sourced from Jobs and Skills Australia.
-3. **Personalised roadmap screen.** Skills to build, scenario sequence, recommended certifications and progress, replacing the direct jump from role selection into practice.
-4. **Mixed workplace activities, not MCQ-only.** Plain MCQ stays skills/role-driven; two new activity types - code review and drag-and-drop - also use years of experience and responsibilities (team decision, 2026-10-04, refining the context document's blanket rule).
+2. **Two AI-predicted roles, with real Australian market data.** Expands Iteration 2's single predicted role to two, each shown with a hiring-demand range sourced from Jobs and Skills Australia.
+3. **Personalised roadmap screen.** Skills she brings back, skills to explore and her progress through them, replacing the direct jump from role selection into practice.
+4. **Mixed workplace activities, not MCQ-only.** Multiple Choice, Drag and Drop and Code Review, each four pre-written questions from the AI team's pools, one activity unlocked at a time. Multiple Choice and Drag and Drop add one live question when she has typed in a skill of her own.
 5. **Hybrid MCQ generation.** Pretrained local lookup when every relevant skill is a catalogue skill; a live AI call only when the user has entered a custom (non-catalogue) skill.
 6. **Progress dashboard.** Replaces the never-built ePortfolio placeholder; resumable by access token, shows activity without rating or scoring it.
-7. **~150 pre-generated skill videos.** Not generated live per user - explicitly out of scope for Iteration 3 per the context document.
 
 ## Cross-team blockers (live - keep this current)
 
 | #   | Blocker | Raised by | Needs (owner) | Status |
 | --- | ------- | --------- | -------------- | ------ |
 | B1  | `role_anzsco_mapping` does not exist yet - CTM's roles are O*NET-based, the Internet Vacancy Index is keyed by ANZSCO/OSCA codes, and the two cannot be joined without this table being populated first. | Backend | Database/data team to source and map | `[DONE]` resolved by DB 3.1 (2026-10-08 check: vacancy ranges are served from real data) |
-| B2  | Live, per-user AI video generation (discussed earlier) conflicts with the context document, which lists it under "Not part of the current core scope" and specifies ~150 pre-generated videos instead. Needs an explicit team decision before any video work starts, so it isn't built twice in two different directions. | Backend | Team decision | `[DONE]` closed 2026-10-08: team decided skill videos are not being built |
-| B3  | Historical snapshot strategy for `role_market_data` not decided - "doubled since her break started" style claims need a fixed comparison period per user, not just the latest data pull. | Backend | Database/data team | `[TODO]` |
-| B4  | Code Review has no real content. Its screen runs on one fixed placeholder, and a completed Code Review (and which activity is waiting for her) is remembered in the browser only. Drag and Drop was delivered and integrated on 2026-10-09. | Frontend, Backend | AI team to deliver the Code Review pool | `[TODO]` |
+| B4  | Code Review has no real content. Its screen runs on one fixed placeholder, and a completed Code Review (and which activity is waiting for her) is remembered in the browser only. Drag and Drop was delivered and integrated on 2026-10-09. | Frontend, Backend | AI team to deliver the Code Review pool | `[DONE]` closed 2026-10-10: Code Review pool delivered and integrated; nothing is browser-only any more |
 
 ---
 
@@ -89,12 +86,9 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **What:** `screens/WorkplaceScenario.jsx` now runs on real practice sessions. There are three kinds of activity (Multiple Choice, Code Review, Drag and Drop) and only one is unlocked on the floor at a time. Multiple Choice is real: `POST /practice-sessions` prepares four questions (five when she has a typed-in skill), each is answered through the API and its stored feedback is shown (what worked well, trade-offs, consider, skill to explore). After the activity comes the soft stop: Keep Going unlocks another kind at random, Finish Practice goes to the dashboard. If she leaves part-way and comes back, a "You have an activity to finish" screen sends her back to the question she left (`GET /practice-sessions/current`). When nothing new is left for the role and level the "completed all the activities" screen is shown. A "Setting up your practice" screen covers the wait while the activity (and its live question) is prepared.
 - **Dashboard and View feedback:** Recent practice lists every answered question from the backend, each with View feedback, which reads the stored feedback from `GET /practice-sessions/{id}`.
 - **Role information panel:** the "How it relates" paragraph is no longer mock; it is written from the roadmap's own data (skills she has that the role lists, and skills it would add). `mockData/roadmapData.js` is deleted.
-- **Still mock:** only the Code Review and Drag and Drop activities (`mockData/practiceSession.js`, one item each, the same for every role), and the browser-only record of having completed them (`practiceHistory.js`). Both wait on the AI team.
 - **Team decisions (Thiri, 2026-10-08):** the first activity is random too, not always Multiple Choice. An activity must be finished before another starts, and earlier practice is never overwritten. The next activity is unlocked at the soft stop: Keep Going opens it, Finish Practice leaves it waiting ("Your next activity is ready" on her next visit). When nothing new is left, the soft stop shows the "activities run out" choices in place of Keep Going (AC 4.5.4 exception), and Try Another Difficulty is hidden when every difficulty is complete (AC 4.3.5 exception).
-- **Also decided and built (2026-10-08):** Code Review is only unlocked for roles that work with code (AC 4.4.4 / 4.7.1; the list of 16 roles is in `mockData/practiceSession.js` and needs the team's confirmation). The AC 4.3.5 exception is built: if her earlier activities cannot be checked she still practises and sees "We couldn't check your earlier activities, so some may repeat." (`history_checked: false` on `POST /practice-sessions`, or a failed `GET /practice-sessions/remaining`). The question about her own skill stays in every Multiple Choice activity, and difficulty cannot be changed while an activity is waiting. Verified in the browser with IT Project Manager (no Code Review; two activities then the run-out choices) and with the remaining-questions check forced to fail. 436 backend tests pass.
-- **Update 2026-10-09 (Code Review):** Code Review is shown to every role again. The earlier list of 16 "roles that work with code" was a judgement call; checked against the catalogue, the skills listed for all 27 roles include Python, Java or SQL, so no role can be ruled out (team rule: if unsure, show it). The "written with an AI assistant" label was removed from the Code Review screen because the agreed content format (endpoint spec, Section 7) has no field for it. Agreed with the AI team: Drag and Drop and Code Review use role and skills only (no years of experience or responsibilities); pools are 324 each (27 roles x 3 levels x 4); Drag and Drop also gets live generation for a custom skill; Code Review is static only.
+- **Code Review roles (2026-10-09):** Code Review is shown to every role. Checked against the catalogue, the skills listed for all 27 roles include Python, Java or SQL, so no role can be ruled out (team rule: if unsure, show it). The "written with an AI assistant" label was removed from the Code Review screen because the agreed content format (endpoint spec, Section 7) has no field for it. Agreed with the AI team: Drag and Drop and Code Review use role and skills only (no years of experience or responsibilities); pools are 324 each (27 roles x 3 levels x 4); Drag and Drop also gets live generation for a custom skill; Code Review is static only.
 - **Speed and size (2026-10-08):** the roadmap and the remaining-questions check are requested as soon as the practice page opens, so they are ready by the time she has chosen a level; a slow earlier page load can no longer undo what she has done since. The workplace floor and intro banner images were converted from PNG to WebP: 2,221 KB -> 215 KB and 2,024 KB -> 58 KB.
-- **Known limit:** which activity is waiting is remembered in the browser (`practiceHistory.js`), because two of the three kinds are still mock. A started Multiple Choice activity is held by the backend and resumes on any device.
 - **Verification:** eslint and build clean. Headless-browser run against the real backend, database and Gemini: full Multiple Choice activity including the live question, leave and resume at question 2 of 5, soft stop, Keep Going into both mock activities in random order, the "completed all" screen, dashboard with seven rows, View feedback, role information panel. No page errors. Preparing an activity with a live question took about 11 s in the browser; answering took 1.4 s.
 - **Blocks / Blocked by:** none.
 
@@ -104,18 +98,10 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Update 2026-10-08:** verified in the browser walkthrough. The practice flow itself was later reworked - see the entry at the top of this section.
 - **What (backend):** dated history of chosen roles (AC 3.4.1) - new `role_choice` table (`data/schema/add_role_choice_table.sql`), `RoleChoiceRepository` (memory + Postgres), recorded on every `PUT /practice-role` and returned as `chosen_roles` on `GET /roadmap`. Recording and reading are best effort: until the table exists the app keeps working and the dashboard shows "selected to practise" with no date.
 - **What (frontend):** practice intro, difficulty and preparation screens restyled to the new frames. New `/practice-feedback` screen (`PracticeFeedbackView.jsx`) re-reads feedback for a finished activity from the dashboard's View feedback links, reusing the same `PracticeFeedback` component. "You've completed all the activities for this role at this level" with Try Another Difficulty / Explore Another Role / Analyse a Job Description (AC 4.3.5), also reached from Keep Going. A session left part-way resumes on the floor after a refresh. Roadmap and job map keep their last successful result and show "This was based on your earlier profile." with Try Again when a fresh one can't be loaded (AC 3.2.5). Loading messages on dashboard, roadmap and job map. Dashboard lists every chosen role with its date. Landing hero now reads "Ready to start your journey?" with a Generate Token button.
-- **TEMPORARY, browser-only storage (`frontend/src/practiceHistory.js`):** because practice is still frontend-only, finished activities, the place she is up to, and which role/difficulty levels are complete are kept in this browser's localStorage, keyed by token. They do not follow her to another browser or device and are not in the database. Replace with API calls when the backend serves the new activity types.
 - **Later the same day:** See all roles went back to one alphabetical list (team decision; `roleGroups.js` removed). The intro banner now uses the supplied office photo (`assets/practice-intro.png`). Your Break's two year lists both run oldest to newest.
 - **Known gaps:** the Postgres path for `role_choice` is untested until the migration is run.
 - **Verification:** 426 backend tests pass (2 new). Whole flow re-walked in a headless browser, 49 screens, no errors - including View feedback, the completed-level screen and resuming after a refresh.
-- **Blocks / Blocked by:** `role_choice` migration must be run for dates to appear.
-
-### AC 2.4.1 - Outlook to 2035 removed from the role information panel
-
-- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08
-- **What:** team decision - the "i" panel no longer shows an outlook to 2035. Removed the section and its mock text from `RoleInfoModal.jsx` and `mockData/roadmapData.js`; the panel now shows the vacancy range with source and date, plus "How it relates to <previous role>" for suggested roles (still mock). Roadmap footer and the Explore Roles card on Choose Your Path no longer mention the outlook.
-- **Why:** there is no outlook data source, and the team chose to drop it rather than keep placeholder text. Earlier entries in this log that mention the outlook are superseded by this one.
-- **Blocks / Blocked by:** none. AC 2.4.1's wording in the acceptance-criteria document still mentions the outlook and needs updating to match.
+- **Blocks / Blocked by:** none (the `role_choice` migration has been run).
 
 ### Browser walkthrough of the Iteration 3 flow + roadmap speed-up
 
@@ -126,16 +112,6 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Not covered by the walkthrough:** the wizard itself (profile was created through the API), the error states, narrow screens, and screen readers.
 - **Verification:** 424 backend tests pass; frontend build and lint clean.
 - **Blocks / Blocked by:** none.
-
-### US 4.6 / US 4.7 / AC 4.4.4 / AC 4.5.4 / AC 4.1.4 - Workplace practice screens (frontend only)
-
-- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08
-- **Update 2026-10-08:** screens done and verified in the browser. Multiple Choice now runs on real sessions (top entry). Code Review and Drag and Drop content is still a placeholder - see blocker B4.
-- **What:** `screens/WorkplaceScenario.jsx` rebuilt around a three-activity session that unlocks one activity at a time: only the current area is highlighted on the floor, the banner says only where she is needed, completed areas show a tick, and a toast announces the next one. New `components/practice/ChoiceActivity.jsx` (Multiple Choice and Code Review, with the Need a hint? toggle), `DragDropActivity.jsx` (drag a phrase to a gap, or select a phrase then a gap; a filled gap returns its earlier phrase; Escape cancels; Submit only when every gap is filled) and `PracticeFeedback.jsx` (reflective feedback, per-phrase feedback with "What would work better" only for a phrase that doesn't fit, skills used, and the "Setting up this situation…" loading layout). Soft stop with Keep Going and Finish Practice replaces the old Practice complete / Practice summary screen. Preparation page now shows practice focus, skills and difficulty only; Continue on difficulty is disabled until one is chosen.
-- **MOCK DATA (team decision 2026-10-08):** every activity, option, hint and feedback line comes from `frontend/src/mockData/practiceSession.js` - the three Figma examples, the same for every role and difficulty. The backend is not called for sessions at all on this screen now, so **nothing she completes here is saved**: it does not reach Recent practice on the dashboard, does not mark roadmap skills as Practised, and is lost on refresh. The role and practice focus are still real (`GET /practice-role`, `GET /roadmap`).
-- **Not built:** no-repeat across sessions (AC 4.3.5), linking activities to the focus skill (AC 4.4.5), the own-skill scenario (AC 4.4.6), "Activity 2 of 3" exhaustion states, and the two-Drag-and-Drop mix for roles that don't work with code - all need the backend. Keep Going replays the same three activities.
-- **Verification:** frontend build and lint clean; walked through in a headless browser, including a real drag (see the walkthrough entry above).
-- **Blocks / Blocked by:** blocked by the AI team's activity content and the backend session work that follows it. `loadPracticeSession()` in the mock file is the single place to swap in the real API.
 
 ### AC 5.2.1 / 5.2.2 - Your map for the job, closest role, curved roadmap branches
 
@@ -154,7 +130,6 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Update 2026-10-08:** verified in the browser walkthrough. Outlook to 2035 was removed and the "How it relates" text is now built from roadmap data, not mock.
 - **What (backend):** new `GET /roadmap` (`RoadmapService`, `schemas/roadmap.py`). Returns the previous role and the two predicted roles, each with Skills You Bring Back, up to three Skills You Could Explore (status `practised` / `next` / `later`, with the date practised), the rounded vacancy range, and the role currently selected to practise. Skills come from the existing role-skill catalogue (`get_skills_for_role`); practised status is derived from the skills tagged on completed activities for that role - no new table. A role with no mapped skills returns `skill_data_available: false`.
 - **What (frontend):** new `screens/YourRoadmap.jsx` at `/your-roadmap` and `components/RoleInfoModal.jsx` (the "i" panel; closes on Close, outside click or Escape). "Practise this role" saves through the existing `PUT /practice-role`; Start practice opens the existing workplace flow; Back returns to the previous screen. Dashboard now shows the AC 3.4.2 next-step card (Practised / Next / Later, Continue, View Roadmap) and the selected role under Your roadmaps. A returning token with a completed profile now lands on the dashboard (AC 3.3.3). Workplace practice takes its skill focus from the roadmap's "Next" skill. Removed: `SkillRelevanceMap` and `YourDirection` screens, their styles and routes; the wizard sidebar now has three steps.
-- **MOCK DATA (team decision 2026-10-08, replace later):** `frontend/src/mockData/roadmapData.js` - the "Outlook to 2035" paragraph and its source line, and the "How it relates to <previous role>" paragraph in the info panel. Both are generic sentences with the role name inserted. The one-line "Builds on your X and Y" on each suggested card is not mock - it is written from the real overlapping skills.
 - **Known gaps:** only the one currently selected role is known, so the dashboard has no history of earlier role choices or "chosen on" dates. Practised status only appears when an activity's tagged skills match a roadmap skill by name, which the current curated scenarios may rarely do. The roadmap's connector lines are straight, not the curved branches in the Figma.
 - **Verification:** 413 backend tests pass (5 new). `GET /roadmap` and selecting a predicted role checked against the real Postgres with real catalogue and vacancy data. Frontend build and lint clean. **Not clicked through in a browser.**
 - **Blocks / Blocked by:** unblocks AC 5.2.2 (closest-role picker opens this roadmap).
@@ -165,9 +140,8 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Update 2026-10-08:** verified in the browser walkthrough. AC 3.4.1 is now complete: View feedback works for stored questions (top entry).
 - **What (backend):** three new endpoints. `DELETE /job-descriptions/{id}` (AC 3.5.1, owner-scoped, 404 for another owner's id). `DELETE /anonymous-sessions/current` (AC 3.5.2) - `SessionService.clear_journey` deletes the profile, every job description and the session; in Postgres the single `anon_session` delete cascades to profile, job_description and practice_session through their existing `ON DELETE CASCADE` keys. `GET /practice-sessions/recent-activities` (AC 3.4.1) - completed scenarios flattened across all of the owner's sessions, newest first, capped at 10. New repository methods: `JobDescriptionRepository.delete_for_owner`, `SessionRepository.delete`, `PracticeSessionRepository.list_for_owner` (memory + Postgres each).
 - **What (frontend):** `ProfileMenu.jsx` now shows icon, title and description per item. `CareerJourney.jsx` trimmed to the three profile steps (Skill Relevance Map and Practice Role rows removed), Continue your journey now opens Choose Your Path, and Clear My Journey + `ClearJourneyDialog.jsx` added - on success the local token is forgotten and she lands on Home with Generate / Access Token showing. `Dashboard.jsx` rebuilt as "Your progress": the real empty state ("You haven't started yet."), Recent practice, and saved job descriptions with Remove + confirmation + "Job description removed." toast. Each list loads and fails independently.
-- **Not built yet (deliberately, no placeholder data):** chosen roles in "Your roadmaps" and the AC 3.4.2 next-skill card (Practised / Next / Later) - both come from choosing a role on Your Roadmap, which doesn't exist yet, so the top card shows AC 3.4.2's own "Choose a path to build your roadmap." state. View Feedback links and opening a job description's map from the dashboard are also not wired (no feedback-review screen; AC 5.2.1 map not built). Drag and Drop / Code Review never appear in Recent practice because those activity types don't exist in the backend yet.
 - **Verification:** 408 backend tests pass (11 new). All three endpoints exercised against the real Postgres: delete took the list from 1 to 0, clear journey returned 204 and the same token then returned 401. Frontend `npm run build` and `npm run lint` clean. **Not clicked through in a browser.**
-- **Blocks / Blocked by:** the rest of US 3.4 is blocked by Your Roadmap (AC 2.2.3 / 2.2.4).
+- **Blocks / Blocked by:** none (the roadmap parts of US 3.4 were built afterwards - see the entries above).
 
 ### AC 5.1.1 / 5.1.2 - Analyse a Job Description + requirements found
 
@@ -180,7 +154,7 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **`min_years_experience` "or more" fix - applied directly (2026-10-08):** root-caused to `_extract_minimum_experience()`'s regex in `job_description_extractor.py` - pure post-processing on the cleaned text, not something GLiNER itself extracts, so this needed no retraining. The pattern only recognized a number followed directly by `years` (optionally with a `minimum of`/`at least`/`more than`/`over` prefix, or a `N+`/`N-M` suffix) - "N or more years" has no matching shape, so it silently matched nothing. Added one alternative (`\s+or\s+(?:more|above)`) to the existing optional suffix group. Verified standalone (fixes the "or more" case, zero regressions on the 6 previously-working phrasings) and against the real loaded extractor + real model (`min_years_experience` now returns `3` for the example above). Patched both copies that exist in this repo - the live one the backend actually imports (`app/ml/job_description_extraction/job_description_extractor.py`) and the AI team's original handoff copy (`ai/job_description_extraction/job_description_extractor.py`), so a future re-copy from their handoff location doesn't silently reintroduce the bug. All 16 job-description backend tests still pass. AI team notified to mirror the same one-line patch in their own canonical source.
 - **Not yet verified in an actual browser** - same limitation as the nav/gating entry above, no browser-automation tool was available this session.
 - **Cleanup needed:** another throwaway test row in the real shared Postgres - token `G-gHKzeA1wpcJwR8ozibNQgU7YzqG8UOWXkgOfMW6LM`, job_description_id `4f2573ce3c534dc5b95930cad4d4a35c`. Same Production Reads block as above prevents me from deleting it myself.
-- **Blocks / Blocked by:** blocked on AC 5.2.1 (needs new backend profile-comparison reasoning) for `JobDescriptionComparison.jsx` to become real. Not blocked on anything for what's built here.
+- **Blocks / Blocked by:** none (AC 5.2.1 was built afterwards - see "AC 5.2.1 / 5.2.2" above).
 
 ### AC 3.1.6 / 3.1.7 / 2.3.3 / 3.2.4 - Nav rework, token/profile gating, Choose Your Path, profile confirmation
 
@@ -189,104 +163,7 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **What:** Top nav now shows Home / Choose Your Path / Practice Scenarios / Dashboard + a profile icon (`components/ProfileMenu.jsx`) with a My Token / Career Profile dropdown, replacing the old Career Journey link and ePortfolio placeholder. Selecting a gated nav item with no active token now opens a dedicated `/access-token-required` page (AC 3.1.6) instead of a dismiss-only modal - `components/TokenRequiredModal.jsx` deleted, no longer used anywhere. Gating also now checks profile completeness, not just token presence (`useAccessTokenFlow.attemptTokenGate`, `requireProfile` option): an active token with an unconfirmed profile is redirected into the wizard at the first unfinished step via the existing `getResumeStep()`, applied to Choose Your Path, Practice Scenarios and Dashboard. New `screens/ChooseYourPath.jsx` (AC 2.3.3) replaces Your Direction as the post-profile fork (Analyse a Job Description / Explore Roles); it also guards itself directly on `profile.confirmed` on mount, not only via the nav click, so a bookmarked/back-navigated visit can't bypass the rule. New `components/SaveProfileDialog.jsx` + `screens/ProfileSetUp.jsx` implement AC 3.2.4 - "Save your career profile?" now shown once, the first time only (gated on the existing `isEditReturn` flag, which already distinguished first-time completion from an edit-return), before showing a real summary (role, years, skills, responsibilities count, break years) read back from the just-saved profile. `screens/Dashboard.jsx` is a deliberately honest placeholder - the nav item and both gating rules are real, but US 3.4's actual dashboard content is a separate, not-yet-built story.
 - **Why:** goal/scope per the real Epics/User Stories/AC document (not the earlier speculative FE 3.x list) - these four ACs are the foundational nav/routing change every other Iteration 3 screen depends on.
 - **Verification:** `npm run build` and `npm run lint` both clean. No mock data - `ProfileSetUp.jsx` reads the real `GET /profile` + catalogue endpoints back after a real `PATCH /profile` + `POST /profile/confirm` against the live backend, confirmed field-by-field (role label, years label, skill labels, break years) against real responses from the real Postgres instance. **Not yet verified in an actual browser** - no browser-automation tool was available in this session to click through the UI, so this is unverified for visual/interaction correctness (modal positioning, dropdown focus handling, etc.) even though the underlying data wiring is confirmed real. Please click through before relying on it.
-- **Cleanup needed:** a throwaway anonymous session (role: Software Developer, skills: Java/Python/SQL/Looker, break 2021→2026, confirmed) was created against the real shared Postgres at `34.56.117.131` while verifying this - my own tooling blocked me from deleting it directly (Production Reads). Token: `X2cd-utTwjLMgEy1kRIpCZeHGj9Atkj3gBhAac3iBug` - needs manual cleanup.
 - **Blocks / Blocked by:** blocks FE work on the job-description path (AC 5.1.x/5.2.x, routes to `/analyse-job-description`) and the roadmap (AC 2.2.3/2.2.4/2.4.1, routes to `/your-roadmap`) - both are linked from Choose Your Path but not built yet. `/skill-relevance-map` and `/your-direction` are still registered in the router and still work, left in place until Your Roadmap is ready to replace them (removing them now would strand CareerJourney's Edit links).
-
-### FE 3.1 - Path hub screen
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built as Choose Your Path - see "AC 3.1.6 / 3.1.7 / 2.3.3 / 3.2.4" above.
-- **What:** new screen reached right after profile setup (Step 1) offering "Analyse a job description" (Path 1) and "Explore roles and practise" (Path 2) side by side - neither forced, no dismiss-a-prompt pattern. Reachable again later from the dashboard (FE 3.12), since she'll keep finding new job ads over the weeks she uses CTM.
-- **Why:** the fork point the whole updated Iteration 3 journey branches from.
-- **Blocks / Blocked by:** none to start - a routing screen, doesn't depend on backend work existing first.
-
-### FE 3.2 - Paste-a-job-description screen + extracted requirements display
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built - see "AC 5.1.1 / 5.1.2" above.
-- **What:** text area for pasting a real job description, calling `POST /job-descriptions` (BE 3.2). Shows the extracted skills/responsibilities/experience requirement back to her before the comparison step runs, so a bad extraction is visible rather than silently trusted.
-- **Why:** goal 1 - the actual data-entry point for Path 1.
-- **Blocks / Blocked by:** blocked by BE 3.2.
-
-### FE 3.3 - Profile-vs-job comparison display
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built as Your map for this job - see "AC 5.2.1 / 5.2.2" above.
-- **What:** renders BE 3.3's four groups (existing alignment / transferable / worth refreshing / worth exploring) with supportive, never-pass/fail wording. Handles the "close match" case specially - leads with "While You Were Away" content (FE 3.7) rather than an empty explore list, per the context document's explicit guidance for what it calls the most common case, not an edge case.
-- **Why:** goal 1 - where she actually reads what the comparison means for her.
-- **Blocks / Blocked by:** blocked by BE 3.3.
-
-### FE 3.4 - Skill relevance map, updated for two paths
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** replaced by Your Roadmap, which shows skills to bring back and skills to explore on both paths - see "AC 2.2.3 / 2.2.4" above.
-- **What:** one component serves both paths - 4 groups on Path 1 (from the pasted job description), 2 groups on Path 2 (from the selected role's O*NET skills). No counts, percentages or coverage figures anywhere - it describes the role, not the user. Keeps "commonly listed for this role" (O*NET) and "in demand" (Jobs and Skills Australia only) strictly separate in the copy.
-- **Why:** the one screen every journey passes through regardless of path chosen.
-- **Blocks / Blocked by:** Path 1 half blocked by FE 3.3; Path 2 half can be built now against the existing role/skill catalogue.
-
-### FE 3.5 - Two predicted roles with market data
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built on Your Roadmap with the role information panel (vacancy range, source and date).
-- **What:** replaces the current single predicted-role card with two role cards, each showing hiring-demand text and shortage status, source and date shown on every figure - never invented or rounded beyond what the data actually says.
-- **Why:** goal 2.
-- **Blocks / Blocked by:** blocked by BE 3.4, which is itself blocked by B1/B3.
-
-### FE 3.6 - Personalised roadmap screen
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built as Your Roadmap. Recommended certifications are not being built (team decision, 2026-10-08).
-- **What:** new screen - skills she has / worth refreshing / worth exploring, relevant workplace practices, a recommended sequence, and the scenarios that help her practise. Explicitly not "Course 1 -> Course 2 -> Certification 3" - answers what to explore next given where she already is.
-- **Why:** goal 3.
-- **Blocks / Blocked by:** needs a backend read/write endpoint over the `roadmap` table (spec Section 9.5) - not yet logged as a BE card; add one when this is picked up.
-
-### FE 3.7 - "While You Were Away"
-
-- **Status:** [NOT BUILDING] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** team decision, 2026-10-08: "While You Were Away" is not being built.
-- **What:** industry-change context for the user's selected role/occupation over her career-break dates - still relevant / changed / worth investigating, each claim tied to a real dataset, never an invented trend.
-- **Why:** context goal - also doubles as the lead content for a close job-description match (FE 3.3).
-- **Blocks / Blocked by:** needs a backend endpoint for this - not yet scoped/logged as a BE card.
-
-### FE 3.8 - Mixed activity types in workplace practice
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built - one activity unlocked at a time, at random; see the entry at the top of this section.
-- **What:** the activity screen needs to render whichever activity type the session returns - workplace MCQ, technical MCQ, drag-and-drop or code review - not one fixed layout. Needs a loading/timeout state for the hybrid live-MCQ path (BE 3.5) specifically, since that call can have real latency unlike the pretrained path.
-- **Why:** goal 4/5 - the "MCQ only doesn't test real skills" complaint, the most-requested change from Iteration 2 feedback alongside hotspot discoverability (already fixed).
-- **Blocks / Blocked by:** blocked by BE 3.5 for the loading state; the type-switch itself can be scaffolded now against mocked responses.
-
-### FE 3.9 - Code review activity UI
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** screen built to AC 4.7.1 / 4.7.2 and only shown to roles that work with code. Content is a placeholder until the AI team delivers it (blocker B4).
-- **What:** code snippet display (syntax-highlighted) plus option selection for the error category. Never shows a right/wrong badge - reflective feedback only, matching the backend-only `correct_option_id` decision (BE 3.6, confirmed).
-- **Why:** goal 4, second new activity type.
-- **Blocks / Blocked by:** blocked by BE 3.6.
-
-### FE 3.10 - Drag-and-drop activity UI
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** screen built to AC 4.6.1 / 4.6.2, with drag and drop and select-then-place. Content is a placeholder until the AI team delivers it (blocker B4).
-- **What:** sentence template with 3 drop targets and 5 draggable option chips. Every option gets feedback on selection, framed as improvement to make, never marked wrong.
-- **Why:** goal 4, third new activity type.
-- **Blocks / Blocked by:** blocked by BE 3.7.
-
-### FE 3.11 - Pre-generated skill video + post-video question
-
-- **Status:** [NOT BUILDING] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** team decision, 2026-10-08: skill videos are not being built.
-- **What:** after a scenario, show the relevant short skill video (matched by the actual skill used, not a generic library), then one reflective question to check understanding - never graded pass/fail, consistent with the rest of the product. No live video-generation call anywhere in the frontend.
-- **Why:** goal 7.
-- **Blocks / Blocked by:** needs `skill_video` rows to actually exist (DB, spec Section 9.6) before this can be tested with real content, not just mocks.
-
-### FE 3.12 - Progress dashboard (replaces the ePortfolio placeholder)
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built as the dashboard - see "AC 3.5.1 / 3.5.2 / 3.4.1" and the top entry.
-- **What:** one place showing saved profile, added job descriptions, roles explored, roadmap position, completed scenarios with their feedback, and videos watched. Resumes via access token. Describes activity, never rates it - no totals, streaks or completion percentages anywhere on this screen.
-- **Why:** goal 6 - the nav tab already relabelled from ePortfolio (earlier team decision) finally gets real content.
-- **Blocks / Blocked by:** blocked by BE 3.8, and in practice by most of the above existing first, since it surfaces their data.
 
 ---
 
@@ -303,7 +180,19 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Dashboard:** `GET /practice-sessions/recent-activities` now also returns `session_id` and `scenario_id`, so each completed question's feedback can be opened again.
 - **Verification:** 434 backend tests pass (8 new in `tests/test_practice_activity_v3.py`). `option_feedback` migration run 2026-10-08. Against the real database and real Gemini: an activity of four questions, and of five with a typed-in skill (the fifth written live about that skill); one question shown at a time; 409 `NO_NEW_ACTIVITIES` afterwards. Warm Gemini calls 3.4-4.3 s; an instruction-like custom skill was rejected and replaced by the static fallback. Building the generator takes about 11 s, so it is warmed in a background thread at startup. **Not verified:** the Docker build and Cloud Run deployment.
 - **Deployment:** `google-genai` and `sentence-transformers` added to `requirements.txt`; the Dockerfile downloads MiniLM at build time; `GEMINI_API_KEY` must be set as a Cloud Run secret (without it the static fallback is used).
-- **Blocks / Blocked by:** none. Drag and Drop and Code Review content is still not delivered by the AI team.
+- **Blocks / Blocked by:** none.
+
+### US 4.7 / AC 4.7.1 / 4.7.2 / 2.4.1 / 4.5.4 - Code Review on the AI team's activities, role explanations, unlocked activity decided by the backend
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-10
+- **What:** merged `feature/iteration-3-ai` (commits 1ee386e and 20e40fa) and integrated both handovers.
+  - **Code Review.** The 324-activity static pool is in `app/ml/code_review_v1/`; new `app/providers/code_review_provider.py`. `POST /practice-sessions` accepts `activity_type: "code_review"`: four reviews per activity, one at a time, answered with `selected_option_id`. The scenario returns `code_snippet` and `language`; `correct_option_id` and the feedback for the other options stay in `practice_scenario.content` and are never sent. After she submits she gets the feedback written for the option she chose. Static only: no Gemini, and the code is never run. Pool ids up to 71 characters are shortened to fit the 64-character `scenario_id` column.
+  - **Role explanations.** The AI team's explainer (`app/ml/career_role_explainer_v1.py`, `predictive_role_explanation_models_v1.py`) now wraps the Version 2 predictor in `MLTwoRolePredictionProvider`. Each suggested role carries `explanation` (`summary`, `matched_skills`, `reason_codes`) through `GET /predicted-roles` and `GET /roadmap`. The two roles and their order are unchanged; if the explainer fails, the roles are still returned without it.
+  - **Which activity is unlocked.** New `GET /practice-sessions/plan` returns what is left per kind and level, the one kind unlocked at each level, and the level she last practised. The pick is derived from her session, role, level and number of answered questions, so she cannot predict it, it only changes when she finishes an activity, and it is the same on every device. Nothing extra is stored.
+- **Frontend:** Code Review runs on real sessions like the other two, with the same feedback screen as Multiple Choice. The role information panel shows the model's explanation, falling back to our own line for a role she picked herself. The last placeholder content and the browser-only history are gone: `mockData/practiceSession.js` and `practiceHistory.js` are deleted.
+- **Verification:** 471 backend tests pass (8 new in `tests/test_code_review_api.py`); eslint and build clean. No database change was needed. Browser runs against the real database: 41 screens with all three activities in one visit and no page errors; and finishing one activity, choosing Finish Practice, then opening a brand-new browser showed "Your next activity is ready" and opened the activity the plan named.
+- **Decision (Thiri, 2026-10-10):** some Code Review feedback for the intended option is worded as confirmation ("Accurately detects the SQL injection..."). The wording is accepted as it is; no change is requested from the AI team. The card for AC 4.7.2 ("do not reveal which option was intended") should be reworded to match: no right/wrong label, tick, cross or score is shown.
+- **Blocks / Blocked by:** none.
 
 ### US 4.6 / AC 4.6.1 / 4.6.2 / 4.4.6 - Drag and Drop on the AI team's activities, with live generation
 
@@ -312,7 +201,7 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Kept on the server:** which phrase is meant for which gap (`fits_blank_id`) and the feedback for unplaced phrases are stored in a new `practice_scenario.content` column and never sent. The five phrases are shuffled, because in the pool the first three are always the fitting ones in gap order.
 - **Team decision (Thiri, 2026-10-09):** use the AI team's service exactly as delivered. The live drag and drop activity is given her role, typed-in skills, years of experience and responsibilities (picked and typed); pre-written ones use role only. Multiple choice still receives role, difficulty and skill names only.
 - **Also fixed:** a generated question id could be longer than the 64-character `scenario_id` column for the longest role ids, so a live question for those roles was silently dropped; ids are now trimmed to fit.
-- **Frontend:** the Drag and Drop screen, feedback screen and View feedback run on the real activities; the placeholder Drag and Drop is removed. Code Review is now the only mock activity.
+- **Frontend:** the Drag and Drop screen, feedback screen and View feedback run on the real activities; the placeholder Drag and Drop is removed.
 - **Verification:** 462 backend tests pass (11 new in `tests/test_drag_and_drop_api.py`). Run through the API and in a headless browser with practice sessions held in memory and everything else on the real database: four pre-written messages plus a live one about "Looker" from real Gemini, feedback for every placed phrase, dashboard rows with View feedback. Migration `data/schema/add_practice_scenario_drag_and_drop.sql` run 2026-10-09, then re-verified against the real practice tables: API run with the live message, and a 41-screen browser run with no page errors.
 - **Blocks / Blocked by:** none.
 
@@ -381,55 +270,6 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **Why:** goal 1 - the entry point for Path 1 (job description analysis), and the first Iteration 3 feature with a real AI deliverable wired all the way through to the database.
 - **Blocks / Blocked by:** unblocks BE 3.3 (profile-vs-job comparison), which can now read real stored job descriptions. One open item, not a blocker: `backend/requirements.txt` has **not** been updated with `torch`/`transformers`/`gliner`/`rapidfuzz` yet - deliberately held back, since adding them makes every `pip install` meaningfully heavier for the whole team immediately, even though nothing needs them until the real model is actually deployed somewhere. Add them when ready to deploy this for real (Cloud Run needs ≥2GiB memory per `MODEL_DEPLOYMENT.md`).
 
-### BE 3.3 - Profile-vs-job comparison endpoint
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built: `GET /job-descriptions/{id}/comparison`, closest-role endpoints and the `closest_role_id` column; verified against the real database.
-- **What:** `POST /job-descriptions/{job_description_id}/compare` - the only place in the whole product where years of experience and responsibilities are compared against something, per the context document's explicit rule. Groups results into existing alignment / transferable / worth refreshing / worth exploring. Wording must never read as pass/fail - see the spec doc, Section 4, for the required supportive phrasing.
-- **Why:** goal 1, second half - turns the extracted job requirements (BE 3.2) into something the user can actually read against her own profile.
-- **Blocks / Blocked by:** depends on BE 3.2. Needs `job_description_comparison` table (DB, see spec Section 9.2).
-
-### BE 3.4 - Expand role prediction to 2 roles + market data
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** delivered by BE 3.10 and BE 3.11 above.
-- **What:** change `GET /predicted-role` (singular) to `GET /predicted-roles`, returning two roles instead of one - breaking change to the current `RolePredictionProvider` interface, which only returns one `PredictedRoleContent` today. Backend then enriches each role with hiring-demand/shortage data from `role_market_data` (a lookup, not an AI call). Full contract in the spec doc, Section 5.
-- **Why:** goal 2 - matches the context document's explicit "2 AI-predicted roles" requirement (Iteration 2 shipped one).
-- **Blocks / Blocked by:** blocked by B1 (`role_anzsco_mapping`) and B3 (snapshot strategy) for the market-data half; the role-count change itself is not blocked.
-
-### BE 3.5 - Hybrid MCQ generation (pretrained + live)
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** delivered by "AC 4.3.1 / 4.3.5 / 4.4.6 - Reflective MCQ Version 3" above.
-- **What:** backend routing decision, not an AI decision - if every skill relevant to the activity is a catalogue `skill_id`, use the existing local pretrained lookup (unchanged from Iteration 2); if the user has a relevant `custom_skill` (free text, not in the catalogue), call the AI service live instead. Needs a loading state and timeout/fallback on the frontend for the live path. Full routing table and both request shapes in the spec doc, Section 6.
-- **Why:** lets MCQ generation actually cover skills the catalogue doesn't have, without making every request pay live-AI latency.
-- **Blocks / Blocked by:** plain MCQ itself does not change its skills+role-only input (goal 4 only applies to the two new activity types above).
-
-### BE 3.6 - Code review activity type
-
-- **Status:** [BLOCKED] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** waiting on Code Review content from the AI team (blocker B4). The frontend screen exists on placeholder content.
-- **What:** new `ActivityType` value `code_review`. User sees a code snippet and picks the error category (syntax error, null/attribute error, etc.). Confirmed exception to the "no option marked correct" rule: `correct_option_id` is backend-only, used to select feedback text, never shown as right/wrong in the UI. Full contract in the spec doc, Section 7.
-- **Why:** the other new activity type from goal 4 - code review and reasoning only, no execution/sandboxing, matching the context document's explicit scope boundary.
-- **Blocks / Blocked by:** needs `practice_scenario.code_snippet`/`language` columns (DB, see spec Section 9.8).
-
-### BE 3.7 - Drag-and-drop activity type
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** waiting on Drag and Drop content from the AI team (blocker B4). The frontend screen exists on placeholder content.
-- **Update 2026-10-09:** delivered by the AI team and integrated - see "US 4.6 / AC 4.6.1 / 4.6.2 / 4.4.6" at the top of this section.
-- **What:** new `ActivityType` value `drag_and_drop`. Sentence template with 3 blanks, 5 options (3 correct, 2 distractors), constructive feedback on every option - never "wrong". Uses skills, role, years of experience and responsibilities (team decision, see Iteration 3 goal 4). Full request/response JSON in the spec doc, Section 8.
-- **Why:** one of the two new activity types replacing "MCQ only" as the sole interaction type, per Iteration 2 feedback's most-repeated workplace complaint.
-- **Blocks / Blocked by:** needs `practice_scenario.sentence_template` and `practice_scenario_option.fits_blank_id` columns (DB, see spec Section 9.8/9.9).
-
-### BE 3.8 - Progress dashboard / resume endpoint
-
-- **Status:** [DONE] **Owner:** TBD **Date:** 2026-10-04
-- **Update 2026-10-08:** built: `GET /practice-sessions/recent-activities`, `GET /practice-sessions/current` for resuming, and chosen roles with dates on `GET /roadmap`.
-- **What:** new endpoint(s) returning the full dashboard view for Step 12 - saved profile, job descriptions added, roles explored, roadmap position, completed scenarios with their feedback, videos watched. Describes activity, never rates it (no totals, percentages, streaks).
-- **Why:** replaces the never-built ePortfolio placeholder; lets a user leave mid-session and resume exactly where she stopped.
-- **Blocks / Blocked by:** depends on BE 3.2-3.7 existing first, since the dashboard surfaces their data. See spec Section 9.7 (`dashboard_state`) for whether a dedicated table is even needed.
-
 ---
 
 ## Database (DB)
@@ -443,8 +283,6 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 - **How to read it:** `SELECT ... FROM role_vacancy_latest WHERE role_id = %s AND state = 'AUST'`. Several roles share one ANZSCO group and so show the same figure (Software Developer, Computer Programmer and Blockchain Engineer all show 2,896), so the UI must label the number with `anzsco_title` and `latest_month`, never as ads for her exact role. Figures are online job ads (SEEK, CareerOne, Workforce Australia), not jobs or hires.
 - **Why:** resolves B1 - O*NET roles can now be joined to Australian vacancy data. The full monthly history also gives B3 a basis: a "since her break started" comparison can read the month her break began from `vacancy_monthly`, not just the latest pull.
 - **Blocks / Blocked by:** unblocks the market-data half of BE 3.4 and FE 3.5. Differences from spec Section 9: the table is `role_anzsco_map` (spec says `role_anzsco_mapping`), and demand comes from `vacancy_monthly` plus the view rather than a `role_market_data` table. Shortage status is not loaded yet (needs the JSA Occupation Shortage List). Monthly refresh: download the new IVI file, rerun the script, rerun `seed_vacancy_monthly.sql`.
-
-*No Iteration 3 entries yet. See `CTM_Iteration3_Endpoints_AI_Database_Spec.docx` Section 9 for the full new-table specification (`job_description`, `job_description_comparison`, `role_anzsco_mapping`, `role_market_data`, `roadmap`, `skill_video`, `dashboard_state`) and the changes needed on `practice_scenario`/`practice_scenario_option` - add your entries above this line once you start building from it.*
 
 ---
 

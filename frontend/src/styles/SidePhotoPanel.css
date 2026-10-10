@@ -25,7 +25,8 @@
   position: absolute;
   left: 24px;
   right: 24px;
-  top: 24px;
+  /* Below the floating nav. */
+  top: 104px;
   display: flex;
   flex-direction: column;
   gap: 4px;

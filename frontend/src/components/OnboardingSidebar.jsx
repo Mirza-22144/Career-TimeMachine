@@ -1,11 +1,12 @@
 import '../styles/OnboardingSidebar.css'
-import { onboardingSteps, sidebarBrand, sidebarStat, sidebarQuote } from '../mockData/onboardingData'
+import { onboardingSteps, sidebarBrand, sidebarNext, sidebarStat, sidebarQuote } from '../mockData/onboardingData'
 import { navigate } from '../navigate.js'
-import { CheckIcon } from './icons'
+import { CheckIcon, ShieldIcon } from './icons'
 
 // Left-hand panel shared by every step of the onboarding wizard, shown
-// below the shared TopNav: a step-by-step progress list, an optional photo
-// panel with a stat card and quote, and a progress bar at the bottom.
+// below the shared TopNav: a step-by-step progress list, what the steps
+// lead to, an optional photo panel with a stat card and quote, and a
+// progress bar at the bottom.
 //
 // `backgroundImage` is optional — falls back to a plain gradient until a
 // real photo is set. `showPhoto` turns the photo panel on or off — only
@@ -15,7 +16,7 @@ export default function OnboardingSidebar({ currentStep, backgroundImage, showPh
   const previousStep = onboardingSteps.find((step) => step.id === currentStep - 1)
 
   return (
-    <aside className={`ob-sidebar ${showPhoto ? '' : 'ob-sidebar--no-photo'}`}>
+    <aside className={`ob-sidebar ${showPhoto ? '' : 'ob-sidebar--no-photo'}`} data-nav-dark>
       <div className="ob-stepper-col">
         <div>
           <p className="ob-brand-tagline">{sidebarBrand.tagline}</p>
@@ -49,7 +50,24 @@ export default function OnboardingSidebar({ currentStep, backgroundImage, showPh
               )
             })}
           </nav>
+
+          <section className="ob-next" aria-label="What happens after these steps">
+            <span className="ob-next-label">{sidebarNext.label}</span>
+            <ul className="ob-next-list">
+              {sidebarNext.items.map((item) => (
+                <li key={item.id} className="ob-next-item">
+                  <span className="ob-next-title">{item.title}</span>
+                  <span className="ob-next-text">{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
+
+        <p className="ob-note">
+          <ShieldIcon size={14} color="#c4b5fd" />
+          <span>{sidebarNext.note}</span>
+        </p>
 
         <div className="ob-progress">
           <div className="ob-progress-header">

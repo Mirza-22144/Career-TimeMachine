@@ -23,6 +23,18 @@ export const sidebarBrand = {
   tagline: "Your experience. Your comeback. Your future.",
 };
 
+// Shown under the steps: what her answers are used for once the three
+// steps are done.
+export const sidebarNext = {
+  label: "AFTER THESE 3 STEPS",
+  items: [
+    { id: "roles", title: "Roles that fit you", text: "Suggested from your role, skills and experience." },
+    { id: "roadmap", title: "Your roadmap", text: "The skills you bring back and the ones to explore." },
+    { id: "practice", title: "Workplace practice", text: "Short activities with feedback, never a score." },
+  ],
+  note: "No account needed. Your access token is the only key to your journey.",
+};
+
 export const sidebarStat = {
   label: "WOMEN IN THIS PLATFORM HAVE",
   value: "8.4 yrs",

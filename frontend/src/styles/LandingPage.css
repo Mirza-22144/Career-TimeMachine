@@ -288,10 +288,6 @@
   background: var(--bg-app);
 }
 
-.lp-roadmap {
-  background: #ffffff;
-}
-
 /* ---------- Numbers ---------- */
 
 .lp-stat-grid {
@@ -332,57 +328,154 @@
 
 /* ---------- Roadmap ---------- */
 
-.lp-roadmap-steps {
-  display: flex;
-  align-items: flex-start;
+/* ---------- How it works ---------- */
+
+.lp-how {
+  background: #ffffff;
+}
+
+.lp-how-eyebrow {
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  color: var(--violet-700);
+}
+
+.lp-how-intro {
+  max-width: 760px;
+}
+
+.lp-how-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
   width: 100%;
-  margin-top: 28px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.lp-roadmap-step {
-  position: relative;
-  flex: 1;
-  text-align: center;
+.lp-how-step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.lp-roadmap-step-badge {
+/* The numbered dot, and the line that joins it to the next step. */
+.lp-how-marker {
+  display: flex;
+  align-items: center;
+}
+
+.lp-how-number {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
-  background: var(--violet-100);
-  font-weight: 700;
-  font-size: 11px;
-  color: var(--violet-600);
+  background: var(--violet-700);
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffffff;
 }
 
-.lp-roadmap-step-title {
-  display: block;
-  margin-top: 12px;
+.lp-how-line {
+  flex: 1;
+  height: 2px;
+  /* Runs across the gap to the next step's dot. */
+  margin-right: -16px;
+  background: var(--violet-200);
+}
+
+.lp-how-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px;
+  background: var(--bg-app);
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  border-radius: 16px;
+}
+
+.lp-how-stage {
   font-weight: 800;
-  font-size: 15px;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  color: var(--violet-700);
+}
+
+.lp-how-title {
+  margin: 8px 0 8px;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 21px;
   color: var(--ink-900);
 }
 
-.lp-roadmap-step-caption {
-  margin: 6px 0 0;
+.lp-how-text {
+  margin: 0 0 16px;
   font-weight: 500;
   font-size: 13px;
-  line-height: 18px;
-  color: var(--ink-600);
+  line-height: 19px;
+  color: var(--ink-700);
 }
 
-.lp-roadmap-connector {
+/* What she leaves the step with. */
+.lp-how-result {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(124, 58, 237, 0.18);
+  font-weight: 700;
+  font-size: 13px;
+  color: #2e1065;
+}
+
+.lp-how-closing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  width: 100%;
+  margin-top: 28px;
+  padding: 18px 22px;
+  background: var(--violet-50);
+  border-radius: 16px;
+}
+
+.lp-how-closing p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2e1065;
+}
+
+.lp-visually-hidden {
   position: absolute;
-  top: 16px;
-  right: -8%;
-  width: 16%;
-  height: 2px;
-  background: rgba(124, 58, 237, 0.25);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1080px) {
+  .lp-how-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lp-how-line {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .lp-how-steps {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- Footer ---------- */
@@ -399,7 +492,8 @@
 .lp-footer-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 58px;
+  justify-content: space-between;
+  gap: 40px 58px;
 }
 
 .lp-footer-brand {
@@ -448,25 +542,28 @@
 }
 
 .lp-footer-link {
-  font-weight: 400;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 500;
   font-size: 14px;
   line-height: 19px;
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
+  text-align: left;
+  /* 10.6:1 on the footer's navy. */
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
 }
 
 .lp-footer-link:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffffff;
+  text-decoration: underline;
 }
 
-/* Demo-only: Practice scenarios and Your ePortfolio aren't built this iteration */
-.lp-footer-link--static {
-  color: rgba(255, 255, 255, 0.32);
-  cursor: default;
-}
-
-.lp-footer-link--static:hover {
-  color: rgba(255, 255, 255, 0.32);
+.lp-footer-link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .lp-footer-divider {
@@ -520,15 +617,6 @@
     width: 100%;
     max-width: none;
     min-width: 0;
-  }
-
-  .lp-roadmap-steps {
-    flex-direction: column;
-    gap: 26px;
-  }
-
-  .lp-roadmap-connector {
-    display: none;
   }
 }
 

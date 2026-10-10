@@ -79,7 +79,7 @@ export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onC
 
         {!isPrevious && (role.explanation || role.skill_data_available) && (
           <>
-            <span className="rim-label">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
+            <span className="rim-label rim-label--accent">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
             <p className="rim-text">{role.explanation?.summary || relationText(role, previousRoleLabel)}</p>
           </>
         )}

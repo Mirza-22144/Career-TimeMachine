@@ -6,6 +6,7 @@ import FinishProfileNotice from '../components/FinishProfileNotice'
 import LoadingPopup from '../components/LoadingPopup'
 import SidePhotoPanel from '../components/SidePhotoPanel'
 import SaveProfileDialog from '../components/SaveProfileDialog'
+import YearCombobox from '../components/YearCombobox'
 import breakPhoto from '../assets/yourbreak.png'
 import { stepThreeData, sidePhoto } from '../mockData/onboardingData'
 import { api, ApiError } from '../api.js'
@@ -27,8 +28,14 @@ const MISSING_FIELD_LABELS = {
 
 const CURRENT_YEAR = new Date().getFullYear()
 // A break can only have started in the past (or this year) - never the future.
-// Both lists run oldest to newest.
-const START_YEAR_OPTIONS = Array.from({ length: 16 }, (_, i) => CURRENT_YEAR - 15 + i)
+// Both lists run oldest to newest. She types the year and the list narrows
+// to match, so the start list can reach a long way back without being a
+// long scroll.
+const EARLIEST_START_YEAR = 1980
+const START_YEAR_OPTIONS = Array.from(
+  { length: CURRENT_YEAR - EARLIEST_START_YEAR + 1 },
+  (_, i) => EARLIEST_START_YEAR + i,
+)
 // A planned return, by definition, can only be this year or a future one.
 const RETURN_YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => CURRENT_YEAR + i)
 
@@ -192,27 +199,26 @@ export default function YourBreak() {
 
           <div className="yb-year-row">
             <div className="yb-year-field">
-              <label className="yb-year-label">{stepThreeData.startLabel}</label>
-              <select value={startYear} onChange={(e) => setStartYear(e.target.value)} className="yb-select">
-                <option value="" disabled hidden>Select year</option>
-                {START_YEAR_OPTIONS.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+              <label className="yb-year-label" htmlFor="yb-start-year">{stepThreeData.startLabel}</label>
+              <YearCombobox
+                id="yb-start-year"
+                value={startYear}
+                onChange={setStartYear}
+                options={START_YEAR_OPTIONS}
+                startAtEnd
+              />
             </div>
             <div className="yb-year-field">
-              <label className="yb-year-label">{stepThreeData.returnLabel}</label>
-              <select
+              <label className="yb-year-label" htmlFor="yb-return-year">{stepThreeData.returnLabel}</label>
+              <YearCombobox
+                // Remounted when "not sure yet" is ticked, so a half-typed year is dropped.
+                key={returnUnsure ? 'unsure' : 'year'}
+                id="yb-return-year"
                 value={returnYear}
-                onChange={(e) => setReturnYear(e.target.value)}
-                className="yb-select"
+                onChange={setReturnYear}
+                options={RETURN_YEAR_OPTIONS}
                 disabled={returnUnsure}
-              >
-                <option value="" disabled hidden>Select year</option>
-                {RETURN_YEAR_OPTIONS.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+              />
               <label className="yb-unsure">
                 <input
                   type="checkbox"

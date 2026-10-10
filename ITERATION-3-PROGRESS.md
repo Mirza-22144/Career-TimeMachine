@@ -54,6 +54,24 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Third round of fixes from local testing: landing "How it works", nav colour, year type-ahead, wizard sidebar, practice setup pages
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-10
+- **What:**
+  - **Landing footer:** the SUPPORT and LEGAL columns and the "Practice scenarios" link are removed; "Your ePortfolio" is now "Dashboard". The three links left all work: "How it works" scrolls to the section below, "Dashboard" goes through the same token and profile check as the nav, and "Start your journey" does what the hero button does. The links were `<a href="#">`, which the hash router read as the home route - that is why "How it works" jumped to the top.
+  - **Landing "How it works":** the old "Your journey, step by step" diagram and a first separate "How it works" section are now one section. It opens with one paragraph on what the site is, then five joined, numbered steps, each with its journey stage (START, REMEMBER, DISCOVER, PRACTISE, MOVE FORWARD), what she does and what she leaves with, and ends with a Generate Token / Continue button.
+  - **Top nav:** no bar. The nav floats over the page: the logo is plain text with its emblem (no background) and the links sit in one pill of frosted glass. Pages mark their dark areas with `data-nav-dark` (landing hero and footer, the wizard sidebar and photos, the practice welcome banner); `TopNav.jsx` turns the logo white, and the links to dark glass with white text, while one of those is behind them. Once a page has scrolled and ordinary content is passing behind the logo, the wordmark hides and only the emblem stays. The wizard sidebar, its photos and the practice welcome banner now run to the top of the screen behind the nav, so there is no empty strip above them. A violet bar, opaque white pills and a glass pill for the logo were tried first and rejected.
+  - **Your Break years:** the two dropdowns are replaced by `components/YearCombobox.jsx`, a field she types into; the list narrows as she types ("201" shows 2010 to 2019). Start years now run from 1980 (they stopped at 2011 because only 16 years were listed). Mouse and arrow keys / Enter / Escape also work.
+  - **Wizard sidebar:** the empty space under the three steps now holds "After these 3 steps" (roles that fit you, your roadmap, workplace practice) and a one-line note about the access token. No font was made bigger.
+  - **Role information popup:** "HOW IT RELATES TO ..." is purple and the explanation is 13px.
+  - **Practice intro:** the welcome banner is a share of the screen height (150 to 260px) instead of a fixed 300px, the three cards are larger (bigger number, 17px text, height grows with the screen) and the block is centred between the banner and the footer bar, so there is no empty band under it.
+  - **Practice setup:** the 132px top gap and the three repeated headings are gone; the levels are a list with level bars, beside an "At every level" card.
+  - **"Before you go in":** each note has its own colour, icon and word label - amber "Keep in mind" (the one rule, now first), green "No pressure", violet "How it runs".
+- **Why:** issues Thiri found while testing the interface end to end.
+- **WCAG:** nav text on the light glass is 7.6:1 even over an unmarked dark area; white on the dark glass is 4.8:1 where the pill overhangs a light part of the page and higher over photos;
+- **Verification:** eslint and build clean. Browser check at 1366x768 (Playwright, real backend): footer shows one column with three links; "How it works" lands the section directly under the nav with the URL unchanged; "Dashboard" with no token opens the access-token page; typing 201 lists 2010-2019 and 202 lists 2020-2026; arrow keys and Enter pick a year; an out-of-range year shows the hint; the sidebar fits without scrolling on all three steps; on intro, setup and preparation nothing sits under the footer bar. Nav and welcome page also checked at 1800x950. No page errors. Not checked: other screen sizes beyond one phone-width look at the preparation page, and a screen reader.
+- **Blocks / Blocked by:** none.
+
 ### AC 5.2.1 - Job map circles size themselves to their content
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-10

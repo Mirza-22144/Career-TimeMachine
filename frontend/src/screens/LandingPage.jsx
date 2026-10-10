@@ -5,7 +5,7 @@ import heroVideo from "../assets/hero-background.mp4";
 import {
   trustItems,
   statsSection,
-  roadmapSteps,
+  howItWorks,
   footerSection,
 } from "../mockData/landingPageData";
 import logoEmblem from "../assets/Logo.png";
@@ -39,12 +39,22 @@ export default function LandingPage() {
     }
   };
 
+  // The footer's links. The app's router owns the URL hash, so "How it
+  // works" scrolls to its section here instead of using an #anchor (which
+  // the router would read as a route and send her back to the top).
+  const footerActions = {
+    "how-it-works": () =>
+      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" }),
+    dashboard: flow.checkTokenGate(() => navigate("/dashboard"), { requireProfile: true }),
+    start: flow.activeToken ? handleContinueJourney : flow.handleGenerateToken,
+  };
+
   return (
     <div className="lp-page">
       <TopNav flow={flow} />
 
       {/* ---------- Hero ---------- */}
-      <section className="lp-hero" id="hero">
+      <section className="lp-hero" id="hero" data-nav-dark>
         <div className="lp-hero-media">
           <video
             className="lp-hero-video"
@@ -127,29 +137,43 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---------- Roadmap ---------- */}
-      <section className="lp-section lp-roadmap" id="roadmap">
-        <h2 className="lp-h2">Your journey, step by step.</h2>
-        <p className="lp-lead lp-lead--section">
-          From remembering what you know to moving forward with confidence.
-        </p>
+      {/* ---------- How it works ---------- */}
+      <section className="lp-section lp-how" id="how-it-works" aria-labelledby="how-it-works-heading">
+        <span className="lp-how-eyebrow">HOW IT WORKS</span>
+        <h2 className="lp-h2" id="how-it-works-heading">{howItWorks.heading}</h2>
+        <p className="lp-lead lp-lead--section lp-how-intro">{howItWorks.intro}</p>
 
-        <div className="lp-roadmap-steps">
-          {roadmapSteps.map((step, i) => (
-            <div className="lp-roadmap-step" key={step.id}>
-              <span className="lp-roadmap-step-badge">{step.step}</span>
-              <span className="lp-roadmap-step-title">{step.title}</span>
-              <p className="lp-roadmap-step-caption">{step.caption}</p>
-              {i < roadmapSteps.length - 1 && (
-                <span className="lp-roadmap-connector" aria-hidden="true" />
-              )}
-            </div>
+        <ol className="lp-how-steps">
+          {howItWorks.steps.map((step, i) => (
+            <li className="lp-how-step" key={step.id}>
+              <div className="lp-how-marker" aria-hidden="true">
+                <span className="lp-how-number">{i + 1}</span>
+                {i < howItWorks.steps.length - 1 && <span className="lp-how-line" />}
+              </div>
+              <div className="lp-how-card">
+                <span className="lp-how-stage">{step.stage}</span>
+                <h3 className="lp-how-title">{step.title}</h3>
+                <p className="lp-how-text">{step.text}</p>
+                <span className="lp-how-result">
+                  <span className="lp-visually-hidden">You leave with: </span>
+                  {step.result}
+                </span>
+              </div>
+            </li>
           ))}
+        </ol>
+
+        <div className="lp-how-closing">
+          <p>{howItWorks.closing}</p>
+          <button type="button" className="lp-btn-primary" onClick={footerActions.start}>
+            <span className="lp-btn-label">{flow.activeToken ? "Continue your journey" : "Generate Token"}</span>
+            <ArrowRightIcon size={16} />
+          </button>
         </div>
       </section>
 
       {/* ---------- Footer ---------- */}
-      <footer className="lp-footer" id="footer">
+      <footer className="lp-footer" id="footer" data-nav-dark>
         <div className="lp-footer-top">
           <div className="lp-footer-brand">
             <div className="lp-logo">
@@ -175,22 +199,16 @@ export default function LandingPage() {
                   {column.heading}
                 </span>
                 <div className="lp-footer-links">
-                  {column.links.map((link) => {
-                    // "Practice scenarios" and "Your ePortfolio" aren't built
-                    // for this iteration yet - shown, but visually inert.
-                    const isStatic =
-                      link === "Practice scenarios" || link === "Your ePortfolio";
-                    return (
-                      <a
-                        key={link}
-                        href="#"
-                        className={`lp-footer-link ${isStatic ? "lp-footer-link--static" : ""}`}
-                        aria-disabled={isStatic || undefined}
-                      >
-                        {link}
-                      </a>
-                    );
-                  })}
+                  {column.links.map((link) => (
+                    <button
+                      key={link.id}
+                      type="button"
+                      className="lp-footer-link"
+                      onClick={footerActions[link.id]}
+                    >
+                      {link.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}

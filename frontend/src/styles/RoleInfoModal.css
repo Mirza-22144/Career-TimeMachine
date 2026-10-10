@@ -79,6 +79,11 @@
   color: #6b6685;
 }
 
+/* 7.1:1 on white. */
+.rim-label--accent {
+  color: #6d28d9;
+}
+
 .rim-range {
   font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
   font-weight: 700;
@@ -103,7 +108,7 @@
 .rim-text {
   margin: 8px 0 6px;
   font-weight: 500;
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 13px;
+  line-height: 19px;
   color: #2e1065;
 }

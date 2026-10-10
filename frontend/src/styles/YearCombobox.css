@@ -1,0 +1,81 @@
+/* Type-ahead year field (components/YearCombobox.jsx). */
+
+.yc-root {
+  position: relative;
+}
+
+.yc-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 40, 0.45);
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f1728;
+  box-sizing: border-box;
+}
+
+.yc-input::placeholder {
+  font-weight: 500;
+  color: #6b6685;
+}
+
+.yc-input:focus-visible {
+  outline: 2px solid #6d28d9;
+  outline-offset: 2px;
+}
+
+.yc-input:disabled {
+  background: #f1eff7;
+  border-color: rgba(15, 23, 40, 0.15);
+  cursor: not-allowed;
+}
+
+.yc-input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.yc-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 216px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 12px;
+  box-shadow: 0px 16px 32px -12px rgba(76, 29, 149, 0.28);
+}
+
+.yc-option {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f1728;
+  cursor: pointer;
+}
+
+.yc-option:hover,
+.yc-option--active {
+  background: #ede9fe;
+}
+
+.yc-option--selected {
+  color: #5b21b6;
+  font-weight: 800;
+}
+
+.yc-hint {
+  margin: 8px 0 0;
+  font-weight: 600;
+  font-size: 13px;
+  color: #b42318;
+}

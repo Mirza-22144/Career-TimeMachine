@@ -774,17 +774,24 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 300px;
-  padding: 40px clamp(24px, 7.8vw, 112px);
+  /* The banner runs up behind the floating nav, so its own content starts
+     below it. A share of the screen height, so the page fills a tall
+     window and never crowds a short one. */
+  min-height: clamp(230px, 32vh, 340px);
+  padding: 100px clamp(24px, 7.8vw, 112px) 32px;
   background-size: cover;
   background-position: center;
   color: #ffffff;
 }
 
+.pa-page--intro {
+  padding-top: 0;
+}
+
 .pa-intro-hero h1 {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   font-weight: 800;
-  font-size: 30px;
+  font-size: 26px;
   line-height: 1.15;
 }
 
@@ -792,8 +799,8 @@
   max-width: 560px;
   margin: 0;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 15px;
+  line-height: 22px;
 }
 
 .pa-setup-label {
@@ -809,18 +816,39 @@
 }
 
 .pa-how-card {
-  min-height: 148px;
-  padding: 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px;
   background: #ffffff;
   border: 1px solid rgba(124, 58, 237, 0.12);
   border-radius: 16px;
 }
 
-.pa-how-card p {
-  margin: 16px 0 0;
-  font-weight: 500;
+/* The welcome page: the cards grow with the screen height (within limits)
+   and the block sits in the middle of the space between the banner and the
+   footer bar, so what is left over is shared above and below it. */
+.pa-body--intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pa-body--intro .pa-how-card {
+  min-height: clamp(170px, 24vh, 240px);
+}
+
+.pa-body--intro .pa-how-number {
+  width: 40px;
+  height: 40px;
   font-size: 16px;
-  line-height: 22px;
+}
+
+.pa-how-card p {
+  margin: 18px 0 0;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 25px;
   color: #2e1065;
 }
 
@@ -838,16 +866,17 @@
 }
 
 .pa-intro-note {
-  margin: 28px 0 0;
-  padding-top: 26px;
+  margin: 20px 0 0;
+  padding-top: 18px;
   border-top: 1px solid rgba(15, 23, 40, 0.1);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 21px;
   color: #514b66;
 }
 
 .pa-body--setup {
-  padding-top: 132px;
+  padding-top: 40px;
 }
 
 .pa-stop-heading--small {
@@ -857,10 +886,9 @@
 
 .pa-setup-card {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-height: 148px;
-  padding: 22px;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
   background: #ffffff;
   border: 1.5px solid rgba(107, 102, 133, 0.6);
   border-radius: 16px;
@@ -871,13 +899,9 @@
 }
 
 .pa-setup-card--active {
-  border: 2px solid #6d28d9;
-}
-
-.pa-setup-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  border-color: #6d28d9;
+  background: #f5f3ff;
+  box-shadow: 0 0 0 1px #6d28d9;
 }
 
 .pa-setup-card strong {
@@ -886,9 +910,115 @@
 }
 
 .pa-setup-caption {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2e1065;
+}
+
+/* Setup screen: the three levels as a list, with what never changes beside it. */
+.pa-setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  max-width: 1040px;
+  margin-top: 22px;
+}
+
+.pa-setup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pa-setup-card:hover {
+  border-color: #6d28d9;
+}
+
+.pa-setup-card:focus-visible {
+  outline: 2px solid #6d28d9;
+  outline-offset: 3px;
+}
+
+.pa-setup-card-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pa-setup-good-for {
   font-weight: 500;
-  font-size: 15px;
+  font-size: 13px;
   color: #514b66;
+}
+
+/* One, two or three filled bars: the level at a glance. Decorative - the
+   label beside it says the same thing. */
+.pa-level-bars {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 4px;
+  height: 30px;
+}
+
+.pa-level-bar {
+  width: 7px;
+  border-radius: 3px;
+  background: #ddd6fe;
+}
+
+.pa-level-bar:nth-child(1) { height: 12px; }
+.pa-level-bar:nth-child(2) { height: 21px; }
+.pa-level-bar:nth-child(3) { height: 30px; }
+
+.pa-level-bar--on {
+  background: #6d28d9;
+}
+
+.pa-setup-aside {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 16px;
+}
+
+.pa-setup-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #2e1065;
+}
+
+.pa-setup-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.pa-setup-tick {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: #047857;
+}
+
+@media (max-width: 900px) {
+  .pa-setup-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pa-prep-subtitle {
@@ -961,29 +1091,87 @@
   font-size: 15px;
 }
 
-.pa-before-item {
-  padding: 16px 0;
-  border-top: 1px solid rgba(15, 23, 40, 0.08);
+.pa-before-heading {
+  margin: 0 0 14px;
+  font-weight: 800;
+  font-size: 17px;
+  color: #0f1728;
 }
 
-.pa-before-item:first-of-type {
-  padding-top: 4px;
-  border-top: none;
+.pa-before-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-left-width: 4px;
+  border-radius: 12px;
+}
+
+.pa-before-item + .pa-before-item {
+  margin-top: 10px;
+}
+
+.pa-before-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.pa-before-tag {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 1.2px;
 }
 
 .pa-before-item strong {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-size: 15px;
+  color: #0f1728;
 }
 
 .pa-before-item p {
   margin: 0;
   font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
-  color: #514b66;
+  font-size: 13px;
+  line-height: 19px;
+  color: #3b3552;
 }
+
+/* The rule to act on. Amber, with every text colour at 7:1 or better on it. */
+.pa-before-item--rule {
+  background: #fff7e6;
+  border-color: #b45309;
+}
+
+.pa-before-item--rule .pa-before-icon { background: #b45309; }
+.pa-before-item--rule .pa-before-tag { color: #8a3c00; }
+
+.pa-before-item--good {
+  background: #ecfdf5;
+  border-color: #047857;
+}
+
+.pa-before-item--good .pa-before-icon { background: #047857; }
+.pa-before-item--good .pa-before-tag { color: #065f46; }
+
+.pa-before-item--info {
+  background: #f5f3ff;
+  border-color: #6d28d9;
+}
+
+.pa-before-item--info .pa-before-icon { background: #6d28d9; }
+.pa-before-item--info .pa-before-tag { color: #5b21b6; }
 
 .pa-choice-row {
   display: flex;

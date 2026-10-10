@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import "../styles/TopNav.css";
 import { navigate, getCurrentPath } from "../navigate.js";
 import logoEmblem from "../assets/Logo.png";
@@ -24,6 +25,46 @@ export default function TopNav({ flow: providedFlow }) {
   const flow = providedFlow || ownFlow;
   const currentPath = getCurrentPath();
 
+  // The nav floats over the page: the logo is plain text and the links sit
+  // on frosted glass, so each has to suit whatever is behind it. Pages mark
+  // their dark areas (a hero photo, the wizard's sidebar, the landing
+  // footer) with `data-nav-dark`; the logo and the links each turn white
+  // while one of those is behind them, and stay dark otherwise.
+  const logoRef = useRef(null);
+  const actionsRef = useRef(null);
+  const [onDark, setOnDark] = useState({ logo: false, actions: false });
+  // The wordmark has no background of its own, so once the page has
+  // scrolled and ordinary content is passing behind it, it steps aside and
+  // leaves just the emblem.
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const isOverDark = (el) => {
+      if (!el) return false;
+      const box = el.getBoundingClientRect();
+      const x = box.left + box.width / 2;
+      const y = box.top + box.height / 2;
+      return [...document.querySelectorAll("[data-nav-dark]")].some((area) => {
+        const r = area.getBoundingClientRect();
+        return r.width > 0 && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+      });
+    };
+    const check = () => {
+      const next = { logo: isOverDark(logoRef.current), actions: isOverDark(actionsRef.current) };
+      setOnDark((now) => (now.logo === next.logo && now.actions === next.actions ? now : next));
+      setIsScrolled(window.scrollY > 24);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+    // No dependency list on purpose: a page can swap what is under the nav
+    // without the route changing (the steps of the practice flow), and the
+    // check only sets state when the answer changes.
+  });
+
   const handleHomeClick = (e) => {
     e.preventDefault();
     if (currentPath === "/") {
@@ -36,13 +77,16 @@ export default function TopNav({ flow: providedFlow }) {
   return (
     <>
       <nav className="tn-nav">
-        <div className="tn-logo">
+        <div
+          className={`tn-logo ${onDark.logo ? "tn-on-dark" : ""} ${isScrolled && !onDark.logo ? "tn-logo--emblem-only" : ""}`}
+          ref={logoRef}
+        >
           <span className="tn-logo-mark">
             <img src={logoEmblem} alt="CareerTimeMachine emblem" className="tn-logo-emblem" />
           </span>
           <span className="tn-logo-word">CareerTimeMachine</span>
         </div>
-        <div className="tn-nav-actions">
+        <div className={`tn-nav-actions ${onDark.actions ? "tn-on-dark" : ""}`} ref={actionsRef}>
           <div className="tn-nav-links">
             {navLinks.map((link) => {
               const isActive = link.href === currentPath;

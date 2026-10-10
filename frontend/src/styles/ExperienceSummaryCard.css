@@ -13,7 +13,7 @@
   position: sticky;
   /* Below the fixed top nav (84px), so its heading is never covered. */
   top: 104px;
-  margin-top: 40px;
+  margin-top: 124px;
   padding: 20px;
   background: #ffffff;
   border: 1px solid rgba(15, 23, 40, 0.08);

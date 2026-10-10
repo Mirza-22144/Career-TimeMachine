@@ -40,10 +40,18 @@ const HOW_IT_WORKS = [
 ]
 
 // AC 4.1.4: Easy, Standard and Complex, with no time estimate.
+// `bars` is how many of the three level bars are filled on the setup screen.
 const DIFFICULTIES = [
-  { value: 'guided', label: 'Easy', caption: 'More prompts along the way' },
-  { value: 'standard', label: 'Standard', caption: 'Work through it as you would at work' },
-  { value: 'challenge', label: 'Complex', caption: 'Less context, more to weigh up' },
+  { value: 'guided', label: 'Easy', bars: 1, caption: 'More prompts along the way', goodFor: 'A gentle first step back in.' },
+  { value: 'standard', label: 'Standard', bars: 2, caption: 'Work through it as you would at work', goodFor: 'Close to an ordinary working day.' },
+  { value: 'challenge', label: 'Complex', bars: 3, caption: 'Less context, more to weigh up', goodFor: 'For when you want to be stretched.' },
+]
+
+// The same whichever level she picks.
+const AT_EVERY_LEVEL = [
+  'The same workplace and the same kinds of activity.',
+  'Feedback on what worked and what to consider, never a score.',
+  'You can pick a different level for your next activity.',
 ]
 
 const areaById = (id) => WORKPLACE_AREAS.find((area) => area.id === id)
@@ -699,32 +707,53 @@ export default function WorkplaceScenario() {
       <TopNav />
       <div className="pa-page">
         <main className="pa-body pa-body--setup">
-          <h1 className="pa-stop-heading pa-stop-heading--small">Set up your practice</h1>
-          <p className="pa-stop-subheading">Choose how challenging you&rsquo;d like this practice to be.</p>
+          <span className="pa-eyebrow">SET UP YOUR PRACTICE</span>
+          <h1 className="pa-stop-heading pa-stop-heading--small" id="pa-setup-heading">
+            How challenging would you like it to be?
+          </h1>
 
-          <h2 className="pa-setup-label">How challenging would you like it to be?</h2>
-          <div className="pa-setup-grid" role="radiogroup" aria-label="Difficulty">
-            {DIFFICULTIES.map((option) => {
-              const isActive = difficulty === option.value
-              return (
-                <button
-                  type="button"
-                  key={option.value}
-                  role="radio"
-                  aria-checked={isActive}
-                  className={`pa-setup-card ${isActive ? 'pa-setup-card--active' : ''}`}
-                  onClick={() => setDifficulty(option.value)}
-                >
-                  <span className="pa-setup-card-top">
-                    <strong>{option.label}</strong>
+          <div className="pa-setup-layout">
+            <div className="pa-setup-list" role="radiogroup" aria-labelledby="pa-setup-heading">
+              {DIFFICULTIES.map((option) => {
+                const isActive = difficulty === option.value
+                return (
+                  <button
+                    type="button"
+                    key={option.value}
+                    role="radio"
+                    aria-checked={isActive}
+                    className={`pa-setup-card ${isActive ? 'pa-setup-card--active' : ''}`}
+                    onClick={() => setDifficulty(option.value)}
+                  >
+                    <span className="pa-level-bars" aria-hidden="true">
+                      {[1, 2, 3].map((bar) => (
+                        <span key={bar} className={`pa-level-bar ${bar <= option.bars ? 'pa-level-bar--on' : ''}`} />
+                      ))}
+                    </span>
+                    <span className="pa-setup-card-text">
+                      <strong>{option.label}</strong>
+                      <span className="pa-setup-caption">{option.caption}</span>
+                      <span className="pa-setup-good-for">{option.goodFor}</span>
+                    </span>
                     <span className={`pa-radio ${isActive ? 'pa-radio--on' : ''}`}>
                       {isActive && <CheckIcon size={11} />}
                     </span>
-                  </span>
-                  <span className="pa-setup-caption">{option.caption}</span>
-                </button>
-              )
-            })}
+                  </button>
+                )
+              })}
+            </div>
+
+            <aside className="pa-setup-aside">
+              <span className="pa-prep-label">AT EVERY LEVEL</span>
+              <ul className="pa-setup-facts">
+                {AT_EVERY_LEVEL.map((fact) => (
+                  <li key={fact}>
+                    <span className="pa-setup-tick" aria-hidden="true"><CheckIcon size={10} /></span>
+                    {fact}
+                  </li>
+                ))}
+              </ul>
+            </aside>
           </div>
         </main>
         <div className="pa-footer">
@@ -777,19 +806,34 @@ export default function WorkplaceScenario() {
               </div>
             </div>
 
-            <div className="pa-card">
-              <span className="pa-prep-label">BEFORE YOU GO IN</span>
-              <div className="pa-before-item">
-                <strong>Work arrives one thing at a time</strong>
-                <p>You will see what each task involves when you get there.</p>
+            <div className="pa-card pa-before">
+              <h2 className="pa-before-heading">Before you go in</h2>
+              {/* The one rule she has to act on comes first and stands out;
+                  the two reassurances follow. Each has its own icon and a
+                  word label, so the meaning never rests on colour alone. */}
+              <div className="pa-before-item pa-before-item--rule">
+                <span className="pa-before-icon" aria-hidden="true">!</span>
+                <div>
+                  <span className="pa-before-tag">KEEP IN MIND</span>
+                  <strong>One activity at a time</strong>
+                  <p>Finish the one you start. If you leave part-way, you pick it up where you left off.</p>
+                </div>
               </div>
-              <div className="pa-before-item">
-                <strong>Nothing is graded</strong>
-                <p>You get feedback on what worked and what to consider, never a score.</p>
+              <div className="pa-before-item pa-before-item--good">
+                <span className="pa-before-icon" aria-hidden="true"><CheckIcon size={12} /></span>
+                <div>
+                  <span className="pa-before-tag">NO PRESSURE</span>
+                  <strong>Nothing is graded</strong>
+                  <p>You get feedback on what worked and what to consider, never a score.</p>
+                </div>
               </div>
-              <div className="pa-before-item">
-                <strong>One activity at a time</strong>
-                <p>Finish the one you start. If you leave part-way, you pick it up where you left off.</p>
+              <div className="pa-before-item pa-before-item--info">
+                <span className="pa-before-icon" aria-hidden="true"><ArrowRightIcon size={12} /></span>
+                <div>
+                  <span className="pa-before-tag">HOW IT RUNS</span>
+                  <strong>Work arrives one thing at a time</strong>
+                  <p>You will see what each task involves when you get there.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -906,12 +950,12 @@ export default function WorkplaceScenario() {
   return (
     <>
       <TopNav />
-      <div className="pa-page">
-        <div className="pa-intro-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(13, 22, 40, 0.92) 0%, rgba(13, 22, 40, 0.55) 55%, rgba(13, 22, 40, 0.2) 100%), url(${introImg})` }}>
+      <div className="pa-page pa-page--intro">
+        <div className="pa-intro-hero" data-nav-dark style={{ backgroundImage: `linear-gradient(90deg, rgba(13, 22, 40, 0.92) 0%, rgba(13, 22, 40, 0.55) 55%, rgba(13, 22, 40, 0.45) 100%), url(${introImg})` }}>
           <h1>Welcome to your practice area</h1>
           <p>You&rsquo;ll work through a realistic workplace situation based on your selected role and experience.</p>
         </div>
-        <main className="pa-body">
+        <main className="pa-body pa-body--intro">
           <h2 className="pa-setup-label">How it works</h2>
           <div className="pa-setup-grid">
             {HOW_IT_WORKS.map((item) => (

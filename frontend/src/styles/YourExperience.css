@@ -15,7 +15,6 @@
   align-items: stretch;
   min-height: 100vh;
   width: 100%;
-  padding-top: 84px;
   font-family: 'Manrope', sans-serif;
   color: var(--ink-900);
   background: var(--bg-app);
@@ -30,7 +29,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 40px 34px 72px;
+  /* The nav floats over the top of the page. */
+  padding: 124px 34px 72px;
 }
 
 .ye-form-content {

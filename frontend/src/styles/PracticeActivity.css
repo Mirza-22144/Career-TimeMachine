@@ -452,7 +452,8 @@
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 1.2px;
-  color: #514b66;
+  /* Every feedback label, on every activity, is the same purple. */
+  color: #6d28d9;
 }
 
 .pa-feedback-label::before {
@@ -463,13 +464,6 @@
   background: currentColor;
 }
 
-.pa-feedback-label--blue {
-  color: #3730a3;
-}
-
-.pa-feedback-label--violet {
-  color: #6d28d9;
-}
 
 .pa-feedback-label--violet::before {
   background: none;
@@ -530,10 +524,11 @@
   font-size: 15px;
 }
 
+/* Purple like the other eyebrow labels; the suggestion under it is the
+   quieter, grey line. */
 .pa-better-label {
   margin: 8px 0 2px;
-  font-size: 10px;
-  color: #6b6685;
+  font-size: 11px;
 }
 
 /* The suggestion under it is secondary to how the phrase comes across. */

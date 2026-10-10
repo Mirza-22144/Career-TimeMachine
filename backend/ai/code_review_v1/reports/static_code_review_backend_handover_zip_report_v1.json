@@ -1,0 +1,22 @@
+{
+  "created_at_utc": "2026-10-10T04:46:45.107487+00:00",
+  "handover_type": "static_code_review",
+  "delivery_mode": "static_only",
+  "zip_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/career_time_machine_iteration_3_static_code_review_ai_handover_v1.zip",
+  "zip_size_bytes": 778670,
+  "zip_sha256": "b3f8a34bef8577ec71305a2613fb76eda25994618193175bb94ee6d8bf5d1136",
+  "packaged_file_count": 27,
+  "static_activity_count": 324,
+  "role_count": 27,
+  "role_difficulty_combinations": 81,
+  "final_pool_sha256": "fb9d6485966858a100cdee25f38d4c876f266524a413eed63653d8f37d733266",
+  "source_manifest_verified": true,
+  "zip_integrity_passed": true,
+  "archived_checksums_verified": true,
+  "contains_live_generation_service": false,
+  "requires_gemini_api_key": false,
+  "code_snippets_executed": 0,
+  "possible_api_secrets_found": 0,
+  "files_over_100_mb": 0,
+  "result": "passed"
+}

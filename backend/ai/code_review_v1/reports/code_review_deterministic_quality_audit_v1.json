@@ -1,0 +1,32 @@
+{
+  "created_at_utc": "2026-10-10T04:31:58.479995+00:00",
+  "source_pool": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/output/code_review_activity_pool_v1_reviewed.json",
+  "audited_activity_count": 324,
+  "role_count": 27,
+  "role_difficulty_combinations": 81,
+  "difficulty_distribution": {
+    "challenge": 108,
+    "guided": 108,
+    "standard": 108
+  },
+  "correct_option_distribution": {
+    "a": 81,
+    "b": 81,
+    "c": 81,
+    "d": 81
+  },
+  "critical_issue_count": 0,
+  "critical_issues": [],
+  "structural_warning_count": 0,
+  "structural_warnings": [],
+  "exact_duplicate_group_count": 0,
+  "exact_duplicate_groups": [],
+  "near_duplicate_threshold": 92.0,
+  "near_duplicate_pair_count": 0,
+  "near_duplicate_pairs": [],
+  "balanced_sample_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/reports/code_review_balanced_manual_review_sample_v1_27.json",
+  "balanced_sample_size": 27,
+  "code_snippets_executed": false,
+  "gemini_calls_made": false,
+  "audit_passed": true
+}

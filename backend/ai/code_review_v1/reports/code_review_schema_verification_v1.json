@@ -1,0 +1,40 @@
+{
+  "created_at_utc": "2026-10-09T08:49:52.644988+00:00",
+  "models_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/source/code_review_models_v1.py",
+  "models_file_sha256": "877d363076f4f9e7bf25064d47d1665df80b8a35f2a59a6cc096bcd6dec03ffe",
+  "schema_files": [
+    {
+      "path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_static_record_schema_v1.json",
+      "sha256": "cb4c33a7f3819c0cb12d7bf3701305c92b7e00d883b67eda856a46493b9b54ec"
+    },
+    {
+      "path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_backend_response_schema_v1.json",
+      "sha256": "3b280e5d3a4948d7cb9e1f8cd16d4c69088e74b212da00596d388e0f9d3122d5"
+    },
+    {
+      "path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_frontend_response_schema_v1.json",
+      "sha256": "4701c6bf668858f0d664bb79791b0b9c5fa812580375b12e5d6679b371aa07f0"
+    },
+    {
+      "path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_feedback_response_schema_v1.json",
+      "sha256": "e93369418c3637d931275944a80caa0124f6d6bab58d34ce45e7959e524ccc48"
+    },
+    {
+      "path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_gemini_response_schema_v1.json",
+      "sha256": "5c98ac9386e5666e1f50cefa7f16ab6b46f172a950b412e70815e4abae0bf6ed"
+    }
+  ],
+  "test_question_id": "software_developer_guided_code_review_v1_01",
+  "option_count": 4,
+  "option_feedback_count": 4,
+  "exactly_one_correct_option": true,
+  "correct_option_id": "a",
+  "backend_answer_mapping_retained": true,
+  "frontend_answer_mapping_hidden": true,
+  "frontend_feedback_mapping_hidden": true,
+  "selected_feedback_contains_result_marker": false,
+  "gemini_schema_contains_additional_properties": false,
+  "code_executed": false,
+  "gemini_calls_made": false,
+  "result": "passed"
+}

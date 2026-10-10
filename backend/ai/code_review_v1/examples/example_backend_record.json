@@ -1,0 +1,99 @@
+{
+  "question_id": "blockchain_engineer_guided_code_review_v1_01",
+  "role_id": "blockchain_engineer",
+  "role_label": "Blockchain Engineer",
+  "difficulty": "guided",
+  "activity_type": "code_review",
+  "title": "Securing a Solidity Withdrawal Function",
+  "situation": "You are reviewing a junior developer's Solidity smart contract. They have implemented a standard withdraw function for a vault, but you notice a critical vulnerability in the order of execution that could allow an attacker to drain the contract's funds.",
+  "language": "solidity",
+  "code_snippet": "function withdraw(uint256 amount) public {\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    (bool success, ) = msg.sender.call{value: amount}(\"\");\n    balances[msg.sender] -= amount;\n    require(success, \"Transfer failed\");\n}",
+  "options": [
+    {
+      "option_id": "a",
+      "text": "The balance is updated after the external transfer call, violating the checks-effects-interactions pattern and exposing the contract to a reentrancy attack."
+    },
+    {
+      "option_id": "b",
+      "text": "The require statement checking the success of the transfer is placed too late and should be executed prior to initiating the external call."
+    },
+    {
+      "option_id": "c",
+      "text": "The use of msg.sender.call is insecure and should be replaced with msg.sender.transfer to automatically revert on failure."
+    },
+    {
+      "option_id": "d",
+      "text": "The amount parameter is not validated against a maximum gas limit, which can cause the transaction to revert due to out-of-gas errors."
+    }
+  ],
+  "correct_option_id": "a",
+  "skills_used": [
+    "GitHub"
+  ],
+  "guidance": [
+    "Look closely at the order of operations in the withdraw function, specifically when the user's balance is updated relative to the external ether transfer.",
+    "Consider what happens if the recipient of the ether is another smart contract that calls back into this withdraw function before the execution finishes."
+  ],
+  "option_feedback": [
+    {
+      "option_id": "a",
+      "feedback": {
+        "what_worked_well": [
+          "You correctly identified that updating the balance after the external call creates a critical reentrancy vulnerability."
+        ],
+        "areas_to_consider": [
+          "Consider how implementing a reentrancy guard modifier (like OpenZeppelin's ReentrancyGuard) can provide defense-in-depth for state-changing functions."
+        ],
+        "skill_to_explore": {
+          "skill": "GitHub",
+          "why_relevant": "You can use GitHub to review established smart contract libraries like OpenZeppelin to see how industry-standard reentrancy guards are implemented and tested."
+        }
+      }
+    },
+    {
+      "option_id": "b",
+      "feedback": {
+        "what_worked_well": [
+          "You recognized the importance of checking the success status of the external call."
+        ],
+        "areas_to_consider": [
+          "Remember that the success status of an external call is only returned after the call executes, making it impossible to check beforehand."
+        ],
+        "skill_to_explore": {
+          "skill": "GitHub",
+          "why_relevant": "Reviewing open-source smart contracts on GitHub helps you understand the chronological flow of low-level Solidity calls and assertions."
+        }
+      }
+    },
+    {
+      "option_id": "c",
+      "feedback": {
+        "what_worked_well": [
+          "You considered alternative native methods for transferring ether within Solidity."
+        ],
+        "areas_to_consider": [
+          "Note that transfer and send are now discouraged due to hardcoded gas limits, making low-level call the preferred method when combined with proper state updates."
+        ],
+        "skill_to_explore": {
+          "skill": "GitHub",
+          "why_relevant": "You can search GitHub discussion boards and security advisories to track the evolution of best practices regarding ether transfer methods in EVM-compatible languages."
+        }
+      }
+    },
+    {
+      "option_id": "d",
+      "feedback": {
+        "what_worked_well": [
+          "You analyzed the potential impact of gas limits on the execution of external calls."
+        ],
+        "areas_to_consider": [
+          "Note that limiting the input amount does not directly control the gas forwarded or consumed by the recipient's fallback function."
+        ],
+        "skill_to_explore": {
+          "skill": "GitHub",
+          "why_relevant": "Exploring gas optimization templates on GitHub will clarify how gas limits and transaction boundaries are best managed in production-grade Solidity code."
+        }
+      }
+    }
+  ]
+}

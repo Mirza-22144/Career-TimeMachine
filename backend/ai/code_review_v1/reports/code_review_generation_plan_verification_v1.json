@@ -1,0 +1,52 @@
+{
+  "created_at_utc": "2026-10-09T08:41:58.394165+00:00",
+  "plan_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_generation_plan_v1_324.json",
+  "role_count": 27,
+  "task_count": 324,
+  "unique_question_ids": 324,
+  "role_difficulty_combinations": 81,
+  "activities_per_combination": 4,
+  "difficulty_distribution": {
+    "challenge": 108,
+    "guided": 108,
+    "standard": 108
+  },
+  "theme_distribution": {
+    "correctness_and_error_handling": 81,
+    "data_integrity_and_state": 81,
+    "maintainability_performance_testing": 81,
+    "security_and_input_validation": 81
+  },
+  "correct_option_distribution": {
+    "a": 81,
+    "b": 81,
+    "c": 81,
+    "d": 81
+  },
+  "language_distribution": {
+    "bash": 33,
+    "c#": 6,
+    "c++": 6,
+    "css": 6,
+    "dax": 3,
+    "go": 3,
+    "html": 6,
+    "java": 9,
+    "javascript": 27,
+    "json": 9,
+    "network configuration": 9,
+    "powershell": 33,
+    "pseudocode": 45,
+    "python": 60,
+    "r": 6,
+    "rust": 3,
+    "solidity": 3,
+    "sql": 27,
+    "typescript": 3,
+    "yaml": 27
+  },
+  "all_tasks_have_at_least_eight_skills": true,
+  "snippets_will_be_executed": false,
+  "gemini_calls_made": false,
+  "result": "passed"
+}

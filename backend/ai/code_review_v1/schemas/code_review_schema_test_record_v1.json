@@ -1,0 +1,100 @@
+{
+  "question_id": "software_developer_guided_code_review_v1_01",
+  "role_id": "software_developer",
+  "role_label": "Software Developer",
+  "difficulty": "guided",
+  "activity_type": "code_review",
+  "title": "Reviewing an Optional Customer Name",
+  "situation": "You are reviewing a small Python function that formats a customer name for an internal support dashboard.",
+  "language": "python",
+  "code_snippet": "def display_name(customer):\n    first_name = customer.get('first_name')\n    last_name = customer.get('last_name')\n    return first_name.strip() + ' ' + last_name.strip()\n\nlabel = display_name(customer_record)",
+  "options": [
+    {
+      "option_id": "a",
+      "text": "The function can raise an attribute error when either name value is missing."
+    },
+    {
+      "option_id": "b",
+      "text": "The local variable names are too descriptive for a short function."
+    },
+    {
+      "option_id": "c",
+      "text": "The function must use a loop before joining the two name values."
+    },
+    {
+      "option_id": "d",
+      "text": "The function needs to write the formatted name back to the database."
+    }
+  ],
+  "correct_option_id": "a",
+  "skills_used": [
+    "Python",
+    "Debugging"
+  ],
+  "guidance": [
+    "Consider what customer.get returns when a key is absent.",
+    "Check whether every returned value supports the method called on it."
+  ],
+  "option_feedback": [
+    {
+      "option_id": "a",
+      "feedback": {
+        "what_worked_well": [
+          "You traced how missing input moves through the function."
+        ],
+        "areas_to_consider": [
+          "Consider how a default value or explicit validation could make the behaviour predictable."
+        ],
+        "skill_to_explore": {
+          "skill": "Debugging",
+          "why_relevant": "Tracing optional values helps identify runtime risks before they reach users."
+        }
+      }
+    },
+    {
+      "option_id": "b",
+      "feedback": {
+        "what_worked_well": [
+          "You considered readability and future maintenance."
+        ],
+        "areas_to_consider": [
+          "Also trace the possible values returned by each dictionary lookup."
+        ],
+        "skill_to_explore": {
+          "skill": "Python",
+          "why_relevant": "Understanding dictionary defaults and string methods supports safer Python code."
+        }
+      }
+    },
+    {
+      "option_id": "c",
+      "feedback": {
+        "what_worked_well": [
+          "You considered alternative ways to assemble the displayed value."
+        ],
+        "areas_to_consider": [
+          "Focus first on whether the values are always strings before changing the assembly approach."
+        ],
+        "skill_to_explore": {
+          "skill": "Python",
+          "why_relevant": "Reviewing value types helps select an appropriate implementation."
+        }
+      }
+    },
+    {
+      "option_id": "d",
+      "feedback": {
+        "what_worked_well": [
+          "You considered how the formatted value might be used elsewhere."
+        ],
+        "areas_to_consider": [
+          "Keep the review focused on the function's stated display purpose and its immediate runtime behaviour."
+        ],
+        "skill_to_explore": {
+          "skill": "Debugging",
+          "why_relevant": "Following the function's actual execution path helps prioritise the issue present in the snippet."
+        }
+      }
+    }
+  ]
+}

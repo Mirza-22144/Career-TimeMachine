@@ -1,0 +1,82 @@
+{
+  "created_at_utc": "2026-10-09T08:57:27.891603+00:00",
+  "generator_model": "gemini-3.5-flash",
+  "role_id": "software_developer",
+  "difficulty": "standard",
+  "requested_activity_count": 4,
+  "generated_activity_count": 4,
+  "locally_validated_count": 4,
+  "question_ids": [
+    "software_developer_standard_code_review_v1_01",
+    "software_developer_standard_code_review_v1_02",
+    "software_developer_standard_code_review_v1_03",
+    "software_developer_standard_code_review_v1_04"
+  ],
+  "planned_correct_option_ids": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "generated_correct_option_ids": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "generation_attempts": [
+    {
+      "question_id": "software_developer_standard_code_review_v1_01",
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 12.8537,
+          "passed": true,
+          "error": null
+        }
+      ],
+      "accepted_attempt": 1
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_02",
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 13.039,
+          "passed": true,
+          "error": null
+        }
+      ],
+      "accepted_attempt": 1
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_03",
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 18.268,
+          "passed": true,
+          "error": null
+        }
+      ],
+      "accepted_attempt": 1
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_04",
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 13.5135,
+          "passed": true,
+          "error": null
+        }
+      ],
+      "accepted_attempt": 1
+    }
+  ],
+  "code_snippets_executed": false,
+  "ready_for_independent_review": true,
+  "output_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/raw_outputs/software_developer_standard_gemini_smoke_test_v1.json",
+  "output_sha256": "8dcb3f9724dc118a35f28abec7089de108e6f9c2dff9cf205650c9159a614bdc",
+  "result": "passed"
+}

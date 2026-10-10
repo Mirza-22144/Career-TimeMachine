@@ -1,0 +1,59 @@
+{
+  "created_at_utc": "2026-10-09T08:36:49.998977+00:00",
+  "repository": "https://github.com/Mirza-22144/Career-TimeMachine.git",
+  "branch": "iteration-3-backend",
+  "commit_hash": "bfcca6e1b9c534c2313304b3585ba8d0c44a4b3e",
+  "commit_message": "quieter 'what would work better' note in drag and drop feedback, update progress log",
+  "retrieval_mode": "read-only shallow clone",
+  "copied_files": {
+    "seed_roles.sql": {
+      "source_relative_path": "data/seed/seed_roles.sql",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/seed_roles.sql",
+      "size_bytes": 1914,
+      "sha256": "4906bef8ce759e742525f5de04980e426a42f46d38c5d2bc2b03a254cd00c8f3"
+    },
+    "seed_skills.sql": {
+      "source_relative_path": "data/seed/seed_skills.sql",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/seed_skills.sql",
+      "size_bytes": 174333,
+      "sha256": "2cf2db58f511ef8a1cad3d613baba0d0325c1f9d6374c2c4f08738baeab0a99a"
+    },
+    "seed_role_skill.sql": {
+      "source_relative_path": "data/seed/seed_role_skill.sql",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/seed_role_skill.sql",
+      "size_bytes": 301021,
+      "sha256": "25c6aa4f73142a853183b70b01d4e4c412fabf1a71881591d6652ea3adf8b233"
+    },
+    "backend_requirements.txt": {
+      "source_relative_path": "backend/requirements.txt",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/backend_requirements.txt",
+      "size_bytes": 1168,
+      "sha256": "c6ebe310df3dc83bdd85794cea386ef0b496e9cf2ec81e99668fcf38ec4e01f5"
+    },
+    "scenario_provider.py": {
+      "source_relative_path": "backend/app/providers/scenario_provider.py",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/scenario_provider.py",
+      "size_bytes": 7967,
+      "sha256": "8a1a6321f5d818b267d89f6da75f16a19035e7ce3368c16bec700673813959f8"
+    },
+    "practice_session_schema.py": {
+      "source_relative_path": "backend/app/schemas/practice_session.py",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/practice_session_schema.py",
+      "size_bytes": 5275,
+      "sha256": "20db1143bfc261a087fea73afe6d4c4201dfcf2e43ed431c7530e088d73148d2"
+    },
+    "practice_activity_contract_test.py": {
+      "source_relative_path": "backend/tests/test_practice_activity_contract.py",
+      "saved_path": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/backend_source/practice_activity_contract_test.py",
+      "size_bytes": 8860,
+      "sha256": "743c804480bd57aaf3ec147c2fc1ba7a4d81c023d3240b53025ee44820f41f17"
+    }
+  },
+  "code_review_backend_gap": {
+    "code_review_in_scenario_provider": false,
+    "code_review_in_practice_session_schema": false,
+    "code_review_named_backend_files": [],
+    "implementation_status": "not implemented"
+  },
+  "agreed_ai_contract_source": "CTM Iteration 3 Endpoints, AI Contracts and Database Needs"
+}

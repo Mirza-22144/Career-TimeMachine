@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .env
 tests/
+# Local model files and AI handover material: the image downloads its
+# models during the build and only needs app/.
+models/
+ai/
+docs/
+.pytest_cache/

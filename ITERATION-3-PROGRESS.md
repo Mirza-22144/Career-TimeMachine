@@ -171,6 +171,14 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Iteration 2 baseline** `[DONE]`: layered FastAPI (routes / schemas / services / repositories / interfaces). Anonymous sessions, profile capture/confirm, practice role, Postgres-backed practice sessions (session-scoped keys, fixed 2026-09-18 after a real cross-session collision bug), real role prediction (one role), AI-pool reflective MCQ scenarios (81 scenarios, 27 roles × 3 difficulties), rate limiting, input caps, security logging. All 358 tests passing as of the last Iteration 2 deploy.
 
+### Deployment - Docker image builds and runs the whole product
+
+- **Status:** [DONE for the image; not yet deployed] **Owner:** Thiri **Date:** 2026-10-10
+- **What:** on branch `iteration-3-deployment`. The Dockerfile now downloads the job description model (`gliner-community/gliner_small-v2.5`, about 670 MB of it) into the image during the build and loads it once with `local_files_only`, so a build that could not serve it offline fails at build time. Before this the image had no job description model at all, because `backend/models/` is not in Git and only `app/` is copied, so job description analysis would have been unavailable in production. `HF_HUB_OFFLINE=1` is set for run time, since every model is inside the image. `.dockerignore` now leaves out `models/`, `ai/` and `docs/`, which were being sent to the build (over 1.3 GB) without being used.
+- **Verification:** image built locally (3.75 GB) and run with a 4 GB memory limit against the real database and Gemini: up in about 18 s; Multiple Choice and Drag and Drop each ran through the API with their live question; a 41-screen browser run, including job description analysis inside the container, finished with no page errors. Memory after the run: 1.24 GiB.
+- **Still to do on Cloud Run and Vercel (settings, not code):** deploy the image; set `GEMINI_API_KEY`, the `DB_*` settings and `CORS_ORIGINS` (the Vercel address) on Cloud Run with at least 2 GiB of memory; set `VITE_API_BASE_URL` in the Vercel project to the Cloud Run address plus `/api/v1`.
+- **Blocks / Blocked by:** none.
+
 ### AC 4.3.1 / 4.3.5 / 4.4.6 - Reflective MCQ Version 3: four questions per activity plus one live question
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-08

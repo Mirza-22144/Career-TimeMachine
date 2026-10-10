@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import uuid
 from collections.abc import Callable
@@ -12,6 +13,7 @@ from pydantic import ValidationError
 
 from app.providers.live_question_provider import LiveQuestion, LiveQuestionProvider
 from app.repositories.interfaces.catalogue_repository import CatalogueRepository
+from app.providers.code_review_provider import CodeReviewProvider
 from app.providers.drag_and_drop_provider import DragDropProvider
 from app.providers.scenario_provider import (
     ScenarioContent,
@@ -87,6 +89,20 @@ class RecentActivity:
     scenario_id: str
 
 
+# The kinds of activity practice sessions serve, and the levels.
+ACTIVITY_KINDS = ("multiple_choice", "drag_and_drop", "code_review")
+DIFFICULTIES = ("guided", "standard", "challenge")
+
+
+@dataclass
+class PracticePlan:
+    """What she can practise next - see PracticeSessionService.practice_plan."""
+
+    remaining: dict[str, dict[str, int]]
+    next_activity: dict[str, str | None]
+    last_difficulty: str | None
+
+
 class PracticeSessionService:
     """Starts, retrieves and completes workplace-practice sessions."""
 
@@ -103,6 +119,7 @@ class PracticeSessionService:
         catalogue: CatalogueRepository | None = None,
         run_in_background: Callable[[Callable[[], None]], None] | None = None,
         drag_drop: DragDropProvider | None = None,
+        code_review: CodeReviewProvider | None = None,
     ) -> None:
         # Storage and scenario generation are both behind interfaces, so the
         # database and AI implementations can be swapped in without changes here.
@@ -126,6 +143,8 @@ class PracticeSessionService:
         self.run_in_background = run_in_background
         # Drag and Drop activities (US 4.6). None means they are not offered.
         self.drag_drop = drag_drop
+        # Code Review activities (US 4.7). None means they are not offered.
+        self.code_review = code_review
 
     def start_session(self, owner: str, settings: PracticeSessionCreate) -> PracticeSession:
         """Start one activity with the saved role, saved career context and
@@ -162,8 +181,11 @@ class PracticeSessionService:
             earlier, history_checked = [], False
         answered = self._answered(earlier, context.role_id, settings.difficulty)
         is_drag_drop = settings.activity_type == "drag_and_drop"
+        is_code_review = settings.activity_type == "code_review"
         if is_drag_drop:
             scenarios = self._new_drag_drop(context, settings.difficulty, answered)
+        elif is_code_review:
+            scenarios = self._new_code_review(context, settings.difficulty, answered)
         else:
             scenarios = self._new_questions(context, settings.duration, settings.difficulty, answered)
         if not scenarios:
@@ -177,7 +199,13 @@ class PracticeSessionService:
 
         # One more, about a skill she typed in herself. Written inline here,
         # or off the request when a background runner is set.
-        if is_drag_drop:
+        if is_code_review:
+            # Static only: the AI team's Code Review has no live generation.
+            wants_live = False
+
+            def make_live() -> PracticeScenario | None:
+                return None
+        elif is_drag_drop:
             wants_live = self.drag_drop is not None and bool(context.custom_skills)
 
             def make_live() -> PracticeScenario | None:
@@ -229,6 +257,18 @@ class PracticeSessionService:
         return [
             self._to_drag_drop_scenario(fields)
             for fields in self.drag_drop.static_activities(
+                context.role_id, difficulty, answered, self.questions_per_activity
+            )
+        ]
+
+    def _new_code_review(self, context: PracticeContext, difficulty: str, answered: set[str]) -> list[PracticeScenario]:
+        """Up to questions_per_activity Code Review activities she has not
+        done for this role and difficulty."""
+        if self.code_review is None:
+            return []
+        return [
+            self._to_drag_drop_scenario(fields)
+            for fields in self.code_review.static_activities(
                 context.role_id, difficulty, answered, self.questions_per_activity
             )
         ]
@@ -326,14 +366,50 @@ class PracticeSessionService:
         still be unlocked without preparing anything."""
         context = self.practice_roles.build_practice_context(owner)
         sessions = self.sessions.list_for_owner(owner)
-        remaining: dict[str, dict[str, int]] = {"multiple_choice": {}, "drag_and_drop": {}}
-        for difficulty in ("guided", "standard", "challenge"):
+        return self._remaining(context, sessions)
+
+    def _remaining(self, context: PracticeContext, sessions: list[PracticeSession]) -> dict[str, dict[str, int]]:
+        remaining: dict[str, dict[str, int]] = {kind: {} for kind in ACTIVITY_KINDS}
+        for difficulty in DIFFICULTIES:
             answered = self._answered(sessions, context.role_id, difficulty)
             remaining["multiple_choice"][difficulty] = len(
                 self._new_questions(context, "standard", difficulty, answered)
             )
             remaining["drag_and_drop"][difficulty] = len(self._new_drag_drop(context, difficulty, answered))
+            remaining["code_review"][difficulty] = len(self._new_code_review(context, difficulty, answered))
         return remaining
+
+    def practice_plan(self, owner: str) -> "PracticePlan":
+        """What she can practise next for her practice role: what is left,
+        which one kind of activity is unlocked at each level, and the level
+        she last practised at.
+
+        The unlocked activity is picked from the kinds that still have
+        something new, in a way she cannot predict but that stays the same
+        until she finishes an activity: it is derived from her session, the
+        role, the level and how many questions she has answered there.
+        Nothing extra is stored, so it is the same on every device."""
+        context = self.practice_roles.build_practice_context(owner)
+        sessions = self.sessions.list_for_owner(owner)
+        remaining = self._remaining(context, sessions)
+
+        next_activity: dict[str, str | None] = {}
+        for difficulty in DIFFICULTIES:
+            kinds = [kind for kind in ACTIVITY_KINDS if remaining[kind][difficulty] > 0]
+            if not kinds:
+                next_activity[difficulty] = None
+                continue
+            answered_count = len(self._answered(sessions, context.role_id, difficulty))
+            seed = f"{owner}:{context.role_id}:{difficulty}:{answered_count}".encode()
+            next_activity[difficulty] = kinds[int(hashlib.sha256(seed).hexdigest(), 16) % len(kinds)]
+
+        for_role = [session for session in sessions if session.role.id == context.role_id]
+        last = max(for_role, key=lambda session: session.created_at, default=None)
+        return PracticePlan(
+            remaining=remaining,
+            next_activity=next_activity,
+            last_difficulty=last.difficulty if last is not None else None,
+        )
 
     @staticmethod
     def _answered(sessions: list[PracticeSession], role_id: str, difficulty: str) -> set[str]:

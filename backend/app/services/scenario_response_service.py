@@ -33,6 +33,7 @@ EXPECTED_ANSWER_FIELD = {
     "multiple_choice": "selected_option_id",
     "written_response": "response_text",
     "drag_and_drop": "placements",
+    "code_review": "selected_option_id",
 }
 BLANK_IDS = {"blank_1", "blank_2", "blank_3"}
 
@@ -92,7 +93,7 @@ class ScenarioResponseService:
 
         selected_option = (
             self._find_option(scenario, submission.selected_option_id)
-            if scenario.activity_type == "multiple_choice"
+            if scenario.activity_type in ("multiple_choice", "code_review")
             else None
         )
 
@@ -194,7 +195,13 @@ class ScenarioResponseService:
         )
         provider = self.practice_sessions.provider
         try:
-            if scenario.option_feedback is not None:
+            if scenario.activity_type == "code_review":
+                # Authored with the activity: the feedback for the option
+                # she chose. Which option the authors had in mind is not used.
+                raw = (scenario.content or {}).get("option_feedback", {}).get(request.selected_option_id)
+                if raw is None:
+                    raise ScenarioProviderError("no feedback authored for this option")
+            elif scenario.option_feedback is not None:
                 # A live question brought its feedback with it.
                 raw = scenario.option_feedback.get(request.selected_option_id)
                 if raw is None:

@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.predicted_roles import MarketDataResponse
+from app.schemas.predicted_roles import MarketDataResponse, RoleExplanationResponse
 
 
 class RoadmapSkillResponse(BaseModel):
@@ -31,6 +31,7 @@ class RoadmapRoleResponse(BaseModel):
     skills_bring_back: list[RoadmapSkillResponse]
     skills_could_explore: list[ExploreSkillResponse]
     market_data: MarketDataResponse | None
+    explanation: RoleExplanationResponse | None = None
 
 
 class ChosenRoleResponse(BaseModel):

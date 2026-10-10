@@ -41,17 +41,6 @@ function clearToken() {
   }
 }
 
-// Practice history kept in this browser for the token (see
-// practiceHistory.js) - removed with the journey. Kept here, not imported
-// from practiceHistory.js, because that file imports this one.
-function clearLocalPractice() {
-  try {
-    localStorage.removeItem(`ctm_practice_${getToken() || 'none'}`)
-  } catch {
-    // Nothing to clear.
-  }
-}
-
 class ApiError extends Error {
   constructor(code, message, details) {
     super(message)
@@ -153,13 +142,16 @@ export const api = {
   getPracticeRole: () => request('/practice-role'),
   getPredictedRole: () => request('/predicted-role'),
   putPracticeRole: (roleId, source) => request('/practice-role', { method: 'PUT', body: { role_id: roleId, source } }),
-  // activityType: 'multiple_choice' (default) or 'drag_and_drop'.
+  // activityType: 'multiple_choice' (default), 'drag_and_drop' or 'code_review'.
   startPracticeSession: (duration, difficulty, activityType = 'multiple_choice') =>
     request('/practice-sessions', { method: 'POST', body: { duration, difficulty, activity_type: activityType } }),
   getCurrentPracticeSession: () => request('/practice-sessions/current'),
   // Questions still new to her, per kind of activity and difficulty:
   // { multiple_choice: { guided, standard, challenge }, drag_and_drop: { ... } }.
   getRemainingQuestions: () => request('/practice-sessions/remaining'),
+  // What she can practise next: { remaining, next_activity: { guided, standard,
+  // challenge } (the one kind unlocked at each level, or null), last_difficulty }.
+  getPracticePlan: () => request('/practice-sessions/plan'),
   getPracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}`),
   completePracticeSession: (sessionId) => request(`/practice-sessions/${sessionId}/complete`, { method: 'POST' }),
   submitScenarioResponse: (sessionId, scenarioId, answer) =>
@@ -185,7 +177,6 @@ export const api = {
   // locally stored copy is forgotten too, atomically with the real delete.
   clearJourney: async () => {
     await request('/anonymous-sessions/current', { method: 'DELETE' })
-    clearLocalPractice()
     clearToken()
   },
 }

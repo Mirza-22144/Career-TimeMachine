@@ -17,6 +17,7 @@ from app.core.config import (
 from app.core.security_events import log_security_event
 from app.core.tokens import is_well_formed_token
 from app.providers.ai_pool_v3_scenario_provider import AiPoolV3ScenarioProvider
+from app.providers.code_review_provider import AiCodeReviewProvider, CodeReviewProvider
 from app.providers.drag_and_drop_provider import AiDragDropProvider, DragDropProvider
 from app.providers.live_question_provider import (
     GeminiLiveQuestionProvider,
@@ -300,6 +301,14 @@ def get_drag_drop_provider() -> DragDropProvider:
     return _drag_drop_provider
 
 
+# Code Review activities: the AI team's static pool (no Gemini involved).
+_code_review_provider: CodeReviewProvider = AiCodeReviewProvider()
+
+
+def get_code_review_provider() -> CodeReviewProvider:
+    return _code_review_provider
+
+
 def _run_on_thread(task: Callable[[], None]) -> None:
     threading.Thread(target=task, daemon=True).start()
 
@@ -317,6 +326,7 @@ def get_practice_session_service(
     live_questions: LiveQuestionProvider = Depends(get_live_question_provider),
     background: Callable[[Callable[[], None]], None] | None = Depends(get_background_runner),
     drag_drop: DragDropProvider = Depends(get_drag_drop_provider),
+    code_review: CodeReviewProvider = Depends(get_code_review_provider),
 ) -> PracticeSessionService:
     """Build practice-session service with shared repositories and the provider."""
     return PracticeSessionService(
@@ -331,6 +341,7 @@ def get_practice_session_service(
         _catalogue_repository,
         background,
         drag_drop,
+        code_review,
     )
 
 

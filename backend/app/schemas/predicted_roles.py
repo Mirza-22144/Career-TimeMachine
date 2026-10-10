@@ -29,6 +29,17 @@ class MarketDataResponse(BaseModel):
     source: str = "Jobs and Skills Australia - Internet Vacancy Index"
 
 
+class RoleExplanationResponse(BaseModel):
+    """Why a role was suggested: a plain-language summary, her skills the
+    role also lists, and reason codes. No score, percentage or confidence."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    summary: str
+    matched_skills: list[str]
+    reason_codes: list[str]
+
+
 class PredictedRoleWithMarketResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -37,6 +48,8 @@ class PredictedRoleWithMarketResponse(BaseModel):
     # None when the role has no ANZSCO mapping yet (e.g. "other") or no
     # vacancy data loaded for it - never a fabricated figure.
     market_data: MarketDataResponse | None
+    # None when the explainer could not supply one.
+    explanation: RoleExplanationResponse | None = None
 
 
 class PredictedRolesResponse(BaseModel):

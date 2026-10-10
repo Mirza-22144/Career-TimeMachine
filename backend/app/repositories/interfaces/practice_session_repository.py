@@ -56,7 +56,7 @@ class PracticeScenario:
     workplace_area: str
     situation: str
     task: str
-    activity_type: str  # "multiple_choice" | "written_response" | "drag_and_drop"
+    activity_type: str  # "multiple_choice" | "written_response" | "drag_and_drop" | "code_review"
     guidance: list[str]
     skills_used: list[str]
     new_skill_focus: str | None
@@ -74,10 +74,23 @@ class PracticeScenario:
     # scenario because there is no pool to look it up in. Never sent to the
     # client as a whole - only the chosen option's feedback is, after she answers.
     option_feedback: dict | None = None
-    # Drag and drop only, and never sent to the client as it is:
-    # {"sentence_template", "fits": phrase id -> the blank it is meant for
-    # (or None), "feedback_by_option": phrase id -> {"why", "what_to_improve"}}.
+    # The server-only part of an activity, never sent to the client as it is.
+    # Drag and drop: {"sentence_template", "fits": phrase id -> the blank it
+    # is meant for (or None), "feedback_by_option": phrase id -> {"why",
+    # "what_to_improve"}}.
+    # Code review: {"language", "code_snippet", "correct_option_id",
+    # "option_feedback": option id -> feedback}.
     content: dict | None = None
+
+    @property
+    def code_snippet(self) -> str | None:
+        """The code to review, shown read-only and never run (code review)."""
+        return self.content.get("code_snippet") if self.content else None
+
+    @property
+    def language(self) -> str | None:
+        """What the code is written in (code review)."""
+        return self.content.get("language") if self.content else None
 
     @property
     def sentence_template(self) -> str | None:

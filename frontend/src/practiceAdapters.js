@@ -1,7 +1,6 @@
 // Turns a scenario from the practice API into the shape the practice
-// components render (components/practice/ChoiceActivity.jsx and
-// PracticeFeedback.jsx), so the real questions and the remaining mock
-// activities share one set of screens.
+// components render (components/practice/ChoiceActivity.jsx,
+// DragDropActivity.jsx and PracticeFeedback.jsx).
 export function toChoiceActivity(scenario) {
   return {
     id: scenario.scenario_id,
@@ -9,6 +8,25 @@ export function toChoiceActivity(scenario) {
     title: scenario.title,
     situation: scenario.situation,
     prompt: scenario.task,
+    hint: scenario.guidance,
+    options: scenario.options.map((option) => ({ id: option.option_id, text: option.text })),
+    skillsUsed: scenario.skills_used,
+  };
+}
+
+// A code review scenario: a workplace situation, the code to read (never
+// run) and one question with four options.
+export function toCodeReviewActivity(scenario) {
+  return {
+    id: scenario.scenario_id,
+    type: "code_review",
+    title: scenario.title,
+    situation: scenario.situation,
+    language: scenario.language,
+    code: (scenario.code_snippet || "").split("\n"),
+    firstLine: 1,
+    prompt: scenario.task,
+    promptCaption: "Read the code, then choose the one that fits best.",
     hint: scenario.guidance,
     options: scenario.options.map((option) => ({ id: option.option_id, text: option.text })),
     skillsUsed: scenario.skills_used,
@@ -67,4 +85,24 @@ export function parseApiFeedbackId(id) {
   if (!id || !id.startsWith("api:")) return null;
   const [, sessionId, ...rest] = id.split(":");
   return { sessionId, scenarioId: rest.join(":") };
+}
+
+// Which completed activity the feedback screen should show - handed over
+// like currentJob.js, since the hash router has no URL parameters.
+const VIEWING_KEY = "ctm_viewing_feedback";
+
+export function setViewingFeedback(id) {
+  try {
+    sessionStorage.setItem(VIEWING_KEY, id);
+  } catch {
+    // The feedback screen then shows its "nothing to show" state.
+  }
+}
+
+export function getViewingFeedbackId() {
+  try {
+    return sessionStorage.getItem(VIEWING_KEY);
+  } catch {
+    return null;
+  }
 }

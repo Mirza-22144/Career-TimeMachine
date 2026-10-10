@@ -63,14 +63,8 @@ function StoredFeedback({ feedback }) {
   );
 }
 
-export default function PracticeFeedback({
-  activity, answer, feedback, dragDropFeedback, areaLabel, isLast, continueLabel, onContinue,
-}) {
+export default function PracticeFeedback({ activity, feedback, dragDropFeedback, areaLabel, isLast, continueLabel, onContinue }) {
   const isDragDrop = activity.type === "drag_and_drop";
-  // Real multiple-choice questions bring their feedback from the backend
-  // (possibly null); the mock Code Review reads it from its own options.
-  const isStored = feedback !== undefined;
-  const chosen = isDragDrop || isStored ? null : activity.options.find((option) => option.id === answer);
 
   return (
     <>
@@ -102,24 +96,8 @@ export default function PracticeFeedback({
               ))}
             </div>
           </>
-        ) : isStored ? (
-          <StoredFeedback feedback={feedback} />
         ) : (
-          <>
-            <div className="pa-card pa-feedback-card">
-              <span className="pa-feedback-label pa-feedback-label--blue">WHAT WORKED WELL</span>
-              <p className="pa-feedback-text">{chosen.workedWell}</p>
-            </div>
-            <div className="pa-card pa-feedback-card">
-              <span className="pa-feedback-label">CONSIDER</span>
-              <p className="pa-feedback-text">{chosen.consider}</p>
-            </div>
-            <div className="pa-card pa-feedback-card">
-              <span className="pa-feedback-label pa-feedback-label--violet">SKILL TO EXPLORE</span>
-              <h2 className="pa-feedback-skill">{activity.skillToExplore.skill}</h2>
-              <p className="pa-feedback-why">{activity.skillToExplore.why}</p>
-            </div>
-          </>
+          <StoredFeedback feedback={feedback} />
         )}
 
         <SkillsUsed skills={activity.skillsUsed} />

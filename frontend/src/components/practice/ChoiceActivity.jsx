@@ -28,8 +28,8 @@ export function HintToggle({ hint }) {
 export default function ChoiceActivity({ activity, areaLabel, isSubmitting = false, submitError = "", onSubmit }) {
   const [selectedId, setSelectedId] = useState(null);
   const isCode = activity.type === "code_review";
-  // A real question describes a situation; the mock ones quote a colleague.
-  const isSituation = Boolean(activity.situation);
+  // Multiple choice describes a situation on the left; code review shows code.
+  const isSituation = !isCode && Boolean(activity.situation);
   const submitLabel = isCode || isSituation ? "Submit" : "Reply";
   const hasHint = Array.isArray(activity.hint) ? activity.hint.length > 0 : Boolean(activity.hint);
 
@@ -44,10 +44,10 @@ export default function ChoiceActivity({ activity, areaLabel, isSubmitting = fal
             <div className="pa-card pa-card--flush">
               <div className="pa-code-header">
                 <FileTextIcon size={15} color="#6D28D9" />
-                <code>{activity.file.name}</code>
-                <span>{activity.file.language} · Read only</span>
+                <code>{activity.language}</code>
+                <span>Read only · never run</span>
               </div>
-              <pre className="pa-code" aria-label={`${activity.file.name}, read only`}>
+              <pre className="pa-code" aria-label={`${activity.language} code, read only`}>
                 {activity.code.map((line, index) => (
                   <span className="pa-code-line" key={activity.firstLine + index}>
                     <span className="pa-code-number">{activity.firstLine + index}</span>
@@ -56,8 +56,8 @@ export default function ChoiceActivity({ activity, areaLabel, isSubmitting = fal
                 ))}
               </pre>
               <div className="pa-code-from">
-                <span className="pa-eyebrow">FROM {activity.from.toUpperCase()}</span>
-                <p>&ldquo;{activity.quote}&rdquo;</p>
+                <span className="pa-eyebrow">THE SITUATION</span>
+                <p>{activity.situation}</p>
               </div>
             </div>
           ) : isSituation ? (

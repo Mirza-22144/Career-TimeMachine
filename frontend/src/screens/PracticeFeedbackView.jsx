@@ -4,15 +4,20 @@ import TopNav from "../components/TopNav";
 import LoadingPopup from "../components/LoadingPopup";
 import PracticeFeedback from "../components/practice/PracticeFeedback";
 import { WORKPLACE_AREAS, getPrimaryAreaId } from "../mockData/workplaceAreas.js";
-import { loadMockActivities } from "../mockData/practiceSession.js";
-import { getLocalFeedback, getViewingFeedbackId } from "../practiceHistory.js";
-import { parseApiFeedbackId, toChoiceActivity, toDragDropActivity, toDragDropFeedback } from "../practiceAdapters.js";
+import {
+  getViewingFeedbackId,
+  parseApiFeedbackId,
+  toChoiceActivity,
+  toCodeReviewActivity,
+  toDragDropActivity,
+  toDragDropFeedback,
+} from "../practiceAdapters.js";
 import { api } from "../api.js";
 import { navigate } from "../navigate.js";
 
 const areaLabel = (areaId) => WORKPLACE_AREAS.find((area) => area.id === areaId)?.label || "";
 
-// A multiple-choice question: her stored feedback from the backend.
+// Her stored answer and feedback, from the backend.
 async function loadStored({ sessionId, scenarioId }) {
   const session = await api.getPracticeSession(sessionId);
   const scenario = session.scenarios.find((item) => item.scenario_id === scenarioId);
@@ -26,21 +31,13 @@ async function loadStored({ sessionId, scenarioId }) {
       areaLabel: areaLabel("project_delivery_board"),
     };
   }
+  const isCodeReview = scenario.activity_type === "code_review";
   return {
-    activity: toChoiceActivity(scenario),
+    activity: isCodeReview ? toCodeReviewActivity(scenario) : toChoiceActivity(scenario),
     feedback: scenario.feedback,
     roleLabel: session.role.label,
-    areaLabel: areaLabel(getPrimaryAreaId(session.role.id)),
+    areaLabel: areaLabel(isCodeReview ? "development_studio" : getPrimaryAreaId(session.role.id)),
   };
-}
-
-// Code Review: still mock, kept in this browser.
-async function loadLocal(id) {
-  const entry = getLocalFeedback(id);
-  if (!entry) return null;
-  const activity = (await loadMockActivities()).find((item) => item.id === entry.activityId);
-  if (!activity) return null;
-  return { activity, answer: entry.answer, roleLabel: entry.roleLabel, areaLabel: areaLabel(activity.areaId) };
 }
 
 /**
@@ -57,7 +54,7 @@ export default function PracticeFeedbackView() {
   useEffect(() => {
     if (!id) return;
     const stored = parseApiFeedbackId(id);
-    (stored ? loadStored(stored) : loadLocal(id))
+    (stored ? loadStored(stored) : Promise.resolve(null))
       .then((found) => {
         setView(found);
         setStatus(found ? "ready" : "none");
@@ -78,7 +75,6 @@ export default function PracticeFeedbackView() {
         {status === "ready" && (
           <PracticeFeedback
             activity={view.activity}
-            answer={view.answer}
             feedback={view.feedback}
             dragDropFeedback={view.dragDropFeedback}
             areaLabel={view.areaLabel}

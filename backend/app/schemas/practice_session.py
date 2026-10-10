@@ -20,8 +20,8 @@ class PracticeSessionCreate(BaseModel):
 
     duration: PracticeDuration
     difficulty: PracticeDifficulty
-    # Which kind of activity to start. Code Review is not served yet.
-    activity_type: Literal["multiple_choice", "drag_and_drop"] = "multiple_choice"
+    # Which kind of activity to start.
+    activity_type: Literal["multiple_choice", "drag_and_drop", "code_review"] = "multiple_choice"
 
 
 class PracticeRoleRefResponse(BaseModel):
@@ -109,6 +109,10 @@ class PracticeScenarioResponse(BaseModel):
     # Drag and drop, after she submits.
     completed_message: str | None = None
     phrase_feedback: list[PhraseFeedbackResponse] | None = None
+    # Code review only: the code and its language. Which option the authors
+    # had in mind is never sent.
+    code_snippet: str | None = None
+    language: str | None = None
 
 
 class PracticeProgressResponse(BaseModel):
@@ -151,6 +155,21 @@ class PracticeSessionResponse(BaseModel):
         client can't show (or leak) what is coming next. progress still
         counts them in total_activities."""
         return [s for s in scenarios if getattr(s, "status", None) != "upcoming"]
+
+
+class PracticePlanResponse(BaseModel):
+    """What she can practise next for her practice role.
+
+    remaining: new questions left, per kind of activity and difficulty.
+    next_activity: per difficulty, the one kind of activity that is unlocked
+    for her now (null when nothing new is left at that level). It only
+    changes once she finishes an activity, so it is the same on every
+    device. last_difficulty: the level of her most recent activity for this
+    role, or null if she has not practised it yet."""
+
+    remaining: dict[str, dict[str, int]]
+    next_activity: dict[str, str | None]
+    last_difficulty: str | None
 
 
 class RecentActivityResponse(BaseModel):

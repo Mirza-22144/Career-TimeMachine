@@ -24,12 +24,30 @@ class TwoRolePredictionProviderError(Exception):
     """Raised by a provider that cannot supply two predictions."""
 
 
+class RoleExplanationContent(BaseModel):
+    """Why a role was suggested (AI team's explainability handover): a
+    plain-language summary, the skills of hers that the role also lists,
+    and controlled reason codes. No scores or percentages."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    summary: str = Field(min_length=1, max_length=500)
+    matched_skills: list[str] = Field(default_factory=list, max_length=5)
+    reason_codes: list[str] = Field(default_factory=list, max_length=3)
+
+
+class ExplainedRoleContent(PredictedRoleContent):
+    """A predicted role, with its explanation when the provider has one."""
+
+    explanation: RoleExplanationContent | None = None
+
+
 class PredictedRolesContent(BaseModel):
     """Two validated, distinct predicted roles returned by a provider."""
 
     model_config = ConfigDict(extra="forbid")
 
-    predicted_roles: list[PredictedRoleContent] = Field(
+    predicted_roles: list[ExplainedRoleContent] = Field(
         min_length=PREDICTED_ROLE_COUNT, max_length=PREDICTED_ROLE_COUNT
     )
 

@@ -20,7 +20,7 @@ OptionId = Annotated[str, StringConstraints(min_length=1, max_length=64, pattern
 
 # How the user completes a scenario. Iteration 2 serves multiple_choice;
 # written_response stays supported for later iterations.
-ActivityType = Literal["multiple_choice", "written_response", "drag_and_drop"]
+ActivityType = Literal["multiple_choice", "written_response", "drag_and_drop", "code_review"]
 
 
 class ScenarioProviderError(Exception):
@@ -98,8 +98,9 @@ class ScenarioContent(BaseModel):
     workplace_area: ShortText
     situation: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)]
     task: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
-    # Drag and drop has its own provider and shape (drag_and_drop_provider.py),
-    # so a scenario provider may only return these two.
+    # Drag and drop and code review have their own providers and shapes
+    # (drag_and_drop_provider.py, code_review_provider.py), so a scenario
+    # provider may only return these two.
     activity_type: Literal["multiple_choice", "written_response"]
     options: list[ScenarioOptionContent] = Field(default_factory=list, max_length=6)
     guidance: list[SentenceText] = Field(default_factory=list, max_length=5)

@@ -8,6 +8,8 @@ function listLabels(skills) {
   return `${labels.slice(0, -1).join(", ")} and ${labels.at(-1)}`;
 }
 
+// Used when the role has no explanation from the prediction model (a role
+// she picked herself, or the explainer was unavailable).
 // How a suggested role relates to her previous one, said only from what
 // the roadmap already knows: the skills on her profile that this role
 // lists, and the ones it would add. No scores or percentages.
@@ -75,10 +77,10 @@ export default function RoleInfoModal({ role, isPrevious, previousRoleLabel, onC
           )}
         </div>
 
-        {!isPrevious && role.skill_data_available && (
+        {!isPrevious && (role.explanation || role.skill_data_available) && (
           <>
             <span className="rim-label">HOW IT RELATES TO {previousRoleLabel.toUpperCase()}</span>
-            <p className="rim-text">{relationText(role, previousRoleLabel)}</p>
+            <p className="rim-text">{role.explanation?.summary || relationText(role, previousRoleLabel)}</p>
           </>
         )}
       </div>

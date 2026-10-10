@@ -2,7 +2,12 @@ from fastapi import APIRouter, Depends, Path, status
 
 from app.api.dependencies import get_current_session, get_practice_session_service
 from app.repositories.interfaces.session_repository import AnonSession
-from app.schemas.practice_session import PracticeSessionCreate, PracticeSessionResponse, RecentActivityResponse
+from app.schemas.practice_session import (
+    PracticePlanResponse,
+    PracticeSessionCreate,
+    PracticeSessionResponse,
+    RecentActivityResponse,
+)
 from app.services.practice_session_service import PracticeSessionService
 
 router = APIRouter(prefix="/practice-sessions", tags=["practice-sessions"])
@@ -40,6 +45,16 @@ def read_remaining_questions(
     unlock the next activity, or offer the "activities run out" choices,
     without starting anything."""
     return service.remaining_by_difficulty(session.token_hash)
+
+
+@router.get("/plan", response_model=PracticePlanResponse)
+def read_practice_plan(
+    session: AnonSession = Depends(get_current_session),
+    service: PracticeSessionService = Depends(get_practice_session_service),
+):
+    """What she can practise next for her practice role: what is left, the
+    one activity unlocked at each level, and the level she last used."""
+    return PracticePlanResponse.model_validate(service.practice_plan(session.token_hash), from_attributes=True)
 
 
 @router.get("/recent-activities", response_model=list[RecentActivityResponse])

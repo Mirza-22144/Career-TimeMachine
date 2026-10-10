@@ -8,7 +8,7 @@ from app.repositories.interfaces.practice_session_repository import PracticeSess
 from app.repositories.interfaces.profile_repository import Profile, ProfileRepository
 from app.repositories.interfaces.role_choice_repository import RoleChoiceRepository
 from app.services.practice_role_service import OTHER_ROLE_ID, PracticeRoleService
-from app.services.role_prediction_service import RoleMarketDisplay, RolePredictionService
+from app.services.role_prediction_service import RoleExplanation, RoleMarketDisplay, RolePredictionService
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,9 @@ class RoadmapRole:
     skills_bring_back: list[RoadmapSkill] = field(default_factory=list)
     skills_could_explore: list[ExploreSkill] = field(default_factory=list)
     market_data: RoleMarketDisplay | None = None
+    # Why the model suggested this role; None for her previous role and for
+    # a role she picked herself.
+    explanation: RoleExplanation | None = None
 
 
 @dataclass
@@ -119,10 +122,11 @@ class RoadmapService:
         previous = self._role(
             profile, profile.role_id, previous_label, skill_labels, len(all_skills), practised, is_previous=True
         )
-        suggested = [
-            self._role(profile, role.role_id, role.role_label, skill_labels, len(all_skills), practised)
-            for role in self.predictions.predict_two_for_profile(profile).predicted_roles
-        ]
+        suggested = []
+        for role in self.predictions.predict_two_for_profile(profile).predicted_roles:
+            card = self._role(profile, role.role_id, role.role_label, skill_labels, len(all_skills), practised)
+            card.explanation = role.explanation
+            suggested.append(card)
 
         # A role she chose herself (closest to a job description, or from
         # See All Roles) that is neither her previous role nor one of the

@@ -75,6 +75,17 @@ class PredictedRoleWithMarketData:
     role_id: str
     role_label: str
     market_data: RoleMarketDisplay | None
+    # Why it was suggested, when the model's explainer supplied it.
+    explanation: "RoleExplanation | None" = None
+
+
+@dataclass
+class RoleExplanation:
+    """Plain-language reason a role was suggested. Never a score."""
+
+    summary: str
+    matched_skills: list[str]
+    reason_codes: list[str]
 
 
 @dataclass
@@ -174,6 +185,13 @@ class RolePredictionService:
                     role_id=role.role_id,
                     role_label=role.role_label,
                     market_data=self.market_data_for(role.role_id),
+                    explanation=RoleExplanation(
+                        summary=role.explanation.summary,
+                        matched_skills=list(role.explanation.matched_skills),
+                        reason_codes=list(role.explanation.reason_codes),
+                    )
+                    if role.explanation is not None
+                    else None,
                 )
                 for role in content.predicted_roles
             ]

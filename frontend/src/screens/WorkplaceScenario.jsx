@@ -9,15 +9,15 @@ import PracticeFeedback, { ActivitySkeleton } from '../components/practice/Pract
 import workplaceImg from '../assets/workplace.webp'
 import introImg from '../assets/practice-intro.webp'
 import { WORKPLACE_AREAS, getPrimaryAreaId } from '../mockData/workplaceAreas.js'
-import { loadMockActivities } from '../mockData/practiceSession.js'
 import {
   UserIcon, BarChartIcon, HeadsetIcon, FileTextIcon, LightbulbIcon, UsersIcon,
   FlaskIcon, CodeIcon, ShieldIcon, GlobeIcon, BellIcon, LayoutIcon, CheckIcon, ArrowRightIcon,
 } from '../components/icons'
 import { api } from '../api.js'
 import { navigate } from '../navigate.js'
-import { addCompleted, clearPending, getPending, hasCompleted, setPending } from '../practiceHistory.js'
-import { toChoiceActivity, toDragDropActivity, toDragDropFeedback } from '../practiceAdapters.js'
+import {
+  toChoiceActivity, toCodeReviewActivity, toDragDropActivity, toDragDropFeedback,
+} from '../practiceAdapters.js'
 
 const AREA_ICONS = {
   user: UserIcon,
@@ -50,18 +50,18 @@ const areaById = (id) => WORKPLACE_AREAS.find((area) => area.id === id)
 
 const MCQ = 'multiple_choice'
 const DND = 'drag_and_drop'
-// Activities the backend prepares, stores and resumes. Code Review is not
-// one of them yet - it is still mock content.
-const REAL_KINDS = [MCQ, DND]
-const isReal = (activityKind) => REAL_KINDS.includes(activityKind)
-// Where on the floor Drag and Drop happens.
+const CR = 'code_review'
+// Every kind of activity is prepared, stored and resumed by the backend.
+const KINDS = [MCQ, DND, CR]
+// Where on the floor Drag and Drop and Code Review happen.
 const DND_AREA_ID = 'project_delivery_board'
+const CR_AREA_ID = 'development_studio'
 
 // AC 4.3.5 exception.
 const MAY_REPEAT = 'We couldn’t check your earlier activities, so some may repeat.'
 
-// What the floor says about the multiple-choice activity before she opens
-// it. It never describes the situations themselves.
+// What the floor says about each activity before she opens it. It never
+// describes the situations themselves.
 const mcqFloor = (roleLabel, areaLabel, completed) => ({
   announcement: `Something needs you in the ${areaLabel}.`,
   panel: {
@@ -69,6 +69,15 @@ const mcqFloor = (roleLabel, areaLabel, completed) => ({
     // No count here: a question about her own skill can still be on its way.
     text: `Situations a ${roleLabel} meets at work, one at a time. You will see each one when you get there.`,
     cta: completed > 0 ? 'Carry on' : 'See the first one',
+  },
+})
+
+const crFloor = (roleLabel, areaLabel, completed) => ({
+  announcement: `Something has come in at the ${areaLabel}.`,
+  panel: {
+    title: 'Some code needs a second pair of eyes',
+    text: `Changes a ${roleLabel} is asked to look over, one at a time. You will see each one when you get there.`,
+    cta: completed > 0 ? 'Carry on' : 'Take a look',
   },
 })
 
@@ -103,12 +112,12 @@ function SettingUp({ text }) {
 // is, the soft stop appears and the next one is unlocked: Keep Going opens
 // it now, Finish Practice leaves it waiting for her next visit.
 //
-// Multiple Choice and Drag and Drop are real: POST /practice-sessions
-// builds an activity of four questions (plus a live one about a skill she
-// typed in herself), the backend hands them over one at a time and stores
-// her answers and feedback, so leaving part-way and coming back resumes at
-// the same question. Code Review is still mock content - see
-// mockData/practiceSession.js.
+// All three are real: POST /practice-sessions builds an activity of four
+// questions (plus, for Multiple Choice and Drag and Drop, a live one about
+// a skill she typed in herself), the backend hands them over one at a time
+// and stores her answers and feedback, so leaving part-way and coming back
+// resumes at the same question. Which activity is unlocked next comes from
+// GET /practice-sessions/plan, so it is the same on every device.
 export default function WorkplaceScenario() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null) // null | 'no-role' | 'intro-failed'
@@ -120,7 +129,6 @@ export default function WorkplaceScenario() {
   const [startError, setStartError] = useState(false)
   const [focusSkill, setFocusSkill] = useState(null)
   const [skillsUsed, setSkillsUsed] = useState([])
-  const [mockActivities, setMockActivities] = useState([])
   // The one kind of activity currently unlocked.
   const [kind, setKind] = useState(null)
   // The backend activity in progress: { id, total, completed }.
@@ -130,12 +138,12 @@ export default function WorkplaceScenario() {
   const [questionError, setQuestionError] = useState(false)
   // Titles finished in the current activity, for the soft stop.
   const [finished, setFinished] = useState([])
-  // What the feedback step shows: { activity, answer } or { activity, feedback, hasNext }.
+  // What the feedback step shows: { activity, feedback | dragDropFeedback, hasNext }.
   const [result, setResult] = useState(null)
   // The activity unlocked after this one: 'checking' while it is being
   // worked out, null when nothing new is left, 'retry' if that check failed.
   const [nextKind, setNextKind] = useState(null)
-  // New questions left per kind and difficulty (GET /practice-sessions/remaining).
+  // New questions left per kind and difficulty (from GET /practice-sessions/plan).
   const [remaining, setRemaining] = useState(null)
   // True when her earlier activities could not be checked for the activity
   // now open (AC 4.3.5 exception): she continues, and is told some may repeat.
@@ -144,7 +152,7 @@ export default function WorkplaceScenario() {
   const sessionFocus = useRef(null)
   // Requested as soon as the page opens, so they are usually ready by the
   // time she has chosen a level. Each is used once, then fetched fresh.
-  const early = useRef({ roadmap: null, remaining: null })
+  const early = useRef({ roadmap: null, plan: null })
   const fetchEarly = (key, fetcher) => {
     const request = fetcher()
     request.catch(() => {}) // a failure is handled where it is awaited
@@ -189,10 +197,7 @@ export default function WorkplaceScenario() {
       }
       setRole({ id: practiceRole.role_id, label: practiceRole.role_label })
       fetchEarly('roadmap', api.getRoadmap)
-      fetchEarly('remaining', api.getRemainingQuestions)
-      const mocks = await loadMockActivities()
-      if (isStale()) return
-      setMockActivities(mocks)
+      fetchEarly('plan', api.getPracticePlan)
 
       // An activity she left part-way through has to be finished first.
       let current = null
@@ -205,7 +210,7 @@ export default function WorkplaceScenario() {
       if (current && current.progress.current_scenario_id) {
         setRole({ id: current.role.id, label: current.role.label })
         setDifficulty(current.difficulty)
-        setKind(current.scenarios.some((item) => item.activity_type === DND) ? DND : MCQ)
+        setKind(KINDS.find((item) => current.scenarios.some((scenario) => scenario.activity_type === item)) || MCQ)
         applySession(current)
         setStep('resume')
       } else {
@@ -213,11 +218,15 @@ export default function WorkplaceScenario() {
         // marked finished.
         if (current) await api.completePracticeSession(current.session_id).catch(() => {})
         if (isStale()) return
-        // The activity unlocked at her last soft stop is still waiting.
-        const pending = getPending(practiceRole.role_id)
-        if (pending) {
-          setDifficulty(pending.difficulty)
-          setNextKind(pending.kind)
+        // The activity unlocked when she last finished one is still
+        // waiting, at the level she was practising.
+        const plan = await takeEarly('plan', api.getPracticePlan).catch(() => null)
+        if (isStale()) return
+        const waiting = plan?.last_difficulty ? plan.next_activity[plan.last_difficulty] : null
+        if (waiting) {
+          setRemaining(plan.remaining)
+          setDifficulty(plan.last_difficulty)
+          setNextKind(waiting)
           setStep('ready')
         }
       }
@@ -250,56 +259,46 @@ export default function WorkplaceScenario() {
   }
 
   const areaIdFor = (activityKind) => {
-    if (activityKind === MCQ) return getPrimaryAreaId(role.id)
     if (activityKind === DND) return DND_AREA_ID
-    return mockActivities.find((item) => item.type === activityKind)?.areaId
+    if (activityKind === CR) return CR_AREA_ID
+    return getPrimaryAreaId(role.id)
   }
 
-  const mockLeft = (level) => mockActivities.filter((item) => !hasCompleted(role.id, level, item.id))
   // Unknown counts (the check failed) are treated as "there may be more".
-  const realLeft = (level, counts) => REAL_KINDS.filter((item) => !counts || counts[item]?.[level] > 0)
-  const levelHasWork = (level, counts) => realLeft(level, counts).length > 0 || mockLeft(level).length > 0
+  const kindsLeft = (level, counts) => KINDS.filter((item) => !counts || counts[item]?.[level] > 0)
+  const levelHasWork = (level, counts) => kindsLeft(level, counts).length > 0
 
-  // Picks, at random, a kind of activity she has not done for this role and
-  // level - or null when nothing new is left (AC 4.3.5).
+  // The kind of activity unlocked for her at this level - or null when
+  // nothing new is left (AC 4.3.5). The backend picks it, so she cannot
+  // predict it and it is the same wherever she signs in.
   const pickNext = async (level, { without = [] } = {}) => {
-    let counts = null
+    let plan = null
     try {
-      counts = await takeEarly('remaining', api.getRemainingQuestions)
+      plan = await takeEarly('plan', api.getPracticePlan)
     } catch {
-      // AC 4.3.5 exception: she still practises; the backend's activities are
-      // assumed to have something left and the backend has the final say.
+      // AC 4.3.5 exception: she still practises; every kind is assumed to
+      // have something left and the backend has the final say.
       unchecked.current = true
     }
-    setRemaining(counts)
-    const kinds = [
-      ...realLeft(level, counts).filter((item) => !without.includes(item)),
-      ...mockLeft(level).map((item) => item.type),
-    ]
-    return kinds.length > 0 ? kinds[Math.floor(Math.random() * kinds.length)] : null
+    setRemaining(plan?.remaining || null)
+    const open = kindsLeft(level, plan?.remaining).filter((item) => !without.includes(item))
+    if (open.length === 0) return null
+    const chosen = plan?.next_activity[level]
+    if (chosen && open.includes(chosen)) return chosen
+    return open[Math.floor(Math.random() * open.length)]
   }
 
-  // Opens the picked activity. Multiple Choice and Drag and Drop are
-  // prepared by the backend. Returns false if it turned out there was
-  // nothing new after all.
+  // Asks the backend to prepare the activity. Returns false if it turned
+  // out there was nothing new after all.
   const enter = async (activityKind, level) => {
-    if (isReal(activityKind)) {
-      try {
-        const started = await api.startPracticeSession('standard', level, activityKind)
-        if (started.history_checked === false) unchecked.current = true
-        sessionFocus.current = started.focus_skill || null
-        applySession(started)
-      } catch (err) {
-        if (err.code !== 'NO_NEW_ACTIVITIES') throw err
-        return false
-      }
-      // From here the backend holds her place.
-      clearPending()
-    } else {
-      setSession(null)
-      setQuestion(null)
-      setFinished([])
-      setPending({ roleId: role.id, difficulty: level, kind: activityKind })
+    try {
+      const started = await api.startPracticeSession('standard', level, activityKind)
+      if (started.history_checked === false) unchecked.current = true
+      sessionFocus.current = started.focus_skill || null
+      applySession(started)
+    } catch (err) {
+      if (err.code !== 'NO_NEW_ACTIVITIES') throw err
+      return false
     }
     setKind(activityKind)
     return true
@@ -309,19 +308,16 @@ export default function WorkplaceScenario() {
     unchecked.current = false
     sessionFocus.current = null
     const opened = await (async () => {
-      // A waiting activity she has since completed elsewhere is not reopened.
-      const stillNew = isReal(preferred) || mockLeft(level).some((item) => item.type === preferred)
-      if (preferred && stillNew && (await enter(preferred, level))) return preferred
+      if (preferred && (await enter(preferred, level))) return preferred
       // A kind the backend turns out to have nothing new for is left out
       // of the next pick.
-      const emptied = isReal(preferred) ? [preferred] : []
-      for (let attempt = 0; attempt <= REAL_KINDS.length; attempt += 1) {
+      const emptied = preferred ? [preferred] : []
+      for (let attempt = 0; attempt <= KINDS.length; attempt += 1) {
         const picked = await pickNext(level, { without: emptied })
         if (!picked) break
         if (await enter(picked, level)) return picked
         emptied.push(picked)
       }
-      clearPending()
       return null
     })()
     setMayRepeat(Boolean(opened) && unchecked.current)
@@ -395,8 +391,6 @@ export default function WorkplaceScenario() {
       // Her practice focus may have moved on with what she just finished.
       fetchEarly('roadmap', api.getRoadmap)
       setNextKind(picked)
-      if (picked) setPending({ roleId: role.id, difficulty, kind: picked })
-      else clearPending()
     } catch {
       setNextKind('retry')
     }
@@ -424,27 +418,11 @@ export default function WorkplaceScenario() {
   }
 
   const handleSubmit = async (answer) => {
-    if (!isReal(kind)) {
-      addCompleted({
-        activityId: mock.id,
-        title: mock.title,
-        type: mock.type,
-        answer,
-        roleId: role.id,
-        roleLabel: role.label,
-        difficulty,
-      })
-      clearPending()
-      setFinished([mock.title])
-      setResult({ activity: mock, answer })
-      setStep('feedback')
-      return
-    }
     setIsSubmitting(true)
     setSubmitError('')
     try {
       // Drag and Drop sends which phrase went into which blank; Multiple
-      // Choice sends the one option chosen.
+      // Choice and Code Review send the one option chosen.
       const body = kind === DND
         ? { placements: Object.fromEntries(activity.blankIds.map((blankId, gap) => [blankId, answer[gap]])) }
         : { selected_option_id: answer }
@@ -483,19 +461,13 @@ export default function WorkplaceScenario() {
     finishActivity()
   }
 
-  const mock = kind && !isReal(kind) ? mockActivities.find((item) => item.type === kind) : null
   const area = kind ? areaById(areaIdFor(kind)) : null
-  const total = isReal(kind) ? session?.total || 0 : 1
-  const completedCount = isReal(kind) ? session?.completed || 0 : 0
-  let activity = mock
-  if (isReal(kind)) {
-    if (!question) activity = null
-    else activity = kind === DND ? toDragDropActivity(question) : toChoiceActivity(question)
-  }
-  let floor = mock
-  if (isReal(kind) && area) {
-    floor = (kind === DND ? dndFloor : mcqFloor)(role.label, area.label, completedCount)
-  }
+  const total = session?.total || 0
+  const completedCount = session?.completed || 0
+  const adapters = { [MCQ]: toChoiceActivity, [DND]: toDragDropActivity, [CR]: toCodeReviewActivity }
+  const activity = question && kind ? adapters[kind](question) : null
+  const floors = { [MCQ]: mcqFloor, [DND]: dndFloor, [CR]: crFloor }
+  const floor = kind && area ? floors[kind](role.label, area.label, completedCount) : null
   const difficultyLabel = DIFFICULTIES.find((d) => d.value === difficulty)?.label
 
   if (loading) return (
@@ -627,7 +599,6 @@ export default function WorkplaceScenario() {
         {step === 'feedback' && (
           <PracticeFeedback
             activity={result.activity}
-            answer={result.answer}
             feedback={result.feedback}
             dragDropFeedback={result.dragDropFeedback}
             areaLabel={area.label}

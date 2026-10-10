@@ -1,0 +1,25 @@
+{
+  "created_at_utc": "2026-10-10T06:17:59.686714+00:00",
+  "purpose": "Verify the backend-ready adapter for two explained role predictions.",
+  "expected_role_ids": [
+    "data_scientist",
+    "business_intelligence_analyst"
+  ],
+  "actual_role_ids": [
+    "data_scientist",
+    "business_intelligence_analyst"
+  ],
+  "original_ranking_preserved": true,
+  "backend_field_names_verified": true,
+  "explanations_present": true,
+  "deterministic_response": true,
+  "duplicate_roles_rejected": true,
+  "internal_scores_exposed": false,
+  "bundle_sha256_before": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_sha256_after": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_unchanged": true,
+  "model_retrained": false,
+  "ranking_weights_changed": false,
+  "gemini_calls_made": false,
+  "result": "passed"
+}

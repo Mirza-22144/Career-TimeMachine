@@ -1,0 +1,52 @@
+{
+  "created_at_utc": "2026-10-10T06:12:23.639469+00:00",
+  "purpose": "Verify deterministic explanations around the unchanged Version 2 role predictor.",
+  "tests": {
+    "saved_version_2_example": {
+      "ranking_preserved": true,
+      "predicted_role_ids": [
+        "data_scientist",
+        "business_intelligence_analyst"
+      ],
+      "internal_scores_hidden": true,
+      "schema_validated": true
+    },
+    "empty_skills": {
+      "ranking_preserved": true,
+      "predicted_role_ids": [
+        "computer_systems_engineer_architect",
+        "computer_systems_analyst"
+      ],
+      "internal_scores_hidden": true,
+      "schema_validated": true
+    },
+    "unrecognised_custom_skill": {
+      "ranking_preserved": true,
+      "predicted_role_ids": [
+        "computer_systems_analyst",
+        "computer_user_support_specialist"
+      ],
+      "internal_scores_hidden": true,
+      "schema_validated": true
+    },
+    "other_previous_role": {
+      "ranking_preserved": true,
+      "predicted_role_ids": [
+        "software_developer",
+        "data_scientist"
+      ],
+      "internal_scores_hidden": true,
+      "schema_validated": true
+    }
+  },
+  "test_count": 4,
+  "tests_passed": 4,
+  "example_original_roles_preserved": true,
+  "bundle_sha256_before": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_sha256_after": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_unchanged": true,
+  "model_retrained": false,
+  "ranking_weights_changed": false,
+  "gemini_calls_made": false,
+  "result": "passed"
+}

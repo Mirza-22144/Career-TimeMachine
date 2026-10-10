@@ -1,0 +1,53 @@
+{
+  "created_at_utc": "2026-10-10T06:03:59.436125+00:00",
+  "source_model": "Career role recommender Version 2",
+  "source_handover_directory": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover",
+  "workspace": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1",
+  "source_files": [
+    {
+      "file_type": "predictor",
+      "source_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover/career_role_predictor_v2.py",
+      "snapshot_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/input_snapshot/career_role_predictor_v2.py",
+      "size_bytes": 14610,
+      "sha256": "67ae9e37a70821d35ca563b09f183f8a30382693d580506f92df9d3e882fcf2b",
+      "status": "copied_and_verified"
+    },
+    {
+      "file_type": "bundle",
+      "source_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover/career_role_recommender_v2_bundle.joblib",
+      "snapshot_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/input_snapshot/career_role_recommender_v2_bundle.joblib",
+      "size_bytes": 20706969,
+      "sha256": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+      "status": "copied_and_verified"
+    },
+    {
+      "file_type": "contract",
+      "source_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover/role_prediction_contract_v2.json",
+      "snapshot_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/input_snapshot/role_prediction_contract_v2.json",
+      "size_bytes": 1362,
+      "sha256": "06cea21af3cf234ddb7f79a7a1faa2dfeea76c2ba08034d827b97c564d7afd44",
+      "status": "copied_and_verified"
+    },
+    {
+      "file_type": "example_request",
+      "source_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover/example_request_v2.json",
+      "snapshot_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/input_snapshot/example_request_v2.json",
+      "size_bytes": 393,
+      "sha256": "05adaa75f7148fffaf84439a832ef3bf46360d2cf9b6b221a62ae7980246f3ad",
+      "status": "copied_and_verified"
+    },
+    {
+      "file_type": "example_response",
+      "source_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_model/version_2/backend_handover/example_response_v2.json",
+      "snapshot_path": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/input_snapshot/example_response_v2.json",
+      "size_bytes": 209,
+      "sha256": "ee4ef9ddcd08fd5ffacda1bf0eda8cdc8cb7247d51fc37419b97d527ae3b5796",
+      "status": "copied_and_verified"
+    }
+  ],
+  "model_loaded": false,
+  "model_retrained": false,
+  "ranking_changed": false,
+  "api_calls_made": false,
+  "result": "passed"
+}

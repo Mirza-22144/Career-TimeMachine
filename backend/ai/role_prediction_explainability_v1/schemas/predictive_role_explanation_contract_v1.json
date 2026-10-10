@@ -1,0 +1,45 @@
+{
+  "operation": "two_explained_future_role_predictions",
+  "response": {
+    "predicted_roles": [
+      {
+        "id": "data_scientist",
+        "label": "Data Scientist",
+        "explanation": {
+          "summary": "This was one of the two highest-ranked roles for the skill profile you provided, with Python contributing direct catalogue-supported evidence.",
+          "matched_skills": [
+            "Python"
+          ],
+          "reason_codes": [
+            "model_profile_match",
+            "selected_skill_match"
+          ]
+        }
+      },
+      {
+        "id": "business_intelligence_analyst",
+        "label": "Business Intelligence Analyst",
+        "explanation": {
+          "summary": "This was one of the two highest-ranked roles produced by the trained model and it shares catalogue skill areas with your previous role.",
+          "matched_skills": [],
+          "reason_codes": [
+            "model_profile_match",
+            "previous_role_similarity"
+          ]
+        }
+      }
+    ]
+  },
+  "constraints": {
+    "predicted_role_count": 2,
+    "roles_are_distinct": true,
+    "current_role_excluded": true,
+    "other_excluded": true,
+    "summary_is_deterministic": true,
+    "matched_skills_require_evidence": true,
+    "internal_scores_public": false,
+    "scores_described_as_probabilities": false,
+    "gemini_required": false,
+    "model_retraining_required": false
+  }
+}

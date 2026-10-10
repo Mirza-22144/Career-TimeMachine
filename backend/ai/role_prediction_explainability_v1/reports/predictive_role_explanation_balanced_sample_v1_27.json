@@ -1,0 +1,1522 @@
+[
+  {
+    "test_id": "blockchain_engineer_empty_skills",
+    "request": {
+      "role": {
+        "id": "blockchain_engineer",
+        "label": "Blockchain Engineer"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Blockchain Engineer, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Blockchain Engineer, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "business_intelligence_analyst_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "business_intelligence_analyst",
+        "label": "Business Intelligence Analyst"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "informatica",
+            "label": "Informatica"
+          },
+          {
+            "id": "snowflake",
+            "label": "Snowflake"
+          },
+          {
+            "id": "microsoft_power_automate",
+            "label": "Microsoft Power Automate"
+          },
+          {
+            "id": "microsoft_power_bi",
+            "label": "Microsoft Power BI"
+          },
+          {
+            "id": "alteryx",
+            "label": "Alteryx"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica, Snowflake, Microsoft Power Automate, Microsoft Power BI, and Alteryx also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Business Intelligence Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Snowflake",
+              "Microsoft Power Automate",
+              "Microsoft Power BI",
+              "Alteryx"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "data_warehousing_specialist",
+          "label": "Data Warehousing Specialist",
+          "explanation": {
+            "summary": "Data Warehousing Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica and Microsoft Power BI also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Business Intelligence Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_and_information_research_scientist_custom_skills",
+    "request": {
+      "role": {
+        "id": "computer_and_information_research_scientist",
+        "label": "Computer and Information Research Scientist"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Prometheus",
+          "PyTorch",
+          "TensorFlow",
+          "Hugging Face",
+          "LangChain"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "data_scientist",
+          "label": "Data Scientist",
+          "explanation": {
+            "summary": "Data Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in PyTorch and TensorFlow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer and Information Research Scientist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "PyTorch",
+              "TensorFlow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Prometheus, PyTorch, and TensorFlow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer and Information Research Scientist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Prometheus",
+              "PyTorch",
+              "TensorFlow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_and_information_systems_manager_empty_skills",
+    "request": {
+      "role": {
+        "id": "computer_and_information_systems_manager",
+        "label": "Computer and Information Systems Manager"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer and Information Systems Manager, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer and Information Systems Manager, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_network_architect_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "computer_network_architect",
+        "label": "Computer Network Architect"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "autodesk_autocad",
+            "label": "Autodesk AutoCAD"
+          },
+          {
+            "id": "autodesk_revit",
+            "label": "Autodesk Revit"
+          },
+          {
+            "id": "border_gateway_protocol_bgp",
+            "label": "Border Gateway Protocol BGP"
+          },
+          {
+            "id": "terraform",
+            "label": "Terraform"
+          },
+          {
+            "id": "dassault_systemes_solidworks",
+            "label": "Dassault Systemes SolidWorks"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Autodesk AutoCAD, Autodesk Revit, Border Gateway Protocol BGP, Terraform, and Dassault Systemes SolidWorks also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Network Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Autodesk AutoCAD",
+              "Autodesk Revit",
+              "Border Gateway Protocol BGP",
+              "Terraform",
+              "Dassault Systemes SolidWorks"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Border Gateway Protocol BGP and Terraform also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Network Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Border Gateway Protocol BGP",
+              "Terraform"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_network_support_specialist_custom_skills",
+    "request": {
+      "role": {
+        "id": "computer_network_support_specialist",
+        "label": "Computer Network Support Specialist"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Border Gateway Protocol BGP",
+          "ServiceNow",
+          "Active directory",
+          "IIS",
+          "Arping"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Border Gateway Protocol BGP, ServiceNow, Active directory, and IIS also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Network Support Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Border Gateway Protocol BGP",
+              "ServiceNow",
+              "Active directory",
+              "IIS"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist",
+          "explanation": {
+            "summary": "Computer User Support Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in ServiceNow and Active directory also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Network Support Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "ServiceNow",
+              "Active directory"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_programmer_empty_skills",
+    "request": {
+      "role": {
+        "id": "computer_programmer",
+        "label": "Computer Programmer"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer Programmer, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer Programmer, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_systems_analyst_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "computer_systems_analyst",
+        "label": "Computer Systems Analyst"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "microsoft_power_bi",
+            "label": "Microsoft Power BI"
+          },
+          {
+            "id": "adobe_illustrator",
+            "label": "Adobe Illustrator"
+          },
+          {
+            "id": "servicenow",
+            "label": "ServiceNow"
+          },
+          {
+            "id": "web_server",
+            "label": "Web server"
+          },
+          {
+            "id": "adobe_photoshop",
+            "label": "Adobe Photoshop"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer",
+          "explanation": {
+            "summary": "Web and Digital Interface Designer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Adobe Illustrator and Adobe Photoshop also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Systems Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Adobe Illustrator",
+              "Adobe Photoshop"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst",
+          "explanation": {
+            "summary": "Business Intelligence Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skill in Microsoft Power BI also appears in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Systems Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_systems_engineer_architect_custom_skills",
+    "request": {
+      "role": {
+        "id": "computer_systems_engineer_architect",
+        "label": "Computer Systems Engineer / Architect"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "GraphQL",
+          "Prometheus",
+          "Grafana Labs Grafana Cloud",
+          "Airflow",
+          "Autodesk AutoCAD"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in GraphQL, Prometheus, Grafana Labs Grafana Cloud, and Airflow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Systems Engineer / Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "GraphQL",
+              "Prometheus",
+              "Grafana Labs Grafana Cloud",
+              "Airflow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "database_administrator",
+          "label": "Database Administrator",
+          "explanation": {
+            "summary": "Database Administrator was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skill in Airflow also appears in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Computer Systems Engineer / Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Airflow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "computer_user_support_specialist_empty_skills",
+    "request": {
+      "role": {
+        "id": "computer_user_support_specialist",
+        "label": "Computer User Support Specialist"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer User Support Specialist, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Computer User Support Specialist, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "data_scientist_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "data_scientist",
+        "label": "Data Scientist"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "pytorch",
+            "label": "PyTorch"
+          },
+          {
+            "id": "tensorflow",
+            "label": "TensorFlow"
+          },
+          {
+            "id": "numpy",
+            "label": "NumPy"
+          },
+          {
+            "id": "aws_sagemaker",
+            "label": "AWS SageMaker"
+          },
+          {
+            "id": "pandas",
+            "label": "pandas"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_and_information_research_scientist",
+          "label": "Computer and Information Research Scientist",
+          "explanation": {
+            "summary": "Computer and Information Research Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in PyTorch, TensorFlow, AWS SageMaker, and pandas also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Data Scientist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "PyTorch",
+              "TensorFlow",
+              "AWS SageMaker",
+              "pandas"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in PyTorch and TensorFlow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Data Scientist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "PyTorch",
+              "TensorFlow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "data_warehousing_specialist_custom_skills",
+    "request": {
+      "role": {
+        "id": "data_warehousing_specialist",
+        "label": "Data Warehousing Specialist"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Operational Data Store ODS",
+          "Informatica",
+          "Microsoft Power BI",
+          "Adaptive Metadata Manager",
+          "Aster Data nCluster"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst",
+          "explanation": {
+            "summary": "Business Intelligence Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica and Microsoft Power BI also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Data Warehousing Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "database_architect",
+          "label": "Database Architect",
+          "explanation": {
+            "summary": "Database Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica and Microsoft Power BI also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Data Warehousing Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "database_administrator_empty_skills",
+    "request": {
+      "role": {
+        "id": "database_administrator",
+        "label": "Database Administrator"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Database Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Database Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "database_architect_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "database_architect",
+        "label": "Database Architect"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "informatica",
+            "label": "Informatica"
+          },
+          {
+            "id": "airflow",
+            "label": "Airflow"
+          },
+          {
+            "id": "snowflake",
+            "label": "Snowflake"
+          },
+          {
+            "id": "autodesk_revit",
+            "label": "Autodesk Revit"
+          },
+          {
+            "id": "microsoft_power_bi",
+            "label": "Microsoft Power BI"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "business_intelligence_analyst",
+          "label": "Business Intelligence Analyst",
+          "explanation": {
+            "summary": "Business Intelligence Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica, Snowflake, and Microsoft Power BI also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Database Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Snowflake",
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "data_warehousing_specialist",
+          "label": "Data Warehousing Specialist",
+          "explanation": {
+            "summary": "Data Warehousing Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Informatica and Microsoft Power BI also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Database Architect, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Informatica",
+              "Microsoft Power BI"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "digital_forensics_analyst_custom_skills",
+    "request": {
+      "role": {
+        "id": "digital_forensics_analyst",
+        "label": "Digital Forensics Analyst"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Google Workspace",
+          "Apple iOS",
+          "Kali Linux",
+          "Metasploit",
+          "MITRE ATT&CK"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "penetration_tester",
+          "label": "Penetration Tester",
+          "explanation": {
+            "summary": "Penetration Tester was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Apple iOS, Kali Linux, Metasploit, and MITRE ATT&CK also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Digital Forensics Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Apple iOS",
+              "Kali Linux",
+              "Metasploit",
+              "MITRE ATT&CK"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist",
+          "explanation": {
+            "summary": "Computer User Support Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skill in Apple iOS also appears in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Digital Forensics Analyst, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Apple iOS"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "information_security_analyst_empty_skills",
+    "request": {
+      "role": {
+        "id": "information_security_analyst",
+        "label": "Information Security Analyst"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Information Security Analyst, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Information Security Analyst, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "information_security_engineer_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "information_security_engineer",
+        "label": "Information Security Engineer"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "apple_ios",
+            "label": "Apple iOS"
+          },
+          {
+            "id": "single_sign_on_sso",
+            "label": "Single sign-on SSO"
+          },
+          {
+            "id": "border_gateway_protocol_bgp",
+            "label": "Border Gateway Protocol BGP"
+          },
+          {
+            "id": "jenkins",
+            "label": "Jenkins"
+          },
+          {
+            "id": "nessus",
+            "label": "Nessus"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Apple iOS, Single sign-on SSO, Border Gateway Protocol BGP, and Jenkins also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Information Security Engineer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Apple iOS",
+              "Single sign-on SSO",
+              "Border Gateway Protocol BGP",
+              "Jenkins"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Border Gateway Protocol BGP and Jenkins also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Information Security Engineer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Border Gateway Protocol BGP",
+              "Jenkins"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "it_project_manager_custom_skills",
+    "request": {
+      "role": {
+        "id": "it_project_manager",
+        "label": "IT Project Manager"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Autodesk AutoCAD",
+          "Autodesk Revit",
+          "Adobe Creative Cloud",
+          "Adobe Illustrator",
+          "ServiceNow"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Autodesk AutoCAD, Autodesk Revit, Adobe Creative Cloud, and ServiceNow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, IT Project Manager, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Autodesk AutoCAD",
+              "Autodesk Revit",
+              "Adobe Creative Cloud",
+              "ServiceNow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist",
+          "explanation": {
+            "summary": "Computer User Support Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Autodesk AutoCAD, Autodesk Revit, Adobe Creative Cloud, Adobe Illustrator, and ServiceNow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, IT Project Manager, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Autodesk AutoCAD",
+              "Autodesk Revit",
+              "Adobe Creative Cloud",
+              "Adobe Illustrator",
+              "ServiceNow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "network_and_systems_administrator_empty_skills",
+    "request": {
+      "role": {
+        "id": "network_and_systems_administrator",
+        "label": "Network and Systems Administrator"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Network and Systems Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Network and Systems Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "penetration_tester_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "penetration_tester",
+        "label": "Penetration Tester"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "nmap",
+            "label": "Nmap"
+          },
+          {
+            "id": "qualys_cloud_platform",
+            "label": "Qualys Cloud Platform"
+          },
+          {
+            "id": "rust_programming_language",
+            "label": "Rust programming language"
+          },
+          {
+            "id": "apple_ios",
+            "label": "Apple iOS"
+          },
+          {
+            "id": "azure_devops",
+            "label": "Azure DevOps"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Apple iOS and Azure DevOps also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Penetration Tester, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Apple iOS",
+              "Azure DevOps"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "digital_forensics_analyst",
+          "label": "Digital Forensics Analyst",
+          "explanation": {
+            "summary": "Digital Forensics Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skill in Apple iOS also appears in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Penetration Tester, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Apple iOS"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "software_developer_custom_skills",
+    "request": {
+      "role": {
+        "id": "software_developer",
+        "label": "Software Developer"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Figma",
+          "GraphQL",
+          "Prometheus",
+          "PyTorch",
+          "TensorFlow"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "data_scientist",
+          "label": "Data Scientist",
+          "explanation": {
+            "summary": "Data Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in PyTorch and TensorFlow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "PyTorch",
+              "TensorFlow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_and_information_research_scientist",
+          "label": "Computer and Information Research Scientist",
+          "explanation": {
+            "summary": "Computer and Information Research Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Prometheus, PyTorch, and TensorFlow also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Prometheus",
+              "PyTorch",
+              "TensorFlow"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "software_qa_analyst_tester_empty_skills",
+    "request": {
+      "role": {
+        "id": "software_qa_analyst_tester",
+        "label": "Software QA Analyst / Tester"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Software QA Analyst / Tester, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Software QA Analyst / Tester, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "telecommunications_engineering_specialist_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "telecommunications_engineering_specialist",
+        "label": "Telecommunications Engineering Specialist"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "autodesk_navisworks",
+            "label": "Autodesk Navisworks"
+          },
+          {
+            "id": "navisworks_jetstream",
+            "label": "NavisWorks Jetstream"
+          },
+          {
+            "id": "autodesk_autocad",
+            "label": "Autodesk AutoCAD"
+          },
+          {
+            "id": "autodesk_revit",
+            "label": "Autodesk Revit"
+          },
+          {
+            "id": "2ab_ilock_security_services",
+            "label": "2AB iLock Security Services"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Autodesk AutoCAD and Autodesk Revit also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Telecommunications Engineering Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Autodesk AutoCAD",
+              "Autodesk Revit"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "computer_user_support_specialist",
+          "label": "Computer User Support Specialist",
+          "explanation": {
+            "summary": "Computer User Support Specialist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Autodesk AutoCAD and Autodesk Revit also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Telecommunications Engineering Specialist, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Autodesk AutoCAD",
+              "Autodesk Revit"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "video_game_designer_custom_skills",
+    "request": {
+      "role": {
+        "id": "video_game_designer",
+        "label": "Video Game Designer"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Autodesk Maya",
+          "Unity Technologies Unity",
+          "Unreal Engine",
+          "TypeScript",
+          "Adobe Creative Cloud"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer",
+          "explanation": {
+            "summary": "Web and Digital Interface Designer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in TypeScript and Adobe Creative Cloud also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Video Game Designer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "TypeScript",
+              "Adobe Creative Cloud"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in TypeScript and Adobe Creative Cloud also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Video Game Designer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "TypeScript",
+              "Adobe Creative Cloud"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "web_administrator_empty_skills",
+    "request": {
+      "role": {
+        "id": "web_administrator",
+        "label": "Web Administrator"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "computer_systems_engineer_architect",
+          "label": "Computer Systems Engineer / Architect",
+          "explanation": {
+            "summary": "Computer Systems Engineer / Architect was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Web Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. It also shares catalogue skill areas with your previous role, Web Administrator, supporting it as a possible career transition.",
+            "matched_skills": [],
+            "reason_codes": [
+              "model_profile_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "web_and_digital_interface_designer_catalogue_skills",
+    "request": {
+      "role": {
+        "id": "web_and_digital_interface_designer",
+        "label": "Web and Digital Interface Designer"
+      },
+      "skills": {
+        "catalogue": [
+          {
+            "id": "figma",
+            "label": "Figma"
+          },
+          {
+            "id": "vue_js",
+            "label": "Vue.js"
+          },
+          {
+            "id": "adobe_xd",
+            "label": "Adobe XD"
+          },
+          {
+            "id": "apple_ios",
+            "label": "Apple iOS"
+          },
+          {
+            "id": "typescript",
+            "label": "TypeScript"
+          }
+        ],
+        "custom": []
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Figma, Vue.js, Apple iOS, and TypeScript also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Web and Digital Interface Designer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Figma",
+              "Vue.js",
+              "Apple iOS",
+              "TypeScript"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "web_developer",
+          "label": "Web Developer",
+          "explanation": {
+            "summary": "Web Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Figma, Vue.js, and TypeScript also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Web and Digital Interface Designer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Figma",
+              "Vue.js",
+              "TypeScript"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": "web_developer_custom_skills",
+    "request": {
+      "role": {
+        "id": "web_developer",
+        "label": "Web Developer"
+      },
+      "skills": {
+        "catalogue": [],
+        "custom": [
+          "Figma",
+          "GraphQL",
+          "Vue.js",
+          "WordPress",
+          "JavaScript frameworks"
+        ]
+      }
+    },
+    "response": {
+      "predicted_roles": [
+        {
+          "id": "software_developer",
+          "label": "Software Developer",
+          "explanation": {
+            "summary": "Software Developer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Figma, GraphQL, Vue.js, WordPress, and JavaScript frameworks also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Web Developer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Figma",
+              "GraphQL",
+              "Vue.js",
+              "WordPress",
+              "JavaScript frameworks"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        },
+        {
+          "id": "web_and_digital_interface_designer",
+          "label": "Web and Digital Interface Designer",
+          "explanation": {
+            "summary": "Web and Digital Interface Designer was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Figma and Vue.js also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Web Developer, supporting it as a possible career transition.",
+            "matched_skills": [
+              "Figma",
+              "Vue.js"
+            ],
+            "reason_codes": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

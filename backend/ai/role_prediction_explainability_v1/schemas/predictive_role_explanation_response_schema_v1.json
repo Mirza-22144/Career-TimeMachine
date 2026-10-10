@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "ExplainedPredictedRole": {
+      "additionalProperties": false,
+      "description": "One explained role recommendation.",
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "explanation": {
+          "$ref": "#/$defs/RoleExplanation"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "explanation"
+      ],
+      "title": "ExplainedPredictedRole",
+      "type": "object"
+    },
+    "RoleExplanation": {
+      "additionalProperties": false,
+      "description": "Public evidence explaining one recommended role.",
+      "properties": {
+        "summary": {
+          "maxLength": 500,
+          "minLength": 30,
+          "title": "Summary",
+          "type": "string"
+        },
+        "matched_skills": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Matched Skills",
+          "type": "array"
+        },
+        "reason_codes": {
+          "items": {
+            "enum": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Reason Codes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "reason_codes"
+      ],
+      "title": "RoleExplanation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Exactly two distinct explained recommendations.",
+  "properties": {
+    "predicted_roles": {
+      "items": {
+        "$ref": "#/$defs/ExplainedPredictedRole"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Predicted Roles",
+      "type": "array"
+    }
+  },
+  "required": [
+    "predicted_roles"
+  ],
+  "title": "ExplainedPredictionResponse",
+  "type": "object"
+}

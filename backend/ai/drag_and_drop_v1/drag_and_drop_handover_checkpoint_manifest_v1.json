@@ -1,0 +1,121 @@
+{
+  "handover_name": "Career TimeMachine Iteration 3 drag-and-drop AI checkpoint",
+  "created_at_utc": "2026-10-08T15:55:10.709201+00:00",
+  "status": "checkpoint_before standalone service export",
+  "static_activity_count": 324,
+  "role_count": 27,
+  "difficulty_count": 3,
+  "live_evaluation_passed": true,
+  "live_tests_passed": "6/6",
+  "security_tests_passed": "6/6",
+  "forced_fallback_passed": true,
+  "contains_api_key": false,
+  "file_count": 21,
+  "files": [
+    {
+      "relative_path": "MODEL_DEPLOYMENT.md",
+      "size_bytes": 973,
+      "sha256": "85a456d16c08a57df79aa040495a89795dae672dcd9af15008327de1a8042041"
+    },
+    {
+      "relative_path": "README.md",
+      "size_bytes": 1574,
+      "sha256": "77f9e99206faf9b5cc75e7d21d20bda897f87bc6bfe0401a61d417d96a97df64"
+    },
+    {
+      "relative_path": "data/drag_and_drop_activity_pool_v1_final.json",
+      "size_bytes": 1118239,
+      "sha256": "48ff34cef943f74793c2ae8f32d55cf38ac34e674bb28129506d0ee8e34fa154"
+    },
+    {
+      "relative_path": "data/drag_and_drop_ai_response_schema_v1.json",
+      "size_bytes": 3648,
+      "sha256": "deb30374c56fe4b00714ccfbd122af62360a2ff8e16a66acaa4d830bf751add7"
+    },
+    {
+      "relative_path": "data/drag_and_drop_backend_contract_v1.json",
+      "size_bytes": 829,
+      "sha256": "454b995d5d39c69dc4ca05a7d56b51df79551cf25c196fd99ffb1d9d4fe8c48b"
+    },
+    {
+      "relative_path": "data/drag_and_drop_static_record_schema_v1.json",
+      "size_bytes": 5151,
+      "sha256": "4c09f08ec6e1044cdf4db579ef31f292bac41a6fe88ddf26233133426c388a08"
+    },
+    {
+      "relative_path": "examples/example_live_drag_and_drop_request.json",
+      "size_bytes": 245,
+      "sha256": "a061512d39fd65dd69e755bed5ff0be0b90835158bf54936790f799152417f00"
+    },
+    {
+      "relative_path": "examples/example_live_drag_and_drop_response.json",
+      "size_bytes": 2243,
+      "sha256": "9f9ad8e163eddc1ff9acbccea715e967ce40b8ef7257bf5a873b55fee37e5ce2"
+    },
+    {
+      "relative_path": "live_drag_and_drop_contract_v1.json",
+      "size_bytes": 1751,
+      "sha256": "149ecc2e6dc78b620946b070ca706f0dbfcdbc9f885eeb49eeaeea3fec199654"
+    },
+    {
+      "relative_path": "reports/balanced_live_drag_and_drop_evaluation_v1_corrected.json",
+      "size_bytes": 52230,
+      "sha256": "68686fe7ae69042b511aa4b66dfd92816d00299fde60c1614ccb10aae45aa3ec"
+    },
+    {
+      "relative_path": "reports/balanced_live_drag_and_drop_evaluation_v1_pre_correction.json",
+      "size_bytes": 893,
+      "sha256": "8cca8ad93dfda5185a2af6b7ac0bed8a4f34b92b5886f3f70ff9bad51aef7a07"
+    },
+    {
+      "relative_path": "reports/dependency_environment_report_v1.json",
+      "size_bytes": 1180,
+      "sha256": "d4731c699b85a9aabdc627b069bc5f99d22241cdbfaf05ea43f9c3f25341bf74"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_deterministic_quality_audit_v1.json",
+      "size_bytes": 2064,
+      "sha256": "9b64c810cce0e248d782cf51312621d72739f069b662373658ab9b2de7270206"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_full_gemini_judge_report_v1_324.json",
+      "size_bytes": 482685,
+      "sha256": "b678c621fe7a0460e5d66d80adeca37738afb71e88c37a674f70005fb38cfae0"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_gemini_3_8_judge_smoke_test_v1.json",
+      "size_bytes": 12701,
+      "sha256": "5142fb5fb2175698b017c07f7e9a8cf829a29b471acf968932938568726079cb"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_generation_summary_v1_324.json",
+      "size_bytes": 782,
+      "sha256": "456fd0729584849cfe57e541f8571d791e028707f498bf26ad1742e371fc9ad8"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_qwen_review_diagnostic_v1.json",
+      "size_bytes": 10295,
+      "sha256": "1c88f207613837e3cb2573471d21f01f007c2a8ce6cd00faecbd7370d7bd197b"
+    },
+    {
+      "relative_path": "reports/drag_and_drop_targeted_revision_report_v1.json",
+      "size_bytes": 123325,
+      "sha256": "a00ab972216a5d34c920df29202f8e6398c57276f6a317a190c9359c9411b605"
+    },
+    {
+      "relative_path": "reports/live_drag_and_drop_quality_correction_v1.json",
+      "size_bytes": 11851,
+      "sha256": "956ec1e77b01b39b4831e88731d7c15eb9e4d80b9fb07139d27179c75c1da858"
+    },
+    {
+      "relative_path": "reports/live_drag_and_drop_smoke_test_report_v1.json",
+      "size_bytes": 626,
+      "sha256": "8d964b4414cf7e93906e1089c5a0819fb5ffad721c43a3b3a28907a11f26572a"
+    },
+    {
+      "relative_path": "source/drag_and_drop_pipeline_v1_complete.ipynb",
+      "size_bytes": 952779,
+      "sha256": "45c70c27492f5cd85def5238507cdf716535f70f9cb8e403340a497061decddf"
+    }
+  ]
+}

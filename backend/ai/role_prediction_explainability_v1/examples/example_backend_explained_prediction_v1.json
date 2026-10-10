@@ -1,0 +1,36 @@
+{
+  "predicted_roles": [
+    {
+      "role_id": "data_scientist",
+      "role_label": "Data Scientist",
+      "explanation": {
+        "summary": "Data Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Python and SQL also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+        "matched_skills": [
+          "Python",
+          "SQL"
+        ],
+        "reason_codes": [
+          "model_profile_match",
+          "selected_skill_match",
+          "previous_role_similarity"
+        ]
+      }
+    },
+    {
+      "role_id": "business_intelligence_analyst",
+      "role_label": "Business Intelligence Analyst",
+      "explanation": {
+        "summary": "Business Intelligence Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Python and SQL also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+        "matched_skills": [
+          "Python",
+          "SQL"
+        ],
+        "reason_codes": [
+          "model_profile_match",
+          "selected_skill_match",
+          "previous_role_similarity"
+        ]
+      }
+    }
+  ]
+}

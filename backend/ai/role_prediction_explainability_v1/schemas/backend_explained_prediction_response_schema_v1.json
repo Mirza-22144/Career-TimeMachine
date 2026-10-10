@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "BackendExplainedRole": {
+      "additionalProperties": false,
+      "description": "One backend-ready role recommendation.",
+      "properties": {
+        "role_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Role Id",
+          "type": "string"
+        },
+        "role_label": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Role Label",
+          "type": "string"
+        },
+        "explanation": {
+          "$ref": "#/$defs/RoleExplanation"
+        }
+      },
+      "required": [
+        "role_id",
+        "role_label",
+        "explanation"
+      ],
+      "title": "BackendExplainedRole",
+      "type": "object"
+    },
+    "RoleExplanation": {
+      "additionalProperties": false,
+      "description": "Public evidence explaining one recommended role.",
+      "properties": {
+        "summary": {
+          "maxLength": 500,
+          "minLength": 30,
+          "title": "Summary",
+          "type": "string"
+        },
+        "matched_skills": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Matched Skills",
+          "type": "array"
+        },
+        "reason_codes": {
+          "items": {
+            "enum": [
+              "model_profile_match",
+              "selected_skill_match",
+              "previous_role_similarity"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Reason Codes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "reason_codes"
+      ],
+      "title": "RoleExplanation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Exactly two backend-ready recommendations.",
+  "properties": {
+    "predicted_roles": {
+      "items": {
+        "$ref": "#/$defs/BackendExplainedRole"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Predicted Roles",
+      "type": "array"
+    }
+  },
+  "required": [
+    "predicted_roles"
+  ],
+  "title": "BackendExplainedRolesResponse",
+  "type": "object"
+}

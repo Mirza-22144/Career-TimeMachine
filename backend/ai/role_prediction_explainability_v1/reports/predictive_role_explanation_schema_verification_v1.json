@@ -1,0 +1,27 @@
+{
+  "created_at_utc": "2026-10-10T06:09:10.489985+00:00",
+  "valid_response_accepted": true,
+  "invalid_examples_rejected": {
+    "only_one_role": true,
+    "duplicate_roles": true,
+    "skill_reason_without_evidence": true,
+    "skill_evidence_without_reason": true,
+    "misleading_probability": true,
+    "unexpected_internal_score": true
+  },
+  "exactly_two_roles_required": true,
+  "distinct_roles_required": true,
+  "matched_skill_evidence_gated": true,
+  "trained_model_reason_required": true,
+  "misleading_probability_language_rejected": true,
+  "unexpected_fields_rejected": true,
+  "internal_scores_excluded": true,
+  "model_loaded": false,
+  "model_retrained": false,
+  "gemini_calls_made": false,
+  "schema_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/output/predictive_role_explanation_response_schema_v1.json",
+  "schema_sha256": "f85f9b9dbfc1ee18f7a5e1d4d671b505a5328a039d4ca931c96e99d3ae32a86a",
+  "contract_file": "/content/drive/MyDrive/CareerTimeMachine/predictive_role_explainability_v1/output/predictive_role_explanation_contract_v1.json",
+  "contract_sha256": "93cfaff94b20435e34c064f59ca050ec7ebc380d709444eb3c165dc71750a878",
+  "result": "passed"
+}

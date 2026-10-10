@@ -1,0 +1,154 @@
+{
+    "handover_name":  "Career Time Machine Iteration 3 Static Code Review AI",
+    "handover_version":  "1.0",
+    "created_at_utc":  "2026-10-10T04:45:09.899642+00:00",
+    "delivery_mode":  "static_only",
+    "status":  "complete",
+    "activity_count":  324,
+    "role_count":  27,
+    "role_difficulty_combinations":  81,
+    "difficulty_distribution":  {
+                                    "challenge":  108,
+                                    "guided":  108,
+                                    "standard":  108
+                                },
+    "final_pool_sha256":  "fb9d6485966858a100cdee25f38d4c876f266524a413eed63653d8f37d733266",
+    "deterministic_audit_passed":  true,
+    "contains_live_generation_service":  false,
+    "requires_gemini_api_key":  false,
+    "executes_code_snippets":  false,
+    "possible_api_secrets_found":  0,
+    "file_count_excluding_manifest":  26,
+    "files":  [
+                  {
+                      "relative_path":  "data/code_review_activity_pool_v1_final.json",
+                      "size_bytes":  1667747,
+                      "sha256":  "fb9d6485966858a100cdee25f38d4c876f266524a413eed63653d8f37d733266"
+                  },
+                  {
+                      "relative_path":  "examples/example_backend_record.json",
+                      "size_bytes":  4696,
+                      "sha256":  "dcf6dc9be93b3d80cfce251d1b82a02ade7b281e3a857e54031558dd4021c957"
+                  },
+                  {
+                      "relative_path":  "examples/example_frontend_safe_activity.json",
+                      "size_bytes":  2001,
+                      "sha256":  "3b6df47270d85cca3fc69e9656898fbf8caac4da325cb774300b480e6acd4b66"
+                  },
+                  {
+                      "relative_path":  "README.md",
+                      "size_bytes":  1241,
+                      "sha256":  "5061166bdaa1d26c6969ebcbe404b4272b7e192dd68c18a12d2605152ba0d254"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_backend_source_provenance_v1.json",
+                      "size_bytes":  3147,
+                      "sha256":  "32ff5dec3a48b28be86d33c32a8bfeebe0bf284b2a1cd73e372030d7bc8fa9cd"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_balanced_manual_review_sample_v1_27.json",
+                      "size_bytes":  137747,
+                      "sha256":  "c4d071adfbe838e6b4261767ccccb4079fe65077b9b0cfdf77994633b79eabc5"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_dependency_environment_v1.json",
+                      "size_bytes":  630,
+                      "sha256":  "7aec545cd8e11e04fda99fcddd32f0f92ab00023d4bb9efbfdae8bdf32626767"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_deterministic_quality_audit_v1.json",
+                      "size_bytes":  1030,
+                      "sha256":  "a4649a2ef0491d7eee4857ef8ed4bd449310d82f9f53c818310f7f239bd3f0e7"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_full_gemini_judge_report_v1_324.json",
+                      "size_bytes":  1444729,
+                      "sha256":  "416e4ae2634cf05e15eddc4f38303d7471dd6b0ffbbf95629a03ee2c787c86ca"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_gemini_3_8_judge_smoke_test_v1.json",
+                      "size_bytes":  23497,
+                      "sha256":  "99a3afd2bcd80df22794af0642eea11476244f06a50b9ca27dc541a28bdf4494"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_gemini_four_activity_smoke_test_v1.json",
+                      "size_bytes":  2126,
+                      "sha256":  "72ffa8fa7f222599199a0213019694c140d1abb0e7675500d2c6647bfca39aad"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_generation_plan_verification_v1.json",
+                      "size_bytes":  1228,
+                      "sha256":  "89e17fb71b4dbaec2b828c1c161a45a4311d9dd1b5887d931d45b257ca3e4c53"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_post_recovery_verification_v1.json",
+                      "size_bytes":  1060,
+                      "sha256":  "64636609a4701b8cf19d1fe5e76003378ccaa7a1d26fdd6f62e2c5e23545e85d"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_role_skill_catalogue_verification_v1.json",
+                      "size_bytes":  1433,
+                      "sha256":  "1b32bb5b54dd6e64d205e97912793bc048efb4394cd5f43cf50be19f1e626788"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_schema_verification_v1.json",
+                      "size_bytes":  1927,
+                      "sha256":  "94544f80668dcdc1a68de01d3ce62f6d9d53e4e5225a327500cec7722ae86b72"
+                  },
+                  {
+                      "relative_path":  "reports/code_review_targeted_revision_report_v1.json",
+                      "size_bytes":  564002,
+                      "sha256":  "45ed46e262b0c13b4024c273e32c8b25e83a037245e63a964c477ffed9d5eeab"
+                  },
+                  {
+                      "relative_path":  "reports/static_code_review_backend_handover_zip_report_v1.json",
+                      "size_bytes":  909,
+                      "sha256":  "68d3a04cf87111a4ee5eff5d23c2d49bcaaa771c6ec34e4e9fa04dcf6a1d4f48"
+                  },
+                  {
+                      "relative_path":  "requirements.txt",
+                      "size_bytes":  17,
+                      "sha256":  "ef34af665c0a57327e4bd2761e8eb59ba0c1e26294ae7cf5ea30f307fdfe796c"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_backend_response_schema_v1.json",
+                      "size_bytes":  3972,
+                      "sha256":  "3b280e5d3a4948d7cb9e1f8cd16d4c69088e74b212da00596d388e0f9d3122d5"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_feedback_response_schema_v1.json",
+                      "size_bytes":  1183,
+                      "sha256":  "e93369418c3637d931275944a80caa0124f6d6bab58d34ce45e7959e524ccc48"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_frontend_response_schema_v1.json",
+                      "size_bytes":  1761,
+                      "sha256":  "4701c6bf668858f0d664bb79791b0b9c5fa812580375b12e5d6679b371aa07f0"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_gemini_response_schema_v1.json",
+                      "size_bytes":  4804,
+                      "sha256":  "5c98ac9386e5666e1f50cefa7f16ab6b46f172a950b412e70815e4abae0bf6ed"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_schema_test_record_v1.json",
+                      "size_bytes":  3403,
+                      "sha256":  "781ab2a8757e37b451915596ed868c83c63fa6123b770cf9f0335953c71143b0"
+                  },
+                  {
+                      "relative_path":  "schemas/code_review_static_record_schema_v1.json",
+                      "size_bytes":  4985,
+                      "sha256":  "cb4c33a7f3819c0cb12d7bf3701305c92b7e00d883b67eda856a46493b9b54ec"
+                  },
+                  {
+                      "relative_path":  "source/code_review_models_v1.py",
+                      "size_bytes":  9971,
+                      "sha256":  "902090f017202687be51faffe6ac7b345e9e9264cdfd7ceb70a139a196e850ea"
+                  },
+                  {
+                      "relative_path":  "static_code_review_backend_contract_v1.json",
+                      "size_bytes":  1057,
+                      "sha256":  "f6629669d5f75e17dd8e18c94cee35c3a0ecc6ef56713da5b9032dd3530aaa24"
+                  }
+              ]
+}

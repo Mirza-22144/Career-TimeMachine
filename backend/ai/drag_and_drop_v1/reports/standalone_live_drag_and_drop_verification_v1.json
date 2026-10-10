@@ -1,0 +1,42 @@
+{
+  "created_at_utc": "2026-10-08T16:08:15.237349+00:00",
+  "correction": "Escaped literal curly braces inside the Python f-string so the rendered prompt contains {blank_1}, {blank_2} and {blank_3}.",
+  "model": "gemini-3.5-flash-lite",
+  "request": {
+    "role_id": "network_and_systems_administrator",
+    "skills": [
+      "Critical outage escalation"
+    ],
+    "years_experience": "8",
+    "responsibilities": [
+      "Coordinated on-call response and mentored junior staff"
+    ],
+    "difficulty": "challenge",
+    "activity_type": "drag_and_drop"
+  },
+  "source": "live_gemini",
+  "attempts": [
+    {
+      "attempt_number": 1,
+      "passed": true,
+      "error": null
+    }
+  ],
+  "latency_seconds": 2.5576,
+  "rendered_prompt_placeholder_counts": {
+    "blank_1": 2,
+    "blank_2": 2,
+    "blank_3": 2
+  },
+  "generated_template_placeholder_counts": {
+    "blank_1": 1,
+    "blank_2": 1,
+    "blank_3": 1
+  },
+  "schema_validation_passed": true,
+  "professional_quality_gate_passed": true,
+  "backend_intended_placements": 3,
+  "backend_distractors": 2,
+  "frontend_mapping_hidden": true,
+  "standalone_live_generation_passed": true
+}

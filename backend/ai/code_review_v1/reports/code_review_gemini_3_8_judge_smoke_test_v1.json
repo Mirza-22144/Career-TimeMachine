@@ -1,0 +1,455 @@
+{
+  "created_at_utc": "2026-10-09T09:00:54.138707+00:00",
+  "judge_model": "gemini-3.8-flash",
+  "generator_model": "gemini-3.5-flash",
+  "reviewed_activity_count": 4,
+  "accepted_count": 4,
+  "revision_required_count": 0,
+  "rejected_count": 0,
+  "consistent_review_count": 4,
+  "reviews": [
+    {
+      "question_id": "software_developer_standard_code_review_v1_01",
+      "review": {
+        "model_decision": "accept",
+        "criteria": [
+          {
+            "criterion": "role_relevance",
+            "score": 5,
+            "evidence": "Assessing dictionary access safety and document schema flexibility in Python application services directly reflects standard backend software engineering duties."
+          },
+          {
+            "criterion": "workplace_realism",
+            "score": 5,
+            "evidence": "Handling legacy documents missing recently added nested structures is an authentic, everyday challenge when working with schemaless NoSQL stores."
+          },
+          {
+            "criterion": "technical_validity",
+            "score": 5,
+            "evidence": "Accessing user['subscription']['expires_at'] without presence checks causes a KeyError if missing or a TypeError if set to None, making the identified defect strictly valid."
+          },
+          {
+            "criterion": "unique_correct_answer",
+            "score": 5,
+            "evidence": "Option A accurately and exclusively pinpoints the fatal runtime exceptions stemming from missing or null nested subscription fields."
+          },
+          {
+            "criterion": "snippet_clarity",
+            "score": 5,
+            "evidence": "The 9-line snippet is concise, readable, self-contained, and clearly displays the control flow without unnecessary dependencies."
+          },
+          {
+            "criterion": "distractor_plausibility",
+            "score": 4,
+            "evidence": "Options B, C, and D reflect common code review talking points such as retries, return types, and timestamp validity, though Option C's claim of high inefficiency is slightly exaggerated."
+          },
+          {
+            "criterion": "feedback_quality",
+            "score": 5,
+            "evidence": "Each feedback entry provides thorough praise, constructive rationale explaining why the answer is incomplete or incorrect, and relevant skill suggestions."
+          },
+          {
+            "criterion": "supportive_language",
+            "score": 5,
+            "evidence": "All explanations use encouraging, professional language that avoids negative labeling or discouraging phrasing."
+          },
+          {
+            "criterion": "difficulty_alignment",
+            "score": 4,
+            "evidence": "Tracing a nested dictionary access bug in a short function is suitable for a standard developer level, though experienced mid-level engineers may find the issue readily apparent."
+          }
+        ],
+        "strengths": [
+          "Authentically models schema evolution challenges in NoSQL-backed application code.",
+          "Provides constructive, high-quality feedback tailored to each specific option choice."
+        ],
+        "issues": [],
+        "summary": "This code review activity presents a realistic, technically accurate scenario representing schema drift in NoSQL-backed application services. The snippet is concise and easy to analyze, the correct answer is unambiguous, and the feedback maintains a supportive educational tone throughout."
+      },
+      "scores": {
+        "role_relevance": 5,
+        "workplace_realism": 5,
+        "technical_validity": 5,
+        "unique_correct_answer": 5,
+        "snippet_clarity": 5,
+        "distractor_plausibility": 4,
+        "feedback_quality": 5,
+        "supportive_language": 5,
+        "difficulty_alignment": 4
+      },
+      "calculated_decision": "accept",
+      "decision_consistent": true,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 20.3081,
+          "passed": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_02",
+      "review": {
+        "model_decision": "accept",
+        "criteria": [
+          {
+            "criterion": "role_relevance",
+            "score": 5,
+            "evidence": "Evaluating an API endpoint in Spring Boot for file delivery and reviewing input handling is a core daily responsibility for a mid-level software developer."
+          },
+          {
+            "criterion": "workplace_realism",
+            "score": 5,
+            "evidence": "The scenario of an internal reporting download endpoint interacting with a local export filesystem is a common real-world enterprise architecture pattern."
+          },
+          {
+            "criterion": "technical_validity",
+            "score": 5,
+            "evidence": "Constructing a java.io.File instance via new File(\"/var/exports/reports/\", filename) without validation allows directory traversal sequences such as '../', which directly exposes arbitrary files on the host."
+          },
+          {
+            "criterion": "unique_correct_answer",
+            "score": 5,
+            "evidence": "Option B correctly points out the critical directory traversal vulnerability. None of the distractors represent blocking defects or compete with B as the primary code review finding."
+          },
+          {
+            "criterion": "snippet_clarity",
+            "score": 5,
+            "evidence": "The snippet is 10 lines of standard Spring MVC code, self-contained, clearly formatted, and free of extraneous noise or compilation ambiguity."
+          },
+          {
+            "criterion": "distractor_plausibility",
+            "score": 4,
+            "evidence": "Distractors A, C, and D target caching, thread blocking with synchronous I/O, and error verbosity, which are all realistic discussion topics in peer code reviews, though D borders on bad practice rather than a genuine defect."
+          },
+          {
+            "criterion": "feedback_quality",
+            "score": 5,
+            "evidence": "Each option includes tailored feedback with what worked well, constructive remediation advice, and relevant catalogue skills ('Fault testing' and 'Stress testing') mapped to the context."
+          },
+          {
+            "criterion": "supportive_language",
+            "score": 5,
+            "evidence": "The feedback uses professional, encouraging phrasing like 'You accurately identified' and 'While thread blocking is a performance concern', completely avoiding harsh or judgmental language."
+          },
+          {
+            "criterion": "difficulty_alignment",
+            "score": 5,
+            "evidence": "The standard difficulty is well calibrated; spotting path traversal in path concatenation requires understanding normal Java File resolution without relying on overt syntax errors or trick questions."
+          }
+        ],
+        "strengths": [
+          "Presents an authentic, high-impact security vulnerability (directory traversal) in a concise, readable Spring Boot controller snippet.",
+          "Feedback provides actionable remediation guidance and links naturally to relevant testing skills.",
+          "Distractors capture realistic topics frequently debated in code reviews such as HTTP caching headers and blocking servlet I/O."
+        ],
+        "issues": [],
+        "summary": "This code review activity is well-crafted, technically sound, and highly relevant to professional software development. The code snippet clearly demonstrates a classic path traversal vulnerability without distracting syntax issues. The distractors and feedback are balanced, constructive, and realistic for a standard-difficulty review."
+      },
+      "scores": {
+        "role_relevance": 5,
+        "workplace_realism": 5,
+        "technical_validity": 5,
+        "unique_correct_answer": 5,
+        "snippet_clarity": 5,
+        "distractor_plausibility": 4,
+        "feedback_quality": 5,
+        "supportive_language": 5,
+        "difficulty_alignment": 5
+      },
+      "calculated_decision": "accept",
+      "decision_consistent": true,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 21.9227,
+          "passed": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_03",
+      "review": {
+        "model_decision": "accept",
+        "criteria": [
+          {
+            "criterion": "role_relevance",
+            "score": 5,
+            "evidence": "Evaluating asynchronous database updates and concurrency pitfalls in backend services is a core day-to-day responsibility for a professional software developer."
+          },
+          {
+            "criterion": "workplace_realism",
+            "score": 5,
+            "evidence": "The pull request scenario involving balance updates under peak load directly reflects a common production issue in financial microservices."
+          },
+          {
+            "criterion": "technical_validity",
+            "score": 5,
+            "evidence": "The code demonstrates a classic read-modify-write concurrency flaw where non-atomic fetch and update calls allow concurrent executions to overwrite balances."
+          },
+          {
+            "criterion": "unique_correct_answer",
+            "score": 5,
+            "evidence": "Option C correctly identifies the asynchronous race condition as the root cause of the lost balance updates, whereas options A, B, and D represent secondary refactoring suggestions that do not address the bug."
+          },
+          {
+            "criterion": "snippet_clarity",
+            "score": 5,
+            "evidence": "The 8-line JavaScript snippet is self-contained, clearly structured, and easy to trace without requiring external context or execution."
+          },
+          {
+            "criterion": "distractor_plausibility",
+            "score": 4,
+            "evidence": "Distractors A, B, and D represent plausible code review suggestions regarding validation, return types, and modularity, though developers focused on data integrity will quickly differentiate them from the core bug."
+          },
+          {
+            "criterion": "feedback_quality",
+            "score": 5,
+            "evidence": "Feedback for all options is detailed and tailored, validating the good intentions of the distractors while explaining why only option C addresses the race condition."
+          },
+          {
+            "criterion": "supportive_language",
+            "score": 5,
+            "evidence": "The feedback uses supportive, professional language with 'what_worked_well' and 'areas_to_consider' sections without negative or shaming terminology."
+          },
+          {
+            "criterion": "difficulty_alignment",
+            "score": 5,
+            "evidence": "Tracing asynchronous control flow to diagnose a lost update race condition perfectly aligns with the standard difficulty level for developers with 3 to 5 years of experience."
+          }
+        ],
+        "strengths": [
+          "Presents an authentic and technically accurate scenario of an async race condition in a financial service.",
+          "Provides balanced, constructive feedback that links specific candidate catalogue skills back to concrete database patterns like atomic DML updates.",
+          "Code snippet is concise, readable, and free of extraneous dependencies."
+        ],
+        "issues": [],
+        "summary": "This activity is exemplary. The snippet clearly illustrates an asynchronous read-modify-write race condition that matches the reported production issue. The options are well-constructed, the correct answer is unique and technically sound, and the feedback provides actionable educational insights aligned with professional development best practices."
+      },
+      "scores": {
+        "role_relevance": 5,
+        "workplace_realism": 5,
+        "technical_validity": 5,
+        "unique_correct_answer": 5,
+        "snippet_clarity": 5,
+        "distractor_plausibility": 4,
+        "feedback_quality": 5,
+        "supportive_language": 5,
+        "difficulty_alignment": 5
+      },
+      "calculated_decision": "accept",
+      "decision_consistent": true,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 14.1128,
+          "passed": true,
+          "error": null
+        }
+      ]
+    },
+    {
+      "question_id": "software_developer_standard_code_review_v1_04",
+      "review": {
+        "model_decision": "accept",
+        "criteria": [
+          {
+            "criterion": "role_relevance",
+            "score": 5,
+            "evidence": "Evaluating asynchronous I/O, resource lifetimes, and networking patterns in C# background services directly aligns with typical software developer day-to-day responsibilities."
+          },
+          {
+            "criterion": "workplace_realism",
+            "score": 5,
+            "evidence": "The scenario mirrors a standard production background worker draining a queue to invoke downstream HTTP endpoints under high throughput."
+          },
+          {
+            "criterion": "technical_validity",
+            "score": 5,
+            "evidence": "Instantiating and disposing HttpClient per iteration in a tight loop is well-known in .NET to exhaust OS sockets due to connections lingering in TIME_WAIT states."
+          },
+          {
+            "criterion": "unique_correct_answer",
+            "score": 5,
+            "evidence": "The prompt specifically asks for the 'most critical performance and resource-handling issue'. Option D unambiguously addresses the primary resource leakage and performance degradation, whereas options A, B, and C address concurrency, error resilience, and observability."
+          },
+          {
+            "criterion": "snippet_clarity",
+            "score": 5,
+            "evidence": "The 9-line snippet is concise, syntactically coherent modern C#, and clearly displays the lifecycle issue without extraneous boilerplate."
+          },
+          {
+            "criterion": "distractor_plausibility",
+            "score": 4,
+            "evidence": "All three distractors represent legitimate concerns often raised in peer reviews (thread safety, unhandled exceptions, and telemetry), making them plausible while remaining secondary to the core resource issue."
+          },
+          {
+            "criterion": "feedback_quality",
+            "score": 5,
+            "evidence": "Each option provides detailed, constructive feedback that acknowledges the validity of the reviewer's observation while explaining why socket exhaustion is the overriding concern."
+          },
+          {
+            "criterion": "supportive_language",
+            "score": 5,
+            "evidence": "The feedback maintains an encouraging and professional tone throughout, using constructive sections like 'what_worked_well' and 'areas_to_consider' without punitive phrasing."
+          },
+          {
+            "criterion": "difficulty_alignment",
+            "score": 5,
+            "evidence": "Recognizing the anti-pattern of disposing HttpClient versus using IHttpClientFactory is an established benchmark expectation for standard-level (3–5 years) C# developers."
+          }
+        ],
+        "strengths": [
+          "Targets a classic, high-impact .NET networking anti-pattern that frequently occurs in real-world background workers.",
+          "The question prompt specifically focuses on performance and resource handling, making option D decisively correct over other code quality concerns.",
+          "Distractors reflect realistic code review comments regarding logging, exception handling, and thread safety rather than arbitrary syntax errors."
+        ],
+        "issues": [],
+        "summary": "This activity is fully fit for purpose. It presents an authentic C# code review scenario focused on socket exhaustion and HttpClient lifecycle management. The distractors are plausible workplace observations, the single correct answer is technically sound and distinct, and the feedback is supportive and pedagogically valuable."
+      },
+      "scores": {
+        "role_relevance": 5,
+        "workplace_realism": 5,
+        "technical_validity": 5,
+        "unique_correct_answer": 5,
+        "snippet_clarity": 5,
+        "distractor_plausibility": 4,
+        "feedback_quality": 5,
+        "supportive_language": 5,
+        "difficulty_alignment": 5
+      },
+      "calculated_decision": "accept",
+      "decision_consistent": true,
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "latency_seconds": 13.1167,
+          "passed": true,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "negative_control": {
+    "review": {
+      "model_decision": "reject",
+      "criteria": [
+        {
+          "criterion": "role_relevance",
+          "score": 4,
+          "evidence": "Evaluating division by zero and basic defensive checks is a standard task for a junior or guided software developer, though the scenario lacks broader context."
+        },
+        {
+          "criterion": "workplace_realism",
+          "score": 2,
+          "evidence": "The scenario ('Review a Python helper used to calculate a ratio') and 3-line isolated snippet are artificial, and distractors such as claiming a function name is 'too descriptive' do not resemble authentic workplace code review discussions."
+        },
+        {
+          "criterion": "technical_validity",
+          "score": 4,
+          "evidence": "The technical issue identified—that passing zero as count triggers an unhandled exception—is completely accurate for Python's division operator."
+        },
+        {
+          "criterion": "unique_correct_answer",
+          "score": 1,
+          "evidence": "Option a ('The function can raise an exception when count is zero') and Option b ('A zero divisor can cause a ZeroDivisionError') describe the exact same technical defect. Option b is actually more precise, invalidating option a as the unique correct answer."
+        },
+        {
+          "criterion": "snippet_clarity",
+          "score": 5,
+          "evidence": "The code snippet is concise, syntactically valid Python, self-contained, and readable without requiring external execution."
+        },
+        {
+          "criterion": "distractor_plausibility",
+          "score": 1,
+          "evidence": "Option b is an alternate correct answer rather than a distractor. Options c ('The function name is too descriptive') and d ('The calculation should always use string values') are absurd caricatures rather than plausible developer misunderstandings."
+        },
+        {
+          "criterion": "feedback_quality",
+          "score": 1,
+          "evidence": "Feedback entries are tautological and uninformative, containing statements like 'You found the correct answer', 'Nothing else needs consideration', 'This duplicates another option', and 'This confirms the answer'."
+        },
+        {
+          "criterion": "supportive_language",
+          "score": 2,
+          "evidence": "Feedback uses blunt judgmental and right/wrong phrasing such as 'This is the wrong answer.' and 'You failed to identify the issue.' which does not follow supportive pedagogical guidelines."
+        },
+        {
+          "criterion": "difficulty_alignment",
+          "score": 2,
+          "evidence": "Although targeted at the guided tier, the presence of duplicate correct options and nonsensical distractors undermines any meaningful educational assessment."
+        }
+      ],
+      "strengths": [
+        "The code snippet is clear, concise, and syntactically correct Python code.",
+        "The underlying technical concept (guarding against division by zero) is relevant for early-career developers."
+      ],
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "unique_correct_answer",
+          "evidence": "Option a and Option b both describe the same zero-division failure mode, making it impossible to select a single definitively correct option.",
+          "recommended_fix": "Keep option a (or b) as the sole correct answer and replace the other with a genuine distractor such as handling non-numeric types or missing return type annotations."
+        },
+        {
+          "severity": "critical",
+          "category": "distractor_plausibility",
+          "evidence": "Option b duplicates the correct answer, while options c and d are obvious jokes that provide no diagnostic value for learning.",
+          "recommended_fix": "Rewrite options b, c, and d into plausible code-review concerns, such as checking for negative values, returning float precision formatting, or adding type hints."
+        },
+        {
+          "severity": "major",
+          "category": "feedback_quality",
+          "evidence": "The feedback strings are unhelpful circular statements ('This duplicates another option', 'Nothing else needs consideration') that do not explain the engineering principles.",
+          "recommended_fix": "Provide informative explanations detailing how ZeroDivisionError occurs in Python and recommending defensive patterns such as checking divisors or handling exceptions."
+        },
+        {
+          "severity": "major",
+          "category": "supportive_language",
+          "evidence": "The feedback uses unsupportive language such as 'You failed to identify the issue' and 'This is the wrong answer.'",
+          "recommended_fix": "Rephrase feedback using growth-oriented, non-punitive language that explains the reasoning rather than declaring failure."
+        },
+        {
+          "severity": "major",
+          "category": "workplace_realism",
+          "evidence": "The prompt and distractors are overly artificial and do not mirror realistic pull request review discussions.",
+          "recommended_fix": "Situate the function within a realistic module (e.g., an analytics or reporting helper) and present realistic review comments."
+        },
+        {
+          "severity": "major",
+          "category": "difficulty_alignment",
+          "evidence": "The activity fails to provide guided learning due to duplicate answers and trivial distractors.",
+          "recommended_fix": "Align options and hints to scaffold an introductory code review on defensive programming without confusing learners with duplicate answers."
+        }
+      ],
+      "summary": "This negative control activity is rejected due to critical flaws: Option a and Option b describe the exact same error, invalidating unique correctness, while options c and d are unplausible caricatures. Additionally, the feedback is unhelpful, circular, and contains unsupportive framing."
+    },
+    "scores": {
+      "role_relevance": 4,
+      "workplace_realism": 2,
+      "technical_validity": 4,
+      "unique_correct_answer": 1,
+      "snippet_clarity": 5,
+      "distractor_plausibility": 1,
+      "feedback_quality": 1,
+      "supportive_language": 2,
+      "difficulty_alignment": 2
+    },
+    "calculated_decision": "reject",
+    "decision_consistent": true,
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "latency_seconds": 22.8832,
+        "passed": true,
+        "error": null
+      }
+    ],
+    "passed": true
+  },
+  "code_snippets_executed": false,
+  "ready_for_full_generation": true,
+  "result": "passed"
+}

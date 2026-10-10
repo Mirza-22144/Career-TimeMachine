@@ -1,0 +1,38 @@
+{
+  "activity_type": "drag_and_drop",
+  "backend_request_fields": [
+    "role_id",
+    "skills",
+    "years_experience",
+    "responsibilities",
+    "difficulty",
+    "activity_type"
+  ],
+  "ai_response_fields": [
+    "title",
+    "situation",
+    "sentence_template",
+    "blanks",
+    "options",
+    "feedback_by_option",
+    "skills_used",
+    "guidance"
+  ],
+  "rules": {
+    "blank_count": 3,
+    "option_count": 5,
+    "intended_option_count": 3,
+    "distractor_count": 2,
+    "intended_mapping_field": "fits_blank_id",
+    "distractor_mapping_value": null,
+    "feedback_required_for_all_options": true,
+    "feedback_style": "constructive improvement, not correctness",
+    "uses_years_experience": true,
+    "uses_responsibilities": true
+  },
+  "difficulty_levels": [
+    "guided",
+    "standard",
+    "challenge"
+  ]
+}

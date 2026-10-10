@@ -1,0 +1,71 @@
+{
+  "title": "Code Review Feedback Discussion",
+  "situation": "You need to discuss a recent pull request with a junior developer, providing constructive feedback on their implementation while ensuring project deadlines are met.",
+  "sentence_template": "Hello, I have {blank_1} regarding your recent pull request. Could we schedule a chat to {blank_2} and aim to {blank_3}?",
+  "blanks": [
+    {
+      "blank_id": "blank_1"
+    },
+    {
+      "blank_id": "blank_2"
+    },
+    {
+      "blank_id": "blank_3"
+    }
+  ],
+  "options": [
+    {
+      "option_id": "o1",
+      "text": "some notes on the code structure",
+      "fits_blank_id": "blank_1"
+    },
+    {
+      "option_id": "o2",
+      "text": "go through a few optimisation ideas",
+      "fits_blank_id": "blank_2"
+    },
+    {
+      "option_id": "o3",
+      "text": "merge the updates by Friday afternoon",
+      "fits_blank_id": "blank_3"
+    },
+    {
+      "option_id": "o4",
+      "text": "fix everything quickly",
+      "fits_blank_id": null
+    },
+    {
+      "option_id": "o5",
+      "text": "rewrite the entire module",
+      "fits_blank_id": null
+    }
+  ],
+  "feedback_by_option": {
+    "o1": {
+      "what_to_improve": null,
+      "why": "This clearly and politely indicates the focus of the feedback without sounding overly critical."
+    },
+    "o2": {
+      "what_to_improve": null,
+      "why": "This frames the discussion collaboratively, encouraging shared problem-solving."
+    },
+    "o3": {
+      "what_to_improve": null,
+      "why": "This sets a clear, actionable target for completing the task together."
+    },
+    "o4": {
+      "what_to_improve": "Be more specific about what needs attention rather than using vague urgency.",
+      "why": "Phrases like 'fix everything quickly' can feel overwhelming and lack actionable detail."
+    },
+    "o5": {
+      "what_to_improve": "Propose targeted improvements rather than suggesting a total rewrite.",
+      "why": "Suggesting a complete rewrite can demoralise team members and is rarely necessary for code refinement."
+    }
+  },
+  "skills_used": [
+    "Stakeholder communication"
+  ],
+  "guidance": [
+    "Consider how your phrasing impacts collaboration and clarity when reviewing junior team members' code."
+  ]
+}

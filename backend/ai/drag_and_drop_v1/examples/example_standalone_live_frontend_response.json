@@ -1,0 +1,73 @@
+{
+  "source": "live_gemini",
+  "activity_id": "network_and_systems_administrator_challenge_live",
+  "activity": {
+    "title": "Critical Outage Escalation and Incident Coordination",
+    "situation": "You are coordinating a critical outage response for enterprise core routing, managing junior staff escalation paths, and communicating impact projections to senior stakeholders.",
+    "sentence_template": "During the incident, we identified {blank_1}, expect {blank_2}, and will {blank_3}.",
+    "blanks": [
+      {
+        "blank_id": "blank_1"
+      },
+      {
+        "blank_id": "blank_2"
+      },
+      {
+        "blank_id": "blank_3"
+      }
+    ],
+    "options": [
+      {
+        "option_id": "o1",
+        "text": "a redundant path failure in the core routing tier"
+      },
+      {
+        "option_id": "o2",
+        "text": "intermittent packet loss to persist for approximately two hours"
+      },
+      {
+        "option_id": "o3",
+        "text": "execute the staged failover procedure and mentor junior engineers through verification"
+      },
+      {
+        "option_id": "o4",
+        "text": "complete network topology redesign before validating the active links"
+      },
+      {
+        "option_id": "o5",
+        "text": "halt all logging services until the incident ticket is closed"
+      }
+    ],
+    "feedback_by_option": {
+      "o1": {
+        "what_to_improve": null,
+        "why": "This option precisely identifies the root cause of the current infrastructure degradation."
+      },
+      "o2": {
+        "what_to_improve": null,
+        "why": "This provides a realistic and measured time frame for stabilization during high-priority incidents."
+      },
+      "o3": {
+        "what_to_improve": null,
+        "why": "This balances immediate technical remediation with the responsibility of guiding junior staff."
+      },
+      "o4": {
+        "what_to_improve": "Consider prioritizing active link validation and immediate recovery over broad architectural changes during an ongoing outage.",
+        "why": "While a redesign may be valuable later, attempting major modifications during active triage introduces unnecessary risk."
+      },
+      "o5": {
+        "what_to_improve": "Consider maintaining logging services to ensure comprehensive forensic data is preserved throughout the escalation.",
+        "why": "Disabling logging can hinder root-cause analysis and make post-incident review significantly more difficult."
+      }
+    },
+    "skills_used": [
+      "Critical outage escalation",
+      "Incident management",
+      "Mentoring junior staff"
+    ],
+    "guidance": [
+      "Ensure technical findings are stated with precision during high-pressure outages.",
+      "Balance immediate recovery actions with the need to support and guide less experienced team members."
+    ]
+  }
+}

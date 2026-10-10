@@ -1,0 +1,18 @@
+{
+  "report_name": "drag_and_drop_generation_summary_v1_324",
+  "created_at_utc": "2026-10-08T14:39:20.963670+00:00",
+  "generator_model": "gemini-3.5-flash",
+  "expected_activity_count": 324,
+  "generated_activity_count": 324,
+  "role_count": 27,
+  "difficulty_count": 3,
+  "role_difficulty_batch_count": 81,
+  "activities_per_batch": 4,
+  "newly_generated_batch_count": 13,
+  "recovered_batch_count": 68,
+  "failed_batch_count": 0,
+  "successful_generation_attempt_count": 13,
+  "checkpoint_directory": "/content/drive/MyDrive/CareerTimeMachine/drag_and_drop_pipeline_v1/checkpoints/static_generation_batches",
+  "combined_output_file": "/content/drive/MyDrive/CareerTimeMachine/drag_and_drop_pipeline_v1/output/drag_and_drop_activity_pool_v1_generated.json",
+  "complete": true
+}

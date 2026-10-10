@@ -1,0 +1,15 @@
+{
+  "report_name": "live_drag_and_drop_smoke_test_report_v1",
+  "created_at_utc": "2026-10-08T15:42:00.220247+00:00",
+  "live_model": "gemini-3.5-flash-lite",
+  "source": "live_gemini",
+  "activity_id": "software_developer_guided_live_v1_fd30722f6f38",
+  "live_generation_succeeded": true,
+  "generation_attempt_count": 1,
+  "total_latency_seconds": 2.4331,
+  "intended_option_count": 3,
+  "distractor_count": 2,
+  "custom_skill_preserved": true,
+  "forced_fallback_passed": true,
+  "output_file": "/content/drive/MyDrive/CareerTimeMachine/drag_and_drop_pipeline_v1/live_service/output/live_drag_and_drop_smoke_test_v1.json"
+}

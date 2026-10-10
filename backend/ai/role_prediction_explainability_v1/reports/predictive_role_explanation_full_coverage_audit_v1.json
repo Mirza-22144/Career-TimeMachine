@@ -1,0 +1,65 @@
+{
+  "created_at_utc": "2026-10-10T06:15:48.736198+00:00",
+  "purpose": "Audit deterministic explanations across all supported production roles and multiple skill-input variants.",
+  "production_role_count": 27,
+  "test_request_count": 81,
+  "tests_passed": 81,
+  "tests_failed": 0,
+  "variant_distribution": {
+    "catalogue_skills": 27,
+    "custom_skills": 27,
+    "empty_skills": 27
+  },
+  "reason_code_distribution": {
+    "model_profile_match": 162,
+    "previous_role_similarity": 162,
+    "selected_skill_match": 102
+  },
+  "matched_skill_count_distribution": {
+    "0": 60,
+    "1": 14,
+    "2": 42,
+    "3": 18,
+    "4": 18,
+    "5": 10
+  },
+  "unique_recommended_roles": 15,
+  "recommended_role_distribution": {
+    "business_intelligence_analyst": 6,
+    "computer_and_information_research_scientist": 4,
+    "computer_systems_analyst": 2,
+    "computer_systems_engineer_architect": 46,
+    "computer_user_support_specialist": 12,
+    "data_scientist": 4,
+    "data_warehousing_specialist": 6,
+    "database_administrator": 2,
+    "database_architect": 4,
+    "digital_forensics_analyst": 2,
+    "penetration_tester": 4,
+    "software_developer": 54,
+    "software_qa_analyst_tester": 2,
+    "web_and_digital_interface_designer": 10,
+    "web_developer": 4
+  },
+  "security_tests": {
+    "untrusted_text_not_echoed": true,
+    "unknown_role_rejected": true,
+    "invalid_catalogue_type_rejected": true,
+    "invalid_custom_type_rejected": true
+  },
+  "security_tests_passed": 4,
+  "security_test_count": 4,
+  "errors": [],
+  "balanced_sample_count": 27,
+  "ranking_preserved_for_all_requests": true,
+  "deterministic_for_all_requests": true,
+  "evidence_verified_for_all_requests": true,
+  "internal_scores_hidden": true,
+  "bundle_sha256_before": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_sha256_after": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_unchanged": true,
+  "model_retrained": false,
+  "ranking_weights_changed": false,
+  "gemini_calls_made": false,
+  "result": "passed"
+}

@@ -1,0 +1,35 @@
+{
+  "created_at_utc": "2026-10-10T02:05:28.221645+00:00",
+  "pool_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/output/code_review_activity_pool_v1_generated.json",
+  "pool_sha256": "99b490fd839d0f1fbb98c6600968e403a9f79b2f6e8f3f237c5335f560aa7800",
+  "activity_count": 324,
+  "unique_question_ids": 324,
+  "role_count": 27,
+  "role_difficulty_combinations": 81,
+  "difficulty_distribution": {
+    "challenge": 108,
+    "guided": 108,
+    "standard": 108
+  },
+  "correct_option_distribution": {
+    "a": 81,
+    "b": 81,
+    "c": 81,
+    "d": 81
+  },
+  "structural_error_count": 0,
+  "checks": {
+    "activity_count_is_324": true,
+    "unique_question_ids_are_324": true,
+    "role_count_is_27": true,
+    "combination_count_is_81": true,
+    "four_per_combination": true,
+    "difficulty_distribution_is_balanced": true,
+    "answer_distribution_is_balanced": true,
+    "structural_errors_are_zero": true,
+    "summary_result_passed": true
+  },
+  "gemini_calls_made": false,
+  "code_snippets_executed": false,
+  "result": "passed"
+}

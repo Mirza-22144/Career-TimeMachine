@@ -1,0 +1,22 @@
+{
+  "created_at_utc": "2026-10-09T08:35:34.591935+00:00",
+  "environment_type": "isolated virtual environment",
+  "environment_path": "/content/code_review_ai_environment",
+  "python": "3.13.16",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+  "packages": {
+    "google-genai": "2.29.0",
+    "pydantic": "2.13.5",
+    "pydantic_core": "2.46.5",
+    "rapidfuzz": "3.14.6"
+  },
+  "processing_device": "cpu",
+  "gpu_required": false,
+  "colab_base_environment_modified": false,
+  "api_key_stored": false,
+  "backend_compatibility": {
+    "google-genai": "2.29.0",
+    "pydantic": "2.13.5",
+    "pydantic_core": "2.46.5"
+  }
+}

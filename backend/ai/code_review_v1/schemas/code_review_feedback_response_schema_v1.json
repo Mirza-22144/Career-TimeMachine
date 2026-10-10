@@ -1,0 +1,58 @@
+{
+  "$defs": {
+    "SkillToExplore": {
+      "additionalProperties": false,
+      "properties": {
+        "skill": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Skill",
+          "type": "string"
+        },
+        "why_relevant": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Why Relevant",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "why_relevant"
+      ],
+      "title": "SkillToExplore",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "what_worked_well": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "What Worked Well",
+      "type": "array"
+    },
+    "areas_to_consider": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "Areas To Consider",
+      "type": "array"
+    },
+    "skill_to_explore": {
+      "$ref": "#/$defs/SkillToExplore"
+    }
+  },
+  "required": [
+    "what_worked_well",
+    "areas_to_consider",
+    "skill_to_explore"
+  ],
+  "title": "CodeReviewFeedbackResponse",
+  "type": "object"
+}

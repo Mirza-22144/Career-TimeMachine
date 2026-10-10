@@ -1,0 +1,232 @@
+{
+  "$defs": {
+    "CodeReviewFeedback": {
+      "properties": {
+        "what_worked_well": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "What Worked Well",
+          "type": "array"
+        },
+        "areas_to_consider": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Areas To Consider",
+          "type": "array"
+        },
+        "skill_to_explore": {
+          "$ref": "#/$defs/SkillToExplore"
+        }
+      },
+      "required": [
+        "what_worked_well",
+        "areas_to_consider",
+        "skill_to_explore"
+      ],
+      "title": "CodeReviewFeedback",
+      "type": "object"
+    },
+    "CodeReviewOption": {
+      "properties": {
+        "option_id": {
+          "enum": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "title": "Option Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "option_id",
+        "text"
+      ],
+      "title": "CodeReviewOption",
+      "type": "object"
+    },
+    "CodeReviewOptionFeedback": {
+      "properties": {
+        "option_id": {
+          "enum": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "title": "Option Id",
+          "type": "string"
+        },
+        "feedback": {
+          "$ref": "#/$defs/CodeReviewFeedback"
+        }
+      },
+      "required": [
+        "option_id",
+        "feedback"
+      ],
+      "title": "CodeReviewOptionFeedback",
+      "type": "object"
+    },
+    "SkillToExplore": {
+      "properties": {
+        "skill": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Skill",
+          "type": "string"
+        },
+        "why_relevant": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Why Relevant",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "why_relevant"
+      ],
+      "title": "SkillToExplore",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "question_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[a-z0-9_]+_(guided|standard|challenge)_code_review_v1_[0-9]{2}$",
+      "title": "Question Id",
+      "type": "string"
+    },
+    "role_id": {
+      "maxLength": 100,
+      "minLength": 1,
+      "pattern": "^[a-z0-9_]+$",
+      "title": "Role Id",
+      "type": "string"
+    },
+    "role_label": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Role Label",
+      "type": "string"
+    },
+    "difficulty": {
+      "enum": [
+        "guided",
+        "standard",
+        "challenge"
+      ],
+      "title": "Difficulty",
+      "type": "string"
+    },
+    "activity_type": {
+      "const": "code_review",
+      "title": "Activity Type",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "situation": {
+      "maxLength": 700,
+      "minLength": 1,
+      "title": "Situation",
+      "type": "string"
+    },
+    "language": {
+      "maxLength": 60,
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9+#./ _-]+$",
+      "title": "Language",
+      "type": "string"
+    },
+    "code_snippet": {
+      "maxLength": 5000,
+      "minLength": 10,
+      "title": "Code Snippet",
+      "type": "string"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/CodeReviewOption"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Options",
+      "type": "array"
+    },
+    "correct_option_id": {
+      "enum": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "title": "Correct Option Id",
+      "type": "string"
+    },
+    "skills_used": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Skills Used",
+      "type": "array"
+    },
+    "guidance": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 0,
+      "title": "Guidance",
+      "type": "array"
+    },
+    "option_feedback": {
+      "items": {
+        "$ref": "#/$defs/CodeReviewOptionFeedback"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Option Feedback",
+      "type": "array"
+    }
+  },
+  "required": [
+    "question_id",
+    "role_id",
+    "role_label",
+    "difficulty",
+    "activity_type",
+    "title",
+    "situation",
+    "language",
+    "code_snippet",
+    "options",
+    "correct_option_id",
+    "skills_used",
+    "guidance",
+    "option_feedback"
+  ],
+  "title": "StaticCodeReviewRecord",
+  "type": "object"
+}

@@ -1,0 +1,143 @@
+{
+  "handover_name": "Career Time Machine predictive-role explainability",
+  "handover_version": "1.0",
+  "created_at_utc": "2026-10-10T06:23:03.205001+00:00",
+  "status": "complete",
+  "existing_model_version": "2",
+  "existing_bundle_filename": "career_role_recommender_v2_bundle.joblib",
+  "existing_bundle_sha256": "c1d796bab859e1b89b6654783c0a5c6e2f17b1ccf1eba84608b722ee54669736",
+  "bundle_included": false,
+  "bundle_exclusion_reason": "The backend already contains the exact unchanged Version 2 model bundle.",
+  "reference_predictor_unchanged": true,
+  "reference_predictor_sha256": "67ae9e37a70821d35ca563b09f183f8a30382693d580506f92df9d3e882fcf2b",
+  "production_roles_tested": 27,
+  "coverage_requests_passed": "81/81",
+  "security_tests_passed": "4/4",
+  "original_rankings_preserved": true,
+  "explanations_deterministic": true,
+  "matched_skill_claims_evidence_gated": true,
+  "internal_scores_exposed": false,
+  "model_retrained": false,
+  "ranking_weights_changed": false,
+  "gemini_required": false,
+  "possible_api_secrets_found": 0,
+  "files_over_100_mb": 0,
+  "file_count_excluding_manifest": 23,
+  "files": [
+    {
+      "relative_path": "BACKEND_INTEGRATION.md",
+      "size_bytes": 1932,
+      "sha256": "09e06a0791ab32a83c25d35373656d107ae242a5956c5426a0781295fd19a30d"
+    },
+    {
+      "relative_path": "README.md",
+      "size_bytes": 816,
+      "sha256": "c281f78f1bd06a347d8e044ae2f01eb79d64fbc91ef919537ced3b79d0dc889a"
+    },
+    {
+      "relative_path": "examples/example_backend_explained_prediction_v1.json",
+      "size_bytes": 1466,
+      "sha256": "63c4189079ba9dd7406f0899e3fdb98b03673a426786da510428657beff7ccec"
+    },
+    {
+      "relative_path": "examples/example_explained_prediction_v1.json",
+      "size_bytes": 1446,
+      "sha256": "e418f05c3ae68c4b541c61b1a7e9a928b5d1914d80d76b63c52704e3cd3e5335"
+    },
+    {
+      "relative_path": "examples/example_request_v2.json",
+      "size_bytes": 393,
+      "sha256": "05adaa75f7148fffaf84439a832ef3bf46360d2cf9b6b221a62ae7980246f3ad"
+    },
+    {
+      "relative_path": "examples/example_response_v2.json",
+      "size_bytes": 209,
+      "sha256": "ee4ef9ddcd08fd5ffacda1bf0eda8cdc8cb7247d51fc37419b97d527ae3b5796"
+    },
+    {
+      "relative_path": "reports/backend_explained_prediction_adapter_verification_v1.json",
+      "size_bytes": 864,
+      "sha256": "8e03da082d0e890075fdf654ffd4c67ad4f07ee2a9a92f30af65b34ac7afcee3"
+    },
+    {
+      "relative_path": "reports/career_role_explainer_verification_v1.json",
+      "size_bytes": 1580,
+      "sha256": "c3fc62851d005ec26d926bcee522128ee3990c56377e0a2e359c0e3572921cc9"
+    },
+    {
+      "relative_path": "reports/predictive_role_explainability_dependency_environment_v1.json",
+      "size_bytes": 823,
+      "sha256": "5a4a75034fc2f61a5cb9b947643dd4477d67393e3a0d3c34bbae94629684fbee"
+    },
+    {
+      "relative_path": "reports/predictive_role_explainability_source_provenance_v1.json",
+      "size_bytes": 2913,
+      "sha256": "7214308bc027c60e62fa3d6d1d144b4cca896907be9e8ce789a619c7e14c80d7"
+    },
+    {
+      "relative_path": "reports/predictive_role_explanation_balanced_sample_v1_27.json",
+      "size_bytes": 56767,
+      "sha256": "67a9716c03c7387dcd3a5b07faceff59a38722de995498cda26a118b0850a999"
+    },
+    {
+      "relative_path": "reports/predictive_role_explanation_full_coverage_audit_v1.json",
+      "size_bytes": 2064,
+      "sha256": "ada12289861765bf188ebf393b8671f827ab23160142340dc3007902a21ae2e3"
+    },
+    {
+      "relative_path": "reports/predictive_role_explanation_schema_verification_v1.json",
+      "size_bytes": 1211,
+      "sha256": "b32632e08fa63aa03a6744248e7fdcb5a5e80896c1ba92733ff8c19f4b9a79d7"
+    },
+    {
+      "relative_path": "reports/predictive_role_v2_baseline_verification_v1.json",
+      "size_bytes": 2536,
+      "sha256": "75bd4e5af38098e0c1bd399a5918af6c221ddff18c6640d13e66f82ffa044d53"
+    },
+    {
+      "relative_path": "requirements.txt",
+      "size_bytes": 78,
+      "sha256": "6ad4d7d4723eafcc5c856ec5554914821e626fb2897921f87809097c6647f330"
+    },
+    {
+      "relative_path": "schemas/backend_explained_prediction_integration_contract_v1.json",
+      "size_bytes": 2549,
+      "sha256": "f1bb8a8edd8ce8671b6d4097659d7ca6a164a88c882976e9c3c530e0594ecfae"
+    },
+    {
+      "relative_path": "schemas/backend_explained_prediction_response_schema_v1.json",
+      "size_bytes": 2174,
+      "sha256": "9fc47697bc8d23a347300e77da92a3df4e9fb5d8091b00da3b1f7117748f5529"
+    },
+    {
+      "relative_path": "schemas/predictive_role_explanation_contract_v1.json",
+      "size_bytes": 1411,
+      "sha256": "93cfaff94b20435e34c064f59ca050ec7ebc380d709444eb3c165dc71750a878"
+    },
+    {
+      "relative_path": "schemas/predictive_role_explanation_response_schema_v1.json",
+      "size_bytes": 2149,
+      "sha256": "f85f9b9dbfc1ee18f7a5e1d4d671b505a5328a039d4ca931c96e99d3ae32a86a"
+    },
+    {
+      "relative_path": "source/career_role_explainer_v1.py",
+      "size_bytes": 8951,
+      "sha256": "4365ff861ab6f480b9af0ec68526291fd4a947974c9768bd85386f22fdaa390d"
+    },
+    {
+      "relative_path": "source/career_role_predictor_v2.py",
+      "size_bytes": 14610,
+      "sha256": "67ae9e37a70821d35ca563b09f183f8a30382693d580506f92df9d3e882fcf2b"
+    },
+    {
+      "relative_path": "source/explained_role_prediction_provider_v1.py",
+      "size_bytes": 2411,
+      "sha256": "7d980235805a7680e4212570e6f27a58ecfe5c369b0ffd79306a19541e06c460"
+    },
+    {
+      "relative_path": "source/predictive_role_explanation_models_v1.py",
+      "size_bytes": 4433,
+      "sha256": "8c7136ad79955ca9f447a4528fb30cda458eff5f108902c2adfbc1794501bbd0"
+    }
+  ]
+}

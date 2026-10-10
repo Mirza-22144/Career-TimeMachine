@@ -1,0 +1,36 @@
+{
+  "question_id": "blockchain_engineer_guided_code_review_v1_01",
+  "role_id": "blockchain_engineer",
+  "role_label": "Blockchain Engineer",
+  "difficulty": "guided",
+  "activity_type": "code_review",
+  "title": "Securing a Solidity Withdrawal Function",
+  "situation": "You are reviewing a junior developer's Solidity smart contract. They have implemented a standard withdraw function for a vault, but you notice a critical vulnerability in the order of execution that could allow an attacker to drain the contract's funds.",
+  "language": "solidity",
+  "code_snippet": "function withdraw(uint256 amount) public {\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    (bool success, ) = msg.sender.call{value: amount}(\"\");\n    balances[msg.sender] -= amount;\n    require(success, \"Transfer failed\");\n}",
+  "options": [
+    {
+      "option_id": "a",
+      "text": "The balance is updated after the external transfer call, violating the checks-effects-interactions pattern and exposing the contract to a reentrancy attack."
+    },
+    {
+      "option_id": "b",
+      "text": "The require statement checking the success of the transfer is placed too late and should be executed prior to initiating the external call."
+    },
+    {
+      "option_id": "c",
+      "text": "The use of msg.sender.call is insecure and should be replaced with msg.sender.transfer to automatically revert on failure."
+    },
+    {
+      "option_id": "d",
+      "text": "The amount parameter is not validated against a maximum gas limit, which can cause the transaction to revert due to out-of-gas errors."
+    }
+  ],
+  "skills_used": [
+    "GitHub"
+  ],
+  "guidance": [
+    "Look closely at the order of operations in the withdraw function, specifically when the user's balance is updated relative to the external ether transfer.",
+    "Consider what happens if the recipient of the ether is another smart contract that calls back into this withdraw function before the execution finishes."
+  ]
+}

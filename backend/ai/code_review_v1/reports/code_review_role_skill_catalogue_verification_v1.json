@@ -1,0 +1,52 @@
+{
+  "created_at_utc": "2026-10-09T08:38:22.146712+00:00",
+  "role_tables": [
+    "role"
+  ],
+  "skill_tables": [
+    "skill"
+  ],
+  "mapping_tables": [
+    "role_skill"
+  ],
+  "total_role_records": 28,
+  "production_role_count": 27,
+  "excluded_role_ids": [
+    "other"
+  ],
+  "skill_count": 1299,
+  "unique_mapping_count": 5629,
+  "unknown_role_mappings": [],
+  "unknown_skill_mappings": [],
+  "roles_without_skills": [],
+  "sample_role_skill_counts": [
+    {
+      "role_id": "blockchain_engineer",
+      "role_label": "Blockchain Engineer",
+      "skill_count": 50
+    },
+    {
+      "role_id": "business_intelligence_analyst",
+      "role_label": "Business Intelligence Analyst",
+      "skill_count": 203
+    },
+    {
+      "role_id": "computer_and_information_research_scientist",
+      "role_label": "Computer and Information Research Scientist",
+      "skill_count": 164
+    },
+    {
+      "role_id": "computer_and_information_systems_manager",
+      "role_label": "Computer and Information Systems Manager",
+      "skill_count": 177
+    },
+    {
+      "role_id": "computer_network_architect",
+      "role_label": "Computer Network Architect",
+      "skill_count": 278
+    }
+  ],
+  "catalogue_file": "/content/drive/MyDrive/CareerTimeMachine/code_review_pipeline_v1/data/code_review_role_skill_catalogue_v1.json",
+  "catalogue_sha256": "1ba1d26c9b5d1617babc6e38fdce6d47ea9d037d0b0128dc78f24207b8b31e1b",
+  "result": "passed"
+}

@@ -1,0 +1,39 @@
+{
+  "report_name": "drag_and_drop_dependency_environment_report_v1",
+  "created_at_utc": "2026-10-08T11:50:54.961925+00:00",
+  "package_versions": {
+    "python": "3.13.15",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.18.0",
+    "accelerate": "1.15.0",
+    "bitsandbytes": "0.50.2",
+    "safetensors": "0.8.0",
+    "sentencepiece": "0.2.2",
+    "google_genai": "2.12.1",
+    "pydantic": "2.13.5",
+    "rapidfuzz": "3.14.6",
+    "scikit_learn": "1.6.1",
+    "jsonschema": "4.26.0",
+    "tenacity": "9.1.4"
+  },
+  "environment": {
+    "cuda_available": true,
+    "device": "Tesla T4",
+    "gpu_memory_gb": 14.56,
+    "cuda_version": "13.0",
+    "generation_dtype": "torch.float16",
+    "quantisation_intended": "four_bit_for_local_qwen"
+  },
+  "planned_usage": {
+    "gemini": "offline static generation and live custom-skill generation",
+    "qwen": "offline independent quality review",
+    "pydantic": "strict activity-contract validation",
+    "rapidfuzz": "duplicate and similarity auditing",
+    "scikit_learn": "optional text-similarity auditing"
+  },
+  "api_key_storage": {
+    "saved_to_drive": false,
+    "saved_to_report": false
+  },
+  "smoke_test_passed": true
+}

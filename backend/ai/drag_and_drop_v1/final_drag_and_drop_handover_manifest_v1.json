@@ -1,0 +1,307 @@
+{
+    "handover_name":  "Career TimeMachine Iteration 3 Drag-and-Drop AI",
+    "handover_version":  "1.0",
+    "created_at_utc":  "2026-10-08T16:09:18.648486+00:00",
+    "status":  "final_verified",
+    "static_content":  {
+                           "roles":  27,
+                           "difficulties":  3,
+                           "activities_per_combination":  4,
+                           "activities":  324,
+                           "guided_activities":  108,
+                           "standard_activities":  108,
+                           "challenge_activities":  108,
+                           "total_blanks":  972,
+                           "total_options":  1620
+                       },
+    "static_quality":  {
+                           "initially_accepted_by_judge":  313,
+                           "targeted_revisions":  11,
+                           "revised_activities_accepted":  11,
+                           "final_schema_validation":  "324/324",
+                           "critical_deterministic_issues":  0,
+                           "exact_duplicate_groups":  0,
+                           "near_duplicate_pairs":  0,
+                           "unique_catalogue_skills":  244
+                       },
+    "live_generation":  {
+                            "model":  "gemini-3.5-flash-lite",
+                            "maximum_attempts":  2,
+                            "fallback":  "Deterministic matching static activity",
+                            "balanced_tests_passed":  "6/6",
+                            "security_tests_passed":  "6/6",
+                            "mean_latency_seconds":  2.4872,
+                            "p95_latency_seconds":  2.8419,
+                            "standalone_live_test_passed":  true,
+                            "standalone_live_latency_seconds":  2.5576
+                        },
+    "quality_models":  {
+                           "offline_static_generator":  "gemini-3.5-flash",
+                           "independent_quality_reviewer":  "gemini-3.8-flash",
+                           "qwen_result":  "Removed from the authoritative quality gate after failed calibration."
+                       },
+    "standalone_service":  {
+                               "module":  "live_drag_and_drop_service.py",
+                               "static_activities_loaded":  324,
+                               "roles_loaded":  27,
+                               "role_difficulty_combinations":  81,
+                               "offline_security_tests_passed":  "4/4",
+                               "forced_fallback_passed":  true,
+                               "deterministic_fallback_passed":  true,
+                               "backend_intended_placements":  3,
+                               "backend_distractors":  2,
+                               "frontend_answer_mapping_hidden":  true
+                           },
+    "deployment":  {
+                       "required_environment_variable":  "GEMINI_API_KEY",
+                       "api_key_included":  false,
+                       "model_weights_included":  false
+                   },
+    "security_scan":  {
+                          "secret_findings":  0,
+                          "files_over_100_mb":  0
+                      },
+    "file_count_excluding_manifest":  48,
+    "files":  [
+                  {
+                      "relative_path":  "MODEL_DEPLOYMENT.md",
+                      "size_bytes":  973,
+                      "sha256":  "85a456d16c08a57df79aa040495a89795dae672dcd9af15008327de1a8042041"
+                  },
+                  {
+                      "relative_path":  "README.md",
+                      "size_bytes":  2309,
+                      "sha256":  "0d34c826e966eeff2e0282afa47791a1698f25fc076f2a53e8435743bf7f75d7"
+                  },
+                  {
+                      "relative_path":  "data/drag_and_drop_activity_pool_v1_final.json",
+                      "size_bytes":  1118239,
+                      "sha256":  "48ff34cef943f74793c2ae8f32d55cf38ac34e674bb28129506d0ee8e34fa154"
+                  },
+                  {
+                      "relative_path":  "data/drag_and_drop_ai_response_schema_v1.json",
+                      "size_bytes":  3648,
+                      "sha256":  "deb30374c56fe4b00714ccfbd122af62360a2ff8e16a66acaa4d830bf751add7"
+                  },
+                  {
+                      "relative_path":  "data/drag_and_drop_backend_contract_v1.json",
+                      "size_bytes":  829,
+                      "sha256":  "454b995d5d39c69dc4ca05a7d56b51df79551cf25c196fd99ffb1d9d4fe8c48b"
+                  },
+                  {
+                      "relative_path":  "data/drag_and_drop_static_record_schema_v1.json",
+                      "size_bytes":  5151,
+                      "sha256":  "4c09f08ec6e1044cdf4db579ef31f292bac41a6fe88ddf26233133426c388a08"
+                  },
+                  {
+                      "relative_path":  "drag_and_drop_handover_checkpoint_manifest_v1.json",
+                      "size_bytes":  4610,
+                      "sha256":  "0cf5a812b02814be9fd087283c07af070bde6ec852306472e951d56959c38d2e"
+                  },
+                  {
+                      "relative_path":  "examples/example_live_drag_and_drop_request.json",
+                      "size_bytes":  245,
+                      "sha256":  "a061512d39fd65dd69e755bed5ff0be0b90835158bf54936790f799152417f00"
+                  },
+                  {
+                      "relative_path":  "examples/example_live_drag_and_drop_response.json",
+                      "size_bytes":  2243,
+                      "sha256":  "9f9ad8e163eddc1ff9acbccea715e967ce40b8ef7257bf5a873b55fee37e5ce2"
+                  },
+                  {
+                      "relative_path":  "examples/example_standalone_live_backend_response.json",
+                      "size_bytes":  3320,
+                      "sha256":  "e2843b5f98f72cf73906d0bb56deb1dfe5a15a26c1130e814f35a89c65de74f6"
+                  },
+                  {
+                      "relative_path":  "examples/example_standalone_live_frontend_response.json",
+                      "size_bytes":  2827,
+                      "sha256":  "6b42278a4ffc81f54e6a6599f9ecb70373348f99cf6c69d62b650f99271938a1"
+                  },
+                  {
+                      "relative_path":  "live_drag_and_drop_contract_v1.json",
+                      "size_bytes":  1751,
+                      "sha256":  "149ecc2e6dc78b620946b070ca706f0dbfcdbc9f885eeb49eeaeea3fec199654"
+                  },
+                  {
+                      "relative_path":  "live_drag_and_drop_service.py",
+                      "size_bytes":  31703,
+                      "sha256":  "7c42ce5543521670e41e4ff3284192e863531f3e4d738fc27d9a2d534f60394b"
+                  },
+                  {
+                      "relative_path":  "reports/balanced_live_drag_and_drop_evaluation_v1_corrected.json",
+                      "size_bytes":  52230,
+                      "sha256":  "68686fe7ae69042b511aa4b66dfd92816d00299fde60c1614ccb10aae45aa3ec"
+                  },
+                  {
+                      "relative_path":  "reports/balanced_live_drag_and_drop_evaluation_v1_pre_correction.json",
+                      "size_bytes":  893,
+                      "sha256":  "8cca8ad93dfda5185a2af6b7ac0bed8a4f34b92b5886f3f70ff9bad51aef7a07"
+                  },
+                  {
+                      "relative_path":  "reports/dependency_environment_report_v1.json",
+                      "size_bytes":  1180,
+                      "sha256":  "d4731c699b85a9aabdc627b069bc5f99d22241cdbfaf05ea43f9c3f25341bf74"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_deterministic_quality_audit_v1.json",
+                      "size_bytes":  2064,
+                      "sha256":  "9b64c810cce0e248d782cf51312621d72739f069b662373658ab9b2de7270206"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_full_gemini_judge_report_v1_324.json",
+                      "size_bytes":  482685,
+                      "sha256":  "b678c621fe7a0460e5d66d80adeca37738afb71e88c37a674f70005fb38cfae0"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_gemini_3_8_judge_smoke_test_v1.json",
+                      "size_bytes":  12701,
+                      "sha256":  "5142fb5fb2175698b017c07f7e9a8cf829a29b471acf968932938568726079cb"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_generation_summary_v1_324.json",
+                      "size_bytes":  782,
+                      "sha256":  "456fd0729584849cfe57e541f8571d791e028707f498bf26ad1742e371fc9ad8"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_qwen_review_diagnostic_v1.json",
+                      "size_bytes":  10295,
+                      "sha256":  "1c88f207613837e3cb2573471d21f01f007c2a8ce6cd00faecbd7370d7bd197b"
+                  },
+                  {
+                      "relative_path":  "reports/drag_and_drop_targeted_revision_report_v1.json",
+                      "size_bytes":  123325,
+                      "sha256":  "a00ab972216a5d34c920df29202f8e6398c57276f6a317a190c9359c9411b605"
+                  },
+                  {
+                      "relative_path":  "reports/live_drag_and_drop_quality_correction_v1.json",
+                      "size_bytes":  11851,
+                      "sha256":  "956ec1e77b01b39b4831e88731d7c15eb9e4d80b9fb07139d27179c75c1da858"
+                  },
+                  {
+                      "relative_path":  "reports/live_drag_and_drop_smoke_test_report_v1.json",
+                      "size_bytes":  626,
+                      "sha256":  "8d964b4414cf7e93906e1089c5a0819fb5ffad721c43a3b3a28907a11f26572a"
+                  },
+                  {
+                      "relative_path":  "reports/standalone_drag_and_drop_service_verification_v1.json",
+                      "size_bytes":  2604,
+                      "sha256":  "24ade9fc6eac0eca37061073e2e0dd10a685784f88a2c38b8269fc69abd21be2"
+                  },
+                  {
+                      "relative_path":  "reports/standalone_live_drag_and_drop_verification_v1.json",
+                      "size_bytes":  1145,
+                      "sha256":  "985fbcaa738e4fc2a936378f712f8efce0cffb027224ef5ba7d1823d27cb2833"
+                  },
+                  {
+                      "relative_path":  "requirements.txt",
+                      "size_bytes":  40,
+                      "sha256":  "967b74f80879e50dffa33dafad627a85b6e68ff75802c53c8aef9e04f9c031c3"
+                  },
+                  {
+                      "relative_path":  "source/drag_and_drop_pipeline_v1_complete.ipynb",
+                      "size_bytes":  952779,
+                      "sha256":  "45c70c27492f5cd85def5238507cdf716535f70f9cb8e403340a497061decddf"
+                  },
+                  {
+                      "relative_path":  "source/drag_and_drop_source_recovery_index_v1.json",
+                      "size_bytes":  23633,
+                      "sha256":  "5e70f9f807680aedbe171649b2f43a976c29aa081ea3c2d126108968b94fbb5f"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/01_notebook_cell_001.py",
+                      "size_bytes":  8621,
+                      "sha256":  "ec7fe9c528d1f7cdfec1bff59f595be8961e5ff24f9b802df10ddcd98c89ba90"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/02_notebook_cell_005.py",
+                      "size_bytes":  22916,
+                      "sha256":  "d1809daa7fd3ce839f0c8ccb62fcef51b378cb61572c4679c6fefb721c5a06db"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/03_notebook_cell_007.py",
+                      "size_bytes":  8811,
+                      "sha256":  "206b627d270e99934ae880bd2f0ed2b96c19ad3dbf5ab56bc0c803c8fb841a45"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/04_notebook_cell_009.py",
+                      "size_bytes":  22584,
+                      "sha256":  "3d4880e68c40a72f8a985bcde20f1b0508b30eef5df98a0d5d80e5c28743747c"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/05_notebook_cell_016.py",
+                      "size_bytes":  25612,
+                      "sha256":  "8e3773a0d0a537fbea73f67a9c899d1549e62a2bf051231d06f2bc8fd930ee7e"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/06_notebook_cell_017.py",
+                      "size_bytes":  25612,
+                      "sha256":  "141dadf27fbf9beb3e8b569932b6c989a82e08761ac7f2c54f41cc6ca2a77d28"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/07_notebook_cell_018.py",
+                      "size_bytes":  25612,
+                      "sha256":  "822554452580e238e398b93f77abd8f112a8ae11f3699a28ea62d1f2be6e2e69"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/08_notebook_cell_019.py",
+                      "size_bytes":  25612,
+                      "sha256":  "ec02b8df59904d05280b7936bb463bc2ac63313830ea374c3643b3c4b2544290"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/09_notebook_cell_020.py",
+                      "size_bytes":  25612,
+                      "sha256":  "851c58bfda1449b2188bebe73188969b67ee47a35dd58a7dfdd29e95331813ff"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/10_notebook_cell_021.py",
+                      "size_bytes":  25612,
+                      "sha256":  "aec646ee68905952eada010dfe5e7f42201f935ab0e5c3fae8d8c9528bac8756"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/11_notebook_cell_022.py",
+                      "size_bytes":  25612,
+                      "sha256":  "7cd5467a602a269cb5be0293c9e9f66abe7ac1c9d240ddead38a96d254669417"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/12_notebook_cell_024.py",
+                      "size_bytes":  24160,
+                      "sha256":  "3e2fbe575b84af1cea0e6e695d1b3c22bdc5cf9471d0addf05a14c888e8e3fa7"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/13_notebook_cell_025.py",
+                      "size_bytes":  21291,
+                      "sha256":  "c7fada1af586dd540bb87a3feec7a60b0dff14bf25c2b7e25f9086a381f28ab3"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/14_notebook_cell_026.py",
+                      "size_bytes":  26166,
+                      "sha256":  "b13c670537fbe5cf31c3eec9e45b0b5b57c4e99812cb415e84b92e0f5c1ad1c5"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/15_notebook_cell_027.py",
+                      "size_bytes":  24680,
+                      "sha256":  "ef02640a1bbbf6fca5c8bab892bd0e8932920e9b2424d4f4a075e0155822892d"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/16_notebook_cell_029.py",
+                      "size_bytes":  16810,
+                      "sha256":  "4376091fe598d237df4a08aac370ce03a63afd451086e846bbf404a782b35573"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/17_notebook_cell_030.py",
+                      "size_bytes":  2118,
+                      "sha256":  "b8083e393ad2c5d245999226c72493128bc4f255f6aef7baa0c790fce79d5d69"
+                  },
+                  {
+                      "relative_path":  "source/source_cells/18_notebook_cell_031.py",
+                      "size_bytes":  16856,
+                      "sha256":  "b0de3304d524977d7916c8d6a411907dfe5ad5e63be399ad4e358a563bdf753c"
+                  },
+                  {
+                      "relative_path":  "source/tested_drag_and_drop_source_reference.py",
+                      "size_bytes":  375031,
+                      "sha256":  "028c841141a9f5f1a8399a632ed7514f40eb4659fa8a3617d780de5b5dd3f77c"
+                  }
+              ]
+}

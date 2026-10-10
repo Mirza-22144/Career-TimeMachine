@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "DragDropBlank": {
+      "additionalProperties": false,
+      "properties": {
+        "blank_id": {
+          "enum": [
+            "blank_1",
+            "blank_2",
+            "blank_3"
+          ],
+          "title": "Blank Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "blank_id"
+      ],
+      "title": "DragDropBlank",
+      "type": "object"
+    },
+    "DragDropOption": {
+      "additionalProperties": false,
+      "properties": {
+        "option_id": {
+          "enum": [
+            "o1",
+            "o2",
+            "o3",
+            "o4",
+            "o5"
+          ],
+          "title": "Option Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 320,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "fits_blank_id": {
+          "anyOf": [
+            {
+              "enum": [
+                "blank_1",
+                "blank_2",
+                "blank_3"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fits Blank Id"
+        }
+      },
+      "required": [
+        "option_id",
+        "text",
+        "fits_blank_id"
+      ],
+      "title": "DragDropOption",
+      "type": "object"
+    },
+    "DragDropOptionFeedback": {
+      "additionalProperties": false,
+      "properties": {
+        "what_to_improve": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "What To Improve"
+        },
+        "why": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "why"
+      ],
+      "title": "DragDropOptionFeedback",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "situation": {
+      "maxLength": 700,
+      "minLength": 1,
+      "title": "Situation",
+      "type": "string"
+    },
+    "sentence_template": {
+      "maxLength": 900,
+      "minLength": 1,
+      "title": "Sentence Template",
+      "type": "string"
+    },
+    "blanks": {
+      "items": {
+        "$ref": "#/$defs/DragDropBlank"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Blanks",
+      "type": "array"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/DragDropOption"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Options",
+      "type": "array"
+    },
+    "feedback_by_option": {
+      "additionalProperties": {
+        "$ref": "#/$defs/DragDropOptionFeedback"
+      },
+      "propertyNames": {
+        "enum": [
+          "o1",
+          "o2",
+          "o3",
+          "o4",
+          "o5"
+        ]
+      },
+      "title": "Feedback By Option",
+      "type": "object"
+    },
+    "skills_used": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "title": "Skills Used",
+      "type": "array"
+    },
+    "guidance": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 3,
+      "title": "Guidance",
+      "type": "array"
+    }
+  },
+  "required": [
+    "title",
+    "situation",
+    "sentence_template",
+    "blanks",
+    "options",
+    "feedback_by_option",
+    "skills_used",
+    "guidance"
+  ],
+  "title": "GeneratedDragDropActivity",
+  "type": "object"
+}

@@ -1,0 +1,35 @@
+{
+  "contract_version": "1.0",
+  "activity_type": "code_review",
+  "delivery_mode": "static_only",
+  "request": {
+    "required_fields": [
+      "role_id",
+      "difficulty",
+      "activity_type"
+    ],
+    "difficulty_values": [
+      "guided",
+      "standard",
+      "challenge"
+    ],
+    "activity_type_value": "code_review",
+    "selection_rule": "Select one unused activity matching role_id and difficulty."
+  },
+  "static_pool": {
+    "path": "data/code_review_activity_pool_v1_final.json",
+    "activity_count": 324,
+    "role_count": 27,
+    "role_difficulty_combinations": 81,
+    "activities_per_combination": 4
+  },
+  "backend_only_fields": [
+    "correct_option_id",
+    "option_feedback"
+  ],
+  "frontend_rule": "Do not expose the correct option or the complete feedback mapping before the user submits a choice.",
+  "submission_rule": "After submission, return only the constructive feedback associated with the selected option.",
+  "live_generation_enabled": false,
+  "gemini_api_key_required": false,
+  "code_execution_required": false
+}

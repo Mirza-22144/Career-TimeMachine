@@ -1,0 +1,69 @@
+{
+  "report_name": "drag_and_drop_deterministic_quality_audit_v1",
+  "created_at_utc": "2026-10-08T15:40:04.013519+00:00",
+  "audited_activity_count": 324,
+  "schema_valid_activity_count": 324,
+  "role_count": 27,
+  "difficulty_counts": {
+    "challenge": 108,
+    "guided": 108,
+    "standard": 108
+  },
+  "role_difficulty_combination_count": 81,
+  "unique_skill_count": 244,
+  "critical_issue_count": 0,
+  "warning_count": 6,
+  "exact_duplicate_content_group_count": 0,
+  "duplicate_title_group_count": 6,
+  "near_duplicate_pair_count": 0,
+  "critical_issues": [],
+  "warnings": [
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "business_intelligence_analyst_guided_v1_01",
+        "it_project_manager_guided_v1_01"
+      ]
+    },
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "computer_network_architect_guided_v1_01",
+        "database_administrator_standard_v1_01"
+      ]
+    },
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "computer_network_support_specialist_guided_v1_01",
+        "computer_network_support_specialist_standard_v1_01"
+      ]
+    },
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "computer_programmer_standard_v1_01",
+        "web_developer_guided_v1_01"
+      ]
+    },
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "information_security_analyst_guided_v1_01",
+        "information_security_engineer_guided_v1_01",
+        "software_developer_challenge_v1_01",
+        "telecommunications_engineering_specialist_challenge_v1_01"
+      ]
+    },
+    {
+      "issue_type": "duplicate_title",
+      "activity_ids": [
+        "software_developer_challenge_v1_02",
+        "web_and_digital_interface_designer_guided_v1_02"
+      ]
+    }
+  ],
+  "passed": true,
+  "final_pool_file": "/content/drive/MyDrive/CareerTimeMachine/drag_and_drop_pipeline_v1/output/drag_and_drop_activity_pool_v1_final.json",
+  "final_pool_sha256": "48ff34cef943f74793c2ae8f32d55cf38ac34e674bb28129506d0ee8e34fa154"
+}

@@ -1,0 +1,67 @@
+{
+  "contract_name": "Iteration 3 live custom-skill drag-and-drop activity",
+  "contract_version": "1.0",
+  "activity_type": "drag_and_drop",
+  "request": {
+    "role_id": "string",
+    "skills": [
+      "string"
+    ],
+    "years_experience": "string or null",
+    "responsibilities": [
+      "string"
+    ],
+    "difficulty": "guided | standard | challenge",
+    "activity_type": "drag_and_drop"
+  },
+  "response": {
+    "title": "string",
+    "situation": "string",
+    "sentence_template": "string containing {blank_1}, {blank_2} and {blank_3}",
+    "blanks": [
+      {
+        "blank_id": "blank_1"
+      },
+      {
+        "blank_id": "blank_2"
+      },
+      {
+        "blank_id": "blank_3"
+      }
+    ],
+    "options": [
+      {
+        "option_id": "string",
+        "text": "string",
+        "fits_blank_id": "blank identifier or null"
+      }
+    ],
+    "feedback_by_option": {
+      "option_id": {
+        "what_to_improve": "string or null",
+        "why": "string"
+      }
+    },
+    "skills_used": [
+      "string"
+    ],
+    "guidance": [
+      "string"
+    ]
+  },
+  "invariants": [
+    "Exactly three blanks are required.",
+    "Exactly five options are required.",
+    "Exactly three options contain a fits_blank_id.",
+    "Exactly two options have a null fits_blank_id.",
+    "Every option has constructive feedback.",
+    "No correct, wrong, score or pass/fail field is returned.",
+    "The backend removes fits_blank_id before sending options to the frontend."
+  ],
+  "runtime": {
+    "live_model": "gemini-3.5-flash-lite",
+    "maximum_live_attempts": 2,
+    "fallback": "One matching validated static activity selected from four available role-difficulty activities.",
+    "api_key_environment_variable": "GEMINI_API_KEY"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "operation": "backend_two_role_predictions_with_explanations",
+  "existing_endpoint": "GET /api/v1/predicted-roles",
+  "request_change_required": false,
+  "response_change": {
+    "location": "predicted_roles[].explanation",
+    "fields": {
+      "summary": "string",
+      "matched_skills": "array of zero to five strings",
+      "reason_codes": "array of controlled reason codes"
+    }
+  },
+  "unchanged_fields": [
+    "predicted_roles[].role_id",
+    "predicted_roles[].role_label",
+    "predicted_roles[].market_data"
+  ],
+  "backend_mapping": {
+    "AI id": "role_id",
+    "AI label": "role_label",
+    "AI explanation": "explanation"
+  },
+  "constraints": {
+    "exactly_two_roles": true,
+    "roles_are_distinct": true,
+    "original_role_order_preserved": true,
+    "current_role_excluded": true,
+    "other_excluded": true,
+    "internal_scores_exposed": false,
+    "market_data_logic_changed": false,
+    "model_retraining_required": false,
+    "gemini_required": false
+  },
+  "example_response": {
+    "predicted_roles": [
+      {
+        "role_id": "data_scientist",
+        "role_label": "Data Scientist",
+        "explanation": {
+          "summary": "Data Scientist was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Python and SQL also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+          "matched_skills": [
+            "Python",
+            "SQL"
+          ],
+          "reason_codes": [
+            "model_profile_match",
+            "selected_skill_match",
+            "previous_role_similarity"
+          ]
+        }
+      },
+      {
+        "role_id": "business_intelligence_analyst",
+        "role_label": "Business Intelligence Analyst",
+        "explanation": {
+          "summary": "Business Intelligence Analyst was one of the two highest-ranked roles produced by the trained career model for the profile you supplied. Your selected skills in Python and SQL also appear in the catalogue profile for this role. It also shares catalogue skill areas with your previous role, Software Developer, supporting it as a possible career transition.",
+          "matched_skills": [
+            "Python",
+            "SQL"
+          ],
+          "reason_codes": [
+            "model_profile_match",
+            "selected_skill_match",
+            "previous_role_similarity"
+          ]
+        }
+      }
+    ]
+  }
+}

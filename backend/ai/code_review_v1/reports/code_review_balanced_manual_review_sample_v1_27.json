@@ -1,0 +1,2668 @@
+{
+  "created_at_utc": "2026-10-10T04:31:58.462548+00:00",
+  "sample_size": 27,
+  "role_count": 27,
+  "difficulty_distribution": {
+    "challenge": 9,
+    "guided": 9,
+    "standard": 9
+  },
+  "activities": [
+    {
+      "question_id": "blockchain_engineer_guided_code_review_v1_01",
+      "role_id": "blockchain_engineer",
+      "role_label": "Blockchain Engineer",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Securing a Solidity Withdrawal Function",
+      "situation": "You are reviewing a junior developer's Solidity smart contract. They have implemented a standard withdraw function for a vault, but you notice a critical vulnerability in the order of execution that could allow an attacker to drain the contract's funds.",
+      "language": "solidity",
+      "code_snippet": "function withdraw(uint256 amount) public {\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    (bool success, ) = msg.sender.call{value: amount}(\"\");\n    balances[msg.sender] -= amount;\n    require(success, \"Transfer failed\");\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The balance is updated after the external transfer call, violating the checks-effects-interactions pattern and exposing the contract to a reentrancy attack."
+        },
+        {
+          "option_id": "b",
+          "text": "The require statement checking the success of the transfer is placed too late and should be executed prior to initiating the external call."
+        },
+        {
+          "option_id": "c",
+          "text": "The use of msg.sender.call is insecure and should be replaced with msg.sender.transfer to automatically revert on failure."
+        },
+        {
+          "option_id": "d",
+          "text": "The amount parameter is not validated against a maximum gas limit, which can cause the transaction to revert due to out-of-gas errors."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "GitHub"
+      ],
+      "guidance": [
+        "Look closely at the order of operations in the withdraw function, specifically when the user's balance is updated relative to the external ether transfer.",
+        "Consider what happens if the recipient of the ether is another smart contract that calls back into this withdraw function before the execution finishes."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly identified that updating the balance after the external call creates a critical reentrancy vulnerability."
+            ],
+            "areas_to_consider": [
+              "Consider how implementing a reentrancy guard modifier (like OpenZeppelin's ReentrancyGuard) can provide defense-in-depth for state-changing functions."
+            ],
+            "skill_to_explore": {
+              "skill": "GitHub",
+              "why_relevant": "You can use GitHub to review established smart contract libraries like OpenZeppelin to see how industry-standard reentrancy guards are implemented and tested."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You recognized the importance of checking the success status of the external call."
+            ],
+            "areas_to_consider": [
+              "Remember that the success status of an external call is only returned after the call executes, making it impossible to check beforehand."
+            ],
+            "skill_to_explore": {
+              "skill": "GitHub",
+              "why_relevant": "Reviewing open-source smart contracts on GitHub helps you understand the chronological flow of low-level Solidity calls and assertions."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You considered alternative native methods for transferring ether within Solidity."
+            ],
+            "areas_to_consider": [
+              "Note that transfer and send are now discouraged due to hardcoded gas limits, making low-level call the preferred method when combined with proper state updates."
+            ],
+            "skill_to_explore": {
+              "skill": "GitHub",
+              "why_relevant": "You can search GitHub discussion boards and security advisories to track the evolution of best practices regarding ether transfer methods in EVM-compatible languages."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You analyzed the potential impact of gas limits on the execution of external calls."
+            ],
+            "areas_to_consider": [
+              "Note that limiting the input amount does not directly control the gas forwarded or consumed by the recipient's fallback function."
+            ],
+            "skill_to_explore": {
+              "skill": "GitHub",
+              "why_relevant": "Exploring gas optimization templates on GitHub will clarify how gas limits and transaction boundaries are best managed in production-grade Solidity code."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "business_intelligence_analyst_standard_code_review_v1_02",
+      "role_id": "business_intelligence_analyst",
+      "role_label": "Business Intelligence Analyst",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Securing NoSQL Dashboard Calculations",
+      "situation": "You are reviewing a Python script that calculates metrics for a Human Resource Management Software (HRMS) dashboard. The function accepts a user-defined department filter directly from the dashboard UI and queries a NoSQL database. Review the snippet for security and input validation issues.",
+      "language": "python",
+      "code_snippet": "def calculate_hr_metrics(db_connection, dept_filter):\n    # Fetch active employee salaries for the dashboard\n    query = f\"{{'dept': '{dept_filter}', 'status': 'Active'}}\"\n    employees = db_connection.query_nosql(query)\n    salaries = [emp['salary'] for emp in employees if 'salary' in emp]\n    if not salaries:\n        return {\"avg_salary\": 0, \"headcount\": 0}\n    return {\n        \"avg_salary\": sum(salaries) / len(salaries),\n        \"headcount\": len(salaries)\n    }",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The code lacks error handling for cases where 'salary' is missing from some records, which could cause a KeyError during list comprehension."
+        },
+        {
+          "option_id": "b",
+          "text": "The function directly interpolates the untrusted dept_filter input into a raw NoSQL query string, exposing the dashboard to NoSQL injection vulnerabilities."
+        },
+        {
+          "option_id": "c",
+          "text": "The function should use a generator expression instead of a list comprehension for salaries to optimize memory usage when processing large HR datasets."
+        },
+        {
+          "option_id": "d",
+          "text": "The function does not verify if the db_connection parameter is an active session, which may lead to unhandled connection timeout exceptions."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Human resource management software HRMS",
+        "NoSQL"
+      ],
+      "guidance": [
+        "Trace how the user-provided dept_filter variable flows into the query execution. Think about what happens if a user inputs special query operators or characters instead of a standard department name."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly identified that robust error handling and defensive checks are vital when processing dictionary values in Python."
+            ],
+            "areas_to_consider": [
+              "However, the list comprehension already includes a safe conditional check ('if salary in emp') to prevent KeyError exceptions."
+            ],
+            "skill_to_explore": {
+              "skill": "NoSQL",
+              "why_relevant": "Understanding how NoSQL queries are constructed and executed helps identify structural vulnerabilities that go beyond basic Python syntax errors."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You accurately spotted the security vulnerability where raw user input is directly formatted into a query string, leaving the database open to injection attacks."
+            ],
+            "areas_to_consider": [
+              "To mitigate this, you should recommend using parameterized queries or a structured query builder rather than raw string interpolation."
+            ],
+            "skill_to_explore": {
+              "skill": "NoSQL",
+              "why_relevant": "Securing database interactions against injection is a fundamental requirement for any BI analyst handling sensitive HR data."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You focused on memory efficiency and optimization, which is highly relevant when designing dashboards that process large datasets."
+            ],
+            "areas_to_consider": [
+              "While generator expressions can save memory, they do not address the critical security risk present in how the query string is built."
+            ],
+            "skill_to_explore": {
+              "skill": "Human resource management software HRMS",
+              "why_relevant": "When pulling data from HRMS databases, prioritizing security is paramount due to the highly sensitive nature of employee salary and personal information."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You recognized the importance of managing database connection states and handling potential network or session timeouts."
+            ],
+            "areas_to_consider": [
+              "While connection management is important, connection handling is typically managed at a higher application level, leaving a more immediate security flaw in the query itself."
+            ],
+            "skill_to_explore": {
+              "skill": "NoSQL",
+              "why_relevant": "Learning how to sanitize inputs and use safe querying methods prevents unauthorized data access in NoSQL environments."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_and_information_research_scientist_challenge_code_review_v1_03",
+      "role_id": "computer_and_information_research_scientist",
+      "role_label": "Computer and Information Research Scientist",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Evaluating Model Performance State Integrity",
+      "situation": "You are reviewing a model-evaluation pipeline designed by a junior researcher. The pipeline tracks validation metrics across multiple training epochs. During integration testing, the team noticed that the validation loss curves look suspiciously flat and slow to react to model improvements after the first epoch. Inspect the pseudocode to identify the root cause of this behavior.",
+      "language": "pseudocode",
+      "code_snippet": "class ModelEvaluator:\n    def __init__(self):\n        self.running_metrics = {\"total_loss\": 0.0, \"samples\": 0}\n    def evaluate_epoch(self, model, val_loader):\n        for batch in val_loader:\n            loss = model.compute_loss(batch.x, batch.y)\n            self.running_metrics[\"total_loss\"] += loss * len(batch)\n            self.running_metrics[\"samples\"] += len(batch)\n        return self.running_metrics[\"total_loss\"] / self.running_metrics[\"samples\"]",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The batch loss is scaled by len(batch) before accumulation, which introduces a mathematical bias if the loss function of the model already performs internal batch-size normalization."
+        },
+        {
+          "option_id": "b",
+          "text": "The validation loader's parallel workers will trigger race conditions on the shared self.running_metrics dictionary, requiring a thread-safe lock."
+        },
+        {
+          "option_id": "c",
+          "text": "The self.running_metrics state is initialized in the constructor but never reset within evaluate_epoch, causing validation metrics to accumulate across epochs and yield stale, incorrect averages."
+        },
+        {
+          "option_id": "d",
+          "text": "The evaluation loop lacks a model.eval() or equivalent state transition, which will cause dropout and batch normalization layers to remain in training mode during validation."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Simulation"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly identified that batch size normalization in modern loss functions must be carefully aligned with metric aggregation."
+            ],
+            "areas_to_consider": [
+              "While batch scaling is a common source of calculation errors, it does not explain why the metrics remain flat and carry over historical data across epoch boundaries."
+            ],
+            "skill_to_explore": {
+              "skill": "Simulation",
+              "why_relevant": "Simulating the state transitions of the evaluation loop across multiple epochs helps identify where variables persist inappropriately."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You showed strong awareness of potential concurrency issues when dealing with asynchronous data loaders."
+            ],
+            "areas_to_consider": [
+              "Data loaders typically yield batches sequentially to the main loop, so multi-threading race conditions on the accumulator are rarely the primary cause of flat metrics across epochs."
+            ],
+            "skill_to_explore": {
+              "skill": "Simulation",
+              "why_relevant": "Tracing the execution flow of sequential epoch evaluations helps pinpoint state retention bugs without assuming concurrent execution."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You accurately spotted that self.running_metrics is a persistent instance variable that is never cleared, leading to stale cumulative state across epochs."
+            ],
+            "areas_to_consider": [
+              "To fix this, the metrics should be initialized or cleared at the start of each evaluate_epoch call, ensuring each epoch's validation is independent."
+            ],
+            "skill_to_explore": {
+              "skill": "Simulation",
+              "why_relevant": "Simulating execution states across iterative loops is essential for detecting subtle data integrity and state leakage issues in ML workflows."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly noted the importance of toggling model states (like training vs. evaluation modes) to ensure correct layer behavior."
+            ],
+            "areas_to_consider": [
+              "While toggling model modes is crucial, the flat metric behavior is directly caused by the accumulation of historical epoch data in the persistent dictionary."
+            ],
+            "skill_to_explore": {
+              "skill": "Simulation",
+              "why_relevant": "Using execution simulation helps isolate whether an issue stems from model architecture states or metric tracking state retention."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_and_information_systems_manager_guided_code_review_v1_04",
+      "role_id": "computer_and_information_systems_manager",
+      "role_label": "Computer and Information Systems Manager",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Reviewing Remote Session Management in PowerShell Automation",
+      "situation": "As an Information Systems Manager, you are reviewing an operational automation script designed to collect process data from a list of remote servers. The script was written by a junior administrator to run as a nightly scheduled task. You need to ensure it adheres to best practices for resource management and reliability.",
+      "language": "powershell",
+      "code_snippet": "$servers = Get-Content -Path \"C:\\servers.txt\"\nforeach ($server in $servers) {\n    $session = New-PSSession -ComputerName $server\n    $processes = Invoke-Command -Session $session -ScriptBlock { Get-Process }\n    Export-Clixml -Path \"C:\\logs\\$server.xml\" -InputObject $processes\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script should use Export-Csv instead of Export-Clixml to reduce the file size of the logged processes on disk."
+        },
+        {
+          "option_id": "b",
+          "text": "The script lacks error handling; wrapping the Export-Clixml command in a try-catch block is the primary fix needed to ensure reliability."
+        },
+        {
+          "option_id": "c",
+          "text": "Reading the server list using Get-Content is inefficient; it should be replaced with a .NET StreamReader to optimize memory usage."
+        },
+        {
+          "option_id": "d",
+          "text": "The script creates persistent PowerShell sessions using New-PSSession but never closes them, which will lead to resource exhaustion and connection failures."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "Puppet"
+      ],
+      "guidance": [
+        "Look closely at how remote connections (New-PSSession) are managed inside the loop.",
+        "Consider what happens to system resources when multiple persistent sessions are opened but never explicitly closed or disposed of."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You identified a valid alternative format for tabular data serialization."
+            ],
+            "areas_to_consider": [
+              "While CSVs are simpler, they do not preserve rich object types like Clixml does, and changing the format does not resolve the underlying resource leak."
+            ],
+            "skill_to_explore": {
+              "skill": "Puppet",
+              "why_relevant": "Exploring declarative automation tools like Puppet can help you design configuration tasks that manage resources and connections implicitly without manual scripting."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly recognized that error handling is a key component of robust operational scripts."
+            ],
+            "areas_to_consider": [
+              "Adding try-catch around the export step protects against write failures but does not address the cumulative buildup of unclosed remote sessions."
+            ],
+            "skill_to_explore": {
+              "skill": "Puppet",
+              "why_relevant": "Puppet provides built-in error handling and state verification, reducing the need for custom try-catch blocks in system automation."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You focused on optimizing file input/output operations, which is good for large-scale scripts."
+            ],
+            "areas_to_consider": [
+              "For a simple list of servers, Get-Content's overhead is negligible compared to the critical issue of dangling remote network connections."
+            ],
+            "skill_to_explore": {
+              "skill": "Puppet",
+              "why_relevant": "Puppet handles node discovery and inventory management natively, eliminating the need to parse raw text files for server lists."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You accurately identified that failing to call Remove-PSSession leaves connections open, eventually exhausting system resources."
+            ],
+            "areas_to_consider": [
+              "To ensure sessions are always closed even if an error occurs, consider using a try-finally block to guarantee Remove-PSSession is executed."
+            ],
+            "skill_to_explore": {
+              "skill": "Puppet",
+              "why_relevant": "Puppet uses agent-based or transient SSH/WinRM connections that automatically clean up after execution, preventing resource leaks."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_network_architect_standard_code_review_v1_01",
+      "role_id": "computer_network_architect",
+      "role_label": "Computer Network Architect",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing Static Routing Configuration for Fallback Defects",
+      "situation": "You are reviewing a proposed static routing configuration for a branch office gateway. The configuration is designed to route local subnet traffic through specific WAN interfaces and send all other internet-bound traffic through a backup WAN interface.",
+      "language": "yaml",
+      "code_snippet": "routing_table:\n  - destination: \"10.100.0.0/16\"\n    gateway: \"192.168.1.1\"\n    interface: \"wan1\"\n    metric: 10\n  - destination: \"0.0.0.0/0\"\n    gateway: \"\"\n    interface: \"wan2\"\n    metric: 20\n  - destination: \"10.200.0.0/16\"\n    gateway: \"192.168.2.1\"\n    interface: \"wan3\"\n    metric: 5",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The default route (0.0.0.0/0) has an empty gateway value, which will cause routing failures or exceptions for any out-of-subnet traffic."
+        },
+        {
+          "option_id": "b",
+          "text": "The metric for wan3 is set lower than wan1, which will cause an asymmetric routing loop between the two local subnets."
+        },
+        {
+          "option_id": "c",
+          "text": "The 10.100.0.0/16 and 10.200.0.0/16 subnets overlap, requiring CIDR aggregation to prevent routing table exhaustion."
+        },
+        {
+          "option_id": "d",
+          "text": "The destination CIDR blocks are invalid because YAML parsers require network addresses to be represented as integers."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "Netreo OmniCenter",
+        "Network intrusion detection"
+      ],
+      "guidance": [
+        "Trace the path of a packet destined for an external address like 8.8.8.8 and evaluate how the configuration handles fallback routing."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly identified that the default route configuration contains an empty gateway string, which prevents successful fallback routing."
+            ],
+            "areas_to_consider": [
+              "Consider implementing automated schema validation to catch empty or null fields before deployment."
+            ],
+            "skill_to_explore": {
+              "skill": "Netreo OmniCenter",
+              "why_relevant": "Using network monitoring and management tools like Netreo OmniCenter helps identify active routing failures and null-route anomalies in real-time."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You recognized the importance of metric values in determining path preference and preventing unintended routing behavior."
+            ],
+            "areas_to_consider": [
+              "Keep in mind that different metrics on separate interfaces are standard for prioritizing traffic and do not inherently cause loops without circular propagation."
+            ],
+            "skill_to_explore": {
+              "skill": "EMC Smarts Network Protocol Manager",
+              "why_relevant": "An understanding of protocol managers helps analyze complex multi-path routing metrics and topology relationships."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You analyzed the subnet ranges to ensure there was no immediate conflict or overlap in the private IP space."
+            ],
+            "areas_to_consider": [
+              "Note that 10.100.0.0/16 and 10.200.0.0/16 are completely disjoint blocks, so aggregation is not strictly required here."
+            ],
+            "skill_to_explore": {
+              "skill": "Network intrusion detection",
+              "why_relevant": "Analyzing subnet boundaries is crucial when configuring intrusion detection systems to monitor traffic crossing different security zones."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You paid close attention to the YAML syntax and data types used for the network configuration parameters."
+            ],
+            "areas_to_consider": [
+              "Remember that CIDR notation (e.g., '0.0.0.0/0') contains non-numeric characters and must be parsed as a string rather than an integer."
+            ],
+            "skill_to_explore": {
+              "skill": "System and data disaster recovery",
+              "why_relevant": "Ensuring syntactically correct and validated configuration files is key to rapid recovery of network infrastructure during disasters."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_network_support_specialist_challenge_code_review_v1_02",
+      "role_id": "computer_network_support_specialist",
+      "role_label": "Computer Network Support Specialist",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Securing Bash Connectivity Diagnostics",
+      "situation": "You are reviewing a custom bash utility written by a junior network support specialist. The utility is deployed on remote diagnostic jumpboxes to quickly check local routing tables and verify gateway latency. You need to identify any critical security or validation issues before this script is deployed to production systems.",
+      "language": "bash",
+      "code_snippet": "#!/bin/bash\nTARGET_IP=$1\nif [ -z \"$TARGET_IP\" ]; then\n    echo \"Usage: $0 <target_ip>\"\n    exit 1\nfi\necho \"Checking local routing table...\"\nroute_exists=$(route -n | grep -E \"$TARGET_IP\")\nif [ -n \"$route_exists\" ]; then\n    echo \"Route found in routing table. Testing latency...\"\n    ping -c 3 -W 2 $TARGET_IP\nelse\n    echo \"No explicit route found. Attempting default gateway ping...\"\n    ping -c 1 -W 2 $TARGET_IP\nfi",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script uses a rigid timeout value (-W 2) which can cause false negatives on high-latency WAN links, and it should be refactored to dynamically adjust timeout thresholds based on historical route metrics."
+        },
+        {
+          "option_id": "b",
+          "text": "The script fails to sanitize $TARGET_IP, exposing ping to argument injection and causing unreliable route checks because unescaped dots in grep -E treat IP periods as regex wildcards rather than evaluating longest-prefix subnet matches."
+        },
+        {
+          "option_id": "c",
+          "text": "The script relies on the legacy route command instead of the modern ip route utility, which restricts compatibility with Linux distributions that do not install net-tools by default."
+        },
+        {
+          "option_id": "d",
+          "text": "The script lacks explicit privilege checks to ensure the executing user has administrative rights, which are required by route -n and low-interval ping commands on secure enterprise operating systems."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Route"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifies potential operational edge cases regarding network latency and ping timeout configurations on slower WAN links."
+            ],
+            "areas_to_consider": [
+              "While timeout adjustments improve diagnostic reliability, they do not address input sanitization and logic flaws in the routing lookup."
+            ],
+            "skill_to_explore": {
+              "skill": "Route",
+              "why_relevant": "Evaluating routing metrics and latency parameters is helpful, but validating script inputs remains essential for secure automation."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identifies argument injection risks with unvalidated shell input and technical flaws in regex-based routing lookups."
+            ],
+            "areas_to_consider": [
+              "Consider enforcing strict IP address schema validation and using native kernel routing lookup commands like 'ip route get'."
+            ],
+            "skill_to_explore": {
+              "skill": "Route",
+              "why_relevant": "Understanding secure input validation and kernel-level route lookup tools prevents security vulnerabilities and false diagnostic results."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Points out a valid software modernization concern regarding the deprecation of net-tools in favor of iproute2."
+            ],
+            "areas_to_consider": [
+              "Migrating to modern toolsets improves portability, but replacing route with ip route alone without input validation leaves argument injection risks unresolved."
+            ],
+            "skill_to_explore": {
+              "skill": "Route",
+              "why_relevant": "Familiarity with both legacy route tools and modern iproute2 utilities ensures broad network compatibility."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Highlights permission constraints associated with running raw socket network commands across enterprise systems."
+            ],
+            "areas_to_consider": [
+              "Standard users can usually perform read-only route checks and basic pings, making input sanitization a higher priority vulnerability."
+            ],
+            "skill_to_explore": {
+              "skill": "Route",
+              "why_relevant": "Understanding execution privileges and user permissions helps build secure, least-privilege administrative utilities."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_programmer_guided_code_review_v1_03",
+      "role_id": "computer_programmer",
+      "role_label": "Computer Programmer",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Reviewing Account Balance Update Logic",
+      "situation": "You are reviewing a C++ service component responsible for updating account balances. A junior developer has written a function to credit accounts, but users are complaining that their balances are not updating even though the system logs show the transactions are processed.",
+      "language": "c++",
+      "code_snippet": "void AccountService::creditAccount(int accountId, double amount) {\n    double currentBalance = fetchBalance(accountId);\n    double newBalance = currentBalance + amount;\n    if (newBalance > MAX_LIMIT) return;\n    logTransaction(accountId, amount);\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The MAX_LIMIT constant should be defined as a double instead of a float to avoid implicit conversion errors."
+        },
+        {
+          "option_id": "b",
+          "text": "The accountId parameter should be passed by reference-to-const to avoid unnecessary copying."
+        },
+        {
+          "option_id": "c",
+          "text": "The calculated newBalance is never written back or saved to the database, resulting in lost state updates."
+        },
+        {
+          "option_id": "d",
+          "text": "The logTransaction function should be called before checking if the balance exceeds MAX_LIMIT."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Debugging"
+      ],
+      "guidance": [
+        "Look closely at how the calculated newBalance is used after the limit check.",
+        "Consider whether the changes to the user's account state are actually persisted anywhere in this function."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identified the use of an external constant and considered type safety."
+            ],
+            "areas_to_consider": [
+              "While type matching is important, look at whether the core state update logic is actually completed."
+            ],
+            "skill_to_explore": {
+              "skill": "Debugging",
+              "why_relevant": "Debugging helps trace variable assignments and verify if the state changes are correctly applied and persisted."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognized micro-optimization opportunities regarding parameter passing."
+            ],
+            "areas_to_consider": [
+              "Passing a primitive integer by value is standard, but focus on the functional completeness of the state update instead."
+            ],
+            "skill_to_explore": {
+              "skill": "Debugging",
+              "why_relevant": "Debugging helps identify logical gaps where calculated data is lost before persistence."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly identified that the calculated newBalance is never persisted back to the database or cache, leading to lost updates."
+            ],
+            "areas_to_consider": [
+              "Think about how to implement a save or update call right after the limit check to ensure data consistency."
+            ],
+            "skill_to_explore": {
+              "skill": "Debugging",
+              "why_relevant": "Debugging allows you to step through the execution and observe that the database state remains unchanged."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Considered the ordering of execution and logging flow within the service component."
+            ],
+            "areas_to_consider": [
+              "Logging before validation could lead to logging transactions that were actually rejected due to limit violations."
+            ],
+            "skill_to_explore": {
+              "skill": "Debugging",
+              "why_relevant": "Debugging helps map out the correct logical sequence of state validation, persistence, and logging."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_systems_analyst_standard_code_review_v1_04",
+      "role_id": "computer_systems_analyst",
+      "role_label": "Computer Systems Analyst",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing Data-Processing Workflow Configurations",
+      "situation": "As a Computer Systems Analyst, you are reviewing a JSON-based definition for a new nightly data-processing workflow before it undergoes system testing. You need to identify potential performance bottlenecks and system reliability risks in the configuration.",
+      "language": "json",
+      "code_snippet": "{\n  \"workflowName\": \"UserActivityIngestion\",\n  \"steps\": [\n    { \"id\": \"fetch_logs\", \"type\": \"FetchS3\", \"retryCount\": 5 },\n    { \"id\": \"parse_json\", \"type\": \"ParseJSON\", \"onFailure\": \"ignore\" },\n    { \"id\": \"transform_records\", \"type\": \"MapReduce\", \"outputTemp\": true },\n    { \"id\": \"load_db\", \"type\": \"BulkInsert\", \"batchSize\": 1000000 }\n  ]\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The \"onFailure\": \"ignore\" setting on the parse_json step should be replaced with an immediate hard failure to prevent downstream data corruption."
+        },
+        {
+          "option_id": "b",
+          "text": "The retryCount of 5 on fetch_logs is too high and should be reduced to 2 to prevent network congestion during API rate-limiting events."
+        },
+        {
+          "option_id": "c",
+          "text": "The transform_records step should explicitly define the temporary storage path instead of using a boolean outputTemp flag to ensure directory compliance."
+        },
+        {
+          "option_id": "d",
+          "text": "The batchSize of 1,000,000 in load_db is excessively high and risks causing memory exhaustion or database lock escalation during system testing and deployment."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "System testing",
+        "Relational database management"
+      ],
+      "guidance": [
+        "Consider how high-volume data operations impact database transaction logs and system memory allocation during load testing."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You identified a potential data integrity concern where silent failures could make debugging difficult."
+            ],
+            "areas_to_consider": [
+              "While ignoring invalid JSON records is sometimes a valid strategy to prevent pipeline blockage, the massive batch size in the final step poses a more critical system-level threat."
+            ],
+            "skill_to_explore": {
+              "skill": "System testing",
+              "why_relevant": "System testing helps evaluate how edge cases like malformed input data and massive bulk loads affect overall pipeline stability."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "You considered network resilience and the impact of retry policies on external API rate limits."
+            ],
+            "areas_to_consider": [
+              "A retry count of 5 is standard for transient network issues; the more pressing concern lies in the database load step which could fail entirely due to resource limits."
+            ],
+            "skill_to_explore": {
+              "skill": "System testing",
+              "why_relevant": "Testing retry mechanisms under simulated network failures ensures the workflow recovers gracefully without overloading external services."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "You focused on configuration clarity and ensuring that temporary files are managed in a traceable manner."
+            ],
+            "areas_to_consider": [
+              "While explicit paths improve maintainability, this change does not address the immediate performance bottleneck in the database ingestion step."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Understanding how databases handle staging and temporary tables helps optimize resource usage during ETL processes."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "You correctly identified that a batch size of 1,000,000 is highly likely to exhaust system memory or trigger lock escalation during database bulk operations."
+            ],
+            "areas_to_consider": [
+              "To mitigate this, recommend implementing a smaller, configurable batch size (e.g., 5,000 to 10,000 records) and verifying its performance during system testing."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Tuning batch sizes balances transaction overhead against memory consumption, ensuring stable and high-performing database writes."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_systems_engineer_architect_challenge_code_review_v1_01",
+      "role_id": "computer_systems_engineer_architect",
+      "role_label": "Computer Systems Engineer / Architect",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Transaction Management in System Updates",
+      "situation": "You are reviewing a service integration script designed to apply batch status updates to system nodes in a relational database. The system needs to process updates reliably, but there are concerns about how database exceptions are handled during the batch execution loop.",
+      "language": "python",
+      "code_snippet": "def apply_system_updates(db_conn, update_payloads):\n    cursor = db_conn.cursor()\n    for payload in update_payloads:\n        try:\n            cursor.execute(\n                \"UPDATE system_nodes SET status = %s WHERE node_id = %s\",\n                (payload['status'], payload['node_id'])\n            )\n        except KeyError as err:\n            logger.warning(f\"Malformed payload skipped: {err}\")\n        except Exception as db_err:\n            db_conn.rollback()\n            continue\n    db_conn.commit()",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The `db_conn.rollback()` call inside the loop discards all successful updates from prior iterations in the current transaction, but subsequent iterations will still run and be committed, resulting in an inconsistent partial batch state."
+        },
+        {
+          "option_id": "b",
+          "text": "The `KeyError` handler fails to reset the transaction state, which leaves the database cursor in an active, locked state that prevents the final `db_conn.commit()` from executing successfully."
+        },
+        {
+          "option_id": "c",
+          "text": "The lack of an explicit `cursor.close()` call inside the exception handlers will cause immediate database connection pool exhaustion as soon as a single update fails."
+        },
+        {
+          "option_id": "d",
+          "text": "Using `%s` placeholders in the SQL statement is unsafe for relational database drivers and should be replaced with manual string formatting to prevent database protocol errors."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "Relational database management"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identifies the critical transaction boundary flaw where a rollback discards previous progress but allows subsequent iterations to commit."
+            ],
+            "areas_to_consider": [
+              "Consider how grouping updates into a single atomic transaction or using savepoints (nested transactions) would guarantee consistent state transitions."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Understanding transaction isolation levels, atomicity, and rollback behavior is essential for ensuring data integrity during batch updates."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Highlights the importance of validating payload structures before attempting database operations to prevent unnecessary processing overhead."
+            ],
+            "areas_to_consider": [
+              "Note that since a KeyError occurs before any database interaction takes place, it does not alter the database transaction state or disrupt the cursor."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Distinguishing between application-level exceptions and database-level transaction states helps prevent unnecessary rollback operations."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizes the value of proper resource management and ensuring database cursors are cleaned up after use."
+            ],
+            "areas_to_consider": [
+              "Keep in mind that while cursor management is a best practice, cursor closure is typically handled at the end of the session or via context managers, rather than causing immediate pool exhaustion during a rollback."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Using context managers for connections and cursors ensures resources are reliably released even when exceptions occur."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Shows a strong awareness of security best practices regarding SQL injection and query parameterization."
+            ],
+            "areas_to_consider": [
+              "Observe that parameterized queries using placeholders like %s are actually the standard, safe method for DB-API drivers to prevent SQL injection, whereas manual string formatting introduces vulnerability."
+            ],
+            "skill_to_explore": {
+              "skill": "Relational database management",
+              "why_relevant": "Mastering driver-specific parameterization mechanisms ensures secure and optimized query execution plans."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "computer_user_support_specialist_guided_code_review_v1_02",
+      "role_id": "computer_user_support_specialist",
+      "role_label": "Computer User Support Specialist",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Securing Account Recovery Script Inputs",
+      "situation": "As a Computer User Support Specialist, you are reviewing a helper Bash script used by the support desk to initiate account recoveries. You need to ensure the script is secure and does not expose the server to unauthorized command execution.",
+      "language": "bash",
+      "code_snippet": "#!/bin/bash\nread -p \"Enter username for password reset: \" username\necho \"Initiating recovery for $username...\"\n# Run the backend reset utility with the user-supplied username\neval \"/usr/local/bin/reset_user_auth.sh $username\"",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script should redirect the output of the echo command to a log file instead of displaying it on standard output."
+        },
+        {
+          "option_id": "b",
+          "text": "Executing the recovery command using eval on line 5 allows an attacker to inject arbitrary shell commands via metacharacters in $username."
+        },
+        {
+          "option_id": "c",
+          "text": "The script should use printf instead of echo on line 3 to ensure system portability across different Linux distributions."
+        },
+        {
+          "option_id": "d",
+          "text": "The backend utility path on line 5 should use a relative directory path instead of an absolute path to improve portability."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Patch management"
+      ],
+      "guidance": [
+        "Look closely at line 5 where eval is used to execute the backend script along with user input stored in $username.",
+        "Consider how eval evaluates strings as executable shell code, allowing unvalidated input containing characters like semicolons to execute extra commands."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizes the benefit of keeping execution logs for system administration tasks."
+            ],
+            "areas_to_consider": [
+              "Redirecting echo output does not fix the code execution vulnerability introduced on line 5."
+            ],
+            "skill_to_explore": {
+              "skill": "Patch management",
+              "why_relevant": "Maintaining support scripts requires prioritizing security flaws over optional output logging changes."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identifies that passing unvalidated user input to eval creates a critical command injection vulnerability."
+            ],
+            "areas_to_consider": [
+              "Replacing eval with a direct script invocation and adding pattern validation for the username variable will fully secure the script."
+            ],
+            "skill_to_explore": {
+              "skill": "Patch management",
+              "why_relevant": "Applying secure input handling practices prevents security vulnerabilities during routine script updates and system maintenance."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Demonstrates awareness of shell portability best practices regarding output formatting."
+            ],
+            "areas_to_consider": [
+              "Replacing echo with printf does not address the high-severity command injection risk on line 5."
+            ],
+            "skill_to_explore": {
+              "skill": "Patch management",
+              "why_relevant": "Evaluating critical execution risks before refactoring display builtins helps maintain secure administrative tools."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Shows interest in script portability and path configuration options."
+            ],
+            "areas_to_consider": [
+              "Switching to relative paths can introduce path hijacking risks and leaves the eval injection flaw unaddressed."
+            ],
+            "skill_to_explore": {
+              "skill": "Patch management",
+              "why_relevant": "Verifying absolute paths and safe command invocation methods prevents unauthorized execution issues during routine updates."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "data_scientist_standard_code_review_v1_03",
+      "role_id": "data_scientist",
+      "role_label": "Data Scientist",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Preventing Target Leakage in SQL Forecasting Features",
+      "situation": "You are reviewing a SQL script written by a junior data scientist. The script prepares training features for a demand forecasting model. The goal is to predict daily units sold for various products using historical sales data. However, you notice a critical issue in how the rolling average feature is constructed that will compromise the model's validity.",
+      "language": "sql",
+      "code_snippet": "SELECT \n    forecast_date,\n    product_id,\n    units_sold,\n    LAG(units_sold, 1) OVER (PARTITION BY product_id ORDER BY forecast_date) AS lag_1,\n    AVG(units_sold) OVER (\n        PARTITION BY product_id \n        ORDER BY forecast_date \n        ROWS BETWEEN 7 PRECEDING AND CURRENT ROW\n    ) AS rolling_avg_7d\nFROM daily_product_sales;",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The `LAG(units_sold, 1)` function will produce `NULL` values for the first record of each product, which will cause the model training to fail unless an explicit `COALESCE` is used."
+        },
+        {
+          "option_id": "b",
+          "text": "The window partition in `rolling_avg_7d` should partition by both `product_id` and `forecast_date` to ensure that sales from different days are not mixed together."
+        },
+        {
+          "option_id": "c",
+          "text": "The window frame `ROWS BETWEEN 7 PRECEDING AND CURRENT ROW` includes the target variable (`units_sold` on the forecast date) in the feature, causing target leakage."
+        },
+        {
+          "option_id": "d",
+          "text": "The query should use `RANGE` instead of `ROWS` to automatically account for missing calendar dates in the `daily_product_sales` table."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Microsoft SQL Server"
+      ],
+      "guidance": [
+        "When preparing features for forecasting models, ensure that features calculated at time T do not incorporate the actual target value at time T, as this information will not be available during real-time inference."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly identifies that the first record of each partition will result in a NULL value for the lag feature."
+            ],
+            "areas_to_consider": [
+              "While handling NULLs is important for model preprocessing, it is a common data cleaning step and does not represent a fundamental data integrity or target leakage issue."
+            ],
+            "skill_to_explore": {
+              "skill": "Microsoft SQL Server",
+              "why_relevant": "Understanding how window functions handle boundary conditions and NULL values is essential for robust data preprocessing."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizes the importance of partitioning to isolate distinct entities in the dataset."
+            ],
+            "areas_to_consider": [
+              "Partitioning by the date itself would collapse the window to a single day, preventing the calculation of any historical rolling average."
+            ],
+            "skill_to_explore": {
+              "skill": "Microsoft SQL Server",
+              "why_relevant": "Mastering partition clauses allows you to define the correct scope for aggregations across time-series data."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identifies that including the CURRENT ROW in the rolling average introduces target leakage, as the model would have access to the actual units sold on the day it is trying to predict."
+            ],
+            "areas_to_consider": [
+              "To resolve this, the window frame should be adjusted to end at 1 PRECEDING to ensure only historical data is used."
+            ],
+            "skill_to_explore": {
+              "skill": "Microsoft SQL Server",
+              "why_relevant": "Constructing leakage-free features using precise window frames is critical for training generalizable forecasting models."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Identifies a valid concern regarding potential gaps in daily sales records."
+            ],
+            "areas_to_consider": [
+              "While missing dates can affect row-based windows, switching to RANGE without addressing CURRENT ROW still leaves the target leakage issue unresolved."
+            ],
+            "skill_to_explore": {
+              "skill": "Microsoft SQL Server",
+              "why_relevant": "Understanding the distinction between ROWS and RANGE frames helps handle irregular time-series intervals effectively."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "data_warehousing_specialist_challenge_code_review_v1_04",
+      "role_id": "data_warehousing_specialist",
+      "role_label": "Data Warehousing Specialist",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Optimizing Point-in-Time Data-Quality Validation Rules",
+      "situation": "You are reviewing a high-volume data-quality rule designed to validate incoming transaction batches against a slowly changing dimension table (SCD Type 2) in an enterprise data warehouse. The pipeline uses an in-memory dimension map (cached_store_map) pre-loaded from dim_store to accelerate throughput. During load tests with late-arriving backfilled transactions, data quality anomalies were flagged.",
+      "language": "pseudocode",
+      "code_snippet": "rule ValidateStoreTransactionsSCD(transaction_batch, cached_store_map):\n    for each transaction in transaction_batch:\n        if transaction.store_id in cached_store_map:\n            store_history = cached_store_map.get(transaction.store_id)\n            latest_record = store_history.get_latest()\n            if latest_record.status == 'ACTIVE' and transaction.event_time >= latest_record.effective_start:\n                transaction.is_valid = true\n            else:\n                transaction.is_valid = false\n                Log.warn(\"Store inactive or invalid at event time\", transaction.id)\n        else:\n            transaction.is_valid = false\n            Log.error(\"Unknown store ID\", transaction.store_id)\n    return transaction_batch",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The rule logs warnings using transaction.id and errors using transaction.store_id, causing inconsistent event correlation schemas in downstream monitoring tools like Splunk."
+        },
+        {
+          "option_id": "b",
+          "text": "The rule mutates the transaction object state in place within the batch iteration loop, which violates pure pipeline isolation and prevents parallel thread processing."
+        },
+        {
+          "option_id": "c",
+          "text": "The rule assumes transaction.store_id in cached_store_map safely processes missing keys, but evaluating a null key against map membership skips explicit tri-state validation and routes null values into standard unregistered store error logs."
+        },
+        {
+          "option_id": "d",
+          "text": "The rule evaluates transactions solely against latest_record rather than checking effective_start <= transaction.event_time < effective_end across the dimension history, causing backfilled or late-arriving transactions to be validated against current state rather than point-in-time SCD Type 2 attributes."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "Aster Data nCluster",
+        "Python",
+        "Splunk",
+        "Talend Data Fabric"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "This highlights logging schema consistency, which is valuable for standardized observability across enterprise monitoring platforms."
+            ],
+            "areas_to_consider": [
+              "While unified log field naming helps observability, it does not address the core temporal data correctness defect when processing late-arriving historical events."
+            ],
+            "skill_to_explore": {
+              "skill": "Splunk",
+              "why_relevant": "Standardizing log key structures ensures predictable ingestion parsing and efficient event extraction in observability tools."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "This identifies functional programming principles regarding immutability, which can make batch transformation logic easier to isolate and test."
+            ],
+            "areas_to_consider": [
+              "In high-throughput ETL jobs, in-place batch updates are often deliberately chosen to reduce memory allocation overhead, whereas incorrect historical lookup logic actively degrades data warehouse accuracy."
+            ],
+            "skill_to_explore": {
+              "skill": "Python",
+              "why_relevant": "Balancing mutable in-place batch operations with pure function design helps balance throughput requirements against maintainability."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "This correctly recognizes that null key evaluation requires explicit tri-state logic to prevent misclassifying missing data as invalid foreign keys."
+            ],
+            "areas_to_consider": [
+              "While explicit null handling improves rejection routing, evaluating transactions against only the latest dimension record remains the primary flaw distorting historical validations."
+            ],
+            "skill_to_explore": {
+              "skill": "Talend Data Fabric",
+              "why_relevant": "Implementing explicit schema validation and null-handling components ensures rejected records are correctly classified in data quality outputs."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "This accurately targets the critical SCD Type 2 flaw: comparing transactions against only the latest dimension snapshot breaks temporal integrity for backfilled or out-of-order records."
+            ],
+            "areas_to_consider": [
+              "To resolve this, the lookup must search the full dimension history list and match transaction.event_time within the exact effective_start and effective_end window."
+            ],
+            "skill_to_explore": {
+              "skill": "Aster Data nCluster",
+              "why_relevant": "Designing point-in-time temporal joins and SCD Type 2 lookups ensures accurate historical state attribution across large-scale analytical datasets."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "database_administrator_guided_code_review_v1_01",
+      "role_id": "database_administrator",
+      "role_label": "Database Administrator",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Handling Null Values in Dynamic SQL Maintenance Scripts",
+      "situation": "You are reviewing a database maintenance script written by a junior administrator. The script is intended to find all user tables that have not been modified in the last 30 days and rebuild their indexes. However, during periods of frequent updates where every table has been modified recently, the script behaves unexpectedly.",
+      "language": "sql",
+      "code_snippet": "CREATE PROCEDURE dbo.RebuildStaleIndexes\nAS\nBEGIN\n    DECLARE @SQL NVARCHAR(MAX);\n    SELECT @SQL = COALESCE(@SQL + '; ', '') + 'ALTER INDEX ALL ON ' + SCHEMA_NAME(schema_id) + '.' + name + ' REBUILD'\n    FROM sys.tables WHERE modify_date < DATEADD(day, -30, GETDATE());\n    EXEC sp_executesql @SQL;\nEND",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script fails to check if @SQL is NULL before calling sp_executesql, which will cause a runtime error if no tables meet the 30-day modification threshold."
+        },
+        {
+          "option_id": "b",
+          "text": "The script uses COALESCE incorrectly, which will cause the first table's rebuild command to be skipped entirely during concatenation."
+        },
+        {
+          "option_id": "c",
+          "text": "The script fails because sys.tables does not contain a modify_date column, resulting in a database engine compilation error."
+        },
+        {
+          "option_id": "d",
+          "text": "The sp_executesql system procedure cannot execute ALTER INDEX statements, requiring the script to be rewritten using a cursor."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "Data definition language DDL",
+        "Data dictionary"
+      ],
+      "guidance": [
+        "Observe how @SQL is initialized and populated. What happens to the value of @SQL if the SELECT statement returns zero rows?",
+        "Check the requirements of sp_executesql. Passing a NULL value as the first argument will trigger a database engine exception."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "You accurately identified that a NULL value passed to sp_executesql triggers a runtime exception when no tables match the filter criteria."
+            ],
+            "areas_to_consider": [
+              "To make this script production-ready, consider adding a simple conditional check like 'IF @SQL IS NOT NULL' before executing the dynamic SQL statement."
+            ],
+            "skill_to_explore": {
+              "skill": "Data definition language DDL",
+              "why_relevant": "Understanding how DDL commands behave inside dynamic SQL blocks is essential for writing robust database maintenance routines."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Analyzing the concatenation logic and the use of COALESCE shows a strong attention to string manipulation details."
+            ],
+            "areas_to_consider": [
+              "Note that COALESCE(@SQL + '; ', '') correctly evaluates to an empty string on the first iteration because @SQL is initially NULL, allowing the first table to be concatenated properly without a leading semicolon."
+            ],
+            "skill_to_explore": {
+              "skill": "Data dictionary",
+              "why_relevant": "Leveraging the system catalog views effectively helps automate schema-wide maintenance tasks safely."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Verifying the schema of system catalog metadata views like sys.tables is an excellent practice for ensuring script portability."
+            ],
+            "areas_to_consider": [
+              "Keep in mind that sys.tables inherits columns from sys.objects, meaning that modify_date is a valid and accessible column in this context."
+            ],
+            "skill_to_explore": {
+              "skill": "Data dictionary",
+              "why_relevant": "Familiarity with the columns and relationships in system catalog views prevents syntax errors during dynamic query generation."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Exploring alternative execution methods like cursors shows a thorough understanding of different control flow mechanisms in T-SQL."
+            ],
+            "areas_to_consider": [
+              "Remember that sp_executesql is fully capable of executing any valid DDL statement, including ALTER INDEX, provided the statement string is non-NULL and syntactically correct."
+            ],
+            "skill_to_explore": {
+              "skill": "Data definition language DDL",
+              "why_relevant": "Mastering the execution of dynamic DDL allows for cleaner, set-based database administration scripts."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "database_architect_standard_code_review_v1_02",
+      "role_id": "database_architect",
+      "role_label": "Database Architect",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing Dynamic SQL in Data Migration Routine",
+      "situation": "You are reviewing a pseudocode migration routine designed to move legacy batch data into a data warehouse. The routine is executed as part of an automated ETL pipeline that processes external partner submissions. You need to assess the routine's security posture and robustness.",
+      "language": "pseudocode",
+      "code_snippet": "procedure run_migration_job(job_id, source_table, target_table) {\n  metadata = fetch_migration_metadata(job_id);\n  if (metadata.status == \"PENDING\") {\n    sql_stmt = \"INSERT INTO \" + target_table + \" SELECT * FROM \" + source_table + \" WHERE batch_id = \" + metadata.batch_id;\n    execute_immediate(sql_stmt);\n    log_success(job_id);\n  }\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The routine lacks explicit transaction boundaries, meaning a failure mid-execution could leave the target table in an inconsistent state."
+        },
+        {
+          "option_id": "b",
+          "text": "The routine is vulnerable to SQL injection because the source_table and target_table parameters are concatenated directly into the dynamic SQL statement without validation."
+        },
+        {
+          "option_id": "c",
+          "text": "The routine lacks direct-path insert hints, which will cause significant performance degradation during large-scale data migrations."
+        },
+        {
+          "option_id": "d",
+          "text": "The routine fails to update the metadata status to 'RUNNING' before executing the query, creating a potential race condition for concurrent jobs."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Oracle SQL Loader"
+      ],
+      "guidance": [
+        "Analyze how the routine constructs and executes the SQL statement. Pay close attention to how external parameters are handled before they are executed by the database engine."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifies the importance of transaction boundaries and error handling during large-scale data migrations."
+            ],
+            "areas_to_consider": [
+              "While adding explicit transaction controls prevents partial loads, it does not address the critical security vulnerability present in the dynamic SQL construction."
+            ],
+            "skill_to_explore": {
+              "skill": "Transaction Management",
+              "why_relevant": "Ensuring ACID compliance during migration prevents data corruption but must be paired with robust input sanitization."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly identifies the SQL injection vulnerability arising from unvalidated table names in dynamic SQL execution."
+            ],
+            "areas_to_consider": [
+              "To mitigate this, implement strict whitelisting of table names or use database-specific utility functions to validate identifiers before execution."
+            ],
+            "skill_to_explore": {
+              "skill": "Secure Dynamic SQL",
+              "why_relevant": "Validating schema object names prevents malicious input from altering the structure or intent of the execution plan."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizes the performance implications of bulk inserts and the potential need for optimization hints."
+            ],
+            "areas_to_consider": [
+              "Optimizing performance is secondary to securing the execution path against unauthorized data access or manipulation via injection."
+            ],
+            "skill_to_explore": {
+              "skill": "Query Optimization",
+              "why_relevant": "Using bulk operations and direct-path loads improves performance once security baselines are met."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Highlights the value of state tracking and logging to prevent race conditions in concurrent migration jobs."
+            ],
+            "areas_to_consider": [
+              "Updating the metadata state is a good operational practice but does not neutralize the risk of arbitrary SQL execution through the parameters."
+            ],
+            "skill_to_explore": {
+              "skill": "Process Orchestration",
+              "why_relevant": "State management ensures reliability but relies on secure underlying execution routines to maintain system integrity."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "digital_forensics_analyst_challenge_code_review_v1_03",
+      "role_id": "digital_forensics_analyst",
+      "role_label": "Digital Forensics Analyst",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Forensic File-Hash State Integrity",
+      "situation": "You are reviewing a Bash script designed by a junior analyst to generate a SHA-256 manifest of a target directory for chain-of-custody tracking. The script must accurately report the total number of hashed files in the final log output to ensure audit integrity.",
+      "language": "bash",
+      "code_snippet": "#!/bin/bash\nTARGET_DIR=\"$1\"\nMANIFEST=\"${TARGET_DIR}/manifest.sha256\"\nHASH_COUNT=0\nfind \"$TARGET_DIR\" -type f ! -name \"manifest.sha256\" | while read -r file; do\n    sha256sum \"$file\" >> \"$MANIFEST\"\n    ((HASH_COUNT++))\ndone\necho \"Successfully verified and hashed $HASH_COUNT files.\"",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script uses standard IFS with read inside a pipe, which will fail to correctly process filenames containing spaces or newlines, leading to incomplete manifest generation."
+        },
+        {
+          "option_id": "b",
+          "text": "The manifest file is written directly to the target directory during execution, which can cause an infinite loop or duplicate entries if the find command detects the manifest file before it is excluded."
+        },
+        {
+          "option_id": "c",
+          "text": "The pipe operator (|) forces the while loop into a subshell, causing the HASH_COUNT state variable to remain at 0 in the parent shell, resulting in an inaccurate audit log."
+        },
+        {
+          "option_id": "d",
+          "text": "The sha256sum command does not use the --tag option, which makes the output format incompatible with standard BSD-style checksum verification tools."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Bash"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifying the potential risk that filenames containing spaces or special characters pose to standard string parsing in Bash."
+            ],
+            "areas_to_consider": [
+              "While filename spacing is a common Bash issue, the find exclusion pattern and read -r mitigate some risks, though they do not address the main state persistence issue."
+            ],
+            "skill_to_explore": {
+              "skill": "Bash Input/Output Handling",
+              "why_relevant": "Understanding how standard input streams and field separators behave with complex filenames ensures robust forensic scripts."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing that writing output directly to the active search directory can introduce state inconsistencies or self-referential issues during execution."
+            ],
+            "areas_to_consider": [
+              "The script explicitly excludes 'manifest.sha256' using the find exclusion pattern, which prevents it from being processed, so this does not cause an infinite loop here."
+            ],
+            "skill_to_explore": {
+              "skill": "Process Isolation in Scripting",
+              "why_relevant": "Keeping output destinations separate from source directories prevents race conditions and directory pollution during analysis."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly identifying that the pipeline creates a subshell environment, which isolates variable modifications and prevents state changes from propagating back to the parent shell."
+            ],
+            "areas_to_consider": [
+              "To resolve this, techniques such as process substitution or the 'lastpipe' shell option can be used to keep the loop execution in the parent shell environment."
+            ],
+            "skill_to_explore": {
+              "skill": "Bash Subshells and State Management",
+              "why_relevant": "Ensuring state variables persist across loops is critical for accurate forensic auditing and logging."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Noting the importance of standardized output formats for tool interoperability in digital forensics workflows."
+            ],
+            "areas_to_consider": [
+              "While standardizing the hash format is a good practice, the default output of sha256sum is widely accepted and does not cause the script's reporting logic to fail."
+            ],
+            "skill_to_explore": {
+              "skill": "Forensic Data Standardization",
+              "why_relevant": "Using universally recognized hash formats ensures that evidence can be verified across different platforms and toolsets."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "information_security_analyst_guided_code_review_v1_04",
+      "role_id": "information_security_analyst",
+      "role_label": "Information Security Analyst",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Optimizing CloudWatch Log Subscription Filters for Security Alerts",
+      "situation": "You are reviewing an AWS CloudFormation template snippet designed to forward security log events from a generator to a central alert-processing Lambda function. With 1-2 years of experience, you want to ensure this workflow is both cost-effective and highly maintainable, avoiding unnecessary downstream processing overhead.",
+      "language": "yaml",
+      "code_snippet": "Type: AWS::Logs::SubscriptionFilter\nProperties:\n  LogGroupName: \"/aws/lambda/SecurityAlertGenerator\"\n  FilterPattern: \"{ $.status = \\\"*\\\" }\"\n  DestinationArn: \"arn:aws:lambda:us-east-1:123456789012:function:AlertProcessor\"\n  RoleArn: \"arn:aws:iam::123456789012:role/CloudWatchToLambdaRole\"",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The RoleArn should use a dynamic reference or parameter instead of a hardcoded ARN to improve cross-environment compatibility."
+        },
+        {
+          "option_id": "b",
+          "text": "The LogGroupName should use a wildcard pattern to automatically capture logs from all active Lambda functions in the region."
+        },
+        {
+          "option_id": "c",
+          "text": "The DestinationArn must point to an Amazon SQS queue instead of a Lambda function to prevent message loss during high-volume spikes."
+        },
+        {
+          "option_id": "d",
+          "text": "The FilterPattern is overly broad and matches all log events, which will overwhelm the downstream Lambda function with non-critical noise and increase execution costs."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "AWS CloudFormation"
+      ],
+      "guidance": [
+        "Look closely at the FilterPattern property. A wildcard match on status means every single log entry will trigger the destination.",
+        "Consider how downstream resource consumption (like Lambda execution time and costs) is affected when an alert-processing workflow handles non-critical events."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifying the security and maintainability benefits of avoiding hardcoded IAM Role ARNs in infrastructure templates."
+            ],
+            "areas_to_consider": [
+              "While parameterizing ARNs is a great best practice, this change does not address the immediate performance and cost overhead of the log delivery mechanism itself."
+            ],
+            "skill_to_explore": {
+              "skill": "AWS CloudFormation Parameterization",
+              "why_relevant": "Using parameters and Ref/Fn::Sub functions makes templates highly reusable and secure across different environments."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing the need to aggregate logs from multiple sources to ensure comprehensive security monitoring."
+            ],
+            "areas_to_consider": [
+              "Subscription filters do not support wildcard log group names, and attempting to ingest all logs indiscriminately would compound the downstream noise and performance issues."
+            ],
+            "skill_to_explore": {
+              "skill": "Log Aggregation Strategies",
+              "why_relevant": "Centralizing logs efficiently requires structured filtering at the source to prevent downstream bottlenecks."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Proposing a decoupled architecture using SQS to handle high-throughput log streams and prevent data loss."
+            ],
+            "areas_to_consider": [
+              "While SQS adds resiliency, the root cause of the high volume is the lack of filtering at the subscription level, which would still result in processing noise."
+            ],
+            "skill_to_explore": {
+              "skill": "Serverless Architecture Patterns",
+              "why_relevant": "Understanding when to use direct Lambda invocations versus message queues helps optimize performance and cost."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly identifying that the wildcard filter pattern creates a significant performance and cost bottleneck by forwarding all logs."
+            ],
+            "areas_to_consider": [
+              "To optimize this, refine the FilterPattern to match only specific error states or high-severity alerts (e.g., 'CRITICAL' or 'ERROR')."
+            ],
+            "skill_to_explore": {
+              "skill": "CloudWatch Filter Patterns",
+              "why_relevant": "Writing precise filter patterns minimizes unnecessary downstream invocations, reducing operational costs and latency."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "information_security_engineer_standard_code_review_v1_01",
+      "role_id": "information_security_engineer",
+      "role_label": "Information Security Engineer",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing GCP Token Validation Logic",
+      "situation": "You are reviewing a Python helper function designed to validate Google Cloud ID token payloads before granting access to sensitive internal APIs. You need to ensure the validation logic is robust and secure.",
+      "language": "python",
+      "code_snippet": "def validate_gcp_auth_payload(payload, expected_audience):\n    try:\n        if payload.get(\"email_verified\") and payload[\"aud\"] == expected_audience:\n            return True\n    except KeyError as e:\n        logger.error(f\"Missing claim: {e}\")\n    return True",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The function returns True by default at the end of the block. If email_verified is false or if a KeyError is caught, the execution falls through to return True, mistakenly validating invalid or malformed tokens."
+        },
+        {
+          "option_id": "b",
+          "text": "The payload.get(\"email_verified\") call will raise an AttributeError if payload is passed as a string, which is not handled by the except KeyError block."
+        },
+        {
+          "option_id": "c",
+          "text": "The logger should use logger.exception instead of logger.error to capture the stack trace of the validation failure."
+        },
+        {
+          "option_id": "d",
+          "text": "The expected_audience parameter should be type-checked to ensure it is a string before performing the comparison."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "Google Cloud"
+      ],
+      "guidance": [
+        "Trace the execution path of the function when the input payload is missing the 'aud' key. Observe what value is returned by default."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Successfully identified the critical logical flaw where the function returns True by default, bypassing validation."
+            ],
+            "areas_to_consider": [
+              "Consider implementing a default return of False and only returning True when all validation checks explicitly pass."
+            ],
+            "skill_to_explore": {
+              "skill": "Google Cloud",
+              "why_relevant": "Understanding how to securely parse and validate Google Cloud Identity tokens is essential for preventing unauthorized access to cloud resources."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognized that type mismatches in the payload parameter could lead to unhandled runtime exceptions."
+            ],
+            "areas_to_consider": [
+              "Consider looking closely at the default return statement at the end of the function and how it behaves when exceptions are caught."
+            ],
+            "skill_to_explore": {
+              "skill": "Google Cloud",
+              "why_relevant": "Familiarity with standard token formats helps in anticipating the structure of incoming authentication payloads."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Identified a valid logging improvement that would preserve the stack trace for easier debugging."
+            ],
+            "areas_to_consider": [
+              "Consider tracing the control flow of the function to see if a caught exception still allows unauthorized access to succeed."
+            ],
+            "skill_to_explore": {
+              "skill": "Google Cloud",
+              "why_relevant": "Robust logging and monitoring of authentication events are key to detecting and responding to security incidents in cloud environments."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Highlighted the importance of input type validation to prevent unexpected comparison behaviors."
+            ],
+            "areas_to_consider": [
+              "Consider evaluating how the overall control flow handles validation failures, regardless of parameter types."
+            ],
+            "skill_to_explore": {
+              "skill": "Google Cloud",
+              "why_relevant": "Ensuring strict validation of all claims within Google Cloud ID tokens guarantees that only authorized identities can access your services."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "it_project_manager_challenge_code_review_v1_02",
+      "role_id": "it_project_manager",
+      "role_label": "IT Project Manager",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Reviewing Dynamic SQL Governance for Milestone Reporting",
+      "situation": "As an IT Project Manager leading a critical Oracle PeopleSoft milestone tracking upgrade, you are conducting a technical risk sign-off review for custom database procedures prior to deployment. A developer submitted a PL/SQL stored procedure designed to generate custom milestone reports based on user-selected sorting and status filters. You must evaluate the code snippet to ensure it meets enterprise security policies and risk governance standards.",
+      "language": "sql",
+      "code_snippet": "CREATE OR REPLACE PROCEDURE get_project_milestones (\n    p_project_id IN VARCHAR2,\n    p_sort_column IN VARCHAR2,\n    p_status_filter IN VARCHAR2,\n    p_cursor OUT SYS_REFCURSOR\n) AS\n    v_sql VARCHAR2(1000);\nBEGIN\n    v_sql := 'SELECT milestone_id, name, due_date, status ' ||\n             'FROM project_milestones ' ||\n             'WHERE project_id = :1 AND status = :2 ' ||\n             'ORDER BY ' || p_sort_column;\n\n    OPEN p_cursor FOR v_sql USING p_project_id, p_status_filter;\nEND get_project_milestones;",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The procedure fails to define an exception handler for NO_DATA_FOUND, which will throw an unhandled runtime error when opening the REF CURSOR for non-existent projects."
+        },
+        {
+          "option_id": "b",
+          "text": "While status and project ID are properly parameterized, directly concatenating the unvalidated sort column into the query string creates an identifier injection vulnerability that bypasses standard value parameterization."
+        },
+        {
+          "option_id": "c",
+          "text": "Using SYS_REFCURSOR for report generation causes implicit database locks on project_milestones, blocking concurrent update transactions across the PeopleSoft module."
+        },
+        {
+          "option_id": "d",
+          "text": "Allocating a 1000-byte VARCHAR2 buffer for the query string risks truncation errors if additional columns are added to the SELECT projection in future releases."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Oracle PeopleSoft"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Considering robust exception handling is key to maintaining stable application behavior during unexpected runtime conditions."
+            ],
+            "areas_to_consider": [
+              "Opening a REF CURSOR does not raise NO_DATA_FOUND upon query execution; empty results are handled naturally when the calling client fetches rows."
+            ],
+            "skill_to_explore": {
+              "skill": "PL/SQL Exception Handling",
+              "why_relevant": "Understanding how cursors evaluate empty result sets prevents unnecessary exception handling logic."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing that parameterizing WHERE clause values does not protect dynamic ORDER BY clauses demonstrates deep security governance awareness."
+            ],
+            "areas_to_consider": [
+              "Ensuring dynamic identifiers are sanitized using an allowlist or DBMS_ASSERT before dynamic SQL execution reinforces secure coding gates."
+            ],
+            "skill_to_explore": {
+              "skill": "Secure Dynamic SQL Governance",
+              "why_relevant": "Validating structural SQL elements like sort columns prevents SQL injection in parameterized procedures."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Analyzing concurrency and resource locking implications is crucial when managing enterprise database updates."
+            ],
+            "areas_to_consider": [
+              "Opening a cursor for a SELECT statement performs read operations without acquiring exclusive row or table locks on the target dataset."
+            ],
+            "skill_to_explore": {
+              "skill": "Database Concurrency Control",
+              "why_relevant": "Distinguishing read-only cursor execution from lock-inducing transactions helps evaluate performance risks accurately."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Evaluating variable buffer capacities helps prevent potential buffer overflow or string truncation issues in schema maintenance."
+            ],
+            "areas_to_consider": [
+              "While string buffer sizing is important, 1000 bytes is more than sufficient for this short SQL text, whereas the unvalidated sort column poses an immediate security vulnerability."
+            ],
+            "skill_to_explore": {
+              "skill": "Enterprise Code Audit Controls",
+              "why_relevant": "Prioritizing high-severity security vulnerabilities over minor buffer sizing optimizations ensures effective release governance."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "network_and_systems_administrator_guided_code_review_v1_03",
+      "role_id": "network_and_systems_administrator",
+      "role_label": "Network and Systems Administrator",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Reviewing Network Traffic Flow Collector Cache Configuration",
+      "situation": "During a routine monitoring configuration review for an enterprise network flow collector indexing into Elasticsearch, network operations reports that flow state tracking becomes stale over time. Review the YAML pipeline configuration to identify why traffic state updates stop reflecting active network conditions.",
+      "language": "yaml",
+      "code_snippet": "flow_collector:\n  output_plugin: \"elasticsearch\"\n  elasticsearch_url: \"http://es-cluster.internal:9200\"\n  enable_flow_deduplication: true\n  cache_ttl_seconds: 0\n  state_storage_path: \"/var/log/flow_cache.db\"\n  flush_interval_seconds: 15",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The flush_interval_seconds setting is set too high for continuous ingestion, which causes buffer overflows during high traffic volume."
+        },
+        {
+          "option_id": "b",
+          "text": "The elasticsearch_url uses HTTP instead of HTTPS, which prevents authentication tokens from being transferred to the cluster."
+        },
+        {
+          "option_id": "c",
+          "text": "Setting cache_ttl_seconds to 0 disables cache expiration, causing stale flow state to persist indefinitely and suppress updated flow metrics."
+        },
+        {
+          "option_id": "d",
+          "text": "The state_storage_path syntax is invalid for UNIX filesystems, causing the flow collector service to fail upon startup."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Network traffic flow monitoring and analysis",
+        "Elasticsearch"
+      ],
+      "guidance": [
+        "Examine how setting cache_ttl_seconds to zero affects state retention and entry eviction in deduplication caches.",
+        "Consider how retaining stale network tracking records indefinitely impacts the visibility of updated traffic flow metrics."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing that flush interval timing plays a role in data ingestion throughput."
+            ],
+            "areas_to_consider": [
+              "Evaluating whether flush timing or state retention settings are responsible for suppressing new flow updates."
+            ],
+            "skill_to_explore": {
+              "skill": "Network traffic flow monitoring and analysis",
+              "why_relevant": "Understanding telemetry buffering ensures monitoring systems handle steady traffic streams efficiently."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Identifying security and protocol considerations for external endpoint connectivity."
+            ],
+            "areas_to_consider": [
+              "Distinguishing transport layer network security concerns from data layer cache eviction issues."
+            ],
+            "skill_to_explore": {
+              "skill": "Elasticsearch",
+              "why_relevant": "Configuring secure transport connections ensures safe telemetry transmission to Elasticsearch endpoints."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identifying that a zero TTL value prevents cache eviction, leaving stale flow records permanently active."
+            ],
+            "areas_to_consider": [
+              "Establishing appropriate cache expiry intervals that balance deduplication effectiveness with real-time state accuracy."
+            ],
+            "skill_to_explore": {
+              "skill": "Network traffic flow monitoring and analysis",
+              "why_relevant": "Managing state expiration windows maintains accurate network visibility while preventing state corruption."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Checking file paths and filesystem conventions during configuration reviews."
+            ],
+            "areas_to_consider": [
+              "Verifying standard UNIX filesystem path conventions where entries like /var/log/ flow path are valid."
+            ],
+            "skill_to_explore": {
+              "skill": "UNIX",
+              "why_relevant": "Familiarity with standard UNIX directory structures helps verify system service configuration files."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "penetration_tester_standard_code_review_v1_04",
+      "role_id": "penetration_tester",
+      "role_label": "Penetration Tester",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing RESTful API finding aggregator performance",
+      "situation": "You are reviewing a Node.js reporting automation script used by penetration testing teams to aggregate vulnerability findings from a RESTful API service into assessment reports. The script takes an array of finding IDs and builds a summary report.",
+      "language": "javascript",
+      "code_snippet": "async function generateScanReport(findingIds, apiBaseUrl) {\n  const reportData = [];\n  for (const id of findingIds) {\n    const response = await fetch(`${apiBaseUrl}/findings/${id}`);\n    const finding = await response.json();\n    reportData.push({ id: finding.id, severity: finding.severity, title: finding.title });\n  }\n  return reportData;\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The script risks silent execution failures because missing HTTP protocols in apiBaseUrl cause silent catch blocks inside native fetch calls."
+        },
+        {
+          "option_id": "b",
+          "text": "Mutating the reportData array with Array.prototype.push inside an async context introduces concurrency race conditions across iterations."
+        },
+        {
+          "option_id": "c",
+          "text": "The code should replace async fetch calls with synchronous network requests to guarantee thread-safe report compilation."
+        },
+        {
+          "option_id": "d",
+          "text": "Awaiting each fetch call sequentially inside the loop creates a network waterfall bottleneck, significantly slowing report generation for large finding lists."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "Software development",
+        "RESTful API"
+      ],
+      "guidance": [
+        "Trace how the asynchronous loop handles each HTTP request to evaluate execution flow and execution time as the input array grows."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifying the importance of handling invalid base URLs when making external REST requests."
+            ],
+            "areas_to_consider": [
+              "While missing protocol strings cause URL parsing errors, fetch calls reject promises explicitly rather than failing silently."
+            ],
+            "skill_to_explore": {
+              "skill": "RESTful API",
+              "why_relevant": "Understanding standard API client error behaviors helps distinguish transport errors from structural logic issues."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Focusing on state modification safety during asynchronous operations."
+            ],
+            "areas_to_consider": [
+              "In JavaScript, sequential await operations execute deterministically on the main event loop, preventing array mutation race conditions."
+            ],
+            "skill_to_explore": {
+              "skill": "Software development",
+              "why_relevant": "Understanding event loop execution semantics helps clarify state mutation behavior across async function calls."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Considering process control and execution safety in automated scripts."
+            ],
+            "areas_to_consider": [
+              "Synchronous HTTP requests block the entire execution thread, which reduces script efficiency compared to non-blocking patterns."
+            ],
+            "skill_to_explore": {
+              "skill": "Software development",
+              "why_relevant": "Evaluating non-blocking I/O patterns ensures automation scripts remain responsive during heavy network activity."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing how sequential await loops introduce unnecessary network latency when aggregating API data."
+            ],
+            "areas_to_consider": [
+              "Structuring network calls concurrently using Promise.all or batch endpoints significantly improves reporting throughput."
+            ],
+            "skill_to_explore": {
+              "skill": "Software development",
+              "why_relevant": "Structuring asynchronous operations efficiently prevents execution bottlenecks in reporting and data gathering pipelines."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "software_developer_challenge_code_review_v1_01",
+      "role_id": "software_developer",
+      "role_label": "Software Developer",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Reviewing Error Handling in Elasticsearch Document Fetching",
+      "situation": "You are conducting a senior code review on a high-throughput Python backend application service that queries Elasticsearch for active user documents. The team recently added exception handling around search document filtering, but production monitoring indicates occasional empty payload lists even when active records exist for a user.",
+      "language": "python",
+      "code_snippet": "class DocumentSearchService:\n    def __init__(self, es_client):\n        self.client = es_client\n\n    def fetch_active_documents(self, user_id: str, page: int = 1, size: int = 20):\n        offset = (page - 1) * size\n        query = {\"query\": {\"term\": {\"user_id\": user_id}}, \"from\": offset, \"size\": size}\n        try:\n            response = self.client.search(index=\"documents\", body=query)\n            hits = response[\"hits\"][\"hits\"]\n            return [doc[\"_source\"][\"payload\"] for doc in hits if doc[\"_source\"][\"status\"] == \"active\"]\n        except KeyError:\n            return []",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "Catching KeyError around response filtering causes the entire batch query to return an empty list if a single hit lacks the 'status' or 'payload' field, silently dropping valid documents."
+        },
+        {
+          "option_id": "b",
+          "text": "The offset calculation formula uses 1-based indexing incorrectly, causing search queries on page 1 to omit the first document from Elasticsearch."
+        },
+        {
+          "option_id": "c",
+          "text": "Elasticsearch requires the size field to be passed as a query parameter rather than inside the query payload dictionary, causing default limit truncation."
+        },
+        {
+          "option_id": "d",
+          "text": "The list comprehension filter executes after the Elasticsearch network call closes, throwing an unhandled client disconnection exception during iteration."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "Elasticsearch",
+        "Regression testing"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identified how broad exception boundaries in batch document parsing affect service return values.",
+              "Focused on the impact of missing fields in Elasticsearch hit payloads on overall batch results."
+            ],
+            "areas_to_consider": [
+              "Consider proposing safer field extraction methods such as dict.get() with defaults within the comprehension.",
+              "Evaluate logging schema mismatches to maintain observability without discarding the entire query payload."
+            ],
+            "skill_to_explore": {
+              "skill": "Elasticsearch",
+              "why_relevant": "Understanding Elasticsearch document source structures and resilient parsing prevents silent data loss during schema variations."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Examined pagination math to verify that offsets align with zero-indexed query requirements."
+            ],
+            "areas_to_consider": [
+              "Note that (1 - 1) * 20 evaluates to 0, which correctly requests the beginning of the result set for page 1.",
+              "Focus attention on how exceptions inside the try block alter the flow when accessing document keys."
+            ],
+            "skill_to_explore": {
+              "skill": "Regression testing",
+              "why_relevant": "Comprehensive regression tests for edge cases like missing attributes help catch exception handling oversights."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Checked query dictionary parameter placement against Elasticsearch query specification structure."
+            ],
+            "areas_to_consider": [
+              "Verify standard Elasticsearch client body syntax, where top-level 'from' and 'size' keys are valid inside body mappings.",
+              "Review how broad catch blocks handle missing field keys during dictionary key lookup."
+            ],
+            "skill_to_explore": {
+              "skill": "Elasticsearch",
+              "why_relevant": "Familiarity with query DSL body structure helps distinguish client query syntax from document parsing logic."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Analyzed stream iteration lifetime and variable scope in relation to client connection handling."
+            ],
+            "areas_to_consider": [
+              "Recognize that search responses return fully parsed in-memory dictionaries rather than streaming socket objects.",
+              "Examine how Python handles dictionary key missing exceptions during list filtering."
+            ],
+            "skill_to_explore": {
+              "skill": "Regression testing",
+              "why_relevant": "Testing document handling under missing schema conditions ensures robust query processing."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "software_qa_analyst_tester_guided_code_review_v1_02",
+      "role_id": "software_qa_analyst_tester",
+      "role_label": "Software QA Analyst / Tester",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Reviewing Test Fixture Input Validation",
+      "situation": "You are reviewing a JavaScript test fixture utility used by your QA automation suite to generate test data queries. You need to ensure the helper function handles test input securely without introducing query injection risks.",
+      "language": "javascript",
+      "code_snippet": "// QA Test Fixture: Build API request payload for user registration tests\nfunction createTestPayload(userInputName) {\n  // HINT: Raw input concatenated directly into query payload\n  return {\n    testQuery: \"SELECT * FROM users WHERE username = '\" + userInputName + \"';\",\n    environment: \"staging_qa\"\n  };\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The function fails to set a default fallback value for the environment property when running automated suites."
+        },
+        {
+          "option_id": "b",
+          "text": "The helper function directly concatenates raw input strings into the query without parameterization, exposing the test utility to SQL injection risks."
+        },
+        {
+          "option_id": "c",
+          "text": "The function returns an object instead of a JSON string, which prevents Selenium from parsing HTTP headers."
+        },
+        {
+          "option_id": "d",
+          "text": "The userInputName parameter should be declared as a global constant to adhere to JavaScript ES6 conventions."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Functional testing",
+        "Selenium"
+      ],
+      "guidance": [
+        "Focus on how input parameters are combined with query strings inside the test fixture helper function.",
+        "Consider how untrusted input or special characters in parameter strings could modify the executed query logic."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identifying the importance of configuration stability across test environments."
+            ],
+            "areas_to_consider": [
+              "Reviewing the helper implementation reveals that string concatenation in the query field presents a higher security risk."
+            ],
+            "skill_to_explore": {
+              "skill": "Functional testing",
+              "why_relevant": "Validating test fixtures for secure data handling ensures reliable automated test execution."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Spotting the unsafe string concatenation pattern used when constructing database queries."
+            ],
+            "areas_to_consider": [
+              "Exploring parameterized queries or ORM methods to safely format inputs during test data setup."
+            ],
+            "skill_to_explore": {
+              "skill": "Functional testing",
+              "why_relevant": "Securing test utilities against SQL injection prevents flawed test execution and unintended database operations."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Considering return types and format compatibility within test automation frameworks."
+            ],
+            "areas_to_consider": [
+              "Checking how payload objects are consumed reveals that string concatenation within the query string is the main structural concern."
+            ],
+            "skill_to_explore": {
+              "skill": "Selenium",
+              "why_relevant": "Understanding how automated test suites handle data fixtures helps prevent injection bugs during test runs."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Recognizing standard JavaScript ES6 parameter conventions in test fixture scripts."
+            ],
+            "areas_to_consider": [
+              "Examining how dynamic parameters affect query string safety provides more insight into security risks."
+            ],
+            "skill_to_explore": {
+              "skill": "Functional testing",
+              "why_relevant": "Applying secure input handling in test helpers ensures data generation scripts remain resilient."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "telecommunications_engineering_specialist_standard_code_review_v1_03",
+      "role_id": "telecommunications_engineering_specialist",
+      "role_label": "Telecommunications Engineering Specialist",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing Link Diagnostic Script State Handling",
+      "situation": "You are reviewing a diagnostic Bash script written for telecommunications network monitoring. The script iterates through core network gateways, tests connectivity via ping, and records link status to an audit log.",
+      "language": "bash",
+      "code_snippet": "#!/bin/bash\nLAST_STATE=\"HEALTHY\"\nfor gateway in gw-alpha gw-beta gw-gamma; do\n  ping -c 2 -W 1 \"$gateway\" > /dev/null 2>&1\n  if [ $? -ne 0 ]; then\n    LAST_STATE=\"FAILED\"\n  fi\n  echo \"$(date '+%Y-%m-%d %H:%M:%S') $gateway status: $LAST_STATE\" >> /var/log/gw_audit.log\ndone",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The ping command packet count (-c 2) is too low to accurately measure trunk link packet loss."
+        },
+        {
+          "option_id": "b",
+          "text": "The echo statement fails to redirect standard error when writing to the gateway log file."
+        },
+        {
+          "option_id": "c",
+          "text": "The LAST_STATE variable persists across loop iterations without being reset, falsely logging subsequent healthy gateways as FAILED after any initial failure."
+        },
+        {
+          "option_id": "d",
+          "text": "The date command inside the loop generates mismatched timestamps across different gateway check entries."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "Network management",
+        "Shell script"
+      ],
+      "guidance": [
+        "Trace how the LAST_STATE variable changes across multiple loop iterations when an early gateway ping fails while subsequent gateway pings succeed."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identified the potential limitation of brief network probes during diagnostic checks."
+            ],
+            "areas_to_consider": [
+              "Note that while packet count affects statistical precision, it does not create inaccurate status reporting in the script execution logic."
+            ],
+            "skill_to_explore": {
+              "skill": "Network management",
+              "why_relevant": "Selecting appropriate probe parameters ensures effective diagnostic coverage while protecting monitoring state accuracy."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Recognized standard I/O redirection patterns in Bash automation scripts."
+            ],
+            "areas_to_consider": [
+              "Observe that standard output from echo is directly appended to the file, while error redirection on echo is rarely required."
+            ],
+            "skill_to_explore": {
+              "skill": "Shell script",
+              "why_relevant": "Understanding standard file descriptors helps prevent unexpected log corruption in automated telemetry tools."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately traced loop variable scopes and identified state leakage across network gateway checks."
+            ],
+            "areas_to_consider": [
+              "Consider re-initializing state variables inside loop iterations or explicitly setting status for both success and failure branches."
+            ],
+            "skill_to_explore": {
+              "skill": "Shell script",
+              "why_relevant": "Ensuring clean variable state management across iterations guarantees reliable audit logging across enterprise networks."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Focused on timestamp consistency for multi-node network log analysis."
+            ],
+            "areas_to_consider": [
+              "Evaluated per-iteration timestamp logging, which accurately reflects the real-time execution moment of each individual check."
+            ],
+            "skill_to_explore": {
+              "skill": "Network management",
+              "why_relevant": "Precise timestamping during individual diagnostic probes provides accurate chronological event sequences during outage analysis."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "video_game_designer_challenge_code_review_v1_04",
+      "role_id": "video_game_designer",
+      "role_label": "Video Game Designer",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Optimizing End-of-Match Scoring Logic",
+      "situation": "You are reviewing a proposed pseudocode scoring module for a high-volume multiplayer title. The module tallies final player scores at match conclusion by recalculating multipliers across recorded gameplay event streams. The design team reports frame hitches and processing delays on long-duration matches when generating summary scoreboards.",
+      "language": "pseudocode",
+      "code_snippet": "function CalculateMatchScore(playerEvents):\n    totalScore = 0.0\n    for i from 0 to length(playerEvents) - 1:\n        multiplier = 1.0\n        for j from 0 to i:\n            if playerEvents[j].type == \"COMBO_BOOST\":\n                multiplier += playerEvents[j].boostValue\n        totalScore += playerEvents[i].basePoints * multiplier\n    return totalScore",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The calculation should round multiplier floating-point values at each iteration to prevent IEEE 754 precision drift in integer scoreboard displays."
+        },
+        {
+          "option_id": "b",
+          "text": "The length of playerEvents should be cached in a local variable outside the outer loop to avoid repeated array property lookups."
+        },
+        {
+          "option_id": "c",
+          "text": "The nested check requires explicit type casting and null checks for boostValue to avoid event payload deserialization failures."
+        },
+        {
+          "option_id": "d",
+          "text": "The nested loop creates O(N^2) time complexity by re-scanning all prior events on every iteration, which degrades performance on large event logs."
+        }
+      ],
+      "correct_option_id": "d",
+      "skills_used": [
+        "C++",
+        "Unreal Engine"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Recognized that floating-point arithmetic can accumulate minor precision variations across repeated additions."
+            ],
+            "areas_to_consider": [
+              "Note that micro-rounding errors do not account for frame hitches or algorithmic latency when processing large event sets."
+            ],
+            "skill_to_explore": {
+              "skill": "Unreal Engine",
+              "why_relevant": "Understanding numeric precision vs. computational scaling helps prioritize fixes that impact game performance."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Identified a standard micro-optimization pattern regarding repeated property evaluations in loop bounds."
+            ],
+            "areas_to_consider": [
+              "Consider whether length evaluations or algorithmic iteration complexity (O(N^2) vs O(N)) is the primary driver of execution time."
+            ],
+            "skill_to_explore": {
+              "skill": "C++",
+              "why_relevant": "Distinguishing between compiler-level micro-optimizations and algorithmic complexity leads to higher-impact performance improvements."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Highlighted data safety and robust payload verification for dynamic event fields."
+            ],
+            "areas_to_consider": [
+              "Observe that structural payload validation does not solve the underlying execution bottleneck in long event streams."
+            ],
+            "skill_to_explore": {
+              "skill": "C++",
+              "why_relevant": "Combining runtime safety checks with efficient linear data traversal maintains both stability and frame rate."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Correctly diagnosed the nested pass as an O(N^2) bottleneck that can be simplified into a single O(N) running multiplier tracking loop."
+            ],
+            "areas_to_consider": [
+              "Evaluating how accumulating running multiplier state across a single pass reduces processing overhead for high event volumes."
+            ],
+            "skill_to_explore": {
+              "skill": "Unreal Engine",
+              "why_relevant": "Designing performant systems for game statistics ensures smooth UI transitions and server scalability at match completion."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "web_administrator_guided_code_review_v1_01",
+      "role_id": "web_administrator",
+      "role_label": "Web Administrator",
+      "difficulty": "guided",
+      "activity_type": "code_review",
+      "title": "Handling Missing Request Parameters in Route Configuration",
+      "situation": "You are reviewing a Node.js web server configuration handler that generates header markup dynamically based on query parameters. The handler needs to gracefully handle requests where optional query parameters might not be supplied by client browsers.",
+      "language": "javascript",
+      "code_snippet": "const express = require('express');\nconst app = express();\n\napp.get('/config/header', (req, res) => {\n  const theme = req.query.theme;\n  // HINT: Check how missing query parameters are handled before calling string methods.\n  const themeClass = theme.toLowerCase();\n  res.send(`<header class=\"${themeClass}\">Welcome</header>`);\n});",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "Calling `toLowerCase()` on `theme` without checking if `req.query.theme` exists causes an unhandled TypeError when the parameter is omitted."
+        },
+        {
+          "option_id": "b",
+          "text": "The route definition should use `app.post()` instead of `app.get()` to process HTTP query parameters."
+        },
+        {
+          "option_id": "c",
+          "text": "The Express `res.send()` method cannot process inline HTML tags without importing an external templating middleware."
+        },
+        {
+          "option_id": "d",
+          "text": "The `req.query` object is immutable in Express and cannot be accessed inside route callback functions."
+        }
+      ],
+      "correct_option_id": "a",
+      "skills_used": [
+        "HTML"
+      ],
+      "guidance": [
+        "Examine what value `req.query.theme` holds when a request to `/config/header` is submitted without a `theme` parameter.",
+        "Consider how invoking string methods directly on undefined properties affects server-side execution and error handling."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Identified the potential runtime exception caused by missing query parameters."
+            ],
+            "areas_to_consider": [
+              "Adding defensive null checks or default values ensures application stability."
+            ],
+            "skill_to_explore": {
+              "skill": "Input Validation in Web Servers",
+              "why_relevant": "Validating incoming HTTP request data prevents runtime crashes and ensures smooth user experiences."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Evaluated HTTP request methods and their role in web routing."
+            ],
+            "areas_to_consider": [
+              "HTTP GET requests standardly include query parameters in the URL path."
+            ],
+            "skill_to_explore": {
+              "skill": "HTTP Protocol Standards",
+              "why_relevant": "Understanding standard HTTP GET and POST behaviors helps configure endpoints appropriately."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Focused on server response rendering and HTML delivery."
+            ],
+            "areas_to_consider": [
+              "Express automatically sets content-type to text/html when sending string payloads containing HTML structures."
+            ],
+            "skill_to_explore": {
+              "skill": "HTML Delivery via Express",
+              "why_relevant": "Recognizing how web servers send HTML content helps design dynamic header configurations."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Analyzed property access on the request object within the route handler."
+            ],
+            "areas_to_consider": [
+              "Express populates `req.query` automatically as a readable object containing parsed URL query strings."
+            ],
+            "skill_to_explore": {
+              "skill": "Express Request Context",
+              "why_relevant": "Navigating request objects effectively helps retrieve client-provided parameters safely."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "web_and_digital_interface_designer_standard_code_review_v1_02",
+      "role_id": "web_and_digital_interface_designer",
+      "role_label": "Web and Digital Interface Designer",
+      "difficulty": "standard",
+      "activity_type": "code_review",
+      "title": "Reviewing Responsive Banner Styles for Security Standards",
+      "situation": "You are reviewing CSS code for a responsive layout banner component that will be rendered across public and authenticated pages. Review the snippet for security and implementation standards.",
+      "language": "css",
+      "code_snippet": ".profile-banner {\n  display: flex;\n  flex-direction: column;\n  min-height: 250px;\n  background-image: url(\"http://cdn.example.com/theme/banner.png\");\n  background-size: cover;\n}\n@media (min-width: 768px) {\n  .profile-banner {\n    flex-direction: row;\n  }\n}",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "Replace the Flexbox layout with CSS Grid to improve layout performance on mobile viewports."
+        },
+        {
+          "option_id": "b",
+          "text": "Update the background asset URL from HTTP to HTTPS to prevent mixed-content warnings and unsafe asset loading."
+        },
+        {
+          "option_id": "c",
+          "text": "Nest the media query declaration directly inside the .profile-banner selector block."
+        },
+        {
+          "option_id": "d",
+          "text": "Change min-height to a fixed height property to prevent content reflow during responsive resizing."
+        }
+      ],
+      "correct_option_id": "b",
+      "skills_used": [
+        "Dynamic hypertext markup language DHTML"
+      ],
+      "guidance": [
+        "Examine how external asset URLs are referenced in the CSS rules and consider potential network security implications for encrypted user sessions."
+      ],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Evaluates layout structure across different viewport sizes."
+            ],
+            "areas_to_consider": [
+              "Flexbox remains a valid layout choice for single-axis responsive components."
+            ],
+            "skill_to_explore": {
+              "skill": "Dynamic hypertext markup language DHTML",
+              "why_relevant": "Understanding layout modes helps build maintainable, responsive web interfaces."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Successfully identifies the security risk of referencing assets over unencrypted HTTP."
+            ],
+            "areas_to_consider": [
+              "Enforcing HTTPS across all asset URLs prevents mixed-content vulnerabilities in secure contexts."
+            ],
+            "skill_to_explore": {
+              "skill": "Dynamic hypertext markup language DHTML",
+              "why_relevant": "Securing web interfaces ensures user data and dynamic assets remain protected against interception."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Focuses on stylesheet organization and media query structure."
+            ],
+            "areas_to_consider": [
+              "Standard CSS media query syntax is correctly structured at top level here."
+            ],
+            "skill_to_explore": {
+              "skill": "Dynamic hypertext markup language DHTML",
+              "why_relevant": "Proper media query syntax maintains cross-browser styling compatibility."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Considers element height constraints across mobile viewports."
+            ],
+            "areas_to_consider": [
+              "Using min-height allows containers to adapt gracefully when dynamic content expands."
+            ],
+            "skill_to_explore": {
+              "skill": "Dynamic hypertext markup language DHTML",
+              "why_relevant": "Dynamic height management prevents layout overflow on varying screen sizes."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "question_id": "web_developer_challenge_code_review_v1_03",
+      "role_id": "web_developer",
+      "role_label": "Web Developer",
+      "difficulty": "challenge",
+      "activity_type": "code_review",
+      "title": "Reviewing Async API State Integrity in Live Search",
+      "situation": "You are reviewing a code submission for an inline user search component connected to a RESTful API. The feature allows users to filter results dynamically as they type into an input field.",
+      "language": "html",
+      "code_snippet": "<div class=\"user-search-widget\">\n  <input type=\"text\" id=\"searchInput\" oninput=\"handleSearch(this.value)\" placeholder=\"Search users...\">\n  <ul id=\"resultsList\"></ul>\n</div>\n<script>\n  let cache = {};\n  async function handleSearch(query) {\n    if (cache[query]) return document.getElementById('resultsList').innerHTML = cache[query];\n    const res = await fetch(`/api/v1/users/search?q=${encodeURIComponent(query)}`);\n    const data = await res.json();\n    cache[query] = data.map(u => `<li>${u.name}</li>`).join('');\n    document.getElementById('resultsList').innerHTML = cache[query];\n  }\n</script>",
+      "options": [
+        {
+          "option_id": "a",
+          "text": "The search query string is not converted to lower case before cache lookup, leading to duplicate API requests for case variations."
+        },
+        {
+          "option_id": "b",
+          "text": "The fetch request omits explicit HTTP headers for JSON payloads, causing the server endpoint to return invalid data."
+        },
+        {
+          "option_id": "c",
+          "text": "Concurrent asynchronous fetches lack cancellation or order tracking, allowing out-of-order network responses to write stale search state to the DOM."
+        },
+        {
+          "option_id": "d",
+          "text": "Caching populated HTML list items in a global object violates web security policies and throws modern DOM execution errors."
+        }
+      ],
+      "correct_option_id": "c",
+      "skills_used": [
+        "React",
+        "CSS"
+      ],
+      "guidance": [],
+      "option_feedback": [
+        {
+          "option_id": "a",
+          "feedback": {
+            "what_worked_well": [
+              "Recognized how cache key formatting affects network efficiency and client-side data reuse."
+            ],
+            "areas_to_consider": [
+              "Consider whether key casing causes severe state corruption during concurrent asynchronous requests."
+            ],
+            "skill_to_explore": {
+              "skill": "React",
+              "why_relevant": "Declarative UI models make it easier to manage asynchronous lifecycle state cleanly."
+            }
+          }
+        },
+        {
+          "option_id": "b",
+          "feedback": {
+            "what_worked_well": [
+              "Focused on API contract specifications and request header handling."
+            ],
+            "areas_to_consider": [
+              "HTTP GET requests typically do not require payload content headers when querying endpoint data."
+            ],
+            "skill_to_explore": {
+              "skill": "React",
+              "why_relevant": "Structured data fetching utilities help abstract network header management across components."
+            }
+          }
+        },
+        {
+          "option_id": "c",
+          "feedback": {
+            "what_worked_well": [
+              "Accurately identified the race condition caused by unhandled asynchronous promise ordering."
+            ],
+            "areas_to_consider": [
+              "Using AbortController or tracking request sequence IDs ensures UI state matches the latest user input."
+            ],
+            "skill_to_explore": {
+              "skill": "React",
+              "why_relevant": "Understanding asynchronous side-effect cleanup prevents stale state overrides during fast input transitions."
+            }
+          }
+        },
+        {
+          "option_id": "d",
+          "feedback": {
+            "what_worked_well": [
+              "Focused on security and object storage practices for client-side state."
+            ],
+            "areas_to_consider": [
+              "Storing string markup in JavaScript memory is syntactically valid, though race conditions pose a primary state issue here."
+            ],
+            "skill_to_explore": {
+              "skill": "CSS",
+              "why_relevant": "Separating structural presentation state from raw string injection keeps DOM components resilient."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2690 @@
+{
+  "report_name": "drag_and_drop_targeted_revision_report_v1",
+  "created_at_utc": "2026-10-08T15:38:02.796544+00:00",
+  "generator_model": "gemini-3.5-flash",
+  "judge_model": "gemini-3.8-flash",
+  "flagged_activity_count": 11,
+  "successfully_revised_count": 11,
+  "new_revision_count": 11,
+  "recovered_revision_count": 0,
+  "revised_activity_ids": [
+    "business_intelligence_analyst_guided_v1_03",
+    "computer_and_information_research_scientist_challenge_v1_02",
+    "computer_and_information_research_scientist_guided_v1_03",
+    "computer_user_support_specialist_standard_v1_03",
+    "database_administrator_guided_v1_02",
+    "database_administrator_guided_v1_04",
+    "database_architect_challenge_v1_01",
+    "network_and_systems_administrator_guided_v1_02",
+    "network_and_systems_administrator_guided_v1_04",
+    "software_qa_analyst_tester_standard_v1_02",
+    "web_developer_standard_v1_04"
+  ],
+  "revision_results": {
+    "business_intelligence_analyst_guided_v1_03": {
+      "activity_id": "business_intelligence_analyst_guided_v1_03",
+      "revised_at_utc": "2026-10-08T15:33:53.137706+00:00",
+      "original_record": {
+        "activity_id": "business_intelligence_analyst_guided_v1_03",
+        "role_id": "business_intelligence_analyst",
+        "role_label": "Business Intelligence Analyst",
+        "difficulty": "guided",
+        "target_skills": [
+          "Data warehouse",
+          "MySQL"
+        ],
+        "activity": {
+          "title": "Data Warehouse Performance Escalation",
+          "situation": "The daily data ingestion pipeline into the main MySQL data warehouse is consistently taking longer to execute, threatening to delay morning executive reports. You need to escalate this risk to the engineering team, explain the impact, and recommend a mitigation task.",
+          "sentence_template": "Hi Team, {blank_1} as the daily data volume has increased by forty percent this month. {blank_2} that executive dashboards will not be refreshed by the 8:00 AM SLA, leading to outdated strategic decisions. {blank_3} to optimise the indexing strategy before the next scheduled run?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "we are facing a significant bottleneck during the MySQL migration to the main data warehouse",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "This delay introduces a high probability",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "I recommend we allocate two hours of engineering time today",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "everything is going to break very soon if we do not act",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "we should probably look into this whenever someone has a bit of spare time",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This option clearly identifies the specific technical risk and the underlying cause of the bottleneck."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This option directly connects the technical risk to a concrete business impact, highlighting the threat to the SLA."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This option proposes a specific, actionable, and timely mitigation plan to address the bottleneck."
+            },
+            "o4": {
+              "what_to_improve": "Avoid alarmist language and instead describe the risk and its consequences using objective, measurable terms.",
+              "why": "Using sensationalist terms like 'everything is going to break' can cause panic without helping the team understand the actual technical scope."
+            },
+            "o5": {
+              "what_to_improve": "State a clear, time-bound recommendation rather than suggesting an indefinite, low-priority task.",
+              "why": "Suggesting the task be done 'whenever someone has spare time' fails to convey the urgency of an SLA breach."
+            }
+          },
+          "skills_used": [
+            "Data warehouse",
+            "MySQL"
+          ],
+          "guidance": [
+            "When escalating, clearly define the technical risk, link it to a measurable business outcome, and suggest a specific, time-bound solution."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "business_intelligence_analyst_guided_v1_03",
+        "role_id": "business_intelligence_analyst",
+        "role_label": "Business Intelligence Analyst",
+        "difficulty": "guided",
+        "target_skills": [
+          "Data warehouse",
+          "MySQL"
+        ],
+        "activity": {
+          "title": "Data Warehouse Performance Escalation",
+          "situation": "The daily data ingestion pipeline into the main MySQL data warehouse is consistently taking longer to execute, threatening to delay morning executive reports. You need to escalate this risk to the engineering team, explain the impact, and recommend a mitigation task.",
+          "sentence_template": "Hi Team, {blank_1} as the daily data volume has increased by forty percent this month. {blank_2} that executive dashboards will not be refreshed by the 8:00 AM SLA, leading to outdated strategic decisions. {blank_3} to optimise the indexing strategy before the next scheduled run?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "we are facing a significant bottleneck during the daily MySQL ingestion pipeline into the main data warehouse",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "This delay introduces a high probability",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "Could we allocate two hours of engineering time today",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "everything is going to break very soon if we do not act",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "we should probably look into this whenever someone has a bit of spare time",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This option clearly identifies the specific technical risk and the underlying cause of the bottleneck in the daily MySQL ingestion pipeline."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This option directly connects the technical risk to a concrete business impact, highlighting the threat to the SLA."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This option proposes a specific, actionable, and timely mitigation plan in an appropriate collaborative question format."
+            },
+            "o4": {
+              "what_to_improve": "Avoid alarmist language and instead describe the risk and its consequences using objective, measurable terms.",
+              "why": "Using sensationalist terms like 'everything is going to break' can cause panic without helping the team understand the actual technical scope."
+            },
+            "o5": {
+              "what_to_improve": "State a clear, time-bound recommendation rather than suggesting an indefinite, low-priority task.",
+              "why": "Suggesting the task be done 'whenever someone has spare time' fails to convey the urgency of an SLA breach."
+            }
+          },
+          "skills_used": [
+            "Data warehouse",
+            "MySQL"
+          ],
+          "guidance": [
+            "When escalating, clearly define the technical risk, link it to a measurable business outcome, and suggest a specific, time-bound solution."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately reflects typical escalation duties for a Business Intelligence Analyst managing database SLAs and warehouse ingestion pipelines.",
+          "The sentence template flows naturally and grammatically when combined with the intended options.",
+          "The distractors effectively demonstrate common real-world communication pitfalls, such as catastrophising and downplaying urgency.",
+          "Feedback is constructive, supportive, and provides actionable guidance on professional escalation tone."
+        ],
+        "issues": [],
+        "summary": "This is an exemplary workplace communication activity for a Business Intelligence Analyst. The technical context involving MySQL ingestion pipelines and data warehouse performance aligns seamlessly with the target skills, and the language throughout is clear, professional, and supportive."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 13.4899,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately reflects typical escalation duties for a Business Intelligence Analyst managing database SLAs and warehouse ingestion pipelines.",
+              "The sentence template flows naturally and grammatically when combined with the intended options.",
+              "The distractors effectively demonstrate common real-world communication pitfalls, such as catastrophising and downplaying urgency.",
+              "Feedback is constructive, supportive, and provides actionable guidance on professional escalation tone."
+            ],
+            "issues": [],
+            "summary": "This is an exemplary workplace communication activity for a Business Intelligence Analyst. The technical context involving MySQL ingestion pipelines and data warehouse performance aligns seamlessly with the target skills, and the language throughout is clear, professional, and supportive."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 10.7235,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "computer_and_information_research_scientist_challenge_v1_02": {
+      "activity_id": "computer_and_information_research_scientist_challenge_v1_02",
+      "revised_at_utc": "2026-10-08T15:34:12.631924+00:00",
+      "original_record": {
+        "activity_id": "computer_and_information_research_scientist_challenge_v1_02",
+        "role_id": "computer_and_information_research_scientist",
+        "role_label": "Computer and Information Research Scientist",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Docker",
+          "GitLab"
+        ],
+        "activity": {
+          "title": "Containerised Model Optimisation Feedback",
+          "situation": "A junior researcher has submitted a containerised model to GitLab, but the Docker configuration lacks multi-stage build optimisation, resulting in bloated image sizes. You need to provide constructive feedback.",
+          "sentence_template": "Regarding the recent model deployment, {blank_1} as evidenced by {blank_2}; please {blank_3} before the final release.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "we require all containerised models to use multi-stage Docker builds to minimise footprint",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the 1.2GB image size currently logged in our GitLab container registry",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "refactor the Dockerfile to separate the build environment from the runtime",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "we need to keep our deployment artifacts reasonably clean and lightweight",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "try to make the setup a bit more efficient when you have a moment",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly articulates the technical standard expected for model containerisation."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This references precise, verifiable evidence from the GitLab container registry."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This provides a specific, actionable task to resolve the image size issue."
+            },
+            "o4": {
+              "what_to_improve": "Define the specific standard and technology instead of using general terms like 'reasonably clean'.",
+              "why": "Vague expectations make it difficult for team members to understand the precise technical requirements."
+            },
+            "o5": {
+              "what_to_improve": "Suggest a concrete technical action rather than a vague request to make it more efficient.",
+              "why": "Asking for efficiency without defining the method or deadline does not guide the junior colleague towards the expected standard."
+            }
+          },
+          "skills_used": [
+            "Docker",
+            "GitLab"
+          ],
+          "guidance": []
+        }
+      },
+      "revised_record": {
+        "activity_id": "computer_and_information_research_scientist_challenge_v1_02",
+        "role_id": "computer_and_information_research_scientist",
+        "role_label": "Computer and Information Research Scientist",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Docker",
+          "GitLab"
+        ],
+        "activity": {
+          "title": "Containerised Model Optimisation Feedback",
+          "situation": "A junior researcher has submitted a containerised model to GitLab, but the Docker configuration lacks multi-stage build optimisation, resulting in bloated image sizes. You need to provide constructive feedback.",
+          "sentence_template": "Regarding the recent model deployment, {blank_1} as evidenced by {blank_2}; please {blank_3} before the final release.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "our containerised model currently exceeds our standard storage footprint",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the 1.2GB image size currently logged in our GitLab container registry",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "refactor the Dockerfile to use multi-stage builds to separate the build environment from the runtime",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "the containerised model is looking a bit too bulky for our deployment pipeline",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "try to clean up the setup to make it run a bit faster and smoother",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly identifies the specific technical issue (exceeding the standard storage footprint) in a professional manner."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This references precise, verifiable evidence from the GitLab container registry."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This provides a specific, actionable technical instruction to resolve the image size issue using Docker best practices."
+            },
+            "o4": {
+              "what_to_improve": "State the specific technical issue and standard being violated rather than using subjective terms like 'bulky'.",
+              "why": "Using vague terms like 'bulky' does not clearly communicate the precise technical standard or the exact nature of the problem to the junior researcher."
+            },
+            "o5": {
+              "what_to_improve": "Provide a concrete, actionable technical task rather than a vague request to make things 'faster and smoother'.",
+              "why": "Vague requests do not guide the junior colleague on how to actually resolve the container size issue using Docker best practices."
+            }
+          },
+          "skills_used": [
+            "Docker",
+            "GitLab"
+          ],
+          "guidance": []
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "Highly realistic workplace scenario reflecting peer review and mentoring in an applied research engineering context.",
+          "The target skills (Docker and GitLab) are integrated meaningfully into both the context and the correct options.",
+          "The complete sentence reads fluently with flawless grammar and professional cadence.",
+          "Distractors realistically capture common communication shortcuts (vague feedback like 'too bulky' and 'faster and smoother') while providing clear learning value in the feedback."
+        ],
+        "issues": [],
+        "summary": "This activity is exemplary. It models constructive, technically precise feedback from a senior research scientist to a colleague, targeting Docker multi-stage builds and GitLab container registries appropriately for a challenge-level task."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 8.4586,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "Highly realistic workplace scenario reflecting peer review and mentoring in an applied research engineering context.",
+              "The target skills (Docker and GitLab) are integrated meaningfully into both the context and the correct options.",
+              "The complete sentence reads fluently with flawless grammar and professional cadence.",
+              "Distractors realistically capture common communication shortcuts (vague feedback like 'too bulky' and 'faster and smoother') while providing clear learning value in the feedback."
+            ],
+            "issues": [],
+            "summary": "This activity is exemplary. It models constructive, technically precise feedback from a senior research scientist to a colleague, targeting Docker multi-stage builds and GitLab container registries appropriately for a challenge-level task."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 11.0242,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "computer_and_information_research_scientist_guided_v1_03": {
+      "activity_id": "computer_and_information_research_scientist_guided_v1_03",
+      "revised_at_utc": "2026-10-08T15:34:43.309773+00:00",
+      "original_record": {
+        "activity_id": "computer_and_information_research_scientist_guided_v1_03",
+        "role_id": "computer_and_information_research_scientist",
+        "role_label": "Computer and Information Research Scientist",
+        "difficulty": "guided",
+        "target_skills": [
+          "Spark",
+          "pandas"
+        ],
+        "activity": {
+          "title": "Escalating Spark Migration Risks",
+          "situation": "You are migrating a large-scale data analysis pipeline from local pandas dataframes to a shared Spark cluster. You have identified that migrating without memory tuning will cause out-of-memory errors on the cluster. You need to explain this risk, describe its impact, and recommend an action.",
+          "sentence_template": "We have identified a significant risk where {blank_1}, which would likely {blank_2}. To mitigate this, I recommend we {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "migrating the pandas pipeline directly to Spark without configuring memory allocation parameters",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "cause executor out-of-memory failures and delay the weekly analytics release",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "allocate two days next week for dedicated cluster configuration testing",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "the new data processing system might not work properly under heavy loads",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "hope the system handles the data volume without crashing",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This precisely names the source of the risk, identifying the Spark migration and pandas configuration details clearly."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly outlines the business and technical impact of the risk, specifically mentioning executor out-of-memory failures."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This recommends a concrete, time-bound mitigation strategy, allowing the project manager to allocate resources effectively."
+            },
+            "o4": {
+              "what_to_improve": "Detail the specific technical risk and the components involved rather than using general terms.",
+              "why": "A general warning about the system not working under heavy loads lacks the technical specificity needed to make an informed decision."
+            },
+            "o5": {
+              "what_to_improve": "Propose an active, structured mitigation plan instead of relying on chance.",
+              "why": "Hoping that the system does not crash fails to address the risk proactively and does not provide the project manager with a decision path."
+            }
+          },
+          "skills_used": [
+            "Spark",
+            "pandas"
+          ],
+          "guidance": [
+            "Identify the specific migration risk, explain its impact on the release, and suggest a practical mitigation timeline."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "computer_and_information_research_scientist_guided_v1_03",
+        "role_id": "computer_and_information_research_scientist",
+        "role_label": "Computer and Information Research Scientist",
+        "difficulty": "guided",
+        "target_skills": [
+          "Spark",
+          "pandas"
+        ],
+        "activity": {
+          "title": "Escalating Spark Migration Risks",
+          "situation": "You are migrating a large-scale data analysis pipeline from local pandas dataframes to a shared Spark cluster. You have identified that migrating without memory tuning will cause out-of-memory errors on the cluster. You need to explain this risk, describe its impact, and recommend an action.",
+          "sentence_template": "We have identified a significant risk in {blank_1}, which would likely {blank_2}. To mitigate this, I recommend we {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "migrating the pandas pipeline directly to Spark without configuring memory allocation parameters",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "cause executor out-of-memory failures and delay the weekly analytics release",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "allocate two days next week for dedicated cluster configuration testing",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "moving our data processing to a larger cluster environment without checking if it works",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "hope that the system handles the data volume without crashing",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This precisely names the source of the risk, identifying the Spark migration and pandas configuration details clearly."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly outlines the business and technical impact of the risk, specifically mentioning executor out-of-memory failures."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This recommends a concrete, time-bound mitigation strategy, allowing the project manager to allocate resources effectively."
+            },
+            "o4": {
+              "what_to_improve": "Detail the specific technical risk and the components involved rather than using general terms.",
+              "why": "A general warning about moving to a larger cluster lacks the technical specificity regarding pandas and Spark memory parameters needed to make an informed decision."
+            },
+            "o5": {
+              "what_to_improve": "Propose an active, structured mitigation plan instead of relying on chance.",
+              "why": "Hoping that the system does not crash fails to address the risk proactively and does not provide the project manager with a clear decision path."
+            }
+          },
+          "skills_used": [
+            "Spark",
+            "pandas"
+          ],
+          "guidance": [
+            "Identify the specific migration risk, explain its impact on the release, and suggest a practical mitigation timeline."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The technical scenario realistically integrates pandas and Apache Spark in a data engineering and research workflow.",
+          "The completed sentence reads naturally and maintains immaculate grammatical coherence across all three blanks.",
+          "Feedback entries are actionable, objective, and clearly explain why specificity and proactive planning are essential in technical communication."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o5 ('hope that the system handles the data volume without crashing') is slightly simplistic and overtly passive for a senior technical professional.",
+            "recommended_fix": "Consider rephrasing o5 to a more realistic but flawed mitigation, such as 'monitor the cluster during initial execution and intervene manually if memory limits are exceeded'."
+          }
+        ],
+        "summary": "This is a well-designed activity that effectively simulates technical risk communication for a Computer and Information Research Scientist. The grammar, pedagogical scaffolding, and feedback are excellent, with only a minor opportunity to make one distractor more nuanced."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 17.6303,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 4,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The technical scenario realistically integrates pandas and Apache Spark in a data engineering and research workflow.",
+              "The completed sentence reads naturally and maintains immaculate grammatical coherence across all three blanks.",
+              "Feedback entries are actionable, objective, and clearly explain why specificity and proactive planning are essential in technical communication."
+            ],
+            "issues": [
+              {
+                "severity": "minor",
+                "criterion": "distractor_plausibility",
+                "explanation": "Option o5 ('hope that the system handles the data volume without crashing') is slightly simplistic and overtly passive for a senior technical professional.",
+                "recommended_fix": "Consider rephrasing o5 to a more realistic but flawed mitigation, such as 'monitor the cluster during initial execution and intervene manually if memory limits are exceeded'."
+              }
+            ],
+            "summary": "This is a well-designed activity that effectively simulates technical risk communication for a Computer and Information Research Scientist. The grammar, pedagogical scaffolding, and feedback are excellent, with only a minor opportunity to make one distractor more nuanced."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 4,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 13.0358,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "computer_user_support_specialist_standard_v1_03": {
+      "activity_id": "computer_user_support_specialist_standard_v1_03",
+      "revised_at_utc": "2026-10-08T15:35:03.805058+00:00",
+      "original_record": {
+        "activity_id": "computer_user_support_specialist_standard_v1_03",
+        "role_id": "computer_user_support_specialist",
+        "role_label": "Computer User Support Specialist",
+        "difficulty": "standard",
+        "target_skills": [
+          "Linux",
+          "Encryption"
+        ],
+        "activity": {
+          "title": "Escalating Unencrypted Linux Backups",
+          "situation": "You discover that backup configurations on legacy Linux servers are transmitting administrative passwords without encryption. You must escalate this security risk to the infrastructure lead.",
+          "sentence_template": "During our system audit, we found that {blank_1}, which means {blank_2}; I recommend that we {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "several legacy Linux backup scripts are transmitting passwords in plain text",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "unauthorised users on the local network could intercept administrative credentials",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "enforce transport-layer encryption on these nodes before the weekend maintenance window",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "some older servers have security settings that are not quite up to standard",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "hope that nobody notices this vulnerability while we think about what to do",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This precisely identifies the risk, specifying legacy Linux systems and plain-text passwords."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly explains the potential security impact of credential interception."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This recommends a concrete, time-bound action to implement encryption."
+            },
+            "o4": {
+              "what_to_improve": "Specify the exact system and security vulnerability.",
+              "why": "Describing settings as 'not quite up to standard' is too vague for a serious security escalation."
+            },
+            "o5": {
+              "what_to_improve": "Propose a proactive and secure remediation plan.",
+              "why": "Hoping no one notices a security vulnerability is passive and exposes the organisation to severe risk."
+            }
+          },
+          "skills_used": [
+            "Linux",
+            "Encryption"
+          ],
+          "guidance": [
+            "A strong risk escalation clearly details both the technical vulnerability and the immediate action required to mitigate it."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "computer_user_support_specialist_standard_v1_03",
+        "role_id": "computer_user_support_specialist",
+        "role_label": "Computer User Support Specialist",
+        "difficulty": "standard",
+        "target_skills": [
+          "Linux",
+          "Encryption"
+        ],
+        "activity": {
+          "title": "Escalating Unencrypted Linux Backups",
+          "situation": "You discover that backup configurations on legacy Linux servers are transmitting administrative passwords without encryption. You must escalate this security risk to the infrastructure lead.",
+          "sentence_template": "During our system audit, we found that {blank_1}, which means {blank_2}; I recommend that we {blank_3}.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "several legacy Linux backup scripts are transmitting passwords in plain text",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "unauthorised users on the local network could intercept administrative credentials",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "enforce transport-layer encryption on these nodes before the weekend maintenance window",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "some older servers have security settings that are not quite up to standard",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "defer remediation of this issue until the next scheduled quarterly audit",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This precisely identifies the risk, specifying legacy Linux systems and plain-text passwords."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly explains the potential security impact of credential interception."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This recommends a concrete, time-bound action to implement encryption."
+            },
+            "o4": {
+              "what_to_improve": "Specify the exact system and security vulnerability.",
+              "why": "Describing settings as 'not quite up to standard' is too vague for a serious security escalation."
+            },
+            "o5": {
+              "what_to_improve": "Propose an immediate, proactive remediation plan rather than delaying action on active security risks.",
+              "why": "Deferring remediation of an active, unencrypted credential vulnerability until a quarterly audit leaves the system exposed to interception for an unacceptable period."
+            }
+          },
+          "skills_used": [
+            "Linux",
+            "Encryption"
+          ],
+          "guidance": [
+            "A strong risk escalation clearly details both the technical vulnerability and the immediate action required to mitigate it."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The sentence structure flows naturally and grammatically when assembled with the correct options.",
+          "The distractors represent realistic workplace missteps, such as using vague descriptions or improperly deferring critical security risks.",
+          "Feedback is constructive, specific, and free from demeaning or pass/fail framing.",
+          "The scenario accurately reflects professional escalation practices involving Linux infrastructure and encryption."
+        ],
+        "issues": [],
+        "summary": "This is an exemplary workplace communication activity. The scenario, options, and feedback align closely with standard-level expectations for technical risk escalation, featuring strong grammatical cohesion and professional realism."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 10.7467,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The sentence structure flows naturally and grammatically when assembled with the correct options.",
+              "The distractors represent realistic workplace missteps, such as using vague descriptions or improperly deferring critical security risks.",
+              "Feedback is constructive, specific, and free from demeaning or pass/fail framing.",
+              "The scenario accurately reflects professional escalation practices involving Linux infrastructure and encryption."
+            ],
+            "issues": [],
+            "summary": "This is an exemplary workplace communication activity. The scenario, options, and feedback align closely with standard-level expectations for technical risk escalation, featuring strong grammatical cohesion and professional realism."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 9.7289,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "database_administrator_guided_v1_02": {
+      "activity_id": "database_administrator_guided_v1_02",
+      "revised_at_utc": "2026-10-08T15:35:22.913376+00:00",
+      "original_record": {
+        "activity_id": "database_administrator_guided_v1_02",
+        "role_id": "database_administrator",
+        "role_label": "Database Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "SQL",
+          "Snowflake"
+        ],
+        "activity": {
+          "title": "Optimising Snowflake Queries",
+          "situation": "A junior developer has written a query that is causing severe performance issues. You need to clarify query optimization standards, refer to specific performance evidence, and propose a collaborative next step.",
+          "sentence_template": "To maintain system performance, {blank_1}, as {blank_2}. Let's {blank_3} to review the updated execution plan.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "all Snowflake queries must adhere to our indexing and partitioning standards",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the recent SQL query is performing full table scans and consuming excessive credits",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "meet tomorrow morning for a brief pairing session",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "queries need to be written much better than this",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "you should just rewrite the code from scratch",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly states the architectural expectation for Snowflake queries, aligning the developer with team standards."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This refers to specific, objective evidence regarding SQL full table scans and resource consumption."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a constructive, collaborative next step that supports the developer's learning."
+            },
+            "o4": {
+              "what_to_improve": "Replace subjective criticism with specific technical standards and objective evidence.",
+              "why": "Telling someone their query needs to be 'written much better' is subjective and does not help them understand what needs to change."
+            },
+            "o5": {
+              "what_to_improve": "Offer a collaborative, educational next step rather than demanding a complete rewrite without guidance.",
+              "why": "Suggesting a complete rewrite without explaining the underlying issues or offering support can discourage the developer and delay resolution."
+            }
+          },
+          "skills_used": [
+            "SQL",
+            "Snowflake"
+          ],
+          "guidance": [
+            "When giving feedback, refer to agreed standards, cite specific performance evidence, and offer a collaborative next step to help the developer improve."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "database_administrator_guided_v1_02",
+        "role_id": "database_administrator",
+        "role_label": "Database Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "SQL",
+          "Snowflake"
+        ],
+        "activity": {
+          "title": "Optimising Snowflake Queries",
+          "situation": "A junior developer has written a query that is causing severe performance issues. You need to clarify query optimisation standards, refer to specific performance evidence, and propose a collaborative next step.",
+          "sentence_template": "To maintain system performance, {blank_1}, as {blank_2}. Let's {blank_3} to review the updated execution plan.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "all Snowflake queries must adhere to our clustering and query optimisation standards",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the recent SQL query is performing full table scans and consuming excessive credits",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "meet tomorrow morning for a brief pairing session",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "queries need to be written much better than this",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "simply rewrite the query from scratch without checking the plan",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly states the architectural expectation for Snowflake queries, aligning the developer with team standards on clustering and query optimisation."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This refers to specific, objective evidence regarding SQL full table scans and resource consumption."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a constructive, collaborative next step that supports the developer's learning."
+            },
+            "o4": {
+              "what_to_improve": "Replace subjective criticism with specific technical standards and objective evidence.",
+              "why": "Telling someone their query needs to be 'written much better' is subjective and does not help them understand what needs to change."
+            },
+            "o5": {
+              "what_to_improve": "Offer a collaborative, educational next step rather than suggesting a complete rewrite without guidance.",
+              "why": "Suggesting a complete rewrite without explaining the underlying issues or offering support can discourage the developer and delay resolution."
+            }
+          },
+          "skills_used": [
+            "SQL",
+            "Snowflake"
+          ],
+          "guidance": [
+            "When giving feedback, refer to agreed standards, cite specific performance evidence, and offer a collaborative next step to help the developer improve."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately reflects typical DBA responsibilities, specifically identifying full table scans, managing Snowflake credit consumption, and mentoring junior colleagues.",
+          "The completed sentence reads naturally and maintains a constructive, professional tone throughout.",
+          "Feedback is specific, providing actionable rationale on avoiding vague criticism and encouraging collaborative problem-solving."
+        ],
+        "issues": [
+          {
+            "severity": "minor",
+            "criterion": "distractor_plausibility",
+            "explanation": "Option o5 ('simply rewrite the query from scratch without checking the plan') creates a mild semantic contradiction when inserted into blank_3 immediately before the clause 'to review the updated execution plan'.",
+            "recommended_fix": "Consider adjusting option o5 to something like 'postpone the deployment until the end of the week' to ensure smoother semantic integration with the following clause."
+          }
+        ],
+        "summary": "This is a high-quality activity tailored well to the Database Administrator role. It balances technical accuracy in Snowflake query performance with constructive mentorship and communication practices."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 9.4562,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 4,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately reflects typical DBA responsibilities, specifically identifying full table scans, managing Snowflake credit consumption, and mentoring junior colleagues.",
+              "The completed sentence reads naturally and maintains a constructive, professional tone throughout.",
+              "Feedback is specific, providing actionable rationale on avoiding vague criticism and encouraging collaborative problem-solving."
+            ],
+            "issues": [
+              {
+                "severity": "minor",
+                "criterion": "distractor_plausibility",
+                "explanation": "Option o5 ('simply rewrite the query from scratch without checking the plan') creates a mild semantic contradiction when inserted into blank_3 immediately before the clause 'to review the updated execution plan'.",
+                "recommended_fix": "Consider adjusting option o5 to something like 'postpone the deployment until the end of the week' to ensure smoother semantic integration with the following clause."
+              }
+            ],
+            "summary": "This is a high-quality activity tailored well to the Database Administrator role. It balances technical accuracy in Snowflake query performance with constructive mentorship and communication practices."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 4,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 9.6385,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "database_administrator_guided_v1_04": {
+      "activity_id": "database_administrator_guided_v1_04",
+      "revised_at_utc": "2026-10-08T15:35:42.634739+00:00",
+      "original_record": {
+        "activity_id": "database_administrator_guided_v1_04",
+        "role_id": "database_administrator",
+        "role_label": "Database Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "MySQL",
+          "Database"
+        ],
+        "activity": {
+          "title": "MySQL Database Migration Handover",
+          "situation": "You are handing over a critical MySQL database migration task to a colleague before going on leave. You need to transfer the relevant context, clarify ownership, and establish a clear follow-up check-in.",
+          "sentence_template": "I have completed the pre-migration checks on the MySQL production database, {blank_1}. You now have {blank_2}, and we should {blank_3} to review any post-migration alerts.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "and documented the backup recovery steps in the shared wiki",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "full ownership of the execution phase starting at 18:00 tonight",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "schedule a brief sync-up tomorrow at 09:00",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "and everything seems to be mostly fine for now",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "you can figure out the rest as you go along",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This provides the necessary technical context and points to the essential documentation for the MySQL database migration."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This explicitly establishes the boundaries and timeline for operational ownership."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This sets up a concrete follow-up check-in time to review the system post-migration."
+            },
+            "o4": {
+              "what_to_improve": "Provide concrete verification details and links to documentation rather than vague assurances.",
+              "why": "Stating 'everything seems mostly fine' lacks the technical precision required for a safe database handover."
+            },
+            "o5": {
+              "what_to_improve": "Define clear ownership and provide structured support instead of leaving tasks open-ended.",
+              "why": "Telling a colleague to 'figure it out' during a critical migration leaves room for error and fails to support team collaboration."
+            }
+          },
+          "skills_used": [
+            "MySQL",
+            "Database"
+          ],
+          "guidance": [
+            "A successful handover requires sharing specific documentation, defining clear ownership boundaries, and establishing a clear follow-up time."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "database_administrator_guided_v1_04",
+        "role_id": "database_administrator",
+        "role_label": "Database Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "MySQL",
+          "Database"
+        ],
+        "activity": {
+          "title": "MySQL Database Migration Handover",
+          "situation": "You are handing over a critical MySQL database migration task to a colleague before going on leave. You need to transfer the relevant context, clarify ownership, and establish a clear follow-up check-in.",
+          "sentence_template": "I have completed the pre-migration checks on the MySQL production database, {blank_1}. You now have {blank_2}, and we should {blank_3} to review any post-migration alerts.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "and documented the backup recovery steps in the shared wiki",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "full ownership of the execution phase starting at 18:00 tonight",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "schedule a brief sync-up tomorrow at 09:00",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "and everything seems to be mostly fine for now",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "the responsibility of figuring out the remaining steps as you go",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This provides the necessary technical context and points to the essential documentation for the MySQL database migration."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This explicitly establishes the boundaries and timeline for operational ownership."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This sets up a concrete follow-up check-in time to review the system post-migration."
+            },
+            "o4": {
+              "what_to_improve": "Provide concrete verification details and links to documentation rather than vague assurances.",
+              "why": "Stating 'everything seems mostly fine' lacks the technical precision required for a safe database handover."
+            },
+            "o5": {
+              "what_to_improve": "Define clear ownership and provide structured support instead of leaving tasks open-ended.",
+              "why": "Asking a colleague to figure out the remaining steps as they go during a critical migration leaves room for error and fails to support team collaboration."
+            }
+          },
+          "skills_used": [
+            "MySQL",
+            "Database"
+          ],
+          "guidance": [
+            "A successful handover requires sharing specific documentation, defining clear ownership boundaries, and establishing a clear follow-up time."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately captures a high-stakes, realistic database administrator task: conducting a structured pre-leave migration handover.",
+          "The complete sentence reads smoothly with natural technical phrasing and clear punctuation.",
+          "Distractors mirror common communication pitfalls (vagueness and shifting unguided burden onto peers) whilst remaining syntactically compatible with their respective blanks.",
+          "Feedback is constructive, supportive, and clearly explains how to make handover messaging accountable and professional."
+        ],
+        "issues": [],
+        "summary": "This activity is exemplary. It provides authentic technical context for a Database Administrator, features well-matched distractors, and delivers actionable, encouraging guidance suitable for the guided difficulty level."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 9.396,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately captures a high-stakes, realistic database administrator task: conducting a structured pre-leave migration handover.",
+              "The complete sentence reads smoothly with natural technical phrasing and clear punctuation.",
+              "Distractors mirror common communication pitfalls (vagueness and shifting unguided burden onto peers) whilst remaining syntactically compatible with their respective blanks.",
+              "Feedback is constructive, supportive, and clearly explains how to make handover messaging accountable and professional."
+            ],
+            "issues": [],
+            "summary": "This activity is exemplary. It provides authentic technical context for a Database Administrator, features well-matched distractors, and delivers actionable, encouraging guidance suitable for the guided difficulty level."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 10.3128,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "database_architect_challenge_v1_01": {
+      "activity_id": "database_architect_challenge_v1_01",
+      "revised_at_utc": "2026-10-08T15:36:20.268514+00:00",
+      "original_record": {
+        "activity_id": "database_architect_challenge_v1_01",
+        "role_id": "database_architect",
+        "role_label": "Database Architect",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Index tuning",
+          "Transact-SQL"
+        ],
+        "activity": {
+          "title": "ERP Performance Degradation Status Update",
+          "situation": "During the critical month-end closing, the primary ERP database is experiencing severe latency. As the Lead Database Architect, you have identified the root cause and need to provide a clear status update to the executive steering committee to manage their expectations and explain the mitigation plan.",
+          "sentence_template": "Following our investigation into the ERP system slowdown during month-end closing, we have verified that {blank_1}; this is currently causing a 40% increase in checkout transaction times. To resolve this, our team is executing an emergency {blank_2} plan, which is estimated to complete by 14:00 GMT. I will provide {blank_3} to confirm system stability.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "a highly-nested subquery in the monthly ledger generation is blocking primary tables",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "Index tuning script on the core Transact-SQL tables",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "a follow-up status update at 14:15 GMT",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "there are some general performance bottlenecks within the database engine",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "some routine maintenance work on the server",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly identifies the verified cause of the database lag, providing the technical team and stakeholders with precise context."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This specifies the exact technical remedy, Index tuning on Transact-SQL tables, and demonstrates active resolution."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes a clear, immediate timeframe for the next update, maintaining stakeholder confidence during a critical period."
+            },
+            "o4": {
+              "what_to_improve": "Provide the specific, verified cause rather than a vague description of performance bottlenecks.",
+              "why": "While professional, this phrase lacks the specific diagnostic details required to reassure stakeholders that the team understands the root cause."
+            },
+            "o5": {
+              "what_to_improve": "Specify the exact, actionable resolution plan rather than referring to routine maintenance.",
+              "why": "This phrase is too general and fails to convey the targeted nature of the emergency response required during a critical month-end window."
+            }
+          },
+          "skills_used": [
+            "Index tuning",
+            "Transact-SQL"
+          ],
+          "guidance": []
+        }
+      },
+      "revised_record": {
+        "activity_id": "database_architect_challenge_v1_01",
+        "role_id": "database_architect",
+        "role_label": "Database Architect",
+        "difficulty": "challenge",
+        "target_skills": [
+          "Index tuning",
+          "Transact-SQL"
+        ],
+        "activity": {
+          "title": "ERP Performance Degradation Status Update",
+          "situation": "During the critical month-end closing, the primary ERP database is experiencing severe latency. As the Lead Database Architect, you have identified the root cause and need to provide a clear status update to the executive steering committee to manage their expectations and explain the mitigation plan.",
+          "sentence_template": "Following our investigation into the ERP system slowdown during month-end closing, we have verified that {blank_1}; this is currently causing a 40% increase in checkout transaction times. To resolve this, our team is executing {blank_2}, which is estimated to complete by 14:00 GMT. I will provide {blank_3} to confirm system stability.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "a highly-nested subquery in the monthly ledger generation is blocking primary tables",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "an emergency index tuning plan on the core Transact-SQL tables",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "a follow-up status update at 14:15 GMT",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "there are general performance bottlenecks within the database engine",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "a standard database defragmentation cycle",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly identifies the verified cause of the database lag, providing the technical team and stakeholders with precise context."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This specifies the exact technical remedy, index tuning on Transact-SQL tables, and demonstrates active, targeted resolution."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes a clear, immediate timeframe for the next update, maintaining stakeholder confidence during a critical period."
+            },
+            "o4": {
+              "what_to_improve": "Provide the specific, verified cause rather than a vague description of performance bottlenecks.",
+              "why": "While professional, this phrase lacks the specific diagnostic details required to reassure stakeholders that the team understands the root cause."
+            },
+            "o5": {
+              "what_to_improve": "Specify the exact, actionable resolution plan rather than referring to standard, non-specific maintenance.",
+              "why": "This option is too general and fails to convey the targeted nature of the emergency response required to address the specific index issues during a critical month-end window."
+            }
+          },
+          "skills_used": [
+            "Index tuning",
+            "Transact-SQL"
+          ],
+          "guidance": []
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 4
+        },
+        "strengths": [
+          "The scenario accurately reflects the communication demands placed on a Lead Database Architect managing an urgent month-end performance incident.",
+          "The target technical skills (Index tuning and Transact-SQL) are seamlessly integrated into a credible executive communication context.",
+          "The distractors are plausible and grammatically aligned, failing only because they lack root-cause specificity and an accountable remediation strategy."
+        ],
+        "issues": [],
+        "summary": "This is an exceptionally well-crafted activity that tests executive communication and incident status reporting for a database architect. The syntax across all blanks is seamless, distractors offer plausible yet inferior alternatives, and feedback is supportive and actionable."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 15.6089,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 4
+            },
+            "strengths": [
+              "The scenario accurately reflects the communication demands placed on a Lead Database Architect managing an urgent month-end performance incident.",
+              "The target technical skills (Index tuning and Transact-SQL) are seamlessly integrated into a credible executive communication context.",
+              "The distractors are plausible and grammatically aligned, failing only because they lack root-cause specificity and an accountable remediation strategy."
+            ],
+            "issues": [],
+            "summary": "This is an exceptionally well-crafted activity that tests executive communication and incident status reporting for a database architect. The syntax across all blanks is seamless, distractors offer plausible yet inferior alternatives, and feedback is supportive and actionable."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 4,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": false,
+              "latency_seconds": 10.4954,
+              "error": "ValidationError: 1 validation error for GeminiJudgeReviewStructural\nstrengths\n  List should have at most 4 items after validation, not 5 [type=too_long, input_value=['The scenario accurately...takeholder confidence.'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_long"
+            },
+            {
+              "attempt_number": 2,
+              "valid": true,
+              "latency_seconds": 9.517,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "network_and_systems_administrator_guided_v1_02": {
+      "activity_id": "network_and_systems_administrator_guided_v1_02",
+      "revised_at_utc": "2026-10-08T15:36:49.831936+00:00",
+      "original_record": {
+        "activity_id": "network_and_systems_administrator_guided_v1_02",
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "Microsoft Azure"
+        ],
+        "activity": {
+          "title": "Azure Resource Naming Feedback",
+          "situation": "A junior administrator has deployed a virtual machine in Microsoft Azure without following the company's resource naming convention. The administrator needs to send an email to clarify the expectation and guide them to align it with the standard.",
+          "sentence_template": "Hi Alex, I noticed that the new virtual machine deployed in {blank_1}. To ensure our automated billing scripts run smoothly, {blank_2}. Could you please update the resource name by tomorrow morning, and {blank_3}?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "Microsoft Azure does not follow the standard prefix convention",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "all production resources must include the department code",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "let me know if you would like to run through the naming documentation together",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "you completely ignored the setup guidelines we talked about",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "I will probably just delete it and recreate it myself if it is not fixed",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This identifies the specific deviation based on objective evidence, which helps the recipient understand exactly what needs attention."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly states the underlying expectation and the operational reason behind it, making the policy logical and easier to follow."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a supportive, collaborative next step that helps build the colleague's capability for future tasks."
+            },
+            "o4": {
+              "what_to_improve": "Focus on the objective evidence and standard practice rather than making personal accusations about the colleague's intent.",
+              "why": "Framing the issue around the resource state rather than personal compliance prevents defensiveness and keeps the conversation collaborative."
+            },
+            "o5": {
+              "what_to_improve": "Offer a supportive, learning-oriented next step rather than taking over the task unilaterally.",
+              "why": "Encouraging the colleague to rectify the naming fosters accountability and ensures they learn the established procedure."
+            }
+          },
+          "skills_used": [
+            "Microsoft Azure"
+          ],
+          "guidance": [
+            "When delivering feedback, clearly state the observed issue using objective evidence, explain the standard required, and offer a supportive next step."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "network_and_systems_administrator_guided_v1_02",
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "Microsoft Azure"
+        ],
+        "activity": {
+          "title": "Azure Resource Naming Feedback",
+          "situation": "A junior administrator has deployed a virtual machine in Microsoft Azure without following the company's resource naming convention. The administrator needs to send an email to clarify the expectation and guide them to align it with the standard.",
+          "sentence_template": "Hi Alex, I noticed that the new virtual machine deployed in {blank_1}. To ensure our automated billing scripts run smoothly, {blank_2}. Could you please update the resource name by tomorrow morning, and {blank_3}?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "Microsoft Azure does not follow the standard prefix convention",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "all production resources must include the department code",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "let me know if you would like to run through the naming documentation together",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "Azure has been set up in a way that completely ignores the guidelines we discussed",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "I will probably just delete it and recreate it myself if it is not fixed",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This identifies the specific deviation based on objective evidence, which helps the recipient understand exactly what needs attention."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly states the underlying expectation and the operational reason behind it, making the policy logical and easier to follow."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a supportive, collaborative next step that helps build the colleague's capability for future tasks."
+            },
+            "o4": {
+              "what_to_improve": "Focus on the objective evidence and standard practice rather than making personal accusations about the colleague's intent.",
+              "why": "Framing the issue around the resource state rather than personal compliance prevents defensiveness and keeps the conversation collaborative."
+            },
+            "o5": {
+              "what_to_improve": "Offer a supportive, learning-oriented next step rather than taking over the task unilaterally.",
+              "why": "Encouraging the colleague to rectify the naming fosters accountability and ensures they learn the established procedure."
+            }
+          },
+          "skills_used": [
+            "Microsoft Azure"
+          ],
+          "guidance": [
+            "When delivering feedback, clearly state the observed issue using objective evidence, explain the standard required, and offer a supportive next step."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately captures a common operational responsibility for an administrator managing cloud environments and onboarding junior colleagues.",
+          "The sentence structure flows naturally and grammatically when completed with the intended keys.",
+          "The distractors effectively reflect authentic communication errors (accusatory framing and passive-aggressive threats of intervention) without being absurd.",
+          "Feedback explanations are instructive, coaching the user on objective framing and collaborative workplace mentorship."
+        ],
+        "issues": [],
+        "summary": "This is a well-designed workplace communication activity tailored to a Network and Systems Administrator. The technical context of Microsoft Azure naming conventions tied to billing automation is highly authentic, the grammar is seamless across all blanks, and the feedback reinforces constructive interpersonal communication."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 16.4173,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately captures a common operational responsibility for an administrator managing cloud environments and onboarding junior colleagues.",
+              "The sentence structure flows naturally and grammatically when completed with the intended keys.",
+              "The distractors effectively reflect authentic communication errors (accusatory framing and passive-aggressive threats of intervention) without being absurd.",
+              "Feedback explanations are instructive, coaching the user on objective framing and collaborative workplace mentorship."
+            ],
+            "issues": [],
+            "summary": "This is a well-designed workplace communication activity tailored to a Network and Systems Administrator. The technical context of Microsoft Azure naming conventions tied to billing automation is highly authentic, the grammar is seamless across all blanks, and the feedback reinforces constructive interpersonal communication."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 13.133,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "network_and_systems_administrator_guided_v1_04": {
+      "activity_id": "network_and_systems_administrator_guided_v1_04",
+      "revised_at_utc": "2026-10-08T15:37:14.939968+00:00",
+      "original_record": {
+        "activity_id": "network_and_systems_administrator_guided_v1_04",
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "Firewalls"
+        ],
+        "activity": {
+          "title": "Firewall Migration Handover",
+          "situation": "The shift is ending, and a network administrator needs to hand over an ongoing firewall migration task to a colleague on the night shift.",
+          "sentence_template": "Hi David, I have successfully configured the policy rules on the new {blank_1}. To ensure a seamless transition, {blank_2}. Let us schedule a quick {blank_3} to verify that all traffic is routing as expected.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "firewalls but still need to run the final validation tests",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "you will now be the primary owner responsible for monitoring the cutover",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "check-in call at 10:00 PM tonight",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "I am leaving now because my shift is officially over",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "message me if an issue arises and I might look at it tomorrow",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This transfers the exact technical status and outstanding tasks, giving the incoming colleague immediate clarity on where to start."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This explicitly clarifies who owns the next phase of the migration, avoiding any ambiguity during the shift change."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes a specific, structured touchpoint to review progress and ensure the migration succeeds."
+            },
+            "o4": {
+              "what_to_improve": "Focus on the technical status and the needs of the incoming colleague rather than simply stating your shift is over.",
+              "why": "Framing the handover around the progress of the task ensures a professional, collaborative transition of duties."
+            },
+            "o5": {
+              "what_to_improve": "Establish a clear, scheduled check-in time rather than offering a vague, passive communication option.",
+              "why": "Proactive and structured check-ins prevent operational gaps and ensure issues are resolved systematically."
+            }
+          },
+          "skills_used": [
+            "Firewalls"
+          ],
+          "guidance": [
+            "A successful handover clearly defines the current progress of the task, transfers ownership explicitly, and schedules a clear follow-up time."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "network_and_systems_administrator_guided_v1_04",
+        "role_id": "network_and_systems_administrator",
+        "role_label": "Network and Systems Administrator",
+        "difficulty": "guided",
+        "target_skills": [
+          "Firewalls"
+        ],
+        "activity": {
+          "title": "Firewall Migration Handover",
+          "situation": "The shift is ending, and a network administrator needs to hand over an ongoing firewall migration task to a colleague on the night shift.",
+          "sentence_template": "Hi David, I have successfully configured the policy rules on the new {blank_1}. To ensure a seamless transition, {blank_2}. Let us schedule a quick {blank_3} to verify that all traffic is routing as expected.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "firewall appliance, but the final validation tests are still pending",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "you will now be the primary owner responsible for monitoring the cutover",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "check-in call at 10:00 pm tonight",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "backup gateway, though I have not verified if it is actually receiving traffic",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "informal messaging exchange tomorrow if any issues happen to arise",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This clearly specifies the hardware being configured and precisely identifies the outstanding validation task for the incoming colleague."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This explicitly establishes who holds ownership of the next phase, preventing any ambiguity during the shift handover."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a specific, structured time to collaborate and verify that the migration has succeeded."
+            },
+            "o4": {
+              "what_to_improve": "Specify the status of the primary firewall appliance and ensure you provide clear, verified progress rather than leaving traffic status uncertain.",
+              "why": "Handing over a task with unverified traffic on a backup gateway without clear context can lead to configuration errors and network downtime."
+            },
+            "o5": {
+              "what_to_improve": "Propose a defined, scheduled time for a direct review rather than relying on a passive, unscheduled messaging exchange.",
+              "why": "A structured check-in ensures that any routing issues are caught and resolved immediately, rather than waiting for problems to be noticed reactively."
+            }
+          },
+          "skills_used": [
+            "Firewalls"
+          ],
+          "guidance": [
+            "A successful handover clearly defines the current progress of the task, transfers ownership explicitly, and schedules a clear follow-up time."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately captures a high-stakes, routine task for network administrators handing over cutovers between operational shifts.",
+          "The target sentence flows naturally and grammatically when the correct options are slotted into the blanks.",
+          "Distractors realistically represent common communication pitfalls in IT handovers, such as vague ownership or reactive follow-up.",
+          "Feedback is constructive, clear, and avoids negative or demeaning terminology."
+        ],
+        "issues": [],
+        "summary": "This is a well-designed guided activity for a Network and Systems Administrator. The context is realistic, the grammar aligns seamlessly across all blanks, and the feedback offers clear, professional rationales."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 14.6452,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately captures a high-stakes, routine task for network administrators handing over cutovers between operational shifts.",
+              "The target sentence flows naturally and grammatically when the correct options are slotted into the blanks.",
+              "Distractors realistically represent common communication pitfalls in IT handovers, such as vague ownership or reactive follow-up.",
+              "Feedback is constructive, clear, and avoids negative or demeaning terminology."
+            ],
+            "issues": [],
+            "summary": "This is a well-designed guided activity for a Network and Systems Administrator. The context is realistic, the grammar aligns seamlessly across all blanks, and the feedback offers clear, professional rationales."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 10.4507,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "software_qa_analyst_tester_standard_v1_02": {
+      "activity_id": "software_qa_analyst_tester_standard_v1_02",
+      "revised_at_utc": "2026-10-08T15:37:39.048537+00:00",
+      "original_record": {
+        "activity_id": "software_qa_analyst_tester_standard_v1_02",
+        "role_id": "software_qa_analyst_tester",
+        "role_label": "Software QA Analyst / Tester",
+        "difficulty": "standard",
+        "target_skills": [
+          "JUnit",
+          "Version control"
+        ],
+        "activity": {
+          "title": "Providing Pull Request Feedback",
+          "situation": "A junior developer submitted a pull request that bypassed branch policies and lacked unit tests. You need to provide constructive feedback that highlights the issue and offers a collaborative resolution.",
+          "sentence_template": "Hi Alex, thanks for the pull request; however, {blank_1} as required by our team guidelines. Specifically, {blank_2}. Could we {blank_3} to walk through the branch strategy and test requirements together?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "the changes were committed directly to the main branch in version control",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the new API endpoints lack corresponding JUnit test cases",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "set up a quick 15-minute call this afternoon",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "you didn't follow the standard procedure we established",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "schedule a long meeting sometime next week to review everything",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This neutrally identifies the procedural deviation regarding version control without sounding accusatory."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This points to objective evidence of missing JUnit test coverage, keeping the feedback professional and actionable."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a timely, focused, and supportive next step to help the developer align with team standards."
+            },
+            "o4": {
+              "what_to_improve": "Focus on the specific action or process deviation rather than framing it as a personal failure.",
+              "why": "Using personal pronouns to highlight mistakes can make the recipient defensive and reduces collaboration."
+            },
+            "o5": {
+              "what_to_improve": "Propose a prompt and appropriately sized session rather than delaying the feedback loop.",
+              "why": "A long meeting scheduled far in the future delays the current release cycle and is inefficient for a minor correction."
+            }
+          },
+          "skills_used": [
+            "JUnit",
+            "Version control"
+          ],
+          "guidance": [
+            "Focus on objective evidence and propose a collaborative, timely solution."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "software_qa_analyst_tester_standard_v1_02",
+        "role_id": "software_qa_analyst_tester",
+        "role_label": "Software QA Analyst / Tester",
+        "difficulty": "standard",
+        "target_skills": [
+          "JUnit",
+          "Version control"
+        ],
+        "activity": {
+          "title": "Providing Pull Request Feedback",
+          "situation": "A junior developer submitted a pull request that bypassed branch policies and lacked unit tests. You need to provide constructive feedback that highlights the issue and offers a collaborative resolution.",
+          "sentence_template": "Hi Alex, thanks for the pull request; however, {blank_1} our version control policy. Specifically, {blank_2}. Could we {blank_3} to walk through the branch strategy and test requirements together?",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "the changes bypass the branch protection rules of",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "the new API endpoints lack corresponding JUnit test cases",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "set up a quick 15-minute call this afternoon",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "you completely ignored the guidelines of",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "schedule a long meeting sometime next week to review everything",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This option clearly and objectively identifies the procedural deviation regarding version control without using accusatory language."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This points to objective evidence of missing JUnit test coverage, keeping the feedback professional, precise and actionable."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This proposes a timely, focused, and supportive next step to help the developer align with team standards quickly."
+            },
+            "o4": {
+              "what_to_improve": "Focus on the specific action or process deviation rather than framing it as a personal failure.",
+              "why": "Using accusatory phrases like 'you completely ignored' can make the recipient defensive and reduces the chance of collaborative improvement."
+            },
+            "o5": {
+              "what_to_improve": "Propose a prompt and appropriately sized session rather than delaying the feedback loop.",
+              "why": "A long meeting scheduled far in the future delays the current release cycle and is inefficient for addressing a straightforward correction."
+            }
+          },
+          "skills_used": [
+            "JUnit",
+            "Version control"
+          ],
+          "guidance": [
+            "Focus on objective evidence and propose a collaborative, timely solution."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 4,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "Highly realistic workplace scenario reflecting day-to-day code review and collaboration between QA and development.",
+          "Flawless syntactic and grammatical integration of all intended options into the sentence template.",
+          "Clear integration of both target skills (JUnit and version control) in a non-contrived manner.",
+          "Exemplary feedback that provides actionable coaching without punitive or dismissive phrasing."
+        ],
+        "issues": [],
+        "summary": "This activity is exceptionally well-constructed, offering an authentic communication scenario for a Software QA Analyst. The sentence flows naturally when populated with the correct choices, and the feedback offers clear pedagogical value."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 4,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 14.3056,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 4,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "Highly realistic workplace scenario reflecting day-to-day code review and collaboration between QA and development.",
+              "Flawless syntactic and grammatical integration of all intended options into the sentence template.",
+              "Clear integration of both target skills (JUnit and version control) in a non-contrived manner.",
+              "Exemplary feedback that provides actionable coaching without punitive or dismissive phrasing."
+            ],
+            "issues": [],
+            "summary": "This activity is exceptionally well-constructed, offering an authentic communication scenario for a Software QA Analyst. The sentence flows naturally when populated with the correct choices, and the feedback offers clear pedagogical value."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 4,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 9.7917,
+              "error": null
+            }
+          ]
+        }
+      ]
+    },
+    "web_developer_standard_v1_04": {
+      "activity_id": "web_developer_standard_v1_04",
+      "revised_at_utc": "2026-10-08T15:38:02.713375+00:00",
+      "original_record": {
+        "activity_id": "web_developer_standard_v1_04",
+        "role_id": "web_developer",
+        "role_label": "Web Developer",
+        "difficulty": "standard",
+        "target_skills": [
+          "Node.js",
+          "Atlassian Confluence"
+        ],
+        "activity": {
+          "title": "Node.js API Handover",
+          "situation": "You are finishing your shift and need to hand over the development of a Node.js API to a colleague. You need to transfer the relevant context, clarify ownership of the next task, and establish a follow-up plan.",
+          "sentence_template": "I have completed the core routing for the Node.js API and {blank_1} detailing the endpoint structures. Please {blank_2} as we agreed, and let us {blank_3} to review the integration.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "updated the Atlassian Confluence documentation",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "take ownership of writing the database integration tests",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "schedule a brief sync tomorrow at 10:00",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "left some notes scattered around my desk",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "figure out what needs to be done next on your own",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This ensures that the colleague has access to structured, updated documentation in Atlassian Confluence."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly defines the next technical task and transfers ownership of it directly."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes a clear, scheduled check-in time to keep the project on track."
+            },
+            "o4": {
+              "what_to_improve": "Point to a centralised, professional documentation source.",
+              "why": "Scattered or informal notes hinder collaboration and make it difficult for your colleague to find reliable information."
+            },
+            "o5": {
+              "what_to_improve": "Explicitly state the specific task and confirm who is responsible for it.",
+              "why": "Leaving tasks open-ended can cause confusion, duplication of work, or missed deadlines."
+            }
+          },
+          "skills_used": [
+            "Node.js",
+            "Atlassian Confluence"
+          ],
+          "guidance": [
+            "Ensure you reference the documentation location, specify the next task's owner, and set a check-in time."
+          ]
+        }
+      },
+      "revised_record": {
+        "activity_id": "web_developer_standard_v1_04",
+        "role_id": "web_developer",
+        "role_label": "Web Developer",
+        "difficulty": "standard",
+        "target_skills": [
+          "Node.js",
+          "Atlassian Confluence"
+        ],
+        "activity": {
+          "title": "Node.js API Handover",
+          "situation": "You are finishing your shift and need to hand over the development of a Node.js API to a colleague. You need to transfer the relevant context, clarify ownership of the next task, and establish a follow-up plan.",
+          "sentence_template": "I have completed the core routing for the Node.js API and {blank_1} detailing the endpoint structures. Please {blank_2} as we agreed, and let us {blank_3} to review the integration.",
+          "blanks": [
+            {
+              "blank_id": "blank_1"
+            },
+            {
+              "blank_id": "blank_2"
+            },
+            {
+              "blank_id": "blank_3"
+            }
+          ],
+          "options": [
+            {
+              "option_id": "o1",
+              "text": "updated the Atlassian Confluence documentation",
+              "fits_blank_id": "blank_1"
+            },
+            {
+              "option_id": "o2",
+              "text": "take ownership of writing the database integration tests",
+              "fits_blank_id": "blank_2"
+            },
+            {
+              "option_id": "o3",
+              "text": "schedule a brief sync tomorrow at 10:00",
+              "fits_blank_id": "blank_3"
+            },
+            {
+              "option_id": "o4",
+              "text": "saved temporary notes in an unshared local scratchpad",
+              "fits_blank_id": null
+            },
+            {
+              "option_id": "o5",
+              "text": "pick up whichever remaining tasks seem most urgent",
+              "fits_blank_id": null
+            }
+          ],
+          "feedback_by_option": {
+            "o1": {
+              "what_to_improve": null,
+              "why": "This ensures that your colleague has immediate access to structured, updated documentation in Atlassian Confluence."
+            },
+            "o2": {
+              "what_to_improve": null,
+              "why": "This clearly defines the next technical task and transfers ownership of it directly."
+            },
+            "o3": {
+              "what_to_improve": null,
+              "why": "This establishes a clear, scheduled check-in time to keep the project on track."
+            },
+            "o4": {
+              "what_to_improve": "Ensure documentation is saved in a shared, centralised repository rather than a private space.",
+              "why": "Saving notes in an unshared local scratchpad prevents your colleague from accessing critical context, delaying progress."
+            },
+            "o5": {
+              "what_to_improve": "Explicitly define the specific task and confirm who is responsible for it.",
+              "why": "Leaving task selection open-ended can cause confusion, duplication of effort, or missed deadlines."
+            }
+          },
+          "skills_used": [
+            "Node.js",
+            "Atlassian Confluence"
+          ],
+          "guidance": [
+            "Ensure you reference the documentation location, specify the next task's owner, and set a check-in time."
+          ]
+        }
+      },
+      "final_review": {
+        "decision": "accept",
+        "scores": {
+          "role_relevance": 5,
+          "workplace_realism": 5,
+          "sentence_coherence": 5,
+          "option_distinctness": 5,
+          "distractor_plausibility": 5,
+          "feedback_quality": 5,
+          "supportive_language": 5,
+          "difficulty_alignment": 5
+        },
+        "strengths": [
+          "The scenario accurately reflects realistic engineering handover practices, incorporating target skills naturally (Node.js API development and Atlassian Confluence documentation).",
+          "Syntactic alignment across the blanks is seamless; the intended options and distractors fit the grammatical structure of the sentence cleanly.",
+          "Distractors highlight common, authentic workplace anti-patterns (siloed notes and vague task allocation) without being absurd.",
+          "Feedback is constructive, objective, and provides clear rationale for collaborative best practices."
+        ],
+        "issues": [],
+        "summary": "This activity is well-constructed and immediately usable. It provides a realistic developer handover scenario with sound grammatical coherence, plausible distractors, and professional, supportive feedback."
+      },
+      "final_assessment": {
+        "model_decision": "accept",
+        "calculated_decision": "accept",
+        "minimum_score": 5,
+        "unexplained_low_scores": [],
+        "decision_consistent": true,
+        "review_consistent": true
+      },
+      "attempts": [
+        {
+          "attempt_number": 1,
+          "generation_latency_seconds": 14.3613,
+          "local_validation_passed": true,
+          "judge_review": {
+            "decision": "accept",
+            "scores": {
+              "role_relevance": 5,
+              "workplace_realism": 5,
+              "sentence_coherence": 5,
+              "option_distinctness": 5,
+              "distractor_plausibility": 5,
+              "feedback_quality": 5,
+              "supportive_language": 5,
+              "difficulty_alignment": 5
+            },
+            "strengths": [
+              "The scenario accurately reflects realistic engineering handover practices, incorporating target skills naturally (Node.js API development and Atlassian Confluence documentation).",
+              "Syntactic alignment across the blanks is seamless; the intended options and distractors fit the grammatical structure of the sentence cleanly.",
+              "Distractors highlight common, authentic workplace anti-patterns (siloed notes and vague task allocation) without being absurd.",
+              "Feedback is constructive, objective, and provides clear rationale for collaborative best practices."
+            ],
+            "issues": [],
+            "summary": "This activity is well-constructed and immediately usable. It provides a realistic developer handover scenario with sound grammatical coherence, plausible distractors, and professional, supportive feedback."
+          },
+          "judge_assessment": {
+            "model_decision": "accept",
+            "calculated_decision": "accept",
+            "minimum_score": 5,
+            "unexplained_low_scores": [],
+            "decision_consistent": true,
+            "review_consistent": true
+          },
+          "judge_attempts": [
+            {
+              "attempt_number": 1,
+              "valid": true,
+              "latency_seconds": 9.292,
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "reviewed_pool_file": "/content/drive/MyDrive/CareerTimeMachine/drag_and_drop_pipeline_v1/output/drag_and_drop_activity_pool_v1_reviewed.json",
+  "complete": true
+}

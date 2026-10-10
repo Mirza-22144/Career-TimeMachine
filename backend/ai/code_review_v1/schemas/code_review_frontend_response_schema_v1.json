@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "CodeReviewOption": {
+      "additionalProperties": false,
+      "properties": {
+        "option_id": {
+          "enum": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "title": "Option Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "option_id",
+        "text"
+      ],
+      "title": "CodeReviewOption",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "question_id": {
+      "title": "Question Id",
+      "type": "string"
+    },
+    "activity_type": {
+      "const": "code_review",
+      "title": "Activity Type",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "situation": {
+      "title": "Situation",
+      "type": "string"
+    },
+    "language": {
+      "title": "Language",
+      "type": "string"
+    },
+    "code_snippet": {
+      "title": "Code Snippet",
+      "type": "string"
+    },
+    "options": {
+      "items": {
+        "$ref": "#/$defs/CodeReviewOption"
+      },
+      "title": "Options",
+      "type": "array"
+    },
+    "skills_used": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Skills Used",
+      "type": "array"
+    },
+    "guidance": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Guidance",
+      "type": "array"
+    }
+  },
+  "required": [
+    "question_id",
+    "activity_type",
+    "title",
+    "situation",
+    "language",
+    "code_snippet",
+    "options",
+    "skills_used",
+    "guidance"
+  ],
+  "title": "FrontendCodeReviewActivity",
+  "type": "object"
+}

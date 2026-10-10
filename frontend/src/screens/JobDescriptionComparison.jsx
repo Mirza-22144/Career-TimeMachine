@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../styles/JobDescriptionComparison.css";
 import TopNav from "../components/TopNav";
 import LoadingPopup from "../components/LoadingPopup";
@@ -19,10 +19,60 @@ import { recallResult, rememberResult } from "../lastGood.js";
 // How many of the job's skills fit inside its circle before "+N more".
 const MAX_EXPLORE_SHOWN = 8;
 
+// The circles size themselves to what they hold. A column's content has to
+// fit within this share of a circle's diameter (a circle is narrower towards
+// its top and bottom, so not the whole height is usable). When it doesn't:
+// first the map takes the full page width, which makes the circles bigger;
+// if that is still not enough, the text inside is set smaller.
+const USABLE_SHARE_OF_DIAMETER = 0.7;
+const FIT_NORMAL = 0;
+const FIT_WIDE = 1;
+const FIT_WIDE_AND_COMPACT = 2;
+
 export default function JobDescriptionComparison() {
   const [status, setStatus] = useState("loading"); // loading | error | none | ready
   const [comparison, setComparison] = useState(null);
   const [showAllExplore, setShowAllExplore] = useState(false);
+  const [fit, setFit] = useState(FIT_NORMAL);
+  const vennRef = useRef(null);
+
+  // Grow the circles when their content needs more room. Measured whenever
+  // the map changes size: after the data arrives, when "+N more" is opened,
+  // and when the window is resized (which starts again from the normal size).
+  useEffect(() => {
+    const venn = vennRef.current;
+    if (!venn || typeof ResizeObserver === "undefined") return undefined;
+    let lastPageWidth = document.documentElement.clientWidth;
+
+    const measure = () => {
+      const circle = venn.querySelector(".jdc-circle");
+      // On a phone the circles are hidden and the map is a plain list.
+      if (!circle || circle.offsetParent === null) return;
+      const diameter = circle.getBoundingClientRect().width;
+      const tallest = Math.max(
+        0,
+        ...[...venn.querySelectorAll(".jdc-col")].map((column) => {
+          const items = [...column.children];
+          if (items.length === 0) return 0;
+          return items.at(-1).getBoundingClientRect().bottom - items[0].getBoundingClientRect().top;
+        }),
+      );
+      if (tallest > diameter * USABLE_SHARE_OF_DIAMETER) {
+        setFit((level) => Math.min(level + 1, FIT_WIDE_AND_COMPACT));
+      }
+    };
+
+    const observer = new ResizeObserver(() => {
+      const pageWidth = document.documentElement.clientWidth;
+      if (Math.abs(pageWidth - lastPageWidth) > 40) {
+        lastPageWidth = pageWidth;
+        setFit(FIT_NORMAL);
+      }
+      requestAnimationFrame(measure);
+    });
+    observer.observe(venn);
+    return () => observer.disconnect();
+  }, [comparison, showAllExplore]);
   const [profile, setProfile] = useState(null);
   const [roleStep, setRoleStep] = useState(null); // { closest, allRoles } while the picker is open
   const [isOpening, setIsOpening] = useState(false);
@@ -158,8 +208,8 @@ export default function JobDescriptionComparison() {
           </div>
         )}
 
-        <div className="jdc-layout">
-          <div className="jdc-venn">
+        <div className={`jdc-layout ${fit >= FIT_WIDE ? "jdc-layout--wide" : ""}`}>
+          <div className={`jdc-venn ${fit >= FIT_WIDE_AND_COMPACT ? "jdc-venn--compact" : ""}`} ref={vennRef}>
             <div className="jdc-circle jdc-circle--profile" aria-hidden="true" />
             <div className="jdc-circle jdc-circle--job" aria-hidden="true" />
             <span className="jdc-tag jdc-tag--profile">YOUR PROFILE</span>
@@ -207,7 +257,15 @@ export default function JobDescriptionComparison() {
                   <span key={skill} className="jdc-chip jdc-chip--explore">{skill}</span>
                 ))}
                 {explore.length > MAX_EXPLORE_SHOWN && (
-                  <button type="button" className="jdc-more" onClick={() => setShowAllExplore((v) => !v)}>
+                  <button
+                    type="button"
+                    className="jdc-more"
+                    onClick={() => {
+                      // Fewer chips may fit the normal size again.
+                      setFit(FIT_NORMAL);
+                      setShowAllExplore((v) => !v);
+                    }}
+                  >
                     {showAllExplore ? "Show fewer" : `+${explore.length - MAX_EXPLORE_SHOWN} more`}
                   </button>
                 )}

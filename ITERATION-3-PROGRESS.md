@@ -54,6 +54,13 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### AC 5.2.1 - Job map circles size themselves to their content
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-10
+- **What:** the circles on "Your map for this job" were a fixed share of the page, so a long advertisement (or opening "+N more") could push skills outside them. `JobDescriptionComparison.jsx` now measures the tallest column against the circle and grows in two steps: first the map takes the full page width with the legend underneath, which makes each circle larger; if that is still not enough, the text inside is set smaller. A short advertisement keeps the original size. It re-measures when the data arrives, when "+N more" is opened or closed, and when the window is resized. The circles are always true circles.
+- **Verification:** eslint and build clean. Browser check at 1366px: a short ad kept 511px circles with the legend beside it; a long ad (37 skills with "+N more" opened) grew to 738px circles with nothing outside them. At 1920px the same long ad fitted the normal layout (859px circles). No page errors.
+- **Blocks / Blocked by:** none.
+
 ### AC 3.1.6 / 3.2.4 - Explain why she is sent back to profile setup; wizard and feedback polish
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-09

@@ -327,6 +327,49 @@
   margin: 0;
 }
 
+/* The circles grow with their content (see the fit levels in
+   JobDescriptionComparison.jsx). Wide: the map takes the full width, so
+   each circle - always 64% of the map - is larger, and the legend sits
+   underneath in a row. */
+.jdc-layout--wide {
+  grid-template-columns: 1fr;
+}
+
+.jdc-layout--wide .jdc-legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+.jdc-layout--wide .jdc-legend-label {
+  grid-column: 1 / -1;
+}
+
+/* Compact: still not enough room at full width, so the text inside is set
+   smaller rather than letting it spill out of the circles. */
+.jdc-venn--compact .jdc-chip {
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.jdc-venn--compact .jdc-chips {
+  gap: 6px;
+}
+
+.jdc-venn--compact .jdc-group {
+  font-size: 13px;
+}
+
+.jdc-venn--compact .jdc-col {
+  gap: 6px;
+}
+
+.jdc-venn--compact .jdc-caption,
+.jdc-venn--compact .jdc-transfer p {
+  font-size: 12px;
+  line-height: 17px;
+}
+
 @media (max-width: 1080px) {
   .jdc-layout {
     grid-template-columns: 1fr;

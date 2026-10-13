@@ -75,7 +75,7 @@ function ExploreChips({ skills, stacked }) {
           )}
           {showStatus && stacked && (
             <span className={`yr-status yr-status--${skill.status}`}>
-              {skill.status === "practised" && `Practised ${shortDate(skill.practised_on)}`}
+              {skill.status === "practised" && `Practiced ${shortDate(skill.practised_on)}`}
               {skill.status === "next" && "Next"}
               {skill.status === "later" && "Later"}
             </span>
@@ -93,7 +93,7 @@ function PractiseToggle({ isSelected, onSelect }) {
         {isSelected && <CheckIcon size={10} />}
       </span>
       <span className={isSelected ? "yr-practise-label--on" : ""}>
-        {isSelected ? "Selected to practise" : "Practise this role"}
+        {isSelected ? "Selected to practice" : "Practice this role"}
       </span>
     </button>
   );
@@ -203,7 +203,7 @@ export default function YourRoadmap() {
         <span className="yr-eyebrow">EXPLORE ROLES</span>
         <h1 className="yr-heading">Your roadmap</h1>
         <p className="yr-subheading">
-          Your experience already leads somewhere. Follow a branch, then select the role you want to practise.
+          Your experience already leads somewhere. Follow a branch, then select the role you want to practice.
         </p>
 
         {isStale && (
@@ -213,7 +213,7 @@ export default function YourRoadmap() {
           </div>
         )}
 
-        <div className="yr-map" role="radiogroup" aria-label="Role to practise" ref={mapRef}>
+        <div className="yr-map" role="radiogroup" aria-label="Role to practice" ref={mapRef}>
           {branches && (
             <svg
               className="yr-connectors"
@@ -323,8 +323,8 @@ export default function YourRoadmap() {
         <div className="yr-footer">
           <span className="yr-footer-note">
             {selectedRole
-              ? `You will practise as a ${selectedRole.role_label}. You can come back and choose another role.`
-              : "Select a role to practise. Use the i on any card for current job vacancies."}
+              ? `You will practice as a ${selectedRole.role_label}. You can come back and choose another role.`
+              : "Select a role to practice. Use the i on any card for current job vacancies."}
           </span>
           <div className="yr-footer-actions">
             <button type="button" className="yr-btn-outline" onClick={() => window.history.back()}>

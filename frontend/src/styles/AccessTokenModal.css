@@ -75,6 +75,20 @@
   background: #ede9fe;
 }
 
+/* Why the modal opened: she chose a page that needs a token. Ink on a pale
+   amber band, 9:1 contrast, with a left rule so it is not colour alone. */
+.atm-required {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: #fff7e6;
+  border-left: 4px solid #b45309;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 19px;
+  color: #5c2c00;
+}
+
 .atm-subtitle {
   margin: 10px 0 20px;
   font-weight: 500;

@@ -54,6 +54,34 @@ Per `CTM_Project_Context_Iteration3_final.docx` (1 Oct 2026) and `CTM_Iteration3
 
 **Note on numbering below:** the FE 3.x entries further down this log were written speculatively (2026-10-04) before the real Epics/User Stories/AC document existed, so their numbers don't correspond to actual AC numbers. New entries from here on cite the real AC numbers directly (e.g. "AC 2.3.3") instead.
 
+### Wording: "practice" everywhere on screen; logo links to the landing page
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-14
+- **What:** (1) every on-screen "practise" is now "practice" and, to match, "practised" is "practiced": Your Roadmap ("Practice this role", "Selected to practice", "Practiced 12 Oct", the intro line and footer note), the dashboard next-step card, the practice preparation page ("YOU'LL PRACTICE"), the landing hero and the PRACTICE step. 18 strings in 6 files. The API values (`practised`, `practised_on`), class names and code comments are unchanged, so nothing in the backend moved. (2) The logo in the top nav is now a link to the landing page on every screen, with a keyboard focus ring and a spoken label; on the landing page itself it scrolls to the top, like the Home link.
+- **Why:** Thiri's decision after testing: the spelling was mixed across screens, and users expect the logo to lead home.
+- **Differs from the AC and the test plan:** they quote "Practise this role" and "Practised on [date]" (AC 2.2.3, 2.2.4; TC-02, TC-05).
+- **Verification:** eslint and build clean; no "practis" left in any displayed string. Browser check (Playwright, local): the logo opens the landing page from another page, scrolls to the top on the landing page, and works with Tab and Enter. The roadmap and dashboard strings were changed by text replacement and not re-opened in the browser. Not yet deployed.
+- **Not changed:** one question in the AI team's Multiple Choice pool contains the word "practise" in its own text.
+- **Blocks / Blocked by:** none.
+
+### AC 3.1.6 - Protected pages show the token options as an overlay, not a separate page
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-14
+- **What:** with no token, selecting Choose Your Path, Practice Scenarios or Dashboard (in the nav or the landing footer) used to move her to the Access Token Required page. It now opens the "Access Your Journey" overlay on the page she is on, with the line "Access token required. Generate or enter an access token to continue." at the top. Opening the overlay from Generate / Access Token does not show that line. Changed: `useAccessTokenFlow.js` (a `tokenRequired` flag), `AccessTokenModal.jsx`, `TopNav.jsx`, `AccessTokenModal.css`.
+- **Why:** Thiri's decision after testing: being sent to another screen was an extra step, and the overlay is the same one used everywhere else.
+- **Differs from the AC and the test plan:** AC 3.1.6 and test case TC-12 describe a separate Access Token Required page. The message is the same; only where it appears changed. The page and its route `/access-token-required` are still in the code but nothing links to them now.
+- **Verification:** eslint and build clean. Browser check (Playwright, local): all three nav links and the footer Dashboard link open the overlay with the notice and leave the address unchanged; the nav token button opens it without the notice. No page errors. Not yet deployed.
+- **Known, not changed:** typing a protected address directly with no token does not show the overlay; those pages still handle it their own way.
+- **Blocks / Blocked by:** none.
+
+### AC 3.1.1 - Landing page start buttons open the token options instead of always making a new token
+
+- **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-14
+- **What:** with no token in the tab, the hero button, the button under "Your journey, step by step" and the footer link "Start your journey" each generated a brand-new token straight away. They now open the same "Access Your Journey" overlay as the nav button, with both choices: generate a token, or enter an existing one. The hero text and button label say so ("Start or return to your journey", "Generate / Access Token"). Only `LandingPage.jsx` changed.
+- **Why:** a returning user who had saved her token and closed the browser was never asked for it. The token is kept only for the open tab, so on her return the page looked the same as for a new visitor and its main button made her a second, empty journey.
+- **Verification:** eslint and build clean. Browser check (Playwright, local): each of the three buttons opens the options overlay and no token request is sent until she chooses Generate Token. No page errors. Not yet deployed.
+- **Blocks / Blocked by:** none.
+
 ### Third round of fixes from local testing: landing "How it works", nav colour, year type-ahead, wizard sidebar, practice setup pages
 
 - **Status:** [DONE] **Owner:** Thiri **Date:** 2026-10-10

@@ -9,7 +9,7 @@ import { PlusIcon, RefreshIcon } from "./icons";
  * onGenerateToken. The existing-token path validates against the real
  * backend (onValidToken, wired to useAccessTokenFlow's handleValidToken).
  */
-export default function AccessTokenModal({ onClose, onGenerateToken, onValidToken }) {
+export default function AccessTokenModal({ onClose, onGenerateToken, onValidToken, required = false }) {
   const [existingToken, setExistingToken] = useState("");
   // null | "empty" | "invalid" | "network"
   const [tokenError, setTokenError] = useState(null);
@@ -67,6 +67,12 @@ export default function AccessTokenModal({ onClose, onGenerateToken, onValidToke
             ×
           </button>
         </div>
+        {/* AC 3.1.6: shown when she tried to open a page that needs a token. */}
+        {required && (
+          <p className="atm-required" role="status">
+            Access token required. Generate or enter an access token to continue.
+          </p>
+        )}
         <p className="atm-subtitle">
           Generate a new token to start your journey, or enter an existing
           token to return to your saved journey.

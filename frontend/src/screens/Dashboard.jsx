@@ -177,10 +177,10 @@ export default function Dashboard() {
                     </span>
                     <h2 className="dash-next-title">
                       {nextSkill
-                        ? `Practise a situation that uses ${nextSkill.label}`
+                        ? `Practice a situation that uses ${nextSkill.label}`
                         : steps.length > 0
-                          ? "You’ve practised every skill to explore for this roadmap."
-                          : `Practise as a ${selectedRole.role_label}`}
+                          ? "You’ve practiced every skill to explore for this roadmap."
+                          : `Practice as a ${selectedRole.role_label}`}
                     </h2>
                   </div>
                   <div className="dash-next-actions">
@@ -203,7 +203,7 @@ export default function Dashboard() {
                         </span>
                         <span className="dash-step-label">{skill.label}</span>
                         <span className="dash-step-status">
-                          {skill.status === "practised" && `Practised ${shortDate(skill.practised_on)}`}
+                          {skill.status === "practised" && `Practiced ${shortDate(skill.practised_on)}`}
                           {skill.status === "next" && "Next"}
                           {skill.status === "later" && "Later"}
                         </span>
@@ -264,7 +264,7 @@ export default function Dashboard() {
                     <div>
                       <span className="dash-row-title">{role.role_label}</span>
                       <span className="dash-row-meta">
-                        Role · {role.chosen_at ? `chosen ${shortDate(role.chosen_at)}` : "selected to practise"}
+                        Role · {role.chosen_at ? `chosen ${shortDate(role.chosen_at)}` : "selected to practice"}
                       </span>
                     </div>
                     <span aria-hidden="true" className="dash-chevron">›</span>

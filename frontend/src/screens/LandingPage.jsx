@@ -46,7 +46,9 @@ export default function LandingPage() {
     "how-it-works": () =>
       document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" }),
     dashboard: flow.checkTokenGate(() => navigate("/dashboard"), { requireProfile: true }),
-    start: flow.activeToken ? handleContinueJourney : flow.handleGenerateToken,
+    // With no token in this tab she may be new or returning, so the same
+    // options the nav offers are shown: generate a token, or enter hers.
+    start: flow.activeToken ? handleContinueJourney : flow.openAccessModal,
   };
 
   return (
@@ -80,7 +82,7 @@ export default function LandingPage() {
           <p className="lp-lead">Your experience is still valuable.</p>
           <p className="lp-brand-line">
             CareerTimeMachine helps women returning to IT reconnect with their
-            experience, explore what&rsquo;s relevant today and practise
+            experience, explore what&rsquo;s relevant today and practice
             their return with confidence.
           </p>
 
@@ -101,12 +103,12 @@ export default function LandingPage() {
             </div>
           ) : (
             <div className="lp-active-journey">
-              <span className="lp-active-journey-title">Ready to start your journey?</span>
+              <span className="lp-active-journey-title">Start or return to your journey</span>
               <p className="lp-active-journey-text">
-                Generate an access token to save your journey and return to it later.
+                Generate an access token to begin, or enter the one you saved to pick up where you left off.
               </p>
-              <button type="button" className="lp-btn-primary" onClick={flow.handleGenerateToken}>
-                <span className="lp-btn-label">Generate Token</span>
+              <button type="button" className="lp-btn-primary" onClick={flow.openAccessModal}>
+                <span className="lp-btn-label">Generate / Access Token</span>
               </button>
             </div>
           )}
@@ -166,7 +168,7 @@ export default function LandingPage() {
         <div className="lp-how-closing">
           <p>{howItWorks.closing}</p>
           <button type="button" className="lp-btn-primary" onClick={footerActions.start}>
-            <span className="lp-btn-label">{flow.activeToken ? "Continue your journey" : "Generate Token"}</span>
+            <span className="lp-btn-label">{flow.activeToken ? "Continue your journey" : "Generate / Access Token"}</span>
             <ArrowRightIcon size={16} />
           </button>
         </div>

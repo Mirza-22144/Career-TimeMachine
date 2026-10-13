@@ -491,7 +491,7 @@ export default function WorkplaceScenario() {
       <div className="ws-page">
         <div className="ws-load-error">
           <p>
-            {loadError === 'no-role' && 'Choose a role to practise on your roadmap first.'}
+            {loadError === 'no-role' && 'Choose a role to practice on your roadmap first.'}
             {loadError === 'intro-failed' && "We couldn't start your workplace practice. Please try again."}
           </p>
           {loadError === 'intro-failed' && <button type="button" onClick={retryLoad}>Try Again</button>}
@@ -799,7 +799,7 @@ export default function WorkplaceScenario() {
                 </div>
               )}
               <div className="pa-prep-section">
-                <span className="pa-prep-label">YOU&rsquo;LL PRACTISE</span>
+                <span className="pa-prep-label">YOU&rsquo;LL PRACTICE</span>
                 <p className="pa-prep-text">
                   Handling the everyday situations a {role.label} meets with colleagues and stakeholders.
                 </p>

@@ -77,15 +77,19 @@ export default function TopNav({ flow: providedFlow }) {
   return (
     <>
       <nav className="tn-nav">
-        <div
+        {/* The logo is a link home, the same as the Home item. */}
+        <a
+          href="/"
+          aria-label="CareerTimeMachine, go to the home page"
+          onClick={handleHomeClick}
           className={`tn-logo ${onDark.logo ? "tn-on-dark" : ""} ${isScrolled && !onDark.logo ? "tn-logo--emblem-only" : ""}`}
           ref={logoRef}
         >
           <span className="tn-logo-mark">
-            <img src={logoEmblem} alt="CareerTimeMachine emblem" className="tn-logo-emblem" />
+            <img src={logoEmblem} alt="" className="tn-logo-emblem" />
           </span>
           <span className="tn-logo-word">CareerTimeMachine</span>
-        </div>
+        </a>
         <div className={`tn-nav-actions ${onDark.actions ? "tn-on-dark" : ""}`} ref={actionsRef}>
           <div className="tn-nav-links">
             {navLinks.map((link) => {
@@ -134,6 +138,7 @@ export default function TopNav({ flow: providedFlow }) {
           onClose={flow.closeModal}
           onGenerateToken={flow.handleGenerateToken}
           onValidToken={flow.handleValidToken}
+          required={flow.tokenRequired}
         />
       )}
 

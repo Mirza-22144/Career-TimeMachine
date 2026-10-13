@@ -17,6 +17,9 @@ export function useAccessTokenFlow() {
   // already-active token).
   const [modalView, setModalView] = useState(null);
   const [accessModalError, setAccessModalError] = useState(false);
+  // True when the options modal was opened because she tried to open a
+  // page that needs a token - the modal then says why it appeared.
+  const [tokenRequired, setTokenRequired] = useState(false);
   const [tokenGenerationError, setTokenGenerationError] = useState(false);
   const [tokenCheckError, setTokenCheckError] = useState(false);
   // Last nav-gate attempt (and its options), so the "couldn't verify"
@@ -33,7 +36,10 @@ export function useAccessTokenFlow() {
   const [sessionRestoreError, setSessionRestoreError] = useState(false);
   const [lastValidToken, setLastValidToken] = useState(null);
 
-  const closeModal = () => setModalView(null);
+  const closeModal = () => {
+    setModalView(null);
+    setTokenRequired(false);
+  };
 
   // Opens the "Access Your Journey" modal (AC 3.1.1). Runs when the user
   // selects Enter My Journey on the Hero or Generate/Access Token in the
@@ -41,6 +47,7 @@ export function useAccessTokenFlow() {
   const openAccessModal = () => {
     try {
       setAccessModalError(false);
+      setTokenRequired(false);
       setModalView("options");
     } catch {
       setAccessModalError(true);
@@ -120,9 +127,9 @@ export function useAccessTokenFlow() {
   };
 
   // Guards a token-dependent nav item (Choose Your Path, Practice
-  // Scenarios, Dashboard). AC 3.1.6: with no active token, opens the
-  // dedicated Access Token Required page instead of just blocking the
-  // click. `requireProfile` (AC 3.3.3's rule, applied to every page that
+  // Scenarios, Dashboard). AC 3.1.6: with no active token, she is told a
+  // token is required and offered the token options - as an overlay on the
+  // page she is on, so she is not taken somewhere else. `requireProfile` (AC 3.3.3's rule, applied to every page that
   // depends on a career profile) additionally sends her back into the
   // wizard, at whichever step is actually unfinished, when a token exists
   // but the profile was never confirmed - same getResumeStep() used
@@ -131,7 +138,8 @@ export function useAccessTokenFlow() {
     try {
       setTokenCheckError(false);
       if (!hasActiveToken()) {
-        navigate("/access-token-required");
+        setTokenRequired(true);
+        setModalView("options");
         return;
       }
       if (requireProfile) {
@@ -164,6 +172,7 @@ export function useAccessTokenFlow() {
     loadTokenError,
     sessionRestoreError,
     closeModal,
+    tokenRequired,
     openAccessModal,
     handleGenerateToken,
     handleValidToken,

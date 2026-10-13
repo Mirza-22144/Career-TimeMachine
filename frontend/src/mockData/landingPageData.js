@@ -67,7 +67,7 @@ export const howItWorks = {
     },
     {
       id: "practice",
-      stage: "PRACTISE",
+      stage: "PRACTICE",
       title: "Try the work",
       text: "Short, realistic workplace activities for the role you chose. Nothing is graded.",
       result: "Feedback, never a score",
@@ -76,7 +76,7 @@ export const howItWorks = {
       id: "dashboard",
       stage: "MOVE FORWARD",
       title: "Follow your progress",
-      text: "Your dashboard keeps your roadmap, the skills you have practised and your past feedback together.",
+      text: "Your dashboard keeps your roadmap, the skills you have practiced and your past feedback together.",
       result: "Confidence to return",
     },
   ],

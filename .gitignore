@@ -13,3 +13,6 @@ frontend/.env
 # General
 .DS_Store
 *.log
+
+# Database backups - real data, kept outside the repository
+*_backup_*.sql
